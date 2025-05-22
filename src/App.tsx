@@ -1,12 +1,18 @@
-import { Button } from '@/components/ui/button'
 import './App.css'
+import { Routes, Route } from "react-router";
+import HomePage from "./pages/home";
+import ContactPage from '@/pages/contact';
 
 function App() {
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
-    </div>
+    <>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/contact" element={<ContactPage />} />
+      </Routes>
+    </>
   )
 }
 
