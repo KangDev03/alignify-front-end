@@ -1,54 +1,79 @@
-# React + TypeScript + Vite
+# Vite Code Base
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React application template built with Vite, TypeScript, and best practices in mind.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ⚡️ [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
+- 🔥 [React](https://reactjs.org/) - A JavaScript library for building user interfaces
+- 💎 [TypeScript](https://www.typescriptlang.org/) - JavaScript with syntax for types
+- 🎨 [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework
+- 📦 [Redux Toolkit](https://redux-toolkit.js.org/) - The official, opinionated, batteries-included toolset for efficient Redux development
+- 🔐 [Clerk](https://clerk.dev/) - Authentication and User Management
+- 🎯 [ESLint](https://eslint.org/) - Code linting
+- 💅 [Prettier](https://prettier.io/) - Code formatting
+- 📱 Responsive design
+- 🎨 Modern UI components with Radix UI
 
-## Expanding the ESLint configuration
+## 📦 Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Clone the repository
+git clone https://github.com/KangDev03/vite-project-ts-swp.git
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+# Navigate to the project directory
+cd vite-project-ts-swp
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Available Scripts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `npm run dev` - Start the development server
+- `npm run build` - Build the app for production
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview the production build locally
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+## 🏗️ Project Structure
+
 ```
+src/
+├── assets/        # Static assets
+├── components/    # Reusable components
+├── features/      # Feature-based modules
+├── hooks/         # Custom React hooks
+├── lib/          # Utility functions and configurations
+├── pages/        # Page components
+├── redux/        # Redux store and slices
+└── ...
+```
+
+## 🔧 Configuration
+
+The project uses several configuration files:
+
+- `vite.config.ts` - Vite configuration
+- `tsconfig.json` - TypeScript configuration
+- `eslint.config.js` - ESLint configuration
+- `.prettierrc` - Prettier configuration
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/vite-project-ts-swp/issues).
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Vite](https://vitejs.dev/)
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- [Clerk](https://clerk.dev/)
+- [Radix UI](https://www.radix-ui.com/)
