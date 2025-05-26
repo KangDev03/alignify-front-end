@@ -1,7 +1,9 @@
-import { Routes, Route } from "react-router";
-import LandingPage from "./pages/landing";
-import ContactPage from '@/pages/contact';
+import { Route, Routes } from "react-router";
+
 import LandingLayout from "@/components/layouts/landing/layout";
+import ContactPage from '@/pages/contact';
+
+import LandingPage from "./pages/landing";
 
 function Router() {
 
