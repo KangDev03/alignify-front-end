@@ -19,10 +19,10 @@ A modern React application template built with Vite, TypeScript, and best practi
 
 ```bash
 # Clone the repository
-git clone https://github.com/KangDev03/vite-project-ts-swp.git
+git clone https://github.com/KangDev03/alignify-front-end.git
 
 # Navigate to the project directory
-cd vite-project-ts-swp
+cd alignify-front-end
 
 # Install dependencies
 npm install
@@ -63,7 +63,7 @@ The project uses several configuration files:
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/vite-project-ts-swp/issues).
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/alignify-front-end/issues).
 
 ## 📝 License
 
