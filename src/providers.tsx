@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 
 import { ClerkProvider } from '@clerk/clerk-react';
 
+import { ThemeProvider } from './components/theme/theme-provider';
 import { store } from './redux/store';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -16,10 +17,12 @@ function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Provider store={store}>
-        <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-          {children}
-        </ClerkProvider>
-        <Toaster />
+        <ThemeProvider defaultTheme="system" storageKey="alignify-theme">
+          <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+            {children}
+          </ClerkProvider>
+          <Toaster />
+        </ThemeProvider>
       </Provider>
     </>
   );
