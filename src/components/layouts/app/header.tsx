@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 
 import { Icons } from "@/components/icons/icons"
 import { UserDropdown } from "@/components/layouts/app/user-dropdown"
+import { ThemeToggle } from "@/components/theme/theme-toggle"
 
 type UserRole = "influencer" | "brand"
 type CurrentPage = "home" | "dashboard" | "profile" | "campaigns" | "applications" | "analytics"
@@ -55,7 +56,7 @@ export function AppHeader({ userRole, currentPage, onPageChange, onLogout, userN
                   onClick={() => onPageChange(item.id as CurrentPage)}
                   className="flex justify-center items-center space-x-2 h-9"
                 >
-                  <Icon/>
+                  <Icon />
                   <span>{item.label}</span>
                 </Button>
               )
@@ -67,7 +68,7 @@ export function AppHeader({ userRole, currentPage, onPageChange, onLogout, userN
               <Icons.bell className="h-4 w-4" />
               <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs"></span>
             </Button>
-
+            <ThemeToggle />
             <UserDropdown
               userName={userName}
               userAvatar={userAvatar}
