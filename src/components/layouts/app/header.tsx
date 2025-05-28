@@ -1,5 +1,7 @@
 "use client"
 
+import { useNavigate } from "react-router"
+
 import { Button } from "@/components/ui/button"
 
 import { Icons } from "@/components/icons/icons"
@@ -34,9 +36,15 @@ export function AppHeader({ userRole, currentPage, onPageChange, onLogout, userN
         { id: "analytics", label: "Báo cáo", icon: Icons.barChart3 },
       ]
 
+  const navigate = useNavigate()
+
+  const handleToProfile = () => {
+    navigate("/user-profile")
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-16">
         <div className="flex h-16 items-center justify-between">
 
           <div className="flex items-center space-x-4">
@@ -61,6 +69,15 @@ export function AppHeader({ userRole, currentPage, onPageChange, onLogout, userN
                 </Button>
               )
             })}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleToProfile}
+              className="flex justify-center items-center space-x-2 h-9"
+            >
+              <Icons.user />
+              <span>Trang cá nhân</span>
+            </Button>
           </nav>
 
           <div className="flex items-center space-x-2">

@@ -14,7 +14,7 @@ function AppLayout() {
         userName={"KangDev"}
         userAvatar={"https://avatars.githubusercontent.com/u/12345678?v=4"}
       />
-      <main>
+      <main className="container mx-auto px-20 py-8">
         <Outlet />
       </main>
       <AppFooter />
