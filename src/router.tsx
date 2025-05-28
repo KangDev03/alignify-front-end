@@ -6,6 +6,7 @@ import LoginPage from "@/pages/auth/login";
 import { SelectRolePage } from "@/pages/auth/select-role";
 import ContactPage from '@/pages/contact';
 
+import RegisterPage from "./pages/auth/register";
 import LandingPage from "./pages/landing";
 
 function Router() {
@@ -15,7 +16,7 @@ function Router() {
       <Routes>
         <Route path="/auth">
           <Route path="login" element={<LoginPage />} />
-          {/* <Route path="register" element={<RegisterPage />} /> */}
+          <Route path="register" element={<RegisterPage />} />
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
           {/* <Route path="reset-password" element={<ResetPasswordPage />} /> */}
           <Route path="select-role" element={<SelectRolePage />} />
