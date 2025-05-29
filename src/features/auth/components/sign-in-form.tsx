@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "react-router"
 
 import { Button } from "@/components/ui/button"
@@ -7,12 +5,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-import { AuthLayout } from "@/components/layouts/auth/layout"
-
-export default function LoginPage() {
-    return (
-        <AuthLayout>
-            <Card className="w-full max-w-md border-2 bg-card shadow-lg">
+export default function SignInForm() {
+  return (
+    <Card className="w-full max-w-md border-2 bg-card shadow-lg">
                 <CardHeader className="space-y-1 text-center">
                     <CardTitle className="text-2xl font-bold text-primary">Đăng nhập</CardTitle>
                     <CardDescription>Nhập thông tin đăng nhập của bạn để tiếp tục</CardDescription>
@@ -60,6 +55,5 @@ export default function LoginPage() {
                     </div>
                 </CardFooter>
             </Card>
-        </AuthLayout>
-    )
+  )
 }

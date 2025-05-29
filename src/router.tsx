@@ -3,13 +3,13 @@ import { Route, Routes } from "react-router";
 // import avatar from "@/assets/avatar-small.png";
 import AppLayout from "@/components/layouts/app/app-layout";
 import ForgotPasswordPage from "@/pages/auth/forgot-password";
-import LoginPage from "@/pages/auth/login";
 import { SelectRolePage } from "@/pages/auth/select-role";
+import LoginPage from "@/pages/auth/sign-in";
 import ContactPage from '@/pages/contact';
 import HomePage from "@/pages/home";
 import { UserProfilePage } from "@/pages/profile";
 
-import RegisterPage from "./pages/auth/register";
+import RegisterPage from "./pages/auth/sign-up";
 
 export const mockInfluencer = {
   id: "1",

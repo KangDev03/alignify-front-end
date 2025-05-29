@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { useNavigate } from "react-router"
 
@@ -7,52 +5,48 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 import { Icons } from "@/components/icons/icons"
-import { AuthLayout } from "@/components/layouts/auth/layout"
 
-export function SelectRolePage() {
+export default function SelectRoleForm() {
     const navigate = useNavigate()
     const [selectedRole, setSelectedRole] = useState("")
 
     const handleContinue = () => {
         navigate(`/auth/register?role=${selectedRole}`)
     }
-
     return (
-        <AuthLayout>
-            <div className="w-full max-w-4xl space-y-12">
-                <div className="text-center space-y-4">
-                    <h1 className="text-4xl font-bold text-primary">Chọn vai trò của bạn</h1>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        Chọn vai trò phù hợp với bạn để chúng tôi có thể cung cấp trải nghiệm tốt nhất
-                    </p>
-                </div>
-
-                <div className="flex justify-center items-center gap-8">
-                    <RoleCard
-                        title="Nhà sáng tạo<br />nội dung"
-                        description="Dành cho những người tạo ra nội dung, influencer và KOLs"
-                        icon={<Icons.user className="w-8 h-8" />}
-                        isSelected={selectedRole === "creator"}
-                        onClick={() => setSelectedRole("creator")}
-                    />
-
-                    <RoleCard
-                        title="Nhãn hàng<br />quảng cáo"
-                        description="Dành cho các thương hiệu và doanh nghiệp cần quảng cáo"
-                        icon={<Icons.store className="w-8 h-8" />}
-                        isSelected={selectedRole === "brand"}
-                        onClick={() => setSelectedRole("brand")}
-                    />
-                </div>
-
-                <div className="flex justify-center">
-                    <Button onClick={handleContinue}>
-                        Tiếp tục
-                        <Icons.arrowRight className="w-5 h-5" />
-                    </Button>
-                </div>
+        <div className="w-full max-w-4xl space-y-12">
+            <div className="text-center space-y-4">
+                <h1 className="text-4xl font-bold text-primary">Chọn vai trò của bạn</h1>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    Chọn vai trò phù hợp với bạn để chúng tôi có thể cung cấp trải nghiệm tốt nhất
+                </p>
             </div>
-        </AuthLayout>
+
+            <div className="flex justify-center items-center gap-8">
+                <RoleCard
+                    title="Nhà sáng tạo<br />nội dung"
+                    description="Dành cho những người tạo ra nội dung, influencer và KOLs"
+                    icon={<Icons.user className="w-8 h-8" />}
+                    isSelected={selectedRole === "creator"}
+                    onClick={() => setSelectedRole("creator")}
+                />
+
+                <RoleCard
+                    title="Nhãn hàng<br />quảng cáo"
+                    description="Dành cho các thương hiệu và doanh nghiệp cần quảng cáo"
+                    icon={<Icons.store className="w-8 h-8" />}
+                    isSelected={selectedRole === "brand"}
+                    onClick={() => setSelectedRole("brand")}
+                />
+            </div>
+
+            <div className="flex justify-center">
+                <Button onClick={handleContinue}>
+                    Tiếp tục
+                    <Icons.arrowRight className="w-5 h-5" />
+                </Button>
+            </div>
+        </div>
     )
 }
 
