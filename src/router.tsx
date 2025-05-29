@@ -10,6 +10,7 @@ import HomePage from "@/pages/home";
 import { UserProfilePage } from "@/pages/profile";
 
 import RegisterPage from "./pages/auth/sign-up";
+import VerifyOtpPage from "@/pages/auth/verify-otp";
 
 export const mockInfluencer = {
   id: "1",
@@ -46,7 +47,7 @@ function Router() {
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
           {/* <Route path="reset-password" element={<ResetPasswordPage />} /> */}
           <Route path="select-role" element={<SelectRolePage />} />
-          {/* <Route path="verify-otp" element={<VerifyOtpPage />} /> */}
+          <Route path="verify-otp" element={<VerifyOtpPage />} />
         </Route>
         <Route element={<AppLayout />}>
           <Route path="/" element={<HomePage />} />

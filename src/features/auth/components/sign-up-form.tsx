@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +19,7 @@ function useQuery() {
 export default function SignUpForm() {
     const query = useQuery();
     const role = query.get('role');
+    const navigate = useNavigate()
 
     if (role !== 'creator' && role !== 'brand') return null;
 
@@ -74,6 +75,11 @@ export default function SignUpForm() {
         ? 'Đăng ký tài khoản nhà sáng tạo nội dung'
         : 'Đăng ký tài khoản nhãn hàng quảng cáo';
 
+
+    const handleSignUp = () => {
+        navigate(`/auth/verify-otp`);
+    }
+
     return (
         <Card className="w-full max-w-md border-2 bg-card shadow-lg">
             <CardHeader className="text-center space-y-1">
@@ -83,7 +89,7 @@ export default function SignUpForm() {
 
             <CardContent className="space-y-4">
                 {formFields}
-                <Button type="submit" variant="default" className="w-full">
+                <Button type="submit" variant="default" className="w-full" onClick={handleSignUp}>
                     Đăng Ký
                 </Button>
             </CardContent>
