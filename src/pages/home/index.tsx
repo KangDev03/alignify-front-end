@@ -1,6 +1,8 @@
 function HomePage() {
   return (
-    <div className="h-[1000px]">HomePage</div>
+    <div>
+      HomePage
+    </div>
   )
 }
 
