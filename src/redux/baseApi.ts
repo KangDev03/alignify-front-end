@@ -1,16 +1,21 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const baseQuery = fetchBaseQuery({
-  baseUrl: 'https://pokeapi.co/api/v2/',
-  prepareHeaders: (headers) => {
-    headers.set('Content-Type', 'application/json');
+import type { RootState } from '@/redux/store';
 
+const baseQuery = fetchBaseQuery({
+  baseUrl: 'api/v1/',
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).auth?.token;
+    if (token) {
+      headers.set('authorization', `Bearer ${token}`);
+    }
+    headers.set('Content-Type', 'application/json');
     return headers;
   },
 });
 
 export const baseApi = createApi({
-  baseQuery: baseQuery,
+  baseQuery,
   endpoints: () => ({}),
-  tagTypes: ['Pokemon'],
+  tagTypes: ['Auth', 'Pokemon'],
 });
