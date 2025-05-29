@@ -1,9 +1,7 @@
-import BookingArea from "@/features/booking/components/booking-area"
-
 function HomePage() {
   return (
     <div>
-      <BookingArea />
+      HomePage
     </div>
   )
 }

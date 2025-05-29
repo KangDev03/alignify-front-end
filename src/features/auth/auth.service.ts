@@ -5,10 +5,10 @@ import type { LoginRequest, LoginResponse } from './auth.type';
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
-      query: (credentials) => ({
-        url: '/api/v1/auth/login',
+      query: (data) => ({
+        url: '/auth/login',
         method: 'POST',
-        body: credentials,
+        body: data,
       }),
       invalidatesTags: ['Auth'],
     }),
@@ -30,7 +30,7 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ['Auth'],
     }),
 
-    getProfile: builder.query<LoginResponse['data']['user'], void>({
+    getProfile: builder.query<LoginResponse, void>({
       query: () => '/auth/profile',
       providesTags: ['Auth'],
     }),

@@ -1,8 +1,8 @@
 export const mockUsers = [
   {
     id: "1",
-    email: "minh@gmail.com",
-    password: "123456",
+    email: "minh@minhpnq1807@gmail.com.com",
+    password: "123",
     name: "John Doe",
     role: "influencer" as const,
     avatar: "/placeholder.svg"

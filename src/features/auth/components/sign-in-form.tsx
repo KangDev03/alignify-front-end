@@ -1,6 +1,7 @@
-import { useState } from "react"
+// import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,7 +26,7 @@ const mockUsers = [
     avatar: "/placeholder.svg"
   },
   {
-    id: "2", 
+    id: "2",
     email: "brand@example.com",
     password: "password123",
     name: "Jane Smith",
@@ -44,53 +45,15 @@ export async function mockLogin(credentials: LoginRequest): Promise<LoginRespons
   }
 
   return {
-    success: true,
-    message: "Login successful",
-    data: {
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        avatar: user.avatar
-      },
-      token: "mock_jwt_token",
-      refreshToken: "mock_refresh_token"
-    }
+    id: user.id,
+    token: "mock_jwt_token",
   };
 }
 
 export default function SignInForm() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  // const [login, { isLoading }] = useLoginMutation();
-
-  // async function onSubmit(values: SignInFormValues) {
-  //   try {
-  //     const response = await login(values).unwrap();
-  //     dispatch(setCredentials(response.data));
-  //     navigate("/dashboard");
-  //     console.log(values);
-  //   } catch (err) {
-  //     console.error('Failed to login:', err);
-  //     console.log(values);
-  //   }
-  // }
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function onSubmit(values: SignInFormValues) {
-    setIsLoading(true);
-    try {
-      const response = await mockLogin(values);
-      dispatch(setCredentials(response.data));
-      navigate("/home");
-    } catch (err) {
-      console.error('Failed to login:', err);
-      // Thêm toast notification ở đây nếu có
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const [login, { isLoading }] = useLoginMutation();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -99,6 +62,45 @@ export default function SignInForm() {
       password: "",
     },
   })
+
+  async function onSubmit(values: { email: string; password: string }) {
+    try {
+      console.log('Submitting login with values:', values);
+      const response = await login(values).unwrap();
+      dispatch(setCredentials(response));
+      navigate("/home");
+    } catch (err) {
+      console.error('Failed to login:', err);
+
+      if (typeof err === "object" && err !== null && "status" in err) {
+        const status = (err as { status?: any }).status;
+        if (status === 'FETCH_ERROR') {
+          toast.error("Không thể kết nối đến server. Vui lòng thử lại sau!");
+        } else if (status === 401) {
+          toast.error("Email hoặc mật khẩu không chính xác!");
+        }
+      }
+
+    }
+  }
+
+  // const [isLoading, setIsLoading] = useState(false);
+
+  // async function onSubmit(values: SignInFormValues) {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await mockLogin(values);
+  //     dispatch(setCredentials(response.data));
+  //     navigate("/home");
+  //   } catch (err) {
+  //     console.error('Failed to login:', err);
+  //     // Thêm toast notification ở đây nếu có
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }
+
+
 
   return (
     <Card className="w-full max-w-md border-2 bg-card shadow-lg">
