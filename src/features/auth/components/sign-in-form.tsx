@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router"
 
@@ -7,25 +8,87 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 
 import { type SignInFormValues, signInSchema } from "@/features/auth/auth.schema"
+import type { LoginRequest, LoginResponse } from "@/features/auth/auth.type"
 import { useAppDispatch } from "@/hooks/redux";
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { useLoginMutation } from "../auth.service";
 import { setCredentials } from "../auth.slice";
 
+const mockUsers = [
+  {
+    id: "1",
+    email: "minh@gmail.com",
+    password: "123456",
+    name: "John Doe",
+    role: "influencer" as const,
+    avatar: "/placeholder.svg"
+  },
+  {
+    id: "2", 
+    email: "brand@example.com",
+    password: "password123",
+    name: "Jane Smith",
+    role: "brand" as const,
+    avatar: "/placeholder.svg"
+  }
+];
+
+export async function mockLogin(credentials: LoginRequest): Promise<LoginResponse> {
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  const user = mockUsers.find(u => u.email === credentials.email);
+
+  if (!user || user.password !== credentials.password) {
+    throw new Error('Invalid credentials');
+  }
+
+  return {
+    success: true,
+    message: "Login successful",
+    data: {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        avatar: user.avatar
+      },
+      token: "mock_jwt_token",
+      refreshToken: "mock_refresh_token"
+    }
+  };
+}
+
 export default function SignInForm() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [login, { isLoading }] = useLoginMutation();
+  // const [login, { isLoading }] = useLoginMutation();
+
+  // async function onSubmit(values: SignInFormValues) {
+  //   try {
+  //     const response = await login(values).unwrap();
+  //     dispatch(setCredentials(response.data));
+  //     navigate("/dashboard");
+  //     console.log(values);
+  //   } catch (err) {
+  //     console.error('Failed to login:', err);
+  //     console.log(values);
+  //   }
+  // }
+  const [isLoading, setIsLoading] = useState(false);
 
   async function onSubmit(values: SignInFormValues) {
+    setIsLoading(true);
     try {
-      const response = await login(values).unwrap();
+      const response = await mockLogin(values);
       dispatch(setCredentials(response.data));
-      navigate("/dashboard");
+      navigate("/home");
     } catch (err) {
       console.error('Failed to login:', err);
-      console.log(values);
+      // Thêm toast notification ở đây nếu có
+    } finally {
+      setIsLoading(false);
     }
   }
 
