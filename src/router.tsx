@@ -9,6 +9,8 @@ import ContactPage from '@/pages/contact';
 import HomePage from "@/pages/home";
 import { UserProfilePage } from "@/pages/profile";
 
+import RegisterPage from "./pages/auth/register";
+
 export const mockInfluencer = {
   id: "1",
   name: "Nguyễn Văn Duy Khang",
@@ -40,7 +42,7 @@ function Router() {
       <Routes>
         <Route path="/auth">
           <Route path="login" element={<LoginPage />} />
-          {/* <Route path="register" element={<RegisterPage />} /> */}
+          <Route path="register" element={<RegisterPage />} />
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
           {/* <Route path="reset-password" element={<ResetPasswordPage />} /> */}
           <Route path="select-role" element={<SelectRolePage />} />
