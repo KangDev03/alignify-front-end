@@ -32,8 +32,7 @@ export function ProfileHeader({
 
     const formData = new FormData();
     formData.append('file', file);
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODM4NDY1MjhhYmI1MDJlMDdmNmY4ZWUiLCJyb2xlSWQiOiI2ODM0MzEyNTE3ZjY0MzI4NjI4YTc4ZGQiLCJleHAiOjE3NDg2MDQ5NDh9.11Yy444qcFtgzZgPRt83YG08Pp2xu0a6ZrGPL-WBcmE';
+    const token = import.meta.env.VITE_API_TOKEN;
     const userId = '683846528abb502e07f6f8ee';
     await axios
       .post(`http://localhost:8080/api/v1/profile/gallery/${userId}`, formData, {
