@@ -1,7 +1,6 @@
 'use client';
 
-import { Link } from 'react-router';
-import { useLocation } from 'react-router';
+import { Link, useLocation } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import {

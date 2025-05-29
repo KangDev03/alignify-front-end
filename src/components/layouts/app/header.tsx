@@ -69,15 +69,6 @@ export function AppHeader({ userRole, currentPage, onPageChange, onLogout, userN
                 </Button>
               )
             })}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleToProfile}
-              className="flex justify-center items-center space-x-2 h-9"
-            >
-              <Icons.user />
-              <span>Trang cá nhân</span>
-            </Button>
           </nav>
 
           <div className="flex items-center space-x-2">

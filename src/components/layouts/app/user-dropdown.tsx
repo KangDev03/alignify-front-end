@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,9 +22,15 @@ interface UserDropdownProps {
 }
 
 export function UserDropdown({ userName, userAvatar, userRole, onPageChange, onLogout }: UserDropdownProps) {
+  const navigate = useNavigate()
+
+  const handleToProfile = () => {
+    navigate("/user-profile")
+  }
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage src={userAvatar || "/placeholder.svg"} alt={userName} />
@@ -30,7 +38,7 @@ export function UserDropdown({ userName, userAvatar, userRole, onPageChange, onL
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-56 left-2" align="center" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{userName}</p>
@@ -40,7 +48,7 @@ export function UserDropdown({ userName, userAvatar, userRole, onPageChange, onL
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => onPageChange("profile")}>
+        <DropdownMenuItem onClick={handleToProfile}>
           <Icons.user className="mr-2 h-4 w-4" />
           <span>Hồ sơ</span>
         </DropdownMenuItem>
