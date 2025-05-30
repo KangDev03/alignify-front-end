@@ -1,6 +1,14 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type { LoginRequest, LoginResponse } from './auth.type';
+import type {
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  RegisterResponse,
+  RequestOTPRequest,
+  RequestOTPResponse,
+  RolesResponse,
+} from './auth.type';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,6 +19,30 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
       invalidatesTags: ['Auth'],
+    }),
+
+    getRoles: builder.query<RolesResponse, void>({
+      query: () => ({
+        url: '/role',
+        method: 'GET',
+      }),
+    }),
+
+    register: builder.mutation<RegisterResponse, RegisterRequest>({
+      query: (data) => ({
+        url: '/auth/register',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Auth'],
+    }),
+
+    requestOTP: builder.query<RequestOTPResponse, RequestOTPRequest>({
+      query: (data) => ({
+        url: `/auth/request-otp`,
+        method: 'GET',
+        params: { email: data.email },
+      }),
     }),
 
     logout: builder.mutation<{ success: boolean; message: string }, void>({
@@ -52,5 +84,8 @@ export const {
   useLogoutMutation,
   useRefreshTokenMutation,
   useGetProfileQuery,
+  useGetRolesQuery,
+  useRegisterMutation,
+  useRequestOTPQuery,
   useGoogleLoginMutation,
 } = authApi;

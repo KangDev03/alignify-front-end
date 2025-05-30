@@ -19,7 +19,6 @@ export const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action: PayloadAction<LoginResponse>) => {
       state.token = action.payload.token;
-      // state.user = action.payload.user;
     },
     logout: (state) => {
       state.token = null;
