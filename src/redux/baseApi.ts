@@ -4,10 +4,13 @@ import type { RootState } from '@/redux/store';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: 'https://alignify-backend.onrender.com/api/v1/',
+  // baseUrl: 'http://localhost:8080/api/v1/',
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth?.token;
 
-    headers.set('Content-Type', 'application/json');
+    if (!(headers.get('Content-Type') === 'multipart/form-data')) {
+      headers.set('Content-Type', 'application/json');
+    }
 
     if (token) {
       headers.set('authorization', `Bearer ${token}`);

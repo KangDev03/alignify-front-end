@@ -7,7 +7,8 @@ import type {
   RegisterResponse,
   RequestOTPRequest,
   RequestOTPResponse,
-  RolesResponse} from './auth.type';
+  RolesResponse,
+} from './auth.type';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -23,7 +24,7 @@ export const authApi = baseApi.injectEndpoints({
     getRoles: builder.query<RolesResponse, void>({
       query: () => ({
         url: '/role',
-        method: 'GET'
+        method: 'GET',
       }),
     }),
 
@@ -65,6 +66,15 @@ export const authApi = baseApi.injectEndpoints({
       query: () => '/auth/profile',
       providesTags: ['Auth'],
     }),
+
+    googleLogin: builder.mutation<{ token: string; id: string }, { code: string }>({
+      query: (accessToken) => ({
+        url: `/auth/google?code=${accessToken.code}`,
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        contentType: 'application/octet-stream; charset=utf-8',
+      }),
+    }),
   }),
 });
 
@@ -77,4 +87,5 @@ export const {
   useGetRolesQuery,
   useRegisterMutation,
   useRequestOTPQuery,
+  useGoogleLoginMutation,
 } = authApi;
