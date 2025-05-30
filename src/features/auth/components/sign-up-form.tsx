@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router';
+import { toast } from "sonner"
 
 import { Button } from '@/components/ui/button';
 import {
@@ -9,97 +12,197 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-}
+import { type SignUpFormValues, signUpSchema } from '@/features/auth/auth.schema';
+import { useGetRolesQuery, useRegisterMutation, useRequestOTPQuery } from '@/features/auth/auth.service';
+// import { setCredentials } from '@/features/auth/auth.slice';
+// import { useAppDispatch } from '@/hooks/redux';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const FORM_FIELDS: {
+    influencer: Array<{ name: keyof SignUpFormValues; label: string; type?: string; placeholder?: string }>;
+    brand: Array<{ name: keyof SignUpFormValues; label: string; type?: string; placeholder?: string }>;
+} = {
+    influencer: [
+        { name: 'name', label: 'Họ và tên', placeholder: 'Nguyễn Văn A' },
+        { name: 'email', label: 'Email', type: 'email', placeholder: 'example@example.com' },
+        { name: 'password', label: 'Mật khẩu', type: 'password' },
+        { name: 'confirmPassword', label: 'Xác nhận mật khẩu', type: 'password' },
+        // { name: 'location', label: 'Địa chỉ', placeholder: 'Hà Nội' }
+    ],
+    brand: [
+        { name: 'name', label: 'Tên nhãn hàng', placeholder: 'Tên nhãn hàng của bạn' },
+        { name: 'email', label: 'Email', type: 'email', placeholder: 'example@example.com' },
+        { name: 'password', label: 'Mật khẩu', type: 'password' },
+        { name: 'confirmPassword', label: 'Xác nhận mật khẩu', type: 'password' },
+        // { name: 'location', label: 'Địa chỉ', placeholder: 'Hà Nội' }
+    ]
+};
 
 export default function SignUpForm() {
-    const query = useQuery();
-    const role = query.get('role');
+    const location = useLocation();
     const navigate = useNavigate()
+    // const dispatch = useAppDispatch()
 
-    if (role !== 'creator' && role !== 'brand') return null;
+    const roleParam = new URLSearchParams(location.search).get('role');
 
-    const isCreator = role === 'creator';
-
-    const formFields = isCreator ? (
-        <div className="space-y-4">
-            <div className="flex gap-4">
-                <div className="flex-1 space-y-2">
-                    <Label htmlFor="lastName">Họ</Label>
-                    <Input id="lastName" placeholder="Nguyễn" />
-                </div>
-                <div className="flex-1 space-y-2">
-                    <Label htmlFor="firstName">Tên</Label>
-                    <Input id="firstName" placeholder="Văn A" />
-                </div>
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="example@example.com" />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="password">Mật khẩu</Label>
-                <Input id="password" type="password" />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-                <Input id="confirmPassword" type="password" />
-            </div>
-        </div>
-    ) : (
-        <div className="space-y-4">
-            <div className="space-y-2">
-                <Label htmlFor="brandName">Tên nhãn hàng</Label>
-                <Input id="brandName" placeholder="Tên nhãn hàng của bạn" />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="example@example.com" />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="password">Mật khẩu</Label>
-                <Input id="password" type="password" />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-                <Input id="confirmPassword" type="password" />
-            </div>
-        </div>
+    const { data: rolesData } = useGetRolesQuery();
+    const [register, { isLoading: isRegistering }] = useRegisterMutation();
+    const { refetch: requestOTP } = useRequestOTPQuery(
+        { email: '' },  // Initial query parameter
+        { 
+            skip: true, // Skip initial fetch
+            refetchOnMountOrArgChange: true // Enable refetch on param change
+        }
     );
 
-    const description = isCreator
-        ? 'Đăng ký tài khoản nhà sáng tạo nội dung'
-        : 'Đăng ký tài khoản nhãn hàng quảng cáo';
+    useEffect(() => {
+        if (!roleParam) {
+            toast.error("Vui lòng chọn vai trò trước");
+            navigate('/auth/select-role');
+            return;
+        }
+    }, [roleParam, navigate]);
 
+    const form = useForm<SignUpFormValues>({
+        resolver: zodResolver(signUpSchema),
+        defaultValues: {
+            email: "",
+            password: "",
+            confirmPassword: "",
+            name: "",
+        },
+    });
 
-    const handleSignUp = () => {
-        navigate(`/auth/verify-otp`);
+    const isInfluencer = roleParam === 'influencer';
+
+    const onSubmit = async (values: SignUpFormValues) => {
+        if (!rolesData?.roles) {
+            toast.error("Không thể xác định vai trò. Vui lòng thử lại!");
+            return;
+        }
+
+        const roleId = rolesData.roles.find(
+            role => role.roleName === (isInfluencer ? 'INFLUENCER' : 'BRAND')
+        )?.roleId;
+
+        if (!roleId) {
+            toast.error("Không tìm thấy vai trò phù hợp!");
+            return;
+        }
+
+        try {
+            const registerData = {
+                email: values.email,
+                password: values.password,
+                roleId: roleId,
+                name: values.name,
+            };
+
+            console.log('Step 1: Sending registration data:', registerData);
+
+            const response = await register(registerData).unwrap();
+
+            console.log('Step 2: Registration response:', response);
+
+            if (response.message) {
+                toast.success(response.message);
+                console.log('Step 3: Starting OTP request for email:', values.email);
+
+                try {
+                    form.setValue('email', values.email);
+                    const { data: otpData } = await requestOTP();
+                    console.log('Step 4: OTP response:', otpData);
+
+                    if (otpData?.message) {
+                        toast.success(otpData.message);
+                        console.log('Step 5: Navigating to verify-otp page');
+                        // Store email for verify page
+                        localStorage.setItem('verifyEmail', values.email);
+                        navigate("/auth/verify-otp");
+                    }
+                } catch (otpErr) {
+                    console.error('OTP request failed:', otpErr);
+                    toast.error("Không thể gửi mã OTP. Vui lòng thử lại!");
+                }
+            }
+        } catch (err) {
+            console.error('Registration failed:', err);
+            toast.error("Đăng ký thất bại. Vui lòng thử lại!");
+        }
+    };
+
+    const isLoading = isRegistering;
+
+    if (!rolesData?.roles) {
+        return <div>Đang tải...</div>;
     }
 
+    const renderFormFields = () => {
+        const fields = isInfluencer ? FORM_FIELDS.influencer : FORM_FIELDS.brand;
+
+        return fields.map(({ name, label, type = 'text', placeholder }) => (
+            <FormField
+                key={name}
+                control={form.control}
+                name={name}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{label}</FormLabel>
+                        <FormControl>
+                            <Input
+                                type={type}
+                                placeholder={placeholder}
+                                {...field}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        ));
+    };
+
     return (
-        <Card className="w-full max-w-md border-2 bg-card shadow-lg">
-            <CardHeader className="text-center space-y-1">
-                <CardTitle className="text-2xl font-bold text-primary">Đăng ký</CardTitle>
-                <CardDescription>{description}</CardDescription>
-            </CardHeader>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md shadow-lg">
+                <Card>
+                    <CardHeader className="text-center space-y-1">
+                        <CardTitle className="text-2xl font-bold text-primary">
+                            Đăng ký {isInfluencer ? 'Influencer' : 'Brand'}
+                        </CardTitle>
+                        <CardDescription>
+                            {isInfluencer
+                                ? 'Đăng ký tài khoản nhà sáng tạo nội dung'
+                                : 'Đăng ký tài khoản nhãn hàng quảng cáo'
+                            }
+                        </CardDescription>
+                    </CardHeader>
 
-            <CardContent className="space-y-4">
-                {formFields}
-                <Button type="submit" variant="default" className="w-full" onClick={handleSignUp}>
-                    Đăng Ký
-                </Button>
-            </CardContent>
+                    <CardContent className="space-y-4">
+                        {renderFormFields()}
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Đang xử lý..." : "Đăng ký"}
+                        </Button>
+                    </CardContent>
 
-            <CardFooter className="justify-center text-sm text-muted-foreground">
-                Đã có tài khoản?{' '}
-                <Link to="/auth/login" className="ml-1 font-medium text-primary hover:text-primary/80">
-                    Đăng nhập
-                </Link>
-            </CardFooter>
-        </Card>
+                    <CardFooter className="justify-center text-sm text-muted-foreground">
+                        Đã có tài khoản?{' '}
+                        <Link
+                            to="/auth/login"
+                            className="ml-1 font-medium text-primary hover:text-primary/80"
+                        >
+                            Đăng nhập
+                        </Link>
+                    </CardFooter>
+                </Card>
+            </form>
+        </Form>
     )
 }

@@ -1,18 +1,60 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 import { Icons } from "@/components/icons/icons"
+import { useGetRolesQuery } from "@/features/auth/auth.service"
+import type { Role } from "@/features/auth/auth.type"
+
+const ROLE_CONFIGS = {
+    BRAND: {
+        title: "Nhãn hàng<br />quảng cáo",
+        description: "Dành cho các thương hiệu và doanh nghiệp cần quảng cáo",
+        icon: <Icons.store className="w-8 h-8" />,
+    },
+    INFLUENCER: {
+        title: "Nhà sáng tạo<br />nội dung",
+        description: "Dành cho những người tạo ra nội dung, influencer và KOLs",
+        icon: <Icons.user className="w-8 h-8" />,
+    },
+}
 
 export default function SelectRoleForm() {
     const navigate = useNavigate()
-    const [selectedRole, setSelectedRole] = useState("")
+    const [selectedRole, setSelectedRole] = useState<Role | null>(null)
+    const { data: rolesData, isLoading, error } = useGetRolesQuery()
+
+    useEffect(() => {
+        if (error) {
+            console.error('Failed to fetch roles:', error)
+            toast.error("Không thể tải thông tin vai trò. Vui lòng thử lại sau!")
+        }
+    }, [error])
+
+    // useEffect(() => {
+    //     console.log('Selected Role:', selectedRole)
+    // }, [selectedRole])
 
     const handleContinue = () => {
-        navigate(`/auth/register?role=${selectedRole}`)
+        if (!selectedRole) {
+            toast.error("Vui lòng chọn vai trò của bạn!")
+            return
+        }
+        const roleParam = selectedRole.roleName.toLowerCase()
+        navigate(`/auth/register?role=${roleParam}`)
     }
+
+    if (isLoading) {
+        return <div>Đang tải...</div>
+    }
+
+    const availableRoles = rolesData?.roles.filter(
+        role => role.roleName === 'INFLUENCER' || role.roleName === 'BRAND'
+    ) || []
+
     return (
         <div className="w-full max-w-4xl space-y-12">
             <div className="text-center space-y-4">
@@ -23,25 +65,25 @@ export default function SelectRoleForm() {
             </div>
 
             <div className="flex justify-center items-center gap-8">
-                <RoleCard
-                    title="Nhà sáng tạo<br />nội dung"
-                    description="Dành cho những người tạo ra nội dung, influencer và KOLs"
-                    icon={<Icons.user className="w-8 h-8" />}
-                    isSelected={selectedRole === "creator"}
-                    onClick={() => setSelectedRole("creator")}
-                />
+                {availableRoles.map((role) => {
+                    const config = ROLE_CONFIGS[role.roleName as keyof typeof ROLE_CONFIGS]
+                    if (!config) return null
 
-                <RoleCard
-                    title="Nhãn hàng<br />quảng cáo"
-                    description="Dành cho các thương hiệu và doanh nghiệp cần quảng cáo"
-                    icon={<Icons.store className="w-8 h-8" />}
-                    isSelected={selectedRole === "brand"}
-                    onClick={() => setSelectedRole("brand")}
-                />
+                    return (
+                        <RoleCard
+                            key={role.roleId}
+                            title={config.title}
+                            description={config.description}
+                            icon={config.icon}
+                            isSelected={selectedRole?.roleId === role.roleId}
+                            onClick={() => setSelectedRole(role)}
+                        />
+                    )
+                })}
             </div>
 
             <div className="flex justify-center">
-                <Button onClick={handleContinue}>
+                <Button onClick={handleContinue} disabled={isLoading}>
                     Tiếp tục
                     <Icons.arrowRight className="w-5 h-5" />
                 </Button>
