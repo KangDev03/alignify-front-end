@@ -67,7 +67,7 @@ export const authApi = baseApi.injectEndpoints({
       providesTags: ['Auth'],
     }),
 
-    googleLogin: builder.mutation<{ token: string; id: string }, { code: string }>({
+    googleLogin: builder.mutation<LoginResponse, { code: string }>({
       query: (accessToken) => ({
         url: `/auth/google?code=${accessToken.code}`,
         method: 'POST',

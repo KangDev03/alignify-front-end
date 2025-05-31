@@ -4,9 +4,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/loader';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { Icons } from '@/components/icons/icons';
+import { useAppSelector } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 
 import { useChangeAvatarMutation } from '../profile.service';
 import type { InfluencerData } from '../types/profile.types';
@@ -27,6 +30,7 @@ export function ProfileHeader({
   const [changeAvatar, { isLoading, error }] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>();
+  const { id } = useAppSelector((state: RootState) => state.auth);
   const handleOnClickAvatar = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     if (fileInputRef.current) {
@@ -43,12 +47,12 @@ export function ProfileHeader({
     formData.append('file', file);
     try {
       const response = await changeAvatar({
-        id: influencer.id,
+        id,
         formData,
       }).unwrap();
 
       console.log('Upload successful:', response);
-      setAvatarUrl(response.avatarUrl);
+      setAvatarUrl(response.data);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
