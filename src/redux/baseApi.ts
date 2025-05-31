@@ -8,9 +8,9 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth?.token;
 
-    if (!(headers.get('Content-Type') === 'multipart/form-data')) {
-      headers.set('Content-Type', 'application/json');
-    }
+    // if (!(headers.get('Content-Type') === 'multipart/form-data')) {
+    //   headers.set('Content-Type', 'application/json');
+    // }
 
     if (token) {
       headers.set('authorization', `Bearer ${token}`);

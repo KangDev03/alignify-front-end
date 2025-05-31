@@ -1,26 +1,24 @@
+import type { ApiReponseError, ApiReponseSuccess } from '../common.type';
+
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
-export interface LoginResponse {
-  id: string;
-  token: string;
+export interface LoginResponse extends ApiReponseSuccess<{ id: string; token: string }> {
+  data: {
+    id: string;
+    token: string;
+  };
 }
 
-export interface ApiError {
-  success: false;
-  message: string;
-  errors?: Record<string, string[]>;
-}
+export type ApiError = ApiReponseError;
 export interface Role {
   roleId: string;
   roleName: 'INFLUENCER' | 'BRAND' | 'ADMIN';
 }
 
-export interface RolesResponse {
-  roles: Role[];
-}
+export type RolesResponse = ApiReponseSuccess<Role[]>;
 
 export interface RegisterRequest {
   email: string;

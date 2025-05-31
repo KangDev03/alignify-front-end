@@ -9,6 +9,7 @@ export const profileApi = baseApi.injectEndpoints({
         url: `/profile/avatar/${id}`,
         method: 'POST',
         body: formData,
+        headers: {},
       }),
       invalidatesTags: ['Auth'],
     }),

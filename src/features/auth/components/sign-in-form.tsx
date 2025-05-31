@@ -50,20 +50,20 @@ const mockUsers = [
   },
 ];
 
-export async function mockLogin(credentials: LoginRequest): Promise<LoginResponse> {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+// export async function mockLogin(credentials: LoginRequest): Promise<LoginResponse> {
+//   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const user = mockUsers.find((u) => u.email === credentials.email);
+//   const user = mockUsers.find((u) => u.email === credentials.email);
 
-  if (!user || user.password !== credentials.password) {
-    throw new Error('Invalid credentials');
-  }
+//   if (!user || user.password !== credentials.password) {
+//     throw new Error('Invalid credentials');
+//   }
 
-  return {
-    id: user.id,
-    token: 'mock_jwt_token',
-  };
-}
+//   return {
+//     id: user.id,
+//     token: 'mock_jwt_token',
+//   };
+// }
 
 export default function SignInForm() {
   const dispatch = useAppDispatch();
