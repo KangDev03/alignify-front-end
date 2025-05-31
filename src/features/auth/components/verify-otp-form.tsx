@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -27,15 +27,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useRegisterMutation, useRequestOTPMutation, useVerifyOTPMutation } from '../auth.service';
 
-const verifyOTPSchema = z
-  .object({
-    otp: z
-      .string()
-      .min(6, 'Mã OTP phải có ít nhất 6 ký tự')
-      .max(6, 'Mã OTP không được vượt quá 6 ký tự'),
-  })
-  .refine(() => {});
-
+const verifyOTPSchema = z.object({
+  otp: z
+    .string()
+    .min(6, 'Mã OTP phải có ít nhất 6 ký tự')
+    .max(6, 'Mã OTP không được vượt quá 6 ký tự'),
+});
 type VerifyOTPFormValues = z.infer<typeof verifyOTPSchema>;
 
 export default function VerifyOTPForm() {
@@ -54,9 +51,9 @@ export default function VerifyOTPForm() {
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const registrationData = JSON.parse(localStorage.getItem('registrationData') || '{}');
-  const { email, password, roleId, name } = registrationData;
-  console.log(registrationData);
+  // const registrationData = JSON.parse(localStorage.getItem('registrationData') || '{}');
+  const { state } = useLocation();
+  const { email, password, roleId, name } = state || {};
   useEffect(() => {
     if (!email || !password || !roleId || !name) {
       toast.error('Dữ liệu đăng ký không hợp lệ. Vui lòng thử lại!');
@@ -96,6 +93,7 @@ export default function VerifyOTPForm() {
   };
 
   const onSubmit = async (values: VerifyOTPFormValues) => {
+    console.log('sending...');
     try {
       const verifyResponse = await verifyOTP({ email, otp: values.otp }).unwrap();
       if (verifyResponse.message) {

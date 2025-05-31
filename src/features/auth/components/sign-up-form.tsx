@@ -121,8 +121,8 @@ export default function SignUpForm() {
       if (otpResponse.message) {
         toast.success(otpResponse.message);
         // Store registration data in localStorage for use in OTP verification
-        localStorage.setItem('registrationData', JSON.stringify(registerData));
-        navigate('/auth/verify-otp');
+        // localStorage.setItem('registrationData', JSON.stringify(registerData));
+        navigate('/auth/verify-otp', { state: registerData });
       }
       // console.log('Step 1: Sending registration data:', registerData);
 
