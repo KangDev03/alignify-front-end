@@ -14,5 +14,13 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    proxy: {
+      '/api/v1': {
+        target: 'https://alignify-backend.onrender.com',
+        // target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });

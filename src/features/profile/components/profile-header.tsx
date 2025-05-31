@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Spinner } from '@/components/ui/loader';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { Icons } from '@/components/icons/icons';
