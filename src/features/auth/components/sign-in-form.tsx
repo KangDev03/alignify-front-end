@@ -23,7 +23,7 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { type SignInFormValues, signInSchema } from '@/features/auth/auth.schema';
-import type { LoginRequest, LoginResponse } from '@/features/auth/auth.type';
+// import type { LoginRequest, LoginResponse } from '@/features/auth/auth.type';
 import { useAppDispatch } from '@/hooks/redux';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -31,24 +31,24 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useGoogleLoginMutation, useLoginMutation } from '../auth.service';
 import { setCredentials } from '../auth.slice';
 
-const mockUsers = [
-  {
-    id: '1',
-    email: 'minh@gmail.com',
-    password: '123456',
-    name: 'John Doe',
-    role: 'influencer' as const,
-    avatar: '/placeholder.svg',
-  },
-  {
-    id: '2',
-    email: 'brand@example.com',
-    password: 'password123',
-    name: 'Jane Smith',
-    role: 'brand' as const,
-    avatar: '/placeholder.svg',
-  },
-];
+// const mockUsers = [
+//   {
+//     id: '1',
+//     email: 'minh@gmail.com',
+//     password: '123456',
+//     name: 'John Doe',
+//     role: 'influencer' as const,
+//     avatar: '/placeholder.svg',
+//   },
+//   {
+//     id: '2',
+//     email: 'brand@example.com',
+//     password: 'password123',
+//     name: 'Jane Smith',
+//     role: 'brand' as const,
+//     avatar: '/placeholder.svg',
+//   },
+// ];
 
 // export async function mockLogin(credentials: LoginRequest): Promise<LoginResponse> {
 //   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -104,10 +104,9 @@ export default function SignInForm() {
     redirect_uri: window.location.origin,
     onSuccess: async (credentialResponse) => {
       const code = credentialResponse.code;
-      console.log(code);
       try {
         const response = await loginViaGoogle({ code }).unwrap();
-        console.log('Server response:', response);
+        dispatch(setCredentials(response));
         navigate('/home');
       } catch (error) {
         console.error('Server error:', error);
