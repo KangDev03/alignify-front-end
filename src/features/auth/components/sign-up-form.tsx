@@ -51,14 +51,14 @@ const FORM_FIELDS: {
     { name: 'name', label: 'Họ và tên', placeholder: 'Nguyễn Văn A' },
     { name: 'email', label: 'Email', type: 'email', placeholder: 'example@example.com' },
     { name: 'password', label: 'Mật khẩu', type: 'password' },
-    { name: 'confirmPassword', label: 'Xác nhận mật khẩu', type: 'password' },
+    { name: 'passwordConfirm', label: 'Xác nhận mật khẩu', type: 'password' },
     // { name: 'location', label: 'Địa chỉ', placeholder: 'Hà Nội' }
   ],
   brand: [
     { name: 'name', label: 'Tên nhãn hàng', placeholder: 'Tên nhãn hàng của bạn' },
     { name: 'email', label: 'Email', type: 'email', placeholder: 'example@example.com' },
     { name: 'password', label: 'Mật khẩu', type: 'password' },
-    { name: 'confirmPassword', label: 'Xác nhận mật khẩu', type: 'password' },
+    { name: 'passwordConfirm', label: 'Xác nhận mật khẩu', type: 'password' },
     // { name: 'location', label: 'Địa chỉ', placeholder: 'Hà Nội' }
   ],
 };
@@ -88,7 +88,7 @@ export default function SignUpForm() {
     defaultValues: {
       email: '',
       password: '',
-      confirmPassword: '',
+      passwordConfirm: '',
       name: '',
     },
   });
@@ -113,6 +113,7 @@ export default function SignUpForm() {
     try {
       const registerData = {
         email: values.email,
+        passwordConfirm: values.passwordConfirm,
         password: values.password,
         roleId: roleId,
         name: values.name,

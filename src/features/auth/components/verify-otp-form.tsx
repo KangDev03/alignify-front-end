@@ -53,13 +53,13 @@ export default function VerifyOTPForm() {
 
   // const registrationData = JSON.parse(localStorage.getItem('registrationData') || '{}');
   const { state } = useLocation();
-  const { email, password, roleId, name } = state || {};
+  const { email, password, passwordConfirm, roleId, name } = state || {};
   useEffect(() => {
-    if (!email || !password || !roleId || !name) {
+    if (!email || !password || !roleId || !name || !passwordConfirm) {
       toast.error('Dữ liệu đăng ký không hợp lệ. Vui lòng thử lại!');
       navigate('/auth/login');
     }
-  }, [email, password, roleId, name, navigate]);
+  }, [email, password, roleId, name, passwordConfirm, navigate]);
 
   const handleInputChange = (index: number, value: string) => {
     if (!/^[0-9a-zA-Z]?$/.test(value)) return;
@@ -98,7 +98,7 @@ export default function VerifyOTPForm() {
       const verifyResponse = await verifyOTP({ email, otp: values.otp }).unwrap();
       if (verifyResponse.message) {
         toast.success(verifyResponse.message);
-        const registerData = { email, password, roleId, name };
+        const registerData = { email, password, passwordConfirm, name, roleId };
         const registerResponse = await register(registerData).unwrap();
         if (registerResponse.message) {
           toast.success(registerResponse.message);

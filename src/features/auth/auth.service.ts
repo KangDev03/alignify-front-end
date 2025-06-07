@@ -1,6 +1,7 @@
 import { baseApi } from '@/redux/baseApi';
 
 import {
+  type GoogleLoginRequest,
   type LoginRequest,
   type LoginResponse,
   type RegisterRequest,
@@ -34,6 +35,7 @@ export const authApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: '/auth/register',
         method: 'POST',
+        params: { roleId: data.roleId },
         body: data,
       }),
       invalidatesTags: ['Auth'],
@@ -51,7 +53,7 @@ export const authApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: `/auth/verify-otp`,
         method: 'POST',
-        params: { email: data.email, otp: data.otp },
+        body: data,
       }),
     }),
 
@@ -77,10 +79,11 @@ export const authApi = baseApi.injectEndpoints({
       providesTags: ['Auth'],
     }),
 
-    googleLogin: builder.mutation<LoginResponse, { code: string }>({
+    googleLogin: builder.mutation<LoginResponse, GoogleLoginRequest>({
       query: (accessToken) => ({
-        url: `/auth/google?code=${accessToken.code}`,
+        url: `/auth/google`,
         method: 'POST',
+        params: { code: accessToken.code },
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         contentType: 'application/octet-stream; charset=utf-8',
       }),

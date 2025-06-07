@@ -5,6 +5,10 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface GoogleLoginRequest {
+  code: string;
+}
+
 export interface LoginResponse extends ApiReponseSuccess<{ id: string; token: string }> {
   data: {
     id: string;
@@ -21,10 +25,11 @@ export interface Role {
 export type RolesResponse = ApiReponseSuccess<Role[]>;
 
 export interface RegisterRequest {
+  name: string;
   email: string;
   password: string;
+  passwordConfirm: string;
   roleId: string | null;
-  name: string;
 }
 
 export interface RegisterResponse {
