@@ -2,6 +2,8 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Toaster } from 'sonner';
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 // import { ClerkProvider } from '@clerk/clerk-react';
 import { ThemeProvider } from './components/theme/theme-provider';
 import { store } from './redux/store';
@@ -15,12 +17,14 @@ function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Provider store={store}>
-        <ThemeProvider defaultTheme="system" storageKey="alignify-theme">
-          {/* <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/"> */}
-          {children}
-          {/* </ClerkProvider> */}
-          <Toaster />
-        </ThemeProvider>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+          <ThemeProvider defaultTheme="system" storageKey="alignify-theme">
+            {/* <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/"> */}
+            {children}
+            {/* </ClerkProvider> */}
+            <Toaster />
+          </ThemeProvider>
+        </GoogleOAuthProvider>
       </Provider>
     </>
   );
