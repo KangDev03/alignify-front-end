@@ -26,18 +26,21 @@ export const authApi = baseApi.injectEndpoints({
 
     getRoles: builder.query<RolesResponse, void>({
       query: () => ({
-        url: '/role',
+        url: '/roles',
         method: 'GET',
       }),
     }),
 
     register: builder.mutation<RegisterResponse, RegisterRequest>({
-      query: (data) => ({
-        url: '/auth/register',
-        method: 'POST',
-        params: { roleId: data.roleId },
-        body: data,
-      }),
+      query: (data) => {
+        const { roleId, ...bodyData } = data;
+        return {
+          url: '/auth/register',
+          method: 'POST',
+          params: { roleId },
+          body: bodyData,
+        };
+      },
       invalidatesTags: ['Auth'],
     }),
 
