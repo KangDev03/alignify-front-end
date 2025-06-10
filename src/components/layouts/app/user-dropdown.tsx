@@ -30,9 +30,9 @@ export function UserDropdown({ userName, userAvatar, userRole, onPageChange, onL
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
+      <DropdownMenuTrigger className="w-10 h-10 select-none">
+        <Button size="icon" className="bg-transparent relative">
+          <Avatar className="h-full w-full !rounded-base">
             <AvatarImage src={userAvatar || "/placeholder.svg"} alt={userName} />
             <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
           </Avatar>

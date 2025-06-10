@@ -26,7 +26,7 @@ export const authApi = baseApi.injectEndpoints({
 
     getRoles: builder.query<RolesResponse, void>({
       query: () => ({
-        url: '/role',
+        url: '/roles',
         method: 'GET',
       }),
     }),

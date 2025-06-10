@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-
 const mockCampaigns = [
   {
     id: "1",
@@ -35,7 +34,7 @@ export default function Campaigns() {
   return (
     <div className="space-y-4">
       {mockCampaigns.map((campaign) => (
-        <Card key={campaign.id} className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
+        <Card key={campaign.id} className="border-2 bg-background shadow-lg hover:shadow-xl transition-all">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">

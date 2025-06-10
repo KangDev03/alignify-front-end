@@ -31,40 +31,6 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useGoogleLoginMutation, useLoginMutation } from '../auth.service';
 import { setCredentials } from '../auth.slice';
 
-// const mockUsers = [
-//   {
-//     id: '1',
-//     email: 'minh@gmail.com',
-//     password: '123456',
-//     name: 'John Doe',
-//     role: 'influencer' as const,
-//     avatar: '/placeholder.svg',
-//   },
-//   {
-//     id: '2',
-//     email: 'brand@example.com',
-//     password: 'password123',
-//     name: 'Jane Smith',
-//     role: 'brand' as const,
-//     avatar: '/placeholder.svg',
-//   },
-// ];
-
-// export async function mockLogin(credentials: LoginRequest): Promise<LoginResponse> {
-//   await new Promise((resolve) => setTimeout(resolve, 1000));
-
-//   const user = mockUsers.find((u) => u.email === credentials.email);
-
-//   if (!user || user.password !== credentials.password) {
-//     throw new Error('Invalid credentials');
-//   }
-
-//   return {
-//     id: user.id,
-//     token: 'mock_jwt_token',
-//   };
-// }
-
 export default function SignInForm() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -133,14 +99,14 @@ export default function SignInForm() {
   // }
 
   return (
-    <Card className="w-full max-w-md border-2 bg-card shadow-lg">
+    <Card className="w-full max-w-md border-2">
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold text-primary">Đăng nhập</CardTitle>
+        <CardTitle className="text-2xl font-bold ">Đăng nhập</CardTitle>
         <CardDescription>Nhập thông tin đăng nhập của bạn để tiếp tục</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-6">
             <FormField
               control={form.control}
               name="email"
@@ -150,7 +116,7 @@ export default function SignInForm() {
                   <FormControl>
                     <Input
                       placeholder="example@example.com"
-                      className="border-input focus:border-primary"
+                      className=""
                       {...field}
                     />
                   </FormControl>
@@ -168,7 +134,7 @@ export default function SignInForm() {
                     <FormLabel>Mật khẩu</FormLabel>
                     <Link
                       to="/forgot-password"
-                      className="text-sm text-primary hover:text-primary/80"
+                      className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                     >
                       Quên mật khẩu?
                     </Link>
@@ -176,7 +142,6 @@ export default function SignInForm() {
                   <FormControl>
                     <Input
                       type="password"
-                      className="border-input focus:border-primary"
                       {...field}
                     />
                   </FormControl>
@@ -187,7 +152,8 @@ export default function SignInForm() {
 
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary/90"
+              className="w-full"
+              variant="default"
               disabled={isLoading}
             >
               {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
@@ -200,17 +166,17 @@ export default function SignInForm() {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">hoặc</span>
+            <span className="bg-background px-2 ">hoặc</span>
           </div>
         </div>
       </CardContent>
       <CardFooter className="flex flex-col space-y-4">
-        <Button variant="outline" className="w-full" onClick={() => googleLogin()}>
+        <Button variant="neutral" className="w-full" onClick={() => googleLogin()}>
           Đăng nhập với Google
         </Button>
-        <div className="text-center text-sm text-muted-foreground">
-          Chưa có tài khoản?
-          <Link to="/auth/select-role" className="font-medium text-primary hover:text-primary/80">
+        <div className="text-center text-sm">
+          Chưa có tài khoản?{" "}
+          <Link to="/auth/select-role" className="underline underline-offset-4">
             Đăng ký
           </Link>
         </div>

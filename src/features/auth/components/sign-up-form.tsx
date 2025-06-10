@@ -192,13 +192,14 @@ export default function SignUpForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md shadow-lg">
         <Card>
           <CardHeader className="text-center space-y-1">
-            <CardTitle className="text-2xl font-bold text-primary">
+            <CardTitle className="text-2xl font-bold">
               Đăng ký {isInfluencer ? 'Influencer' : 'Brand'}
             </CardTitle>
             <CardDescription>
               {isInfluencer
                 ? 'Đăng ký tài khoản nhà sáng tạo nội dung'
-                : 'Đăng ký tài khoản nhãn hàng quảng cáo'}
+                : 'Đăng ký tài khoản nhãn hàng quảng cáo'
+              }
             </CardDescription>
           </CardHeader>
 
@@ -209,9 +210,9 @@ export default function SignUpForm() {
             </Button>
           </CardContent>
 
-          <CardFooter className="justify-center text-sm text-muted-foreground">
-            Đã có tài khoản?{' '}
-            <Link to="/auth/login" className="ml-1 font-medium text-primary hover:text-primary/80">
+          <CardFooter className="justify-center text-sm">
+            Đã có tài khoản?
+            <Link to="/auth/login" className="ml-1 underline underline-offset-4">
               Đăng nhập
             </Link>
           </CardFooter>

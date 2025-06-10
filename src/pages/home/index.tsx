@@ -66,7 +66,7 @@ export function HomePage() {
     <div className="min-h-screen bg-transparent transition-colors duration-300">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Khám phá</h1>
+          <h1 className="text-3xl font-bold select-none">Khám phá</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -75,7 +75,7 @@ export function HomePage() {
             {/* Search and Filter */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
-                <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
                 <Input
                   placeholder="Tìm kiếm..."
                   value={searchTerm}
@@ -84,7 +84,7 @@ export function HomePage() {
                 />
               </div>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px] select-none">
                   <SelectValue placeholder="Chọn danh mục" />
                 </SelectTrigger>
                 <SelectContent>
@@ -104,7 +104,6 @@ export function HomePage() {
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="rounded-xs h-full"
                   >
                     {tab.label}
                   </TabsTrigger>
