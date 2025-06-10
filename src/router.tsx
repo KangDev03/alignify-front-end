@@ -7,7 +7,7 @@ import { SelectRolePage } from '@/pages/auth/select-role';
 import LoginPage from '@/pages/auth/sign-in';
 import VerifyOtpPage from '@/pages/auth/verify-otp';
 import ContactPage from '@/pages/contact';
-import HomePage from '@/pages/home';
+import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
 
 import RegisterPage from './pages/auth/sign-up';
