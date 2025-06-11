@@ -20,7 +20,7 @@ function AppLayout() {
         userName={'KangDev'}
         userAvatar={'https://avatars.githubusercontent.com/u/12345678?v=4'}
       />
-      <main className="container mx-auto px-20 py-8">
+      <main className="container mx-auto px-20 py-8 bg-[linear-gradient(to_right,#80808033_1px,transparent_1px),linear-gradient(to_bottom,#80808033_1px,transparent_1px)] bg-[size:70px_70px]">
         <Outlet />
       </main>
       <AppFooter />

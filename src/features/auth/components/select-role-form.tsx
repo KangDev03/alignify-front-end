@@ -59,8 +59,8 @@ export default function SelectRoleForm() {
   return (
     <div className="w-full max-w-4xl space-y-12">
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-primary">Chọn vai trò của bạn</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold">Chọn vai trò của bạn</h1>
+        <p className="text-lg max-w-2xl mx-auto">
           Chọn vai trò phù hợp với bạn để chúng tôi có thể cung cấp trải nghiệm tốt nhất
         </p>
       </div>
@@ -104,28 +104,28 @@ interface RoleCardProps {
 function RoleCard({ title, description, icon, isSelected, onClick }: RoleCardProps) {
   return (
     <Card
-      className={`w-64 cursor-pointer transition duration-300 py-7 ${
+      className={`w-64 hover:cursor-pointer transition duration-300 py-7 select-none bg-secondary-background ${
         isSelected
-          ? 'border-2 border-primary bg-primary/10 shadow-lg'
-          : 'hover:border-primary/30 hover:shadow-md'
+          ? 'bg-main/20'
+          : '!shadow-none'
       }`}
       onClick={onClick}
     >
       <CardContent className="flex flex-col items-center justify-center h-full text-center space-y-[22px]">
         <div
-          className={`w-16 h-16 rounded-full flex items-center justify-center ${
-            isSelected ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'
+          className={`w-16 h-16 rounded-full flex items-center justify-center transition duration-300 ${
+            isSelected ? 'bg-main/30 text-main' : 'bg-foreground/10 text-muted-foreground'
           }`}
         >
           {icon}
         </div>
         <div className="space-y-3">
           <h3
-            className={`text-2xl font-bold ${isSelected ? 'text-primary' : ''}`}
+            className={`text-2xl font-bold ${isSelected ? 'text-main' : ''}`}
             dangerouslySetInnerHTML={{ __html: title }}
           />
           <div className="px-5">
-            <p className={`text-sm ${isSelected ? 'text-primary/80' : 'text-muted-foreground'}`}>
+            <p className={`text-sm ${isSelected ? 'text-main/80' : ''}`}>
               {description}
             </p>
           </div>

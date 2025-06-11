@@ -128,10 +128,10 @@ export default function VerifyOTPForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md shadow-lg">
-        <Card className="border-2 border-primary/20 bg-card">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md">
+        <Card>
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold text-primary">Xác nhận OTP</CardTitle>
+            <CardTitle className="text-2xl font-bold ">Xác nhận OTP</CardTitle>
             <CardDescription>Nhập mã OTP đã được gửi đến email của bạn</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -146,7 +146,7 @@ export default function VerifyOTPForm() {
                       {otpDigits.map((digit, index) => (
                         <Input
                           key={index}
-                          className="h-12 w-12 border-input text-center text-xl focus:border-primary"
+                          className="h-12 w-12 text-center text-xl"
                           maxLength={1}
                           value={digit}
                           onChange={(e) => handleInputChange(index, e.target.value)}
@@ -166,7 +166,7 @@ export default function VerifyOTPForm() {
             />
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary/90"
+              className="w-full"
               disabled={isLoading}
             >
               {isLoading ? 'Đang xử lý...' : 'Xác nhận'}
@@ -174,8 +174,8 @@ export default function VerifyOTPForm() {
             <div className="text-center text-sm text-muted-foreground">
               Không nhận được mã?{' '}
               <Button
-                variant="link"
-                className="p-0 text-primary hover:text-primary/80"
+                variant={null}
+                className="p-0 underline underline-offset-4"
                 onClick={handleResendOTP}
                 disabled={isLoading}
               >
