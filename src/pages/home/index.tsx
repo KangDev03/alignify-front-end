@@ -63,7 +63,7 @@ export function HomePage() {
   const [activeTab, setActiveTab] = useState("campaigns")
 
   return (
-    <div className="min-h-screen bg-transparent transition-colors duration-300">
+    <div className="min-h-screen transition-colors duration-300">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Khám phá</h1>
@@ -75,7 +75,7 @@ export function HomePage() {
             {/* Search and Filter */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
-                <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-ring" />
                 <Input
                   placeholder="Tìm kiếm..."
                   value={searchTerm}
