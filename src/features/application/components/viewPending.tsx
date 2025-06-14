@@ -27,6 +27,7 @@ type Campaign = {
   brand: string;
   createdDate: string;
   appliedDate: string;
+  numberDate: number;
   campaignRequirement: Map<string, number>;
   influencerRequirement: string[];
   status: string;
@@ -61,10 +62,10 @@ export default function ViewPending({ campaign }: { campaign: Campaign }) {
             <span className="font-semibold text-foreground  ">Mô tả chiến dịch</span>
             <div className=" text-muted-foreground text-sm mt-1 ">{campaign.description}</div>
           </div>
-          <div className="flex gap-3 ">
+          <div className="flex gap-3 items-center ">
             <span className="font-semibold text-foreground  ">Danh mục:</span>
             {campaign.categories.map((category, index) => (
-              <label className="bg-accent" key={index}>
+              <label className="border-2 rounded-lg gap-4 px-3 py-1 " key={index}>
                 {category}
               </label>
             ))}
@@ -72,10 +73,10 @@ export default function ViewPending({ campaign }: { campaign: Campaign }) {
           <hr></hr>
           <div className="flex items-center gap-2">
             <span className="font-semibold text-foreground  ">Trạng thái: </span>
-            <Badge variant="pending" className="w-30">
+            <Badge variant="pending" className="w-30 rounded-full">
               {' '}
               <BadgeCheckIcon />
-              Đang chờ duyệt
+              Chờ duyệt
             </Badge>
           </div>
           <div>
@@ -99,7 +100,7 @@ export default function ViewPending({ campaign }: { campaign: Campaign }) {
           </div>
           <div>
             <div className="flex gap-1 items-center">
-              <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+              <Accordion type="single" collapsible className="w-full" defaultValue="">
                 <AccordionItem value="item-1">
                   <AccordionTrigger>
                     {' '}

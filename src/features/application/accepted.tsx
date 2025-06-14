@@ -49,16 +49,16 @@ export default function Accepted() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
       {accepted.map((item) => (
         <Card key={item.id} className="border shadow-sm flex items-center justify-center">
-          <CardContent className="h-fit flex flex-col justify-between px-6 py-4 gap-4">
-            <div className="flex items-start gap-4">
+          <CardContent className="w-full h-fit flex flex-col gap-4">
+            <div className="flex gap-4">
               <Avatar className="h-12 w-12 mt-1">
                 <AvatarImage src={item.avatar || "/placeholder.svg"} alt={item.name} />
                 <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
               </Avatar>
-              <div className="flex-1">
+              <div className="w-full">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-foreground">{item.name}</span>
-                  <Badge variant="accepted" className='w-30'>
+                  <span className="font-semibold text-foreground flex-1">{item.name}</span>
+                  <Badge variant="accepted" className='w-30 rounded-full'>
                     {' '}
                     <BadgeCheckIcon />
                     Đã chấp nhận
