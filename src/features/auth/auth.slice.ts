@@ -6,11 +6,13 @@ import type { LoginResponse } from './auth.type';
 interface AuthState {
   token: string | null;
   id: string | null;
+  role: 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
 }
 
 const initialState: AuthState = {
   token: null,
   id: null,
+  role: null,
 };
 
 export const authSlice = createSlice({
@@ -20,6 +22,7 @@ export const authSlice = createSlice({
     setCredentials: (state, action: PayloadAction<LoginResponse>) => {
       state.token = action.payload.data.token;
       state.id = action.payload.data.id;
+      state.role = action.payload.data.role;
     },
     logout: (state) => {
       state.token = null;
