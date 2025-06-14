@@ -63,8 +63,8 @@ export function HomePage() {
   const [activeTab, setActiveTab] = useState("campaigns")
 
   return (
-    <div className="min-h-screen bg-transparent transition-colors duration-300 pl-[16px] pr-[16px]">
-      <div className="  ">
+    <div className="min-h-screen bg-transparent transition-colors duration-300">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Khám phá</h1>
         </div>
@@ -98,13 +98,13 @@ export function HomePage() {
             </div>
 
             {/* Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full ">
-              <TabsList className="grid w-full h-fit grid-cols-4 px-2 py-1.5 ">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full h-fit grid-cols-4 px-2 py-1.5">
                 {tabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="rounded-xs h-full "
+                    className="rounded-xs h-full"
                   >
                     {tab.label}
                   </TabsTrigger>
