@@ -99,12 +99,12 @@ export function HomePage() {
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full h-fit grid-cols-4 px-2 py-1.5">
+              <TabsList className="grid w-full h-fit grid-cols-4 p-1">
                 {tabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="rounded-xs h-full"
+                    className="h-full"
                   >
                     {tab.label}
                   </TabsTrigger>
@@ -132,7 +132,7 @@ export function HomePage() {
           {/* Sidebar - 1/3 width */}
           <div className="space-y-6">
             {/* Trending Campaigns */}
-            <Card className="border-2 border-primary/20 bg-card shadow-lg">
+            <Card className="border-2 border-primary/20 shadow-lg">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <TrendingUp className="h-5 w-5 text-blue-500" />

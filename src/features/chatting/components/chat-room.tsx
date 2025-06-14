@@ -81,7 +81,7 @@ export default function ChatRoom() {
                   <div className="flex items-center justify-end gap-1.5">
                     <span className="text-xs font-normal leading-4">{msg.name}</span>
                     {/* <Icons.dot className="" /> */}
-                    <span className="w-1 h-1 bg-accent rounded-full inline-block" />
+                    <span className="w-1 h-1 bg-destructive-foreground rounded-full inline-block" />
                     <span className="text-xs font-normal">{msg.time}</span>
                   </div>
                   {msg.content}
