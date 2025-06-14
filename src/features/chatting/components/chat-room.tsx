@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { SheetClose } from '@/components/ui/sheet';
 
 import { Icons } from '@/components/icons/icons';
@@ -61,10 +62,11 @@ export default function ChatRoom() {
                 <AvatarImage src={msg.avatar} alt={msg.name} className="rounded-full" />
                 <AvatarFallback>{msg.name.charAt(0)}</AvatarFallback>
               </Avatar>
-              <div className="rounded-[8px] px-4 py-2 text-sm text-accent-foreground w-[284px] flex flex-col bg-muted">
-                <div className="flex items-center justify-start">
+              <div className="rounded-[8px] p-3 text-sm text-accent-foreground w-[284px] flex flex-col bg-muted">
+                <div className="flex items-center justify-start gap-1.5">
                   <span className="text-xs font-normal text-muted-foreground">{msg.name}</span>
-                  <Icons.dot className="h-6 w-6" />
+                  {/* <Icons.dot className="h-6 w-6" /> */}
+                  <span className="w-1 h-1 bg-muted-foreground rounded-full inline-block" />
                   <span className="text-xs font-normal leading-4 text-muted-foreground">
                     {msg.time}
                   </span>
@@ -75,10 +77,11 @@ export default function ChatRoom() {
           ) : (
             <div key={msg.id} className="flex items-start gap-2 justify-end">
               <div className="flex flex-col items-end rounded-[8px] text-sm">
-                <div className="bg-primary rounded-lg px-4 py-2 text-sm text-destructive-foreground max-w-[320px] flex flex-col">
-                  <div className="flex items-center justify-end">
+                <div className="bg-primary rounded-lg p-3 text-sm text-destructive-foreground max-w-[320px] flex flex-col">
+                  <div className="flex items-center justify-end gap-1.5">
                     <span className="text-xs font-normal leading-4">{msg.name}</span>
-                    <Icons.dot />
+                    {/* <Icons.dot className="" /> */}
+                    <span className="w-1 h-1 bg-accent rounded-full inline-block" />
                     <span className="text-xs font-normal">{msg.time}</span>
                   </div>
                   {msg.content}
@@ -94,10 +97,14 @@ export default function ChatRoom() {
       </div>
       {/* Input */}
       <form className="flex items-center px-6 py-4 border-t border-border rounded-[6px]">
-        <input
+        {/* <input
           type="text"
           placeholder="Nhập tin nhắn..."
           className="flex-1 rounded-lg border border-border px-3 py-2 h-[40px] text-base placeholder:text-base focus:outline-none focus:ring-2 focus:ring-primary bg-muted"
+        /> */}
+        <Input
+          className="flex-1 rounded-lg border border-border px-3 py-2 h-[40px] text-base placeholder:text-base "
+          placeholder="Nhập tin nhắn..."
         />
         <Button type="submit" className="ml-2 px-3 py-2 h-[40px] w-[40px] rounded-[6px] gap-[10px]">
           <Icons.send className="h-5 w-5" />
