@@ -33,7 +33,7 @@ export default function PopUpTrigger() {
         return prev.filter((id) => id !== categoryId);
       }
       if (prev.length >= MAX_CATEGORIES) {
-        const copy = [...prev].splice(1, MAX_CATEGORIES);
+        const copy = [...prev].slice(0, MAX_CATEGORIES - 1);
         return [...copy, categoryId];
       }
       return [...prev, categoryId];
