@@ -16,7 +16,7 @@ function AppLayout() {
       <AppHeader
         userRole={'influencer'}
         currentPage={'home'}
-        onPageChange={(page) => console.log(`Page changed to: ${page}`)}
+        onPageChange={(page) => navigate(`/${page}`)}
         onLogout={handleLogout}
         userName={'KangDev'}
         userAvatar={'https://avatars.githubusercontent.com/u/12345678?v=4'}
