@@ -1,28 +1,46 @@
-import { BadgeCheckIcon, Calendar, Eye } from 'lucide-react';
+import { BadgeCheckIcon, Calendar } from 'lucide-react';
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import ViewAccepted from './components/viewAccepted';
+
 
 const accepted = [
   {
-    id: '1',
-    name: 'Chiến dịch thời trang tuần lễ thời trang',
-    avatar: '/placeholder.svg?height=60&width=60',
-    brand: 'Beauty Co.',
-    createdDate: '5/6/2025',
-    appliedDate: '6/6/2025',
-    status: 'accepted',
+     id: "1",
+    name: "Chiến dịch mỹ phẩm xuân 2025",
+    description: "Quảng bá dòng sản phẩm dưỡng da mới ra mắt cho mùa xuân.",
+    categories: ["Làm đẹp", "Chăm sóc da"],
+    avatar: "/images/campaigns/campaign1.jpg",
+    brand: "GlowUp Cosmetics",
+    createdDate: "01/03/2025",
+    appliedDate: "05/02/2025",
+    campaignRequirement: new Map([
+      ["followers", 10000],
+      ["posts", 3],
+      ["story", 5],
+    ]),
+    influencerRequirement: ["Nữ", "18-30 tuổi", "Quan tâm đến skincare"],
+    status: "accepted",
   },
   {
-    id: '2',
-    name: 'Chiến dịch thời trang tuần lễ thời trang',
-    avatar: '/placeholder.svg?height=60&width=60',
-    brand: 'Beauty Co.',
-    createdDate: '5/6/2025',
-    appliedDate: '6/6/2025',
-    status: 'accepted',
+    id: "2",
+    name: "Chiến dịch thời trang hè 2025",
+    description: "Tìm kiếm influencer để quảng bá bộ sưu tập thời trang hè năng động.",
+    categories: ["Thời trang", "Phong cách sống"],
+    avatar: "/images/campaigns/campaign2.jpg",
+    brand: "UrbanStyle",
+    createdDate: "20/05/2025",
+    appliedDate: "28/05/2025",
+    campaignRequirement: new Map([
+      ["followers", 5000],
+      ["reels", 2],
+      ["hashtag", 1],
+    ]),
+    influencerRequirement: ["Nam hoặc nữ", "Yêu thích phong cách đường phố", "Hoạt động trên Instagram"],
+    status: "accepted",
   },
 ];
 
@@ -57,10 +75,7 @@ export default function Accepted() {
                 Ngày ứng tuyển: <span className=" font-medium">{item.appliedDate}</span>
               </span>
             </div>
-            <button className="flex items-center justify-center  gap-2 px-4 py-2 rounded-lg border border-border bg-[#f7f9fb] text-primary hover:bg-[#eef3fa] transition text-sm font-medium">
-              <Eye className="w-4 h-4 " />
-              <p className="">Xem chi tiết</p>
-            </button>
+              <ViewAccepted campaign={item}/>
           </CardContent>
         </Card>
       ))}

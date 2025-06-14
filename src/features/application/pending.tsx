@@ -1,28 +1,75 @@
-import { Calendar, Clock9 , Eye } from 'lucide-react';
+import { Calendar, Clock9  } from 'lucide-react';
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import ViewPending from './components/viewPending';
 
 const pending = [
-  {
-    id: '1',
-    name: 'Chiến dịch thời trang tuần lễ thời trang',
-    avatar: '/placeholder.svg?height=60&width=60',
-    brand: 'Beauty Co.',
-    createdDate: '5/6/2025',
-    appliedDate: '6/6/2025',
-    status: 'accepted',
+ {
+    id: 'c1',
+    name: 'Chiến dịch nước hoa mùa hè',
+    description: 'Quảng bá sản phẩm nước hoa mới cho giới trẻ.',
+    categories: ['Làm đẹp', 'Lifestyle'],
+    avatar: '/images/perfume.jpg',
+    brand: 'Scentify',
+    createdDate: '01/06/2024',
+    appliedDate: '07/06/2024',
+    campaignRequirement: new Map([
+      ['Lượt xem tối thiểu', 5000],
+      ['Bài đăng bắt buộc', 2],
+    ]),
+    influencerRequirement: ['18-25 tuổi', 'Nữ', 'Sống tại TP.HCM'],
+    status: 'pending',
   },
   {
-    id: '2',
-    name: 'Chiến dịch thời trang tuần lễ thời trang',
-    avatar: '/placeholder.svg?height=60&width=60',
-    brand: 'Beauty Co.',
-    createdDate: '5/6/2025',
-    appliedDate: '6/6/2025',
-    status: 'accepted',
+    id: 'c2',
+    name: 'Chiến dịch sức khỏe cộng đồng',
+    description: 'Nâng cao nhận thức về ăn uống lành mạnh.',
+    categories: ['Sức khỏe', 'Thực phẩm'],
+    avatar: '/images/health.jpg',
+    brand: 'GreenLife',
+    createdDate: '03/05/2025',
+    appliedDate: '08/05/2025',
+    campaignRequirement: new Map([
+      ['Bài viết Facebook', 1],
+      ['Story Instagram', 3],
+    ]),
+    influencerRequirement: ['Quan tâm đến sức khỏe', 'Tối thiểu 10k followers'],
+    status: 'pending',
+  },
+  {
+    id: 'c3',
+    name: 'Chiến dịch thời trang học đường',
+    description: 'Giới thiệu bộ sưu tập thời trang học sinh mới.',
+    categories: ['Thời trang', 'Giáo dục'],
+    avatar: '/images/fashion.jpg',
+    brand: 'UniWear',
+    createdDate: '09/06/2025',
+    appliedDate: '16/06/2025',
+    campaignRequirement: new Map([
+      ['Ảnh mặc sản phẩm', 5],
+      ['Bài đăng TikTok', 1],
+    ]),
+    influencerRequirement: ['Học sinh, sinh viên', 'Sống tại Hà Nội'],
+    status: 'pending',
+  },
+  {
+    id: 'c4',
+    name: 'Chiến dịch giới thiệu ứng dụng học tập',
+    description: 'Khuyến khích sử dụng app học ngoại ngữ mới.',
+    categories: ['Công nghệ', 'Giáo dục'],
+    avatar: '/images/app.jpg',
+    brand: 'LinguaGo',
+    createdDate: '07/06/2025',
+    appliedDate: '14/06/2025',
+    campaignRequirement: new Map([
+      ['Video review', 1],
+      ['Thời lượng video', 60], 
+    ]),
+    influencerRequirement: ['Có kinh nghiệm review app', 'Trên 5k subscribers YouTube'],
+    status: 'pending',
   },
 ];
 
@@ -40,7 +87,7 @@ export default function Pending() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-foreground ">{item.name}</span>
-                  <Badge variant="secondary" className='w-30'>
+                  <Badge variant="pending" className='w-30'>
                     {' '}
                     <Clock9  />
                     Đang chờ duyệt
@@ -57,10 +104,7 @@ export default function Pending() {
                 Ngày ứng tuyển: <span className=" font-medium">{item.appliedDate}</span>
               </span>
             </div>
-            <button className="flex items-center justify-center  gap-2 px-4 py-2 rounded-lg border border-border bg-[#f7f9fb] text-primary hover:bg-[#eef3fa] transition text-sm font-medium">
-              <Eye className="w-4 h-4 " />
-              <p className="">Xem chi tiết</p>
-            </button>
+            <ViewPending campaign={item}/>
           </CardContent>
         </Card>
       ))}

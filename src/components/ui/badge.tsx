@@ -18,7 +18,9 @@ const badgeVariants = cva(
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         accepted: 
-          "text-destructive-foreground bg-accepted border-transparent [a&]:hover:bg-accepted/90"
+          "text-destructive-foreground bg-accepted border-transparent [a&]:hover:bg-accepted/90",
+        pending:
+        "text-destructive-foreground bg-pending border-transparent [a&]:hover:bg-pending/90"
       },
     },
     defaultVariants: {

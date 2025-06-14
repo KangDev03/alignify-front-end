@@ -54,6 +54,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        pending: {
+          DEFAULT: "hsl(var(--pending))",
+          foreground: "hsl(var(--pending))",
+        },
         accepted:{
           DEFAULT: "hsl(var(--accepted))",
           foreground: "hsl(var(--accepted))"

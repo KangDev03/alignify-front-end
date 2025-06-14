@@ -1,28 +1,58 @@
 import { Calendar,CircleX, Eye } from 'lucide-react';
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import ViewRejected from './components/viewRejected';
 
 const rejected = [
   {
-    id: '1',
-    name: 'Chiến dịch thời trang tuần lễ thời trang',
-    avatar: '/placeholder.svg?height=60&width=60',
-    brand: 'Beauty Co.',
-    createdDate: '5/6/2025',
-    appliedDate: '6/6/2025',
-    status: 'accepted',
+    id: 'r1',
+    name: 'Chiến dịch khai trương nhà hàng Nhật Bản',
+    description: 'Tìm kiếm influencer để giới thiệu ẩm thực Nhật.',
+    categories: ['Ẩm thực', 'Du lịch'],
+    avatar: '/images/japan-food.jpg',
+    brand: 'TokyoBites',
+    createdDate: '`15-05-2025`',
+    appliedDate: '20-05-2025',
+    campaignRequirement: new Map([
+      ['Story Instagram', 2],
+      ['Check-in địa điểm', 1],
+    ]),
+    influencerRequirement: ['Có follower từ 8k trở lên', 'Quan tâm ẩm thực'],
+    status: 'rejected',
   },
   {
-    id: '2',
-    name: 'Chiến dịch thời trang tuần lễ thời trang',
-    avatar: '/placeholder.svg?height=60&width=60',
-    brand: 'Beauty Co.',
-    createdDate: '5/6/2025',
-    appliedDate: '6/6/2025',
-    status: 'accepted',
+    id: 'r2',
+    name: 'Chiến dịch công nghệ AI dành cho giáo dục',
+    description: 'Giới thiệu nền tảng AI hỗ trợ học tập thông minh.',
+    categories: ['Công nghệ', 'Giáo dục'],
+    avatar: '/images/ai-edu.jpg',
+    brand: 'EduAI',
+    createdDate: '28-04-2025',
+    appliedDate: '04-05-2025',
+    campaignRequirement: new Map([
+      ['Video hướng dẫn', 1],
+      ['Bài đăng Facebook', 1],
+    ]),
+    influencerRequirement: ['Tốt nghiệp chuyên ngành giáo dục hoặc công nghệ', 'Tối thiểu 5k followers'],
+    status: 'rejected',
+  },
+  {
+    id: 'r3',
+    name: 'Chiến dịch quảng bá mỹ phẩm hữu cơ',
+    description: 'Nâng cao nhận thức về mỹ phẩm thiên nhiên không hóa chất.',
+    categories: ['Làm đẹp', 'Sức khỏe'],
+    avatar: '/images/natural-cosmetics.jpg',
+    brand: 'EcoBeauty',
+    createdDate: '10-05-2025',
+    appliedDate: '17-05-2025',
+    campaignRequirement: new Map([
+      ['Bài đăng Instagram', 2],
+      ['Hashtag bắt buộc', 1],
+    ]),
+    influencerRequirement: ['Có quan điểm sống xanh', 'Tối thiểu 3 bài về skincare'],
+    status: 'rejected',
   },
 ];
 
@@ -57,10 +87,7 @@ export default function Rejected() {
                 Ngày ứng tuyển: <span className=" font-medium">{item.appliedDate}</span>
               </span>
             </div>
-            <button className="flex items-center justify-center  gap-2 px-4 py-2 rounded-lg border border-border bg-[#f7f9fb] text-primary hover:bg-[#eef3fa] transition text-sm font-medium">
-              <Eye className="w-4 h-4 " />
-              <p className="">Xem chi tiết</p>
-            </button>
+            <ViewRejected campaign={item}/>
           </CardContent>
         </Card>
       ))}
