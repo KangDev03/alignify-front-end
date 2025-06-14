@@ -15,17 +15,29 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 import { Icons } from '@/components/icons/icons';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { contentFormSchema } from '../posting.schema';
 import type { Categories } from '../posting.type';
 
-export default function ContentPopUp({ categories }: Categories) {
+interface PopUpContentProps {
+  categories: Categories;
+  onSelectCategory: (categoryId: string) => void;
+  selectedCategories?: string[];
+}
+
+export default function ContentPopUp({
+  categories,
+  onSelectCategory,
+  selectedCategories = [],
+}: PopUpContentProps) {
   const form = useForm<z.infer<typeof contentFormSchema>>({
     resolver: zodResolver(contentFormSchema),
     defaultValues: {
       title: '',
       content: '',
+      categoryIds: [],
     },
   });
 
@@ -35,7 +47,7 @@ export default function ContentPopUp({ categories }: Categories) {
   return (
     <DialogContent
       showCloseButton={false}
-      className="p-6 w-[564px] text-base max-h-[80%] overflow-x-scroll"
+      className="p-6 w-[564px] text-base max-h-[80%] overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent"
     >
       <DialogHeader className="flex flex-col gap-1.5">
         <DialogTitle className="flex gap-2">
@@ -66,10 +78,18 @@ export default function ContentPopUp({ categories }: Categories) {
               {categories.map((category) => (
                 <Badge
                   key={category.id}
-                  className="flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium"
+                  variant={
+                    selectedCategories.length > 0 && selectedCategories.includes(category.id)
+                      ? 'default'
+                      : 'secondary'
+                  }
+                  className={cn(
+                    'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer',
+                  )}
+                  onClick={() => onSelectCategory?.(category.id)}
                 >
                   {category.name}
-                  <Icons.x className="w-3 h-3" />
+                  {selectedCategories.includes(category.id) && <Icons.x className="size-3" />}
                 </Badge>
               ))}
             </div>

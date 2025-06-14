@@ -1,3 +1,7 @@
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+
 import { Icons } from '@/components/icons/icons';
 import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
 
@@ -16,17 +20,52 @@ const categories = [
   { id: '9', name: 'Kinh doanh' },
   { id: '10', name: 'Nghệ thuật' },
 ];
+type Role = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
+
+const userRole: Role = 'INFLUENCER';
 
 export default function PopUpTrigger() {
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const MAX_CATEGORIES = 3;
+  function handleSelectCategory(categoryId: string) {
+    setSelectedCategories((prev) => {
+      if (prev.includes(categoryId)) {
+        return prev.filter((id) => id !== categoryId);
+      }
+      if (prev.length >= MAX_CATEGORIES) {
+        const copy = [...prev].splice(1, MAX_CATEGORIES);
+        return [...copy, categoryId];
+      }
+      return [...prev, categoryId];
+    });
+  }
   return (
-    <Dialog>
-      <DialogTrigger className="fixed bottom-5 right-5 cursor-pointer">
-        <div className="p-2 bg-primary rounded-full">
-          <Icons.plus className="bg-primary rounded-full text-amber-50 w-6 h-6" />
-        </div>
-      </DialogTrigger>
-      {/* <ContentPopUp categories={categories} /> */}
-      <CampaignPopUp categories={categories} />
-    </Dialog>
+    userRole !== 'ADMIN' &&
+    userRole !== null && (
+      <Dialog>
+        <DialogTrigger className="fixed bottom-5 right-5 cursor-pointer">
+          <Button
+            variant={'default'}
+            className="size-14 rounded-full flex justify-center items-center"
+          >
+            <Icons.plus className="bg-transparent rounded-full text-background size-6" />
+          </Button>
+        </DialogTrigger>
+        {userRole === 'INFLUENCER' && (
+          <ContentPopUp
+            categories={categories}
+            selectedCategories={selectedCategories}
+            onSelectCategory={handleSelectCategory}
+          />
+        )}
+        {userRole === 'BRAND' && (
+          <CampaignPopUp
+            categories={categories}
+            selectedCategories={selectedCategories}
+            onSelectCategory={handleSelectCategory}
+          />
+        )}
+      </Dialog>
+    )
   );
 }

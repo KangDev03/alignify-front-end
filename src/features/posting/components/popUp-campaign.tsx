@@ -22,12 +22,23 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 import { Icons } from '@/components/icons/icons';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { campaignFormSchema } from '../posting.schema';
 import type { Categories } from '../posting.type';
 
-export default function CampaignPopUp({ categories }: Categories) {
+interface PopUpCampaignProps {
+  categories: Categories;
+  onSelectCategory: (categoryId: string) => void;
+  selectedCategories?: string[];
+}
+
+export default function CampaignPopUp({
+  categories,
+  onSelectCategory,
+  selectedCategories = [],
+}: PopUpCampaignProps) {
   const form = useForm<z.infer<typeof campaignFormSchema>>({
     resolver: zodResolver(campaignFormSchema),
     defaultValues: {
@@ -39,6 +50,7 @@ export default function CampaignPopUp({ categories }: Categories) {
       endAt: new Date(),
       influencerRequirement: '',
       contentRequirement: '',
+      categoryIds: [],
     },
   });
 
@@ -98,10 +110,18 @@ export default function CampaignPopUp({ categories }: Categories) {
               {categories.map((category) => (
                 <Badge
                   key={category.id}
-                  className="flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium"
+                  variant={
+                    selectedCategories.length > 0 && selectedCategories.includes(category.id)
+                      ? 'default'
+                      : 'secondary'
+                  }
+                  className={cn(
+                    'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer',
+                  )}
+                  onClick={() => onSelectCategory?.(category.id)}
                 >
                   {category.name}
-                  <Icons.x className="w-3 h-3" />
+                  {selectedCategories.includes(category.id) && <Icons.x className="size-3" />}
                 </Badge>
               ))}
             </div>

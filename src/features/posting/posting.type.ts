@@ -3,6 +3,4 @@ export interface CategoryItem {
   name: string;
 }
 
-export interface Categories {
-  categories: CategoryItem[];
-}
+export type Categories = Array<CategoryItem>;

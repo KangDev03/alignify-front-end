@@ -1,12 +1,23 @@
 import { z } from 'zod';
 
-export const contentFormSchema = z.object({
+export interface ContentFormSchema {
+  title: string;
+  content: string;
+  categoryIds?: string[];
+}
+export const contentFormSchema: z.ZodType<ContentFormSchema> = z.object({
   title: z.string().min(10, {
     message: 'Tiêu đề phải có ít nhất 10 ký tự',
   }),
   content: z.string().min(20, {
     message: 'Nội dung phải có ít nhất 20 ký tự',
   }),
+  categoryIds: z
+    .array(z.string())
+    .max(3, {
+      message: 'Bạn chỉ có thể chọn tối đa 3 danh mục',
+    })
+    .optional(),
 });
 
 export type ContentFormValues = z.infer<typeof contentFormSchema>;
@@ -20,6 +31,7 @@ export interface CampaignFormSchema {
   endAt: Date;
   influencerRequirement: string;
   contentRequirement: string;
+  categoryIds?: string[];
 }
 
 export const campaignFormSchema: z.ZodType<CampaignFormSchema> = z.object({
@@ -67,6 +79,12 @@ export const campaignFormSchema: z.ZodType<CampaignFormSchema> = z.object({
   contentRequirement: z.string().min(20, {
     message: 'Yêu cầu nội dung phải có ít nhất 20 ký tự',
   }),
+  categoryIds: z
+    .array(z.string())
+    .max(3, {
+      message: 'Bạn chỉ có thể chọn tối đa 3 danh mục',
+    })
+    .optional(),
 });
 
 export type CampaignFormValues = z.infer<typeof campaignFormSchema>;
