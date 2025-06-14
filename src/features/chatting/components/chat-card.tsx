@@ -24,20 +24,21 @@ export default function ChatCard({
       key={key}
       className="w-full h-[84px] px-6 py-3 flex items-center gap-4 border border-accent bg-background relative"
     >
+      {/* sua lai thanh border bottom */}
       <Avatar className="h-12 w-12 flex-shrink-0">
         <AvatarImage src={userAvatar || '/placeholder.svg'} alt={userName} />
         <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
       </Avatar>
       <div className="flex-1 flex flex-col min-w-0 items-start">
-        <h3 className="font-medium text-[16px] truncate">{campaignName}</h3>
+        <h3 className="font-medium text-sm truncate">{campaignName}</h3>
         <div className="flex items-center gap-2 text-background mt-0.5">
-          <span className="text-sm truncate text-muted-foreground">{userName}</span>
+          <span className="text-xs truncate text-muted-foreground">{userName}</span>
           <span className="w-1 h-1 bg-accent-foreground rounded-full inline-block" />
-          <span className="text-sm truncate text-muted-foreground">
+          <span className="text-xs truncate text-muted-foreground">
             {sendAt.getHours()} giờ trước
           </span>
         </div>
-        <p className="text-base text-muted-foreground truncate mt-0.5">{lastMessage}</p>
+        <p className="text-sm text-muted-foreground truncate mt-0.5">{lastMessage}</p>
       </div>
       {status === 'unread' && (
         <span className="absolute right-6 top-1/2 -translate-y-1/2 w-3 h-3 bg-destructive rounded-full" />

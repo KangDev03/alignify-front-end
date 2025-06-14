@@ -14,21 +14,16 @@ export default function ChatSheet() {
           <Icons.messageCircle className="h-4 w-4" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[466px]">
-        <SheetHeader>
-          <SheetTitle className="text-2xl md:text-2xl font-bold p-2.5 mt-4.0" asChild>
+      <SheetContent className="w-[466px] gap-0">
+        {/* xoa gap mac dinh cua SheetContent */}
+        <SheetHeader className="flex flex-col items-start justify-center gap-4 p-6 border-b border-border">
+          {/* them padding, them border bottom, them display flex */}
+          <SheetTitle className="text-xl font-semibold leading-6">
+            {/* them leading~line-height */}
             <h1>Tin nhắn</h1>
           </SheetTitle>
           <ChatSearch />
         </SheetHeader>
-        {/* <ChatCard
-          userName="TLee."
-          userAvatar="/avatar-chat.jpg"
-          campaignName="Chiến dịch tuần lễ thời trang"
-          lastMessage="Chúng tôi rất hài lòng với kết quả chiến dịch!"
-          sendAt={new Date(Date.now() - 1000 * 60 * 60 * 2)}
-          status="unread"
-        /> */}
         <ChatList />
       </SheetContent>
     </Sheet>

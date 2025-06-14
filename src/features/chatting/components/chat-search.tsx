@@ -4,12 +4,12 @@ import { Icons } from '@/components/icons/icons';
 
 export default function ChatSearch() {
   return (
-    <div className="px-3 py-3 relative">
+    <div className="w-[418px] relative">
       <Input
-        placeholder="Tìm kiếm cuộc trò chuyện..."
-        className="pl-9 text-base placeholder:text-base h-11"
+        placeholder="Tìm kiếm tin nhắn hoặc tên người dùng..."
+        className="px-[9px] py-2 pl-11 placeholder:text-base h-10 leading-6 gap-[17px] rounded-[6px] font-semibold placeholder:font-normal placeholder: text-base"
       />
-      <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 translate-x-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+      <Icons.search className="absolute left-1 top-1/2 transform -translate-y-1/2 translate-x-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
     </div>
   );
 }
