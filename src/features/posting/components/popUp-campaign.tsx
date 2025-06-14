@@ -2,7 +2,9 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -211,6 +213,16 @@ export default function CampaignPopUp({ categories }: Categories) {
               </FormItem>
             )}
           />
+          <div className="flex justify-end gap-2.5">
+            <DialogClose>
+              <Button variant={'outline'} className="text-" type="reset">
+                Hủy
+              </Button>
+            </DialogClose>
+            <Button variant={'default'} type="submit">
+              Tạo chiến dịch
+            </Button>
+          </div>
         </form>
       </Form>
     </DialogContent>
