@@ -21,6 +21,8 @@ import {
   MapPin,
   Megaphone,
   MessageCircle,
+  PenTool,
+  Plus,
   Save,
   Search,
   SendHorizontal,
@@ -68,4 +70,6 @@ export const Icons = {
   dot: Dot,
   arrowleft: ArrowLeft,
   send: SendHorizontal,
+  plus: Plus,
+  penTool: PenTool,
 };
