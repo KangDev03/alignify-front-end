@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   ArrowRight,
   BarChart3,
   Bell,
@@ -7,6 +8,7 @@ import {
   Calendar,
   Camera,
   CheckCircle,
+  Dot,
   Edit,
   ExternalLink,
   Eye,
@@ -23,6 +25,7 @@ import {
   Plus,
   Save,
   Search,
+  SendHorizontal,
   Settings,
   Star,
   Store,
@@ -64,6 +67,9 @@ export const Icons = {
   eye: Eye,
   heart: Heart,
   messageCircle: MessageCircle,
+  dot: Dot,
+  arrowleft: ArrowLeft,
+  send: SendHorizontal,
   plus: Plus,
   penTool: PenTool,
 };
