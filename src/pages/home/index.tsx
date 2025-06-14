@@ -140,15 +140,15 @@ export function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="p-3 border rounded-lg hover:bg-muted/50 cursor-pointer">
+                <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
                   <h4 className="font-medium text-sm">Chiến dịch quảng cáo sản phẩm làm đẹp mùa hè</h4>
                   <p className="text-xs text-muted-foreground mt-1">Beauty Co.</p>
                 </div>
-                <div className="p-3 border rounded-lg hover:bg-muted/50 cursor-pointer">
+                <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
                   <h4 className="font-medium text-sm">Review công nghệ AI mới nhất</h4>
                   <p className="text-xs text-muted-foreground mt-1">TechViet</p>
                 </div>
-                <div className="p-3 border rounded-lg hover:bg-muted/50 cursor-pointer">
+                <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
                   <h4 className="font-medium text-sm">Fashion Week 2024</h4>
                   <p className="text-xs text-muted-foreground mt-1">Fashion House</p>
                 </div>
