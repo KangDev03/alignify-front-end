@@ -22,3 +22,11 @@ export const signUpSchema = z
   });
 
 export type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+export const verifyOTPSchema = z.object({
+  otp: z
+    .string()
+    .min(6, 'Mã OTP phải có ít nhất 6 ký tự')
+    .max(6, 'Mã OTP không được vượt quá 6 ký tự'),
+});
+export type VerifyOTPFormValues = z.infer<typeof verifyOTPSchema>;

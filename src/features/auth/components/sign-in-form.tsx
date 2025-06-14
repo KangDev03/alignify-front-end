@@ -113,7 +113,7 @@ export default function SignInForm() {
       }
     },
     onError: () => {
-      console.log('Google Login Failed');
+      toast.error('Đăng nhập với Google thất bại!');
     },
   });
   // const [isLoading, setIsLoading] = useState(false);
