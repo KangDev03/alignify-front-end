@@ -19,6 +19,8 @@ import {
   MapPin,
   Megaphone,
   MessageCircle,
+  PenTool,
+  Plus,
   Save,
   Search,
   Settings,
@@ -28,7 +30,8 @@ import {
   User,
   Users,
   X,
-  Youtube} from 'lucide-react';
+  Youtube,
+} from 'lucide-react';
 
 export const Icons = {
   user: User,
@@ -60,5 +63,7 @@ export const Icons = {
   camera: Camera,
   eye: Eye,
   heart: Heart,
-  messageCircle : MessageCircle,
+  messageCircle: MessageCircle,
+  plus: Plus,
+  penTool: PenTool,
 };
