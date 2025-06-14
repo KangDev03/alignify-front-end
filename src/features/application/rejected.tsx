@@ -3,6 +3,7 @@ import { Calendar,CircleX, Eye } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+
 import ViewRejected from './components/viewRejected';
 
 const rejected = [
@@ -13,8 +14,8 @@ const rejected = [
     categories: ['Ẩm thực', 'Du lịch'],
     avatar: '/images/japan-food.jpg',
     brand: 'TokyoBites',
-    createdDate: '`15-05-2025`',
-    appliedDate: '20-05-2025',
+    createdDate: '`15/05/2025`',
+    appliedDate: '20/05/2025',
     campaignRequirement: new Map([
       ['Story Instagram', 2],
       ['Check-in địa điểm', 1],
@@ -29,8 +30,8 @@ const rejected = [
     categories: ['Công nghệ', 'Giáo dục'],
     avatar: '/images/ai-edu.jpg',
     brand: 'EduAI',
-    createdDate: '28-04-2025',
-    appliedDate: '04-05-2025',
+    createdDate: '28/04/2025',
+    appliedDate: '04/05/2025',
     campaignRequirement: new Map([
       ['Video hướng dẫn', 1],
       ['Bài đăng Facebook', 1],
@@ -45,8 +46,8 @@ const rejected = [
     categories: ['Làm đẹp', 'Sức khỏe'],
     avatar: '/images/natural-cosmetics.jpg',
     brand: 'EcoBeauty',
-    createdDate: '10-05-2025',
-    appliedDate: '17-05-2025',
+    createdDate: '10/05/2025',
+    appliedDate: '17/05/2025',
     campaignRequirement: new Map([
       ['Bài đăng Instagram', 2],
       ['Hashtag bắt buộc', 1],
