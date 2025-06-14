@@ -113,7 +113,7 @@ export default function CampaignPopUp({
                   variant={
                     selectedCategories.length > 0 && selectedCategories.includes(category.id)
                       ? 'default'
-                      : 'secondary'
+                      : 'outline'
                   }
                   className={cn(
                     'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer',
@@ -147,7 +147,7 @@ export default function CampaignPopUp({
                 <FormItem>
                   <FormLabel>Số lượng Influencer*</FormLabel>
                   <FormControl>
-                    <Input placeholder="5" required {...field} />
+                    <Input type="number" placeholder="5" required {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
