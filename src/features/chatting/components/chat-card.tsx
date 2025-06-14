@@ -22,9 +22,8 @@ export default function ChatCard({
   return (
     <div
       key={key}
-      className="w-full h-[84px] px-6 py-3 flex items-center gap-4 border border-accent bg-background relative cursor-pointer"
+      className="w-full h-[84px] px-6 py-3 flex items-center gap-4 border border-accent bg-background relative cursor-pointer hover:bg-muted dark:hover:bg-muted transition-colors duration-200"
     >
-      {/* sua lai thanh border bottom */}
       <Avatar className="h-12 w-12 flex-shrink-0">
         <AvatarImage src={userAvatar || '/placeholder.svg'} alt={userName} />
         <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
