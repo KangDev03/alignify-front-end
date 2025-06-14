@@ -54,7 +54,7 @@ export default function Campaigns() {
         {mockCampaigns.map((campaign) => (
           <Card
             key={campaign.id}
-            className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all overflow-hidden"
+            className="border-2 border-primary/20 pt-0 bg-card shadow-lg hover:shadow-xl transition-all overflow-hidden"
           >
             <div className="w-full h-64 relative">
               <img
