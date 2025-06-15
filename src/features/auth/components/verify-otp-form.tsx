@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,21 +24,19 @@ import { Input } from '@/components/ui/input';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { type VerifyOTPFormValues, verifyOTPSchema } from '../auth.schema';
 import { useRegisterMutation, useRequestOTPMutation, useVerifyOTPMutation } from '../auth.service';
-
-const verifyOTPSchema = z.object({
-  otp: z
-    .string()
-    .min(6, 'Mã OTP phải có ít nhất 6 ký tự')
-    .max(6, 'Mã OTP không được vượt quá 6 ký tự'),
-});
-type VerifyOTPFormValues = z.infer<typeof verifyOTPSchema>;
 
 export default function VerifyOTPForm() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const [verifyOTP, { isLoading: isVerifyingOTP }] = useVerifyOTPMutation();
   const [register, { isLoading: isRegistering }] = useRegisterMutation();
   const [requestOTP, { isLoading: isRequestingOTP }] = useRequestOTPMutation();
+  const [isSelectAll, setIsSelectAll] = useState(false);
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const { email, password, passwordConfirm, roleId, name } = state || {};
 
   const form = useForm<VerifyOTPFormValues>({
     resolver: zodResolver(verifyOTPSchema),
@@ -48,16 +45,17 @@ export default function VerifyOTPForm() {
     },
   });
 
-  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  useEffect(() => {
+    inputRefs.current = Array(otpDigits.length).fill(null);
+  }, [otpDigits.length]);
 
   // const registrationData = JSON.parse(localStorage.getItem('registrationData') || '{}');
-  const { state } = useLocation();
-  const { email, password, passwordConfirm, roleId, name } = state || {};
   useEffect(() => {
     if (!email || !password || !roleId || !name || !passwordConfirm) {
       toast.error('Dữ liệu đăng ký không hợp lệ. Vui lòng thử lại!');
       navigate('/auth/login');
+    } else {
+      inputRefs.current[0]?.focus();
     }
   }, [email, password, roleId, name, passwordConfirm, navigate]);
 
@@ -67,16 +65,10 @@ export default function VerifyOTPForm() {
     const newOtpDigits = [...otpDigits];
     newOtpDigits[index] = value;
     setOtpDigits(newOtpDigits);
-
-    form.setValue('otp', newOtpDigits.join(''), { shouldValidate: true });
-
+    form.setValue('otp', newOtpDigits.join(''));
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+    } else if (!value && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
@@ -86,14 +78,68 @@ export default function VerifyOTPForm() {
     if (/^[0-9a-zA-Z]{6}$/.test(pastedData)) {
       const newOtpDigits = pastedData.split('');
       setOtpDigits(newOtpDigits);
-      form.setValue('otp', pastedData, { shouldValidate: true });
+      form.setValue('otp', pastedData);
       inputRefs.current[5]?.focus();
     }
     e.preventDefault();
   };
 
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+      setIsSelectAll(true);
+      return;
+    }
+    if (isSelectAll && (e.key === 'Backspace' || e.key === 'Delete')) {
+      setOtpDigits(['', '', '', '', '', '']);
+      form.setValue('otp', '');
+      inputRefs.current[0]?.focus();
+      setIsSelectAll(false);
+      e.preventDefault();
+      return;
+    } else if (isSelectAll && /^[0-9a-zA-Z]?$/.test(e.key)) {
+      setOtpDigits([e.key, '', '', '', '', '']);
+      form.setValue('otp', '');
+      inputRefs.current[0]?.focus();
+      setIsSelectAll(false);
+      e.preventDefault();
+      return;
+    }
+    if (e.key === 'ArrowLeft' && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+      e.preventDefault();
+      return;
+    }
+    if (e.key === 'ArrowRight' && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+      e.preventDefault();
+      return;
+    }
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      if (otpDigits[index]) {
+        const newOtpDigits = [...otpDigits];
+        newOtpDigits[index] = '';
+        setOtpDigits(newOtpDigits);
+        form.setValue('otp', newOtpDigits.join(''));
+        e.preventDefault();
+        return;
+      }
+      if (!otpDigits[index] && index < 6) {
+        const newOtpDigits = [...otpDigits];
+        newOtpDigits[index - 1] = '';
+        inputRefs.current[index - 1]?.focus();
+        setOtpDigits(newOtpDigits);
+        form.setValue('otp', newOtpDigits.join(''));
+        e.preventDefault();
+        return;
+      }
+    }
+    if (/^[0-9a-zA-Z]?$/.test(e.key)) {
+      handleInputChange(index, e.key.toUpperCase());
+      e.preventDefault();
+    }
+  };
+
   const onSubmit = async (values: VerifyOTPFormValues) => {
-    console.log('sending...');
     try {
       const verifyResponse = await verifyOTP({ email, otp: values.otp }).unwrap();
       if (verifyResponse.message) {
@@ -109,6 +155,9 @@ export default function VerifyOTPForm() {
     } catch (err) {
       console.log(err);
       toast.error('Xác thực OTP hoặc đăng ký thất bại. Vui lòng thử lại!');
+      setOtpDigits(['', '', '', '', '', '']);
+      form.setValue('otp', '');
+      inputRefs.current[0]?.focus();
     }
   };
 
@@ -117,6 +166,9 @@ export default function VerifyOTPForm() {
       const otpResponse = await requestOTP({ email }).unwrap();
       if (otpResponse.message) {
         toast.success(otpResponse.message);
+        setOtpDigits(['', '', '', '', '', '']);
+        form.setValue('otp', '');
+        inputRefs.current[0]?.focus();
       }
     } catch (err) {
       console.log(err);
@@ -125,7 +177,6 @@ export default function VerifyOTPForm() {
   };
 
   const isLoading = isVerifyingOTP || isRegistering || isRequestingOTP;
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md shadow-lg">
@@ -140,18 +191,22 @@ export default function VerifyOTPForm() {
               name="otp"
               render={() => (
                 <FormItem>
-                  <FormLabel>Mã OTP</FormLabel>
+                  <FormLabel dataError={false}>Nhập mã OTP</FormLabel>
                   <FormControl>
                     <div className="flex justify-center gap-2">
                       {otpDigits.map((digit, index) => (
                         <Input
+                          type="text"
                           key={index}
-                          className="h-12 w-12 border-input text-center text-xl focus:border-primary"
+                          className={`h-12 w-12 border-input text-center text-xl focus:border-primary transition-colors ${isSelectAll ? 'bg-primary/10 font-bold text-primary border-primary' : ''}`}
                           maxLength={1}
                           value={digit}
-                          onChange={(e) => handleInputChange(index, e.target.value)}
-                          onKeyDown={(e) => handleKeyDown(index, e)}
+                          onClick={() => {
+                            inputRefs.current[index]?.focus();
+                          }}
+                          onChange={(e) => handleInputChange(index, e.target.value.toUpperCase())}
                           onPaste={index === 0 ? handlePaste : undefined}
+                          onKeyDown={(e) => handleKeyDown(index, e)}
                           ref={(el) => {
                             inputRefs.current[index] = el;
                           }}

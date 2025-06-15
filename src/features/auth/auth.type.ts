@@ -9,10 +9,17 @@ export interface GoogleLoginRequest {
   code: string;
 }
 
-export interface LoginResponse extends ApiReponseSuccess<{ id: string; token: string }> {
+export interface LoginReponse {
+  id: string;
+  token: string;
+  role: 'INFLUENCER' | 'BRAND' | 'ADMIN';
+}
+
+export interface LoginResponse extends ApiReponseSuccess<LoginReponse> {
   data: {
     id: string;
     token: string;
+    role: 'INFLUENCER' | 'BRAND' | 'ADMIN';
   };
 }
 
