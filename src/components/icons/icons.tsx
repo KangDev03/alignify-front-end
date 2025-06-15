@@ -8,6 +8,9 @@ import {
   Calendar,
   Camera,
   CheckCircle,
+  CircleCheckBig,
+  CircleX,
+  Clock4,
   Dot,
   Edit,
   ExternalLink,
@@ -72,4 +75,7 @@ export const Icons = {
   send: SendHorizontal,
   plus: Plus,
   penTool: PenTool,
+  clock4: Clock4,
+  circleCheckBig: CircleCheckBig,
+  circleX: CircleX,
 };

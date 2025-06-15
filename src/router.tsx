@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router';
 
 // import avatar from "@/assets/avatar-small.png";
 import AppLayout from '@/components/layouts/app/app-layout';
+import { ApplicationsPage } from '@/pages/applications';
 import ForgotPasswordPage from '@/pages/auth/forgot-password';
 import { SelectRolePage } from '@/pages/auth/select-role';
 import LoginPage from '@/pages/auth/sign-in';
@@ -10,7 +11,6 @@ import ContactPage from '@/pages/contact';
 import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
 
-import ApplicationsPage from './pages/applications';
 import RegisterPage from './pages/auth/sign-up';
 
 export const mockInfluencer = {
