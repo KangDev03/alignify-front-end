@@ -1,67 +1,154 @@
-import { useState } from 'react';
+"use client"
 
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from "react"
+import { Search } from "lucide-react"
 
-import { Icons } from '@/components/icons/icons';
-import Accepted from '@/features/application/accepted';
-import Pending from '@/features/application/pending';
-import Rejected from '@/features/application/rejected';
+import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-const status = [
+import ApplicationCard from "@/features/application/components/application-card"
+
+const tabs = [
   { value: 'pending', label: 'Đang chờ duyệt' },
   { value: 'accepted', label: 'Đã chấp nhận' },
   { value: 'rejected', label: 'Bị từ chối' },
-];
+]
 
-export default function ApplicationsPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [tab, setTab] = useState('pending');
+const applications = {
+  pending: [
+    {
+      id: "1",
+      title: "Chiến dịch thời trang tuần lễ thời trang",
+      brand: "Beauty Co.",
+      brandAvatar: "/placeholder.svg?height=40&width=40",
+      description: "Tìm kiếm influencer để quảng cáo dòng sản phẩm chăm sóc da mùa hè",
+      budget: "10,000,000 VNĐ",
+      status: "Chờ duyệt",
+      appliedDate: "2024-01-20",
+      // expectedResponse: "2024-01-27",
+      startDate: "2024-02-15",
+      endDate: "2024-03-15",
+      category: ["Thời trang", "Làm đẹp"],
+      requirements: ["Instagram 100K+ followers", "Fashion influencer", "Có kinh nghiệm runway"],
+      deliverables: ["3 bài đăng Instagram", "2 Stories", "1 Reel"],
+      contactPerson: "Lê Văn C",
+      contactEmail: "contact@stylehouse.vn",
+      contactPhone: "0912345678",
+    },
+    {
+      id: "2",
+      title: "Chiến dịch thời trang tuần lễ thời trang",
+      brand: "Beauty Co.",
+      brandAvatar: "/placeholder.svg?height=40&width=40",
+      description: "Tìm kiếm influencer để quảng cáo dòng sản phẩm chăm sóc da mùa hè",
+      budget: "10,000,000 VNĐ",
+      status: "Chờ duyệt",
+      appliedDate: "2024-01-20",
+      // expectedResponse: "2024-01-27",
+      startDate: "2024-02-15",
+      endDate: "2024-03-15",
+      category: ["Thời trang", "Làm đẹp"],
+      requirements: ["Instagram 100K+ followers", "Fashion influencer", "Có kinh nghiệm runway"],
+      deliverables: ["3 bài đăng Instagram", "2 Stories", "1 Reel"],
+      contactPerson: "Lê Văn C",
+      contactEmail: "contact@stylehouse.vn",
+      contactPhone: "0912345678",
+    },
+  ],
+  accepted: [
+    {
+      id: "3",
+      title: "Chiến dịch thời trang mùa hè",
+      brand: "Summer Style",
+      brandAvatar: "/placeholder.svg?height=40&width=40",
+      description: "Quảng bá bộ sưu tập thời trang mùa hè mới nhất",
+      budget: "15,000,000 VNĐ",
+      status: "Đã chấp nhận",
+      appliedDate: "2024-01-10",
+      acceptedDate: "2024-01-15",
+      startDate: "2024-02-01",
+      endDate: "2024-03-01",
+      category: ["Thời trang", "Mùa hè"],
+      requirements: ["Instagram 80K+ followers", "Fashion influencer"],
+      deliverables: ["5 Instagram posts", "3 Stories", "2 Reels"],
+      contactPerson: "Trần Thị H",
+      contactEmail: "contact@summerstyle.vn",
+      contactPhone: "0923456789",
+    },
+  ],
+  rejected: [
+    {
+      id: "4",
+      title: "Chiến dịch mỹ phẩm cao cấp",
+      brand: "Luxury Beauty",
+      brandAvatar: "/placeholder.svg?height=40&width=40",
+      description: "Quảng bá dòng mỹ phẩm cao cấp mới ra mắt",
+      budget: "20,000,000 VNĐ",
+      status: "Bị từ chối",
+      appliedDate: "2024-01-05",
+      rejectedDate: "2024-01-12",
+      rejectionReason: "Không phù hợp với định hướng thương hiệu",
+      startDate: "2024-02-01",
+      endDate: "2024-03-01",
+      category: ["Làm đẹp", "Mỹ phẩm cao cấp"],
+      requirements: ["Instagram 150K+ followers", "Beauty influencer"],
+      deliverables: ["4 Instagram posts", "6 Stories", "2 Reels"],
+      contactPerson: "Nguyễn Văn K",
+      contactEmail: "contact@luxurybeauty.vn",
+      contactPhone: "0934567890",
+    },
+  ],
+}
+
+export function ApplicationsPage() {
+  const [activeTab, setActiveTab] = useState("pending")
 
   return (
-    <div className="min-h-screen bg-transparent transition-colors flex justify-center">
-      <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold">Đơn ứng tuyển của tôi</h1>
-
-          {/* Tabs Nav + Search */}
-          <div className="flex gap-6">
-            <div className="flex-1 font-semibold text-foreground">
-              <TabsList className="grid w-full h-fit grid-cols-3 py-1.5 ">
-                {status.map((status) => (
-                  <TabsTrigger
-                    key={status.value}
-                    value={status.value}
-                    className="rounded-xs h-full "
-                  >
-                    {status.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-            <div className="relative w-[349px] h-10 px-[9px] py-2 flex gap-[17px] border border-input rounded-[6px]">
-              <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Tìm kiếm..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 h-full border-none outline-none shadow-none bg-transparent"
-              />
-            </div>
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold">Đơn ứng tuyển của tôi</h1>
+      <Tabs defaultValue="pending" value={activeTab} onValueChange={setActiveTab} className="w-full gap-6">
+        <div className="flex flex-row gap-6">
+          <TabsList className="grid w-full h-fit grid-cols-3 p-1">
+            {tabs.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="h-full"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <div className="relative w-2/5">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Tìm kiếm..." className="pl-8" />
           </div>
-
-          {/* Nội dung từng tab */}
-          <TabsContent value="pending" className="mt-6 ">
-            <Pending />
-          </TabsContent>
-          <TabsContent value="accepted" className="mt-6">
-            <Accepted />
-          </TabsContent>
-          <TabsContent value="rejected" className="mt-6">
-            <Rejected />
-          </TabsContent>
         </div>
+
+        <TabsContent value="pending" className="">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {applications.pending.map((application) => (
+              <ApplicationCard key={application.id} application={application} />
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="accepted" className="">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {applications.accepted.map((application) => (
+              <ApplicationCard key={application.id} application={application} />
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="rejected" className="">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {applications.rejected.map((application) => (
+              <ApplicationCard key={application.id} application={application} />
+            ))}
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }
