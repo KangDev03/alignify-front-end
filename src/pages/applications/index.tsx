@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Icons } from '@/components/icons/icons';
 import Accepted from '@/features/application/accepted';
+import { useGetApplicationsByBrandQuery } from '@/features/application/application.service';
 import Pending from '@/features/application/pending';
 import Rejected from '@/features/application/rejected';
 
@@ -17,13 +18,14 @@ const status = [
 export default function ApplicationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [tab, setTab] = useState('pending');
-
+  const { data: applicationData, isLoading, error } = useGetApplicationsByBrandQuery();
+  console.log("application: ",applicationData?.data);
+  console.log("error: ",error);
   return (
     <div className="min-h-screen bg-transparent transition-colors flex justify-center">
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <div className="space-y-6">
           <h1 className="text-3xl font-bold">Đơn ứng tuyển của tôi</h1>
-
           {/* Tabs Nav + Search */}
           <div className="flex gap-6">
             <div className="flex-1 font-semibold text-foreground">
