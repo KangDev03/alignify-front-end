@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router';
 // import avatar from "@/assets/avatar-small.png";
 import AppLayout from '@/components/layouts/app/app-layout';
 import ForgotPasswordPage from '@/pages/auth/forgot-password';
+import ResetPasswordPage from '@/pages/auth/reset-password';
 import { SelectRolePage } from '@/pages/auth/select-role';
 import LoginPage from '@/pages/auth/sign-in';
 import VerifyOtpPage from '@/pages/auth/verify-otp';
@@ -46,7 +47,7 @@ function Router() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
-          {/* <Route path="reset-password" element={<ResetPasswordPage />} /> */}
+          <Route path="reset-password" element={<ResetPasswordPage />} />
           <Route path="select-role" element={<SelectRolePage />} />
           <Route path="verify-otp" element={<VerifyOtpPage />} />
         </Route>
