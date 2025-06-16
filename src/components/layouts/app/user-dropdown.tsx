@@ -28,6 +28,10 @@ export function UserDropdown({ userName, userAvatar, userRole, onPageChange, onL
     navigate("/user-profile")
   }
 
+  const handleToSetting = () => {
+    navigate("/settings")
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -52,7 +56,7 @@ export function UserDropdown({ userName, userAvatar, userRole, onPageChange, onL
           <Icons.user className="mr-2 h-4 w-4" />
           <span>Hồ sơ</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleToSetting}>
           <Icons.settings className="mr-2 h-4 w-4" />
           <span>Cài đặt</span>
         </DropdownMenuItem>

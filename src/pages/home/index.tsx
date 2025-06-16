@@ -132,7 +132,7 @@ export function HomePage() {
           {/* Sidebar - 1/3 width */}
           <div className="space-y-6">
             {/* Trending Campaigns */}
-            <Card className="border-2 border-primary/20 shadow-lg">
+            <Card className="border-2 shadow-lg">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <TrendingUp className="h-5 w-5 text-blue-500" />
