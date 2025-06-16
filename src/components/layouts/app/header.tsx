@@ -1,7 +1,5 @@
 'use client';
 
-import { useNavigate } from 'react-router';
-
 import { Button } from '@/components/ui/button';
 
 import { Icons } from '@/components/icons/icons';
@@ -43,12 +41,6 @@ export function AppHeader({
           { id: 'applications', label: 'Ứng viên', icon: Icons.fileText },
           { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
         ];
-
-  const navigate = useNavigate();
-
-  const handleToProfile = () => {
-    navigate('/user-profile');
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
