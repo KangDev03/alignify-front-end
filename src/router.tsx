@@ -11,6 +11,7 @@ import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
 
 import RegisterPage from './pages/auth/sign-up';
+import MyCampaignPage from './pages/my-campaign';
 
 export const mockInfluencer = {
   id: '1',
@@ -55,6 +56,7 @@ function Router() {
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
         </Route>
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/my-campaign" element={<MyCampaignPage />} />
       </Routes>
     </>
   );

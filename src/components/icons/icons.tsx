@@ -7,6 +7,7 @@ import {
   Calendar,
   Camera,
   CheckCircle,
+  DollarSign,
   Edit,
   ExternalLink,
   Eye,
@@ -61,4 +62,6 @@ export const Icons = {
   eye: Eye,
   heart: Heart,
   messageCircle : MessageCircle,
+  DollarSign: DollarSign,
 };
+
