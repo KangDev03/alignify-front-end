@@ -1,6 +1,6 @@
 import type { ApiReponseSuccess } from "../common.type";
 
-export interface ApplicationBrandRequest{
+export interface ApplicationsRequest{
     pageNumber: number | 0,
     pageSize: number | 10
 }
@@ -10,7 +10,7 @@ export interface Campaign  {
     brandId: string;
     content: string ;
     imageUrl: string;
-    categories: Category[];
+    categories?: Category[]|[];
     createdDate: Date;
     status: string;
     budget: number;
@@ -26,8 +26,8 @@ interface Category {
 }
 
 interface ApplicationsByCampaginResponse  {
-    campaignReponse: Campaign;
-    applications: Application[];
+        campaignResponse: Campaign;
+        applications: Application[];
 }
 
 export interface Application {
@@ -41,4 +41,8 @@ export interface Application {
 }
 export interface ApplicationBrandResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse>{
     data: ApplicationsByCampaginResponse
+}
+
+export interface ApplicationByInfluencerResponse extends ApiReponseSuccess<Application[]>{
+    data: Application[]
 }

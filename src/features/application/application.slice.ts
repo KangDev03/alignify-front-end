@@ -25,7 +25,7 @@ export const applicationSlice = createSlice({
     reducers: {
         setApplicationBrand: (state, action: PayloadAction<ApplicationBrandResponse>) => {
             state.applications = action.payload.data.applications;
-            state.campaignReponse = action.payload.data.campaignReponse;
+            state.campaignReponse = action.payload.data.campaignResponse;
         },
         setStatusApplicationBrand: (state, action:PayloadAction<ApplicationStatusState>)=>{
         const copyState = state.applications;

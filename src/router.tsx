@@ -12,7 +12,7 @@ import ContactPage from '@/pages/contact';
 import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
 
-import ApplicationsPage from './pages/applications';
+// import ApplicationsPage from './pages/applications';
 import RegisterPage from './pages/auth/sign-up';
 
 export const mockInfluencer = {

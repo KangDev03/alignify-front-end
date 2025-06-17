@@ -11,10 +11,15 @@ import {
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 
-import type { Application } from "@/features/application/application.type"
+import type { Application, Campaign } from "@/features/application/application.type"
 import { StatusBadge } from "@/features/application/components/status-badge"
 
-export default function ApplicationDetail({ application }: { application: Application }) {
+interface ApplicationDetailProps{
+  application: Application;
+  campaign: Campaign;
+}
+
+export default function ApplicationDetail({ application, campaign}:ApplicationDetailProps) {
 
   const handleGoToCampaign = (applicationId: string) => {
     console.log(`Chuyển đến chiến dịch từ đơn ứng tuyển ${applicationId}`)
@@ -30,13 +35,13 @@ export default function ApplicationDetail({ application }: { application: Applic
       <DialogHeader>
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={application.brandAvatar || "/placeholder.svg"} alt={application.brand} />
-            <AvatarFallback>{application.brand.charAt(0)}</AvatarFallback>
+            <AvatarImage src={campaign.imageUrl ||"/placeholder.svg"} alt={campaign.campaignId} />
+            <AvatarFallback>{'mock-avatar'.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <DialogTitle className="text-xl">{application.title}</DialogTitle>
+            <DialogTitle className="text-xl">{'mock-titile'}</DialogTitle>
             <DialogDescription className="flex items-center">
-              {application.brand} • 5/6/2025
+              {''} • 5/6/2025
             </DialogDescription>
           </div>
         </div>
@@ -45,19 +50,19 @@ export default function ApplicationDetail({ application }: { application: Applic
       <div className="space-y-3">
         <div>
           <h4 className="text-sm font-medium mb-1">Mô tả chiến dịch:</h4>
-          <p className="text-sm text-muted-foreground">{application.description}</p>
+          <p className="text-sm text-muted-foreground">{campaign.content}</p>
         </div>
 
-        {application.category && (
+        {campaign.categories && (
           <div className="flex flex-row gap-2">
             <h4 className="text-sm font-medium mb-2">Danh mục:</h4>
             <div className="flex flex-wrap gap-2">
-              {application.category.map((cat: string, index: number) => (
+              {campaign.categories.map((category, index) => (
                 <Badge
-                  key={index}
+                  key={category.categoryId ?? index}
                   variant="outline"
                 >
-                  {cat}
+                  {category.categoryName ?? category}
                 </Badge>
               ))}
             </div>
@@ -79,7 +84,7 @@ export default function ApplicationDetail({ application }: { application: Applic
               <Calendar className="h-4 w-4 text-blue-500 mr-2" />
               <div>
                 <p className="text-sm text-muted-foreground">Ngày ứng tuyển:</p>
-                <p className="text-sm ">20/1/2024</p>
+                <p className="text-sm ">{application.createdAt instanceof Date ? application.createdAt.toLocaleDateString() : application.createdAt}</p>
               </div>
             </div>
             <div className="flex items-center">
@@ -104,14 +109,14 @@ export default function ApplicationDetail({ application }: { application: Applic
         {/* </div> */}
 
         <Accordion type="multiple" className="w-full mb-4">
-          {application.deliverables && (
+          {Array.isArray(campaign.campaignRequirements) && campaign.campaignRequirements.length > 0 && (
             <AccordionItem value="deliverables">
               <AccordionTrigger>
                 <span className="text-sm font-medium">Nội dung yêu cầu</span>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="flex flex-col gap-1">
-                  {application.deliverables.map((item: string, index: number) => (
+                  {campaign.campaignRequirements.map((item: string, index: number) => (
                     <div key={index} className="flex items-center">
                       <span className="mr-2 text-muted-foreground">•</span>
                       <span className="text-sm text-muted-foreground">{item}</span>
@@ -122,23 +127,7 @@ export default function ApplicationDetail({ application }: { application: Applic
             </AccordionItem>
           )}
 
-          {application.requirements && (
-            <AccordionItem value="requirements">
-              <AccordionTrigger>
-                <span className="text-sm font-medium">Yêu cầu đối với influencer</span>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-1">
-                  {application.requirements.map((req: string, index: number) => (
-                    <div key={index} className="flex items-center">
-                      <span className="mr-2 text-muted-foreground">•</span>
-                      <span className="text-sm text-muted-foreground">{req}</span>
-                    </div>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          )}
+          
         </Accordion>
 
         <div className="flex justify-end gap-2 pt-4">
@@ -151,14 +140,14 @@ export default function ApplicationDetail({ application }: { application: Applic
           {application.status === "Đã chấp nhận" && (
             <Button
               variant="default"
-              onClick={() => handleGoToCampaign(application.id)}
+              onClick={() => handleGoToCampaign(application.applicationId)}
             >
               <Clock className="h-4 w-4" />
               Đến trang chiến dịch
             </Button>
           )}
           {application.status === "Bị từ chối" && (
-            <Button variant="default" onClick={() => handleReapply(application.id)}>
+            <Button variant="default" onClick={() => handleReapply(application.applicationId)}>
               <RefreshCw className="h-4 w-4" />
               Apply lại
             </Button>
