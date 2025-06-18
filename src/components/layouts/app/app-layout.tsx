@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from 'react-router';
 
-import AppFooter from '@/components/layouts/app/footer';
+// import AppFooter from '@/components/layouts/app/footer';
 import { AppHeader } from '@/components/layouts/app/header';
 import PopUpTrigger from '@/features/posting/components/popUp-trigger';
 
@@ -25,7 +25,7 @@ function AppLayout() {
         <Outlet />
         <PopUpTrigger />
       </main>
-      <AppFooter />
+      {/* <AppFooter /> */}
     </div>
   );
 }

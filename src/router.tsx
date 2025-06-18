@@ -11,6 +11,7 @@ import VerifyOtpPage from '@/pages/auth/verify-otp';
 import ContactPage from '@/pages/contact';
 import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
+import { Settings } from '@/pages/setting';
 
 // import ApplicationsPage from './pages/applications';
 import RegisterPage from './pages/auth/sign-up';
@@ -55,6 +56,14 @@ function Router() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/settings" element={
+            <Settings
+              userRole="influencer"
+              userName="John"
+              userAvatar="avatar.png"
+              onBack={() => { }}
+            />}
+          />
           <Route path='/applications' element={<ApplicationsPage />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
         </Route>
