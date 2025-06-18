@@ -74,9 +74,11 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
           {StatusBadge(campaign.status)}
         </div>
 
+        
+
         <Accordion type="multiple" className="w-full mb-4">
           {campaign.deliverables?.length > 0 && (
-            <AccordionItem value="deliverables">
+            <AccordionItem value="deliverables" className ="border-none">
               <AccordionTrigger>Nội dung yêu cầu</AccordionTrigger>
               <AccordionContent>
                 {campaign.deliverables.map((item: string, idx: number) => (
