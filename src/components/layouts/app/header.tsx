@@ -1,11 +1,14 @@
 'use client';
 
+import { useSelector } from 'react-redux';
+
 import { Button } from '@/components/ui/button';
 
 import { Icons } from '@/components/icons/icons';
 import { UserDropdown } from '@/components/layouts/app/user-dropdown';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import ChatSheet from '@/features/chatting/components/chat-sheet';
+import type { RootState } from '@/redux/store';
 
 type UserRole = 'influencer' | 'brand';
 type CurrentPage = 'home' | 'my-campaign' | 'applications';
@@ -20,15 +23,16 @@ interface HeaderProps {
 }
 
 export function AppHeader({
-  userRole,
   currentPage,
   onPageChange,
   onLogout,
   userName,
   userAvatar,
 }: HeaderProps) {
+
+  const userRole = useSelector((state: RootState) => state.auth.role);
   const navigationItems =
-    userRole === 'influencer'
+    userRole === 'INFLUENCER'
       ? [
           { id: 'home', label: 'Trang chủ', icon: Icons.home },
           { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
