@@ -113,7 +113,7 @@ export default function SignInForm() {
       }
     },
     onError: () => {
-      console.log('Google Login Failed');
+      toast.error('Đăng nhập với Google thất bại!');
     },
   });
   // const [isLoading, setIsLoading] = useState(false);
@@ -167,7 +167,7 @@ export default function SignInForm() {
                   <div className="flex items-center justify-between">
                     <FormLabel>Mật khẩu</FormLabel>
                     <Link
-                      to="/forgot-password"
+                      to="/auth/forgot-password"
                       className="text-sm text-primary hover:text-primary/80"
                     >
                       Quên mật khẩu?

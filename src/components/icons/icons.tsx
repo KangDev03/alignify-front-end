@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   ArrowRight,
   BarChart3,
   Bell,
@@ -7,7 +8,11 @@ import {
   Calendar,
   Camera,
   CheckCircle,
+  CircleCheckBig,
+  CircleX,
+  Clock4,
   DollarSign,
+  Dot,
   Edit,
   ExternalLink,
   Eye,
@@ -20,8 +25,11 @@ import {
   MapPin,
   Megaphone,
   MessageCircle,
+  PenTool,
+  Plus,
   Save,
   Search,
+  SendHorizontal,
   Settings,
   Star,
   Store,
@@ -29,7 +37,8 @@ import {
   User,
   Users,
   X,
-  Youtube} from 'lucide-react';
+  Youtube,
+} from 'lucide-react';
 
 export const Icons = {
   user: User,
@@ -61,7 +70,15 @@ export const Icons = {
   camera: Camera,
   eye: Eye,
   heart: Heart,
-  messageCircle : MessageCircle,
+  messageCircle: MessageCircle,
+  dot: Dot,
+  arrowleft: ArrowLeft,
+  send: SendHorizontal,
+  plus: Plus,
+  penTool: PenTool,
+  clock4: Clock4,
+  circleCheckBig: CircleCheckBig,
+  circleX: CircleX,
   DollarSign: DollarSign,
 };
 

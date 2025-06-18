@@ -27,7 +27,7 @@ export function ThemeToggle() {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       size="icon"
       onClick={toggleTheme}
       className="rounded-full border-2 border-primary/30 bg-background"

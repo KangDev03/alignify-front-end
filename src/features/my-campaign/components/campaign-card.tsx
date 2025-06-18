@@ -1,40 +1,86 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+// src/features/my-campaign/components/campaign-card.tsx
 
-import { Icons } from '@/components/icons/icons';
+import { useState } from "react"
+import { Calendar, DollarSignIcon, Eye } from "lucide-react"
 
-import type { Campaign } from '../my-campaign.type';
-import { getCampaignStatus } from '../utils/campaign-status';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
-export function CampaignCard({ campaign }: { campaign: Campaign }) {
-  const status = getCampaignStatus(campaign);
+import type { Campaign } from "@/features/my-campaign/campaign.type.ts"
 
-  const statusLabel = {
-    upcoming: 'Chưa bắt đầu',
-    ongoing: 'Đang diễn ra',
-    ended: 'Đã kết thúc',
-  }[status];
+import CampaignDetail from "./campaign-detail.tsx"
+import { StatusBadge } from "./status-badge.tsx"
+
+export default function CampaignCard({ campaign }: { campaign: Campaign }) {
+  const [openDialog, setOpenDialog] = useState<string | null>(null)
+
+  const description = new String(campaign.description)
+  const startDate = new Date(campaign.startDate)
+  const endDate = new Date(campaign.endDate)
+  const budget = new String(campaign.budget)
+  // const currentDate = new Date()
+  // const timeDifference = currentDate.getTime() - startDate.getTime()
+  // const daysSinceStarted = Math.floor(timeDifference / (1000 * 3600 * 24))
 
   return (
-    <div className="border rounded-xl p-4 shadow-sm">
-      <div className="flex items-center gap-3 mb-2">
-        <Avatar>
-          <AvatarImage src={campaign.imageUrl} alt={campaign.name} />
-          <AvatarFallback>{campaign.name.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <div>
-          <h4 className="font-semibold text-sm line-clamp-1">{campaign.name}</h4>
-          <p className="text-xs text-gray-500">{campaign.brand} • {campaign.createdAt}</p>
+    <Card
+      key={campaign.id}
+      className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+    >
+      <CardContent className="px-6 w-full">
+        <div className="flex items-center gap-3 mb-3">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={campaign.brandAvatar || "/placeholder.svg"} alt={campaign.brand} />
+            <AvatarFallback>{campaign.brand.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <div className="flex flex-row items-center justify-center">
+              <h3 className="flex-1 font-semibold text-lg ">{campaign.title}</h3>
+              {StatusBadge(campaign.status)}
+            </div>
+            <p className="text-sm text-muted-foreground">{campaign.brand} • {startDate.toLocaleDateString("vi-VN")}</p>
+          </div>
         </div>
-        <span className="ml-auto px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">{statusLabel}</span>
-      </div>
-      <p className="text-sm text-gray-600 mb-2">{campaign.description}</p>
-      <div className="flex justify-between text-sm text-gray-700 mb-2">
-        <div className="flex items-center gap-1"><Icons.DollarSign size={16} /> {campaign.budget.toLocaleString()} VNĐ</div>
-        <div className="flex items-center gap-1"><Icons.calendar size={16} /> {campaign.startDate} - {campaign.endDate}</div>
-      </div>
-      <button type="button" className="text-blue-600 text-sm inline-flex items-center gap-1 hover:underline" onClick={() => console.log('Chi tiết chiến dịch', campaign.id)}>
-        <Icons.eye size={16} /> Xem chi tiết
-      </button>
-    </div>
-  );
+
+        <div className="flex items-center w-fit mb-4">
+          <span>{`${description}`}</span>
+        </div>
+
+        <div className="flex justify-between mb-4 text-sm text-muted-foreground">
+          <div className="flex items-center w-fit mr-4">
+            <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
+            <span>{`${budget}`}</span>
+          </div>
+
+          <div className="flex items-center w-fit">
+            <Calendar className="w-4 h-4 mr-2 text-primary" />
+            <span>{`${startDate.toLocaleDateString("vi-VN")} - ${endDate.toLocaleDateString("vi-VN")}`}</span>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <Dialog
+            open={openDialog === campaign.id}
+            onOpenChange={(open) => setOpenDialog(open ? campaign.id : null)}
+          >
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center w-full">
+                <Eye className="h-4 w-4 mr-2" />
+                Xem chi tiết
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <CampaignDetail key={campaign.id} campaign={campaign} />
+            </DialogContent>
+          </Dialog>
+        </div>
+      </CardContent>
+    </Card>
+  )
 }

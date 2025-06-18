@@ -2,13 +2,16 @@ import { Route, Routes } from 'react-router';
 
 // import avatar from "@/assets/avatar-small.png";
 import AppLayout from '@/components/layouts/app/app-layout';
+import { ApplicationsPage } from '@/pages/applications';
 import ForgotPasswordPage from '@/pages/auth/forgot-password';
+import ResetPasswordPage from '@/pages/auth/reset-password';
 import { SelectRolePage } from '@/pages/auth/select-role';
 import LoginPage from '@/pages/auth/sign-in';
 import VerifyOtpPage from '@/pages/auth/verify-otp';
 import ContactPage from '@/pages/contact';
 import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
+import { Settings } from '@/pages/setting';
 
 import RegisterPage from './pages/auth/sign-up';
 import MyCampaignPage from './pages/my-campaign';
@@ -46,17 +49,26 @@ function Router() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
-          {/* <Route path="reset-password" element={<ResetPasswordPage />} /> */}
+          <Route path="reset-password" element={<ResetPasswordPage />} />
           <Route path="select-role" element={<SelectRolePage />} />
           <Route path="verify-otp" element={<VerifyOtpPage />} />
         </Route>
         <Route element={<AppLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/settings" element={
+            <Settings
+              userRole="influencer"
+              userName="John"
+              userAvatar="avatar.png"
+              onBack={() => { }}
+            />}
+          />
+          <Route path='/applications' element={<ApplicationsPage />} />        
+          <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
         </Route>
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/my-campaign" element={<MyCampaignPage />} />
       </Routes>
     </>
   );
