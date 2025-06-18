@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input';
 import { SheetClose } from '@/components/ui/sheet';
 
 import { Icons } from '@/components/icons/icons';
-import { selectAuthState } from '@/features/auth/auth.slice';
+import { useAppSelector } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 import { formatDateToTimestamp } from '@/utils/format';
 
 import MessageCard from './message-card';
@@ -32,8 +33,8 @@ interface ChatMessageState extends ChatMessage {
 export default function ChatRoom({ chatRoomId }: ChatRoomProps) {
   const [message, setMessage] = useState<string>('');
   const stompClientRef = useRef<Stomp.Client | null>(null);
-  const { id: userId, token } = useSelector(selectAuthState);
-  const { data, isLoading, isFetching } = useGetMessagesInRoomQuery({ roomId: chatRoomId });
+  const { id: userId, token } = useAppSelector((state: RootState) => state.auth);
+  const { data } = useGetMessagesInRoomQuery({ roomId: chatRoomId });
   const [messages, setMessages] = useState<ChatMessageState[]>([]);
   const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const dispatch = useDispatch();
