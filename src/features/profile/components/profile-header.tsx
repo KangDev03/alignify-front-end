@@ -7,8 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { Icons } from '@/components/icons/icons';
-import { useAppSelector } from '@/hooks/redux';
-import type { RootState } from '@/redux/store';
 
 import { useChangeAvatarMutation } from '../profile.service';
 import type { InfluencerData } from '../types/profile.types';
@@ -26,10 +24,10 @@ export function ProfileHeader({
   onEditToggle,
   onCancel,
 }: ProfileHeaderProps) {
-  const [changeAvatar, { isLoading, error }] = useChangeAvatarMutation();
+  const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>();
-  const { id } = useAppSelector((state: RootState) => state.auth);
+  const [isOpenPopover, setOpenPopover] = useState<boolean>(false);
   const handleOnClickAvatar = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     if (fileInputRef.current) {
@@ -37,20 +35,17 @@ export function ProfileHeader({
     }
   };
   const handleChangeAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOpenPopover(false);
     const file = event.target.files?.[0] || null;
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       return;
     }
-    const formData = new FormData();
-    formData.append('file', file);
+    const image = new FormData();
+    image.append('image', file);
     try {
-      const response = await changeAvatar({
-        id,
-        formData,
-      }).unwrap();
+      const response = await changeAvatar({ image }).unwrap();
 
-      console.log('Upload successful:', response);
       setAvatarUrl(response.data);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -63,8 +58,12 @@ export function ProfileHeader({
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
       <CardContent>
         <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
-          <Popover>
-            <PopoverTrigger>
+          <Popover open={isOpenPopover}>
+            <PopoverTrigger
+              onClick={() => {
+                setOpenPopover(!isOpenPopover);
+              }}
+            >
               <Avatar className="h-24 w-24">
                 <AvatarImage src={avatarUrl || '/placeholder.svg'} alt={influencer.name} />
                 <AvatarFallback className="text-2xl">{influencer.name.charAt(0)}</AvatarFallback>

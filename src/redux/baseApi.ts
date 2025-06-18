@@ -13,7 +13,7 @@ const baseQuery = fetchBaseQuery({
     // }
 
     if (token) {
-      headers.set('authorization', `Bearer ${token}`);
+      headers.set('Authorization', `Bearer ${token}`);
     }
 
     return headers;
@@ -23,5 +23,5 @@ const baseQuery = fetchBaseQuery({
 export const baseApi = createApi({
   baseQuery,
   endpoints: () => ({}),
-  tagTypes: ['Auth'],
+  tagTypes: ['Auth', 'ChatRoom', 'ChatSheet'],
 });
