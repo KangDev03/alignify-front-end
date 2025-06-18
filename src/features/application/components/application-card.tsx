@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { format } from "date-fns";
 import { Calendar, Eye } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -14,19 +15,19 @@ import type { Application, Campaign } from "@/features/application/application.t
 import ApplicationDetail from "@/features/application/components/application-detail"
 import { StatusBadge } from "@/features/application/components/status-badge"
 
+
 interface ApplicationCardProps {
   application: Application
-  campaign: Campaign
+  campaignInfo: Campaign
 }
-
-export default function ApplicationCard({ application, campaign }: ApplicationCardProps) {
+export default function ApplicationCard({ application, campaignInfo }: ApplicationCardProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null)
+const currentDate = new Date()
+const [year, month, day, hour, minute] = application.createdAt;
+const appliedDate = new Date(year, month - 1, day);
 
-  const appliedDate = new Date(application.createdAt)
-  const currentDate = new Date()
-  const timeDifference = currentDate.getTime() - appliedDate.getTime()
-  const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
-
+const timeDifference = currentDate.getTime() - appliedDate.getTime()
+const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
   return (
     <Card
       key={application.applicationId}
@@ -35,24 +36,25 @@ export default function ApplicationCard({ application, campaign }: ApplicationCa
       <CardContent className="px-6">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={campaign.imageUrl || "/placeholder.svg"} alt="brand avatar" />
-            <AvatarFallback>{campaign.brandId.charAt(0)}</AvatarFallback>
+            <AvatarImage src={campaignInfo.imageUrl || "/placeholder.svg"} alt="brand avatar" />
+            <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback> 
           </Avatar>
           <div className="flex-1">
             <div className="flex flex-row items-center justify-center">
-              <h3 className="flex-1 font-semibold text-lg">{campaign.content}</h3>
+              <h3 className="flex-1 font-semibold text-lg">{campaignInfo.content}</h3>
               {StatusBadge(application.status)}
             </div>
-            <p className="text-sm text-muted-foreground">{campaign.brandId} • {appliedDate.toLocaleDateString("vi-VN")}</p>
+            <p className="text-sm text-muted-foreground">{campaignInfo.brandId} • {appliedDate.toLocaleDateString("vi-VN")}</p>
           </div>
         </div>
 
         <div className="flex items-center text-sm text-muted-foreground mb-4">
           <Calendar className="w-4 h-4 mr-2 text-primary" />
           <span>
-            {application.status === "Chờ duyệt"
+            {application.status === "PENDING"
               ? `Ứng tuyển ${daysSinceApplied} ngày trước`
-              : `Ngày ứng tuyển: ${appliedDate.toLocaleDateString("vi-VN")}`}
+              : `Ngày ứng tuyển: ${appliedDate.toLocaleDateString("vi-VN")}`
+            }
           </span>
         </div>
 
@@ -68,7 +70,7 @@ export default function ApplicationCard({ application, campaign }: ApplicationCa
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
-              <ApplicationDetail application={application} campaign={campaign} />
+              <ApplicationDetail application={application} campaignInfo={campaignInfo} />
             </DialogContent>
           </Dialog>
         </div>

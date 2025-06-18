@@ -37,12 +37,12 @@ export interface Application {
     brandId: string;
     limited: number;
     status: string;
-    createdAt: Date;
+    createdAt: number[];
 }
-export interface ApplicationBrandResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse>{
-    data: ApplicationsByCampaginResponse
+export interface ApplicationBrandResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]>{
+    data: ApplicationsByCampaginResponse[]
 }
 
-export interface ApplicationByInfluencerResponse extends ApiReponseSuccess<Application[]>{
-    data: Application[]
+export interface ApplicationByInfluencerResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]>{
+    data: ApplicationsByCampaginResponse[]
 }
