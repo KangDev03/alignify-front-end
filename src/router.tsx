@@ -44,6 +44,7 @@ function Router() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<LoginPage />} />
         <Route path="/auth">
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
@@ -55,15 +56,18 @@ function Router() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/settings" element={
-            <Settings
-              userRole="influencer"
-              userName="John"
-              userAvatar="avatar.png"
-              onBack={() => { }}
-            />}
+          <Route
+            path="/settings"
+            element={
+              <Settings
+                userRole="influencer"
+                userName="John"
+                userAvatar="avatar.png"
+                onBack={() => {}}
+              />
+            }
           />
-          <Route path='/applications' element={<ApplicationsPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
         </Route>
         <Route path="/contact" element={<ContactPage />} />
