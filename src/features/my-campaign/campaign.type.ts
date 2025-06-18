@@ -6,7 +6,7 @@ export interface Campaign {
   brandAvatar: string;
   budget: string;
   goals: string[];
-  status: "draft" | "active" | "ended";
+  status: "PENDING" | "IN PROGRESS" | "COMPLETED";
   createdDate: string; // ISO date string
   startDate: string; // ISO date string
   endDate: string;   // ISO date string

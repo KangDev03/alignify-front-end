@@ -61,34 +61,4 @@ function TabsContent({
   )
 }
 
-interface TabFilterOption {
-  value: string
-  label: string
-}
-
-interface TabFilterProps {
-  options: TabFilterOption[]
-  selected: string
-  onChange: (value: string) => void
-  className?: string
-}
-
-function TabFilter({ options, selected, onChange, className }: TabFilterProps) {
-  return (
-    <Tabs
-      value={selected}
-      onValueChange={onChange}
-      className={className}
-    >
-      <TabsList>
-        {options.map((option) => (
-          <TabsTrigger key={option.value} value={option.value}>
-            {option.label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-    </Tabs>
-  )
-}
-
-export { TabFilter,Tabs, TabsContent,TabsList, TabsTrigger }
+export { Tabs, TabsContent,TabsList, TabsTrigger }

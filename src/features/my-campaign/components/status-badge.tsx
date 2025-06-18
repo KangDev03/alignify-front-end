@@ -4,21 +4,21 @@ import { Icons } from "@/components/icons/icons";
 
 export const StatusBadge = (status: string) => {
   switch (status) {
-    case "draft":
+    case "PENDING":
       return (
         <Badge variant="pending">
           <Icons.clock4 size={12} className="mt-0.5" />
           <p className="leading-6">Chưa bắt đầu</p>
         </Badge>
       );
-    case "active":
+    case "IN PROGRESS":
       return (
         <Badge variant="accepted">
           <Icons.circleCheckBig size={12} className="mt-0.5" />
           <p className="leading-6">Đang diễn ra</p>
         </Badge>
       );
-    case "ended":
+    case "COMPLETED":
       return (
         <Badge variant="rejected">
           <Icons.circleX size={12} className="mt-0.5" />

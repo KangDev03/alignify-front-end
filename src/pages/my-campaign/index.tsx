@@ -10,9 +10,9 @@ import type { Campaign } from "@/features/my-campaign/campaign.type"
 import CampaignCard from "@/features/my-campaign/components/campaign-card"
 
 const tabs = [
-  { value: "draft", label: "Bản nháp" },
-  { value: "active", label: "Đang chạy" },
-  { value: "ended", label: "Đã kết thúc" },
+  { value: "PENDING", label: "Chưa bắt đầu" },
+  { value: "IN PROGRESS", label: "Đang diễn ra" },
+  { value: "COMPLETED", label: "Đã kết thúc" },
 ]
 
 // 🔸 Dữ liệu mẫu tạm thời
@@ -25,7 +25,7 @@ const mockCampaigns: Campaign[] = [
     brandAvatar: "/brands/coca.png",
     budget: "200,000,000 VND",
     goals: ["Tăng nhận diện thương hiệu", "Tăng tương tác trên mạng xã hội"],
-    status: "active",
+    status: "IN PROGRESS",
     createdDate: "2024-12-01T00:00:00Z",
     startDate: "2025-01-01T00:00:00Z",
     endDate: "2025-02-01T00:00:00Z",
@@ -44,7 +44,7 @@ const mockCampaigns: Campaign[] = [
     brandAvatar: "/brands/bitis.png",
     budget: "120,000,000 VND",
     goals: ["Tăng lượt truy cập website", "Giới thiệu sản phẩm mới"],
-    status: "draft",
+    status: "PENDING",
     createdDate: "2025-06-10T00:00:00Z",
     startDate: "2025-07-01T00:00:00Z",
     endDate: "2025-08-15T00:00:00Z",
@@ -63,7 +63,7 @@ const mockCampaigns: Campaign[] = [
     brandAvatar: "/brands/vinmart.png",
     budget: "150,000,000 VND",
     goals: ["Tăng doanh số bán hàng dịp Noel", "Lan tỏa hình ảnh thương hiệu"],
-    status: "ended",
+    status: "COMPLETED",
     createdDate: "2024-11-15T00:00:00Z",
     startDate: "2024-12-01T00:00:00Z",
     endDate: "2024-12-31T00:00:00Z",
@@ -82,7 +82,7 @@ const mockCampaigns: Campaign[] = [
     brandAvatar: "/brands/suncare.png",
     budget: "100,000,000 VND",
     goals: ["Tăng tương tác Instagram", "Lan tỏa thương hiệu đến Gen Z"],
-    status: "active",
+    status: "IN PROGRESS",
     createdDate: "2025-03-15T00:00:00Z",
     startDate: "2025-05-01T00:00:00Z",
     endDate: "2025-06-30T00:00:00Z",
@@ -101,7 +101,7 @@ const mockCampaigns: Campaign[] = [
     brandAvatar: "/brands/acecook.png",
     budget: "180,000,000 VND",
     goals: ["Tăng độ phủ sản phẩm", "Thúc đẩy dùng thử tại khu vực miền Trung"],
-    status: "draft",
+    status: "PENDING",
     createdDate: "2025-06-01T00:00:00Z",
     startDate: "2025-07-10T00:00:00Z",
     endDate: "2025-08-30T00:00:00Z",
@@ -120,7 +120,7 @@ const mockCampaigns: Campaign[] = [
     brandAvatar: "/brands/samsung.png",
     budget: "250,000,000 VND",
     goals: ["Tăng nhận diện sản phẩm mới", "Khuyến khích tạo nội dung sáng tạo"],
-    status: "active",
+    status: "IN PROGRESS",
     createdDate: "2025-04-01T00:00:00Z",
     startDate: "2025-05-15T00:00:00Z",
     endDate: "2025-07-15T00:00:00Z",
@@ -139,7 +139,7 @@ const mockCampaigns: Campaign[] = [
     brandAvatar: "/brands/phuclong.png",
     budget: "130,000,000 VND",
     goals: ["Tăng lượng khách hàng mới", "Giới thiệu sản phẩm truyền thống"],
-    status: "ended",
+    status: "COMPLETED",
     createdDate: "2025-01-10T00:00:00Z",
     startDate: "2025-02-01T00:00:00Z",
     endDate: "2025-03-01T00:00:00Z",
@@ -158,7 +158,7 @@ const mockCampaigns: Campaign[] = [
     brandAvatar: "/brands/vnairlines.png",
     budget: "300,000,000 VND",
     goals: ["Thúc đẩy đặt vé trước", "Tăng nhận diện thương hiệu", "Chia sẻ trải nghiệm"],
-    status: "draft",
+    status: "PENDING",
     createdDate: "2025-06-01T00:00:00Z",
     startDate: "2025-06-20T00:00:00Z",
     endDate: "2025-08-20T00:00:00Z",
@@ -172,48 +172,34 @@ const mockCampaigns: Campaign[] = [
 ]
 
 export default function MyCampaignPage() {
-  const [activeTab, setActiveTab] = useState("draft")
-  const [searchTerm, setSearchTerm] = useState("")
+  const [activeTab, setActiveTab] = useState("PENDING")
 
   const filteredCampaigns = mockCampaigns.filter(
     (campaign) =>
-      campaign.status === activeTab &&
-      campaign.title.toLowerCase().includes(searchTerm.toLowerCase())
+      campaign.status === activeTab 
   )
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Chiến dịch của tôi</h1>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full gap-6">
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            {/* Tab bar */}
-            <TabsList className="flex-1 flex justify-between items-center rounded-md px-2 py-1 gap-[10px]"
-              style={{
-                width: "715px",
-                height: "40px",
-              }}
-            >
-              {tabs.map((tab) => (
-                <TabsTrigger key={tab.value} value={tab.value}>
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {/* Search bar */}
-            <div className="relative flex items-center">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-              />
-              <Input
-                placeholder="Tìm kiếm chiến dịch..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full h-full"
-              />
+          <h1 className="text-3xl font-bold">Chiến dịch của tôi</h1>
+          <Tabs defaultValue="pending" value={activeTab} onValueChange={setActiveTab} className="w-full gap-6">
+            <div className="flex flex-row gap-6">
+              <TabsList className="grid w-full h-fit grid-cols-3 p-1">
+                {tabs.map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="h-full"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <div className="relative w-2/5">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Tìm kiếm..." className="pl-8" />
+              </div>
             </div>
-          </div>
 
 
         <TabsContent value={activeTab}>
