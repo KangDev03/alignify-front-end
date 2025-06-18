@@ -5,11 +5,10 @@ import type { ChangeAvatarRequest, ChangeAvatarResponses } from './profile.type'
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     changeAvatar: builder.mutation<ChangeAvatarResponses, ChangeAvatarRequest>({
-      query: ({ id, formData }) => ({
-        url: `/profile/avatar/${id}`,
+      query: ({ image }) => ({
+        url: `/profiles/avatar`,
         method: 'POST',
-        body: formData,
-        headers: {},
+        body: image,
       }),
       invalidatesTags: ['Auth'],
     }),
