@@ -81,16 +81,15 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
         </div>
 
         {campaign.status === 'IN PROGRESS' && (
-          <div className="w-full mb-4">
-            {/* Tiêu đề + phần trăm */}
+          <div className="w-full mb-4">            
+            {/* Tiêu đề*/}
+            <p className ="text-sm font-medium mb-0.5">Tiến độ</p>
+
+            {/* Mô tả ngắn + Phần trăm */}
             <div className="flex justify-between text-sm font-medium mb-1">
-              <span>Tiến độ</span>
+              <p className="text-sm text-muted-foreground mb-2">Hoàn thành</p>
               <span>{campaign.progress}%</span>
             </div>
-
-            {/* Mô tả ngắn bên dưới */}
-            <p className="text-sm text-muted-foreground mb-2">Hoàn thành</p>
-
             {/* Thanh progress */}
             <Progress
               value={campaign.progress}
