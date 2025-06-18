@@ -115,7 +115,7 @@ const mockCampaigns: Campaign[] = [
   {
     id: "cmp006",
     title: "Chiến dịch Thử Thách Sáng Tạo Cùng Galaxy Z Flip",
-    description: "Mời các influencer thử nghiệm và chia sẻ trải nghiệm sáng tạo với Galaxy Z Flip5.",
+    description: "Mời các influencer thử nghiệm và chia sẻ trải nghiệm sáng tạo với Galaxy Z Flip5. Mời các influencer thử nghiệm và chia sẻ trải nghiệm sáng tạo với Galaxy Z Flip5. Mời các influencer thử nghiệm và chia sẻ trải nghiệm sáng tạo với Galaxy Z Flip5.",
     brand: "Samsung",
     brandAvatar: "/brands/samsung.png",
     budget: "250,000,000 VND",

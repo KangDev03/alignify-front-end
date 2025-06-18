@@ -48,8 +48,8 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           </div>
         </div>
 
-        <div className="flex items-center w-fit mb-4 line-clamp-2">
-          <span>{`${description}`}</span>
+        <div className="flex items-start w-fit mb-4 h-12">
+          <p className="line-clamp-2">{`${description}`}</p>
         </div>
 
         <div className="flex justify-between mb-4 text-sm text-muted-foreground">
