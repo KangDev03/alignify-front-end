@@ -13,7 +13,6 @@ import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
 import { Settings } from '@/pages/setting';
 
-// import ApplicationsPage from './pages/applications';
 import RegisterPage from './pages/auth/sign-up';
 import MyCampaignPage from './pages/my-campaign';
 
@@ -65,11 +64,11 @@ function Router() {
                 userRole="influencer"
                 userName="John"
                 userAvatar="avatar.png"
-                onBack={() => {}}
+                onBack={() => { }}
               />
             }
           />
-          <Route path='/applications' element={<ApplicationsPage />} />        
+          <Route path='/applications' element={<ApplicationsPage />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
         </Route>

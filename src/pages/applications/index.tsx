@@ -33,19 +33,17 @@ export function ApplicationsPage() {
     role === 'INFLUENCER' ? { pageNumber: 0, pageSize: 10 } : skipToken,
   );
 
-  const brandQuery = useGetApplicationsByBrandQuery(
-    role === 'BRAND' ? { pageNumber: 0, pageSize: 10 } : skipToken,
-  );
+  // const brandQuery = useGetApplicationsByBrandQuery(
+  //   role === 'BRAND' ? { pageNumber: 0, pageSize: 10 } : skipToken,
+  // );
 
   console.log('ROLE:', role, 'ID:', id);
   console.log('influencerQuery:', influencerQuery);
-  console.log('brandQuery:', brandQuery);
+  // console.log('brandQuery:', brandQuery);
   const rawData =
     role === 'INFLUENCER'
       ? influencerQuery.currentData
-      : role === 'BRAND'
-        ? brandQuery.currentData
-        : undefined;
+      : undefined;
   let applications: (Application & { campaignInfo?: Campaign })[] = [];
 
 if (rawData?.data && Array.isArray(rawData.data)) {
