@@ -13,14 +13,14 @@ export const StatusBadge = (status: string) => {
       );
     case "IN PROGRESS":
       return (
-        <Badge variant="accepted">
+        <Badge variant="default">
           <Icons.circleCheckBig size={12} className="mt-0.5" />
           <p className="leading-6">Đang diễn ra</p>
         </Badge>
       );
     case "COMPLETED":
       return (
-        <Badge variant="rejected">
+        <Badge variant="accepted">
           <Icons.circleX size={12} className="mt-0.5" />
           <p className="leading-6">Đã kết thúc</p>
         </Badge>
