@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { format } from "date-fns";
 import { Calendar, Eye } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -22,12 +21,12 @@ interface ApplicationCardProps {
 }
 export default function ApplicationCard({ application, campaignInfo }: ApplicationCardProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null)
-const currentDate = new Date()
-const [year, month, day, hour, minute] = application.createdAt;
-const appliedDate = new Date(year, month - 1, day);
+  const currentDate = new Date()
+  const [year, month, day, hour, minute] = application.createdAt;
+  const appliedDate = new Date(year, month - 1, day);
 
-const timeDifference = currentDate.getTime() - appliedDate.getTime()
-const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
+  const timeDifference = currentDate.getTime() - appliedDate.getTime()
+  const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
   return (
     <Card
       key={application.applicationId}
@@ -37,7 +36,7 @@ const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={campaignInfo.imageUrl || "/placeholder.svg"} alt="brand avatar" />
-            <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback> 
+            <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex flex-row items-center justify-center">

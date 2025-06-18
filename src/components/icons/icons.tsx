@@ -11,6 +11,7 @@ import {
   CircleCheckBig,
   CircleX,
   Clock4,
+  DollarSign,
   Dot,
   Edit,
   ExternalLink,
@@ -78,4 +79,5 @@ export const Icons = {
   clock4: Clock4,
   circleCheckBig: CircleCheckBig,
   circleX: CircleX,
+  DollarSign: DollarSign,
 };

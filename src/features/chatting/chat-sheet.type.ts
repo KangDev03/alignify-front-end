@@ -1,0 +1,51 @@
+import type { ApiReponseSuccess } from '../common.type';
+
+export interface IChatRoom {
+  chatRoomId: string;
+  roomName: string;
+  roomAvatarUrl: string;
+  name: string;
+  lastMessage: string;
+  readBy: string[];
+  sendAt: number[];
+}
+
+export interface ChatRoomRequest {
+  pageSize?: number;
+  pageNumber?: number;
+}
+
+export interface ChatRoomResponse extends ApiReponseSuccess<IChatRoom[]> {
+  data: IChatRoom[];
+}
+
+export interface UserDTO {
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+}
+
+export interface Message {
+  messageId?: string | null;
+  userId: string;
+  chatRoomId: string;
+  message: string;
+  sendAt?: number[];
+  tempId?: string | null;
+  readBy: string[];
+}
+
+export interface ChatMessage {
+  message: Message;
+  userDTO: UserDTO;
+}
+
+export interface MessagesRequest {
+  roomId: string;
+  pageSize?: number;
+  pageNumber?: number;
+}
+
+export interface MessagesResponse extends ApiReponseSuccess<ChatMessage[]> {
+  data: ChatMessage[];
+}
