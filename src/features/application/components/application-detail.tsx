@@ -1,4 +1,4 @@
-import { Calendar, Clock, RefreshCw, XCircle } from 'lucide-react';
+import {  Clock, RefreshCw, XCircle } from 'lucide-react';
 
 import {
   Accordion,
@@ -76,7 +76,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
           {StatusBadge(application.status)}
         </div>
 
-        {/* <div className="grid grid-cols-2 gap-4"> */}
+        {/* <div className="grid grid-cols-2 gap-4"> 
         <div className="w-full">
           <h4 className="text-sm font-medium mb-1">Thông tin ứng tuyển</h4>
           <div className="space-y-2  grid grid-cols-2">

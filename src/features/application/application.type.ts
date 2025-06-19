@@ -11,7 +11,7 @@ export interface Campaign  {
     content: string ;
     imageUrl: string;
     categories?: Category[]|[];
-    createdDate: Date;
+    createdDate: string;
     status: string;
     budget: number;
     campaignRequirements: {[key:string]:number};

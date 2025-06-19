@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { format } from "date-fns";
 import { Calendar, Eye } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -23,7 +22,7 @@ interface ApplicationCardProps {
 export default function ApplicationCard({ application, campaignInfo }: ApplicationCardProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null)
 const currentDate = new Date()
-const [year, month, day, hour, minute] = application.createdAt;
+const [year, month, day] = application.createdAt;
 const appliedDate = new Date(year, month - 1, day);
 
 const timeDifference = currentDate.getTime() - appliedDate.getTime()

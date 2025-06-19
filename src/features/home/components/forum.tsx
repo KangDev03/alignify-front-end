@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card"
 
 import { Icons } from "@/components/icons/icons"
 
+import { useGetAllContentPostingQuery } from "../forum-api/forum.service"
+
 const mockForumPosts = [
   {
     id: "1",
@@ -30,41 +32,49 @@ const mockForumPosts = [
     category: "Công nghệ",
   },
 ]
-
 export default function Forum() {
+    const { data: rawData } = useGetAllContentPostingQuery({ pageNumber: 0, pageSize: 10 })
+  const contentPosting = rawData?.data
+  console.log(contentPosting)
   return (
     <div className="space-y-4">
-      {mockForumPosts.map((post) => (
-        <Card key={post.id} className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
+      {contentPosting?.map((post) => (
+        <Card key={post.contentId} className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
           <CardContent>
             <div className="flex items-start space-x-3">
               <Avatar className="h-10 w-10">
-                <AvatarImage src={post.avatar || "/placeholder.svg"} alt={post.author} />
-                <AvatarFallback>{post.author.charAt(0)}</AvatarFallback>
+                <AvatarImage src={post.imageUrl || "/placeholder.svg"} alt={post.userName} />
+                <AvatarFallback>{post.userName.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center space-x-2">
-                  <h3 className="font-semibold">{post.author}</h3>
+                  <h3 className="font-semibold">{post.userName}</h3>
                   <span className="text-sm text-muted-foreground">•</span>
-                  <span className="text-sm text-muted-foreground">{post.timeAgo}</span>
+                  <span className="text-sm text-muted-foreground">{post.createdDate}</span>
                 </div>
-                <h4 className="font-medium mt-1">{post.title}</h4>
+                <h4 className="font-medium mt-1">{post.content}</h4>
                 <p className="text-sm text-muted-foreground mt-2">{post.content}</p>
                 <div className="flex items-center space-x-6 mt-3">
                   <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                     <Icons.heart className="h-4 w-4" />
-                    <span>{post.likes}</span>
+                    <span>{post.likeCount}</span>
                   </div>
                   <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                     <Icons.messageCircle className="h-4 w-4" />
-                    <span>{post.comments}</span>
+                    <span>{post.commentCount}</span>
                   </div>
                   <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                     <Icons.eye className="h-4 w-4" />
-                    <span>{post.views}</span>
+                    <span>0</span>
                   </div>
                   <Badge variant="outline" className="text-xs">
-                    {post.category}
+                    {Array.isArray(post.categories)
+                      ? post.categories.map((cat) =>
+                          typeof cat === "string"
+                            ? cat
+                            : cat.categoryName || ""
+                        ).join(", ")
+                      : ""}
                   </Badge>
                 </div>
               </div>
