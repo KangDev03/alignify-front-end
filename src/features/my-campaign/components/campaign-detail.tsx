@@ -1,33 +1,37 @@
-import { Calendar, DollarSignIcon } from "lucide-react"
+import { Calendar, DollarSignIcon } from 'lucide-react';
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Separator } from "@/components/ui/separator"
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
 
-import { StatusBadge } from "./status-badge.tsx"
-import type { Campaign } from "../campaign.type.ts"
+import { StatusBadge } from './status-badge.tsx';
+import type { Campaign } from '../campaign.type.ts';
 
 export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
-  const startDate = new Date(campaign.startDate)
-  const endDate = new Date(campaign.endDate)
+  const startDate = new Date(campaign.startDate);
+  const endDate = new Date(campaign.endDate);
 
   return (
     <>
       <DialogHeader>
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={campaign.brandAvatar || "/placeholder.svg"} alt={campaign.brand} />
+            <AvatarImage src={campaign.brandAvatar || '/placeholder.svg'} alt={campaign.brand} />
             <AvatarFallback>{campaign.brand.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
             <DialogTitle className="text-xl">{campaign.title}</DialogTitle>
-            <DialogDescription>{campaign.brand} • {new Date(campaign.createdDate).toLocaleDateString("vi-VN")}</DialogDescription>
+            <DialogDescription>
+              {campaign.brand} • {new Date(campaign.createdDate).toLocaleDateString('vi-VN')}
+            </DialogDescription>
           </div>
         </div>
       </DialogHeader>
@@ -42,7 +46,9 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
           <div className="flex flex-wrap gap-2">
             <h4 className="text-sm font-medium">Danh mục:</h4>
             {campaign.category.map((cat: string, i: number) => (
-              <Badge key={i} variant="outline">{cat}</Badge>
+              <Badge key={i} variant="outline">
+                {cat}
+              </Badge>
             ))}
           </div>
         )}
@@ -62,7 +68,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <h4 className="text-sm font-medium mb-1">Thời gian</h4>
             <div className="flex items-center w-fit">
               <Calendar className="w-4 h-4 mr-2 text-primary" />
-              <p>{`${startDate.toLocaleDateString("vi-VN")} - ${endDate.toLocaleDateString("vi-VN")}`}</p>
+              <p>{`${startDate.toLocaleDateString('vi-VN')} - ${endDate.toLocaleDateString('vi-VN')}`}</p>
             </div>
           </div>
         </div>
@@ -74,11 +80,27 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
           {StatusBadge(campaign.status)}
         </div>
 
-        
+        {campaign.status === 'IN PROGRESS' && (
+          <div className="w-full mb-4">            
+            {/* Tiêu đề*/}
+            <p className ="text-sm font-medium mb-0.5">Tiến độ</p>
+
+            {/* Mô tả ngắn + Phần trăm */}
+            <div className="flex justify-between text-sm font-medium mb-1">
+              <p className="text-sm text-muted-foreground mb-2">Hoàn thành</p>
+              <span>{campaign.progress}%</span>
+            </div>
+            {/* Thanh progress */}
+            <Progress
+              value={campaign.progress}
+              className="h-2 bg-gray-200" // đây là màu nền (phần chưa hoàn thành)
+            />
+          </div>
+        )}
 
         <Accordion type="multiple" className="w-full mb-4">
           {campaign.deliverables?.length > 0 && (
-            <AccordionItem value="deliverables" className ="border-none">
+            <AccordionItem value="deliverables" className="border-none">
               <AccordionTrigger>Nội dung yêu cầu</AccordionTrigger>
               <AccordionContent>
                 {campaign.deliverables.map((item: string, idx: number) => (
@@ -94,7 +116,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <AccordionItem value="goals">
               <AccordionTrigger>Mục tiêu chiến dịch</AccordionTrigger>
               <AccordionContent>
-                {campaign.goals.map((goal: string, idx:number) => (
+                {campaign.goals.map((goal: string, idx: number) => (
                   <div key={idx} className="flex items-center text-sm text-muted-foreground">
                     <span className="mr-2">•</span>
                     {goal}
@@ -105,6 +127,14 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
           )}
         </Accordion>
       </div>
+
+      {campaign.status === 'IN PROGRESS' && (
+        <div className="w-full flex justify-end mb-4">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded">
+            Cập nhật tiến độ
+          </button>
+        </div>
+      )}
     </>
-  )
+  );
 }
