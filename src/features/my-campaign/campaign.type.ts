@@ -7,6 +7,7 @@ export interface Campaign {
   budget: string;
   goals: string[];
   status: "PENDING" | "IN PROGRESS" | "COMPLETED";
+  progress: number;
   createdDate: string; // ISO date string
   startDate: string; // ISO date string
   endDate: string;   // ISO date string

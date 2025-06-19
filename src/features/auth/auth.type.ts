@@ -1,4 +1,6 @@
-import type { ApiReponseError, ApiReponseSuccess } from '../common.type';
+import type { UserDTO } from '@/features/chatting/chat-sheet.type';
+
+import type { ApiReponseError, ApiReponseSuccess, RoleName } from '../common/common.type';
 
 export interface LoginRequest {
   email: string;
@@ -10,23 +12,24 @@ export interface GoogleLoginRequest {
 }
 
 export interface LoginReponse {
-  id: string;
   token: string;
-  role: 'INFLUENCER' | 'BRAND' | 'ADMIN';
+  role: RoleName;
+  user: UserDTO;
 }
 
 export interface LoginResponse extends ApiReponseSuccess<LoginReponse> {
   data: {
+    user: any;
     id: string;
     token: string;
-    role: 'INFLUENCER' | 'BRAND' | 'ADMIN';
+    role: RoleName;
   };
 }
 
 export type ApiError = ApiReponseError;
 export interface Role {
   roleId: string;
-  roleName: 'INFLUENCER' | 'BRAND' | 'ADMIN';
+  roleName: RoleName;
 }
 
 export type RolesResponse = ApiReponseSuccess<Role[]>;
