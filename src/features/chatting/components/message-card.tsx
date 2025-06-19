@@ -34,7 +34,7 @@ const MessageCard = forwardRef<HTMLDivElement, MessageCardProps>(
           <HoverCardTrigger>
             <Avatar className="h-8 w-8">
               <AvatarImage
-                // src={userdto.avatarUrl || ''}
+                src={userdto.avatarUrl!}
                 alt={userdto.name}
                 className="rounded-full object-cover h-8 w-8"
               />

@@ -69,8 +69,9 @@ function Router() {
               />
             }
           />
-          <Route path='/applications' element={<ApplicationsPage />} />        
-          <Route path='/applicants' element={<Applicants />} />        
+          <Route path="/applications" element={<ApplicationsPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
+          <Route path="/applicants" element={<Applicants />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
         </Route>
