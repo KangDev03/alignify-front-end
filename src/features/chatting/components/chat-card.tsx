@@ -34,7 +34,7 @@ export default function ChatCard({
             {formatLastTimeSentMessage(parseTimestampToDate(sendAt))} trước
           </span>
         </div>
-        <p className="text-sm text-muted-foreground truncate mt-1 w-full line-clamp-1">
+        <p className="text-sm text-muted-foreground truncate mt-1 w-full line-clamp-1 text-left">
           {lastMessage}
         </p>
       </div>
