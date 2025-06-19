@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,16 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { Icons } from "@/components/icons/icons"
+import { useAppSelector } from "@/hooks/redux"
+import type { RootState } from "@/redux/store"
 
 interface UserDropdownProps {
-  userName: string
-  userAvatar: string
-  userRole: 'INFLUENCER' | 'BRAND' | 'ADMIN'
   onPageChange: (page: "profile") => void
   onLogout: () => void
 }
 
-export function UserDropdown({ userName, userAvatar, userRole, onPageChange, onLogout }: UserDropdownProps) {
+export function UserDropdown({onPageChange, onLogout }: UserDropdownProps) {
   const navigate = useNavigate()
 
   const handleToProfile = () => {
@@ -32,23 +30,32 @@ export function UserDropdown({ userName, userAvatar, userRole, onPageChange, onL
     navigate("/settings")
   }
 
+  const {name, avatarUrl, role} = useAppSelector((state: RootState) => state.auth)
+
+  const displayName = name || "User"
+  const displayAvatar = avatarUrl || "/placeholder.svg"
+  const displayRole =
+    role === "INFLUENCER"
+      ? "Content Creator"
+      : role === "BRAND"
+      ? "Brand"
+      : role === "ADMIN"
+      ? "Admin"
+      : "User"
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+      <DropdownMenuTrigger className="cursor-pointer">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={userAvatar || "/placeholder.svg"} alt={userName} />
-            <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+            <AvatarImage src={displayAvatar} alt={displayName} />
+            <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
           </Avatar>
-        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 left-2" align="center" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{userName}</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {userRole === "influencer" ? "Content Creator" : "Brand Manager"}
-            </p>
+            <p className="text-sm font-medium leading-none">{displayName}</p>
+            <p className="text-xs leading-none text-muted-foreground">{displayRole}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

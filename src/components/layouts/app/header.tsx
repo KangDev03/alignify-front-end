@@ -26,8 +26,6 @@ export function AppHeader({
   currentPage,
   onPageChange,
   onLogout,
-  userName,
-  userAvatar,
 }: HeaderProps) {
 
   const userRole = useSelector((state: RootState) => state.auth.role);
@@ -82,9 +80,6 @@ export function AppHeader({
             </Button>
             <ThemeToggle />
             <UserDropdown
-              userName={userName}
-              userAvatar={userAvatar}
-              userRole={userRole}
               onPageChange={onPageChange}
               onLogout={onLogout}
             />
