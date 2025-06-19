@@ -1,3 +1,5 @@
+import type { UserDTO } from '@/features/chatting/chat-sheet.type';
+
 import type { ApiReponseError, ApiReponseSuccess } from '../common.type';
 
 export interface LoginRequest {
@@ -10,13 +12,14 @@ export interface GoogleLoginRequest {
 }
 
 export interface LoginReponse {
-  id: string;
   token: string;
   role: 'INFLUENCER' | 'BRAND' | 'ADMIN';
+  user: UserDTO;
 }
 
 export interface LoginResponse extends ApiReponseSuccess<LoginReponse> {
   data: {
+    user: any;
     id: string;
     token: string;
     role: 'INFLUENCER' | 'BRAND' | 'ADMIN';
