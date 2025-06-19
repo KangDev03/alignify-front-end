@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
-import type { Application, ApplicationBrandResponse, Campaign } from './application.type';
+import type { Application, ApplicationResponse, Campaign } from './application.type';
 
 interface ApplicationCampaignGroup {
   campaignResponse: Campaign;
@@ -25,10 +25,10 @@ export const applicationSlice = createSlice({
     name: 'application',
     initialState,
     reducers: {
-  setApplicationBrand: (state, action: PayloadAction<ApplicationBrandResponse>) => {
+  setApplication: (state, action: PayloadAction<ApplicationResponse>) => {
     state.campaignGroups = action.payload.data;
   },
-  setStatusApplicationBrand: (state, action: PayloadAction<ApplicationStatusState>) => {
+  setStatusApplication: (state, action: PayloadAction<ApplicationStatusState>) => {
     const groups = state.campaignGroups;
     if (!groups) return;
 
@@ -45,5 +45,5 @@ export const applicationSlice = createSlice({
   }
 }
 }) 
-export const { setApplicationBrand, setStatusApplicationBrand} = applicationSlice.actions;
+export const { setApplication, setStatusApplication} = applicationSlice.actions;
 export default applicationSlice.reducer;

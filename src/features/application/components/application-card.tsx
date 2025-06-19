@@ -24,7 +24,6 @@ export default function ApplicationCard({ application, campaignInfo }: Applicati
 const currentDate = new Date()
 const [year, month, day] = application.createdAt;
 const appliedDate = new Date(year, month - 1, day);
-
 const timeDifference = currentDate.getTime() - appliedDate.getTime()
 const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
   return (
@@ -40,10 +39,10 @@ const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
           </Avatar>
           <div className="flex-1">
             <div className="flex flex-row items-center justify-center">
-              <h3 className="flex-1 font-semibold text-lg">{campaignInfo.content}</h3>
+              <h3 className="flex-1 font-semibold text-lg">{campaignInfo.campaignName}</h3>
               {StatusBadge(application.status)}
             </div>
-            <p className="text-sm text-muted-foreground">{campaignInfo.brandId} • {appliedDate.toLocaleDateString("vi-VN")}</p>
+            <p className="text-sm text-muted-foreground">{campaignInfo.brandName} • {appliedDate.toLocaleDateString("vi-VN")}</p>
           </div>
         </div>
 

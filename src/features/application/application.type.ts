@@ -7,15 +7,19 @@ export interface ApplicationsRequest{
 
 export interface Campaign  {
     campaignId: string;
-    brandId: string;
+    brandName: string;
+    campaignName: string;
     content: string ;
     imageUrl: string;
     categories?: Category[]|[];
-    createdDate: string;
+    createdDate: number[];
+    endDate: number[];    
     status: string;
     budget: number;
     campaignRequirements: {[key:string]:number};
-    influencerRequirement: string[];
+    influencerRequirements: string[];
+    influencerCountExpected:number;
+    influencerCountCurrent: number;
     influencerCount: number;
 
 }
@@ -39,10 +43,7 @@ export interface Application {
     status: string;
     createdAt: number[];
 }
-export interface ApplicationBrandResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]>{
+export interface ApplicationResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]>{
     data: ApplicationsByCampaginResponse[]
 }
 
-export interface ApplicationByInfluencerResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]>{
-    data: ApplicationsByCampaginResponse[]
-}

@@ -1,4 +1,4 @@
-import {  Clock, RefreshCw, XCircle } from 'lucide-react';
+import { Calendar, Clock, RefreshCw, XCircle } from 'lucide-react';
 
 import {
   Accordion,
@@ -31,7 +31,8 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
   };
   const [year, month, day] = application.createdAt;
   const appliedDate = new Date(year, month - 1, day);
-
+  const responseDate = new Date(year, month - 1, day + 7);
+  console.log(campaignInfo.influencerRequirements)
   return (
     <>
       <DialogHeader>
@@ -45,7 +46,9 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
           </Avatar>
           <div>
             <DialogTitle className="text-xl">{campaignInfo.content}</DialogTitle>
-            <DialogDescription className="flex items-center">{''} • {appliedDate.toLocaleDateString("vi-VN")}</DialogDescription>
+            <DialogDescription className="flex items-center">
+              {campaignInfo.brandName} • {appliedDate.toLocaleDateString('vi-VN')}
+            </DialogDescription>
           </div>
         </div>
       </DialogHeader>
@@ -76,29 +79,27 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
           {StatusBadge(application.status)}
         </div>
 
-        {/* <div className="grid grid-cols-2 gap-4"> 
-        <div className="w-full">
-          <h4 className="text-sm font-medium mb-1">Thông tin ứng tuyển</h4>
-          <div className="space-y-2  grid grid-cols-2">
-            <div className="flex items-center">
-              <Calendar className="h-4 w-4 text-blue-500 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">Ngày ứng tuyển:</p>
-                <p className="text-sm ">
-                  {appliedDate.toLocaleDateString("vi-VN")}
-                </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="w-full">
+            <h4 className="text-sm font-medium mb-1">Thông tin ứng tuyển</h4>
+            <div className="space-y-2  grid grid-cols-2">
+              <div className="flex items-center">
+                <Calendar className="h-4 w-4 text-blue-500 mr-2" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Ngày ứng tuyển:</p>
+                  <p className="text-sm ">{appliedDate.toLocaleDateString('vi-VN')}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center">
-              <Calendar className="h-4 w-4 text-blue-500 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">Phản hồi dự kiến:</p>
-                <p className="text-sm ">27/1/2024</p>
+              <div className="flex items-center">
+                <Calendar className="h-4 w-4 text-blue-500 mr-2" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Phản hồi dự kiến:</p>
+                  <p className="text-sm ">{responseDate.toLocaleDateString('vi-VN')}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        {/* <div>
+          {/* <div>
             <h4 className="text-sm font-medium mb-2">Thời gian dự kiến</h4>
             <div className="flex items-center">
               <Calendar className="h-4 w-4 text-blue-500 mr-1" />
@@ -108,7 +109,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
               </span>
             </div>
           </div> */}
-        {/* </div> */}
+        </div>
 
         <Accordion type="multiple" className="w-full mb-4">
           {campaignInfo.campaignRequirements &&
@@ -136,15 +137,15 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
         </Accordion>
 
         <Accordion type="multiple" className="w-full mb-4">
-          {Array.isArray(campaignInfo.influencerRequirement) &&
-            campaignInfo.influencerRequirement.length > 0 && (
+          {Array.isArray(campaignInfo.influencerRequirements) &&
+            campaignInfo.influencerRequirements.length > 0 && (
               <AccordionItem value="deliverables">
                 <AccordionTrigger>
                   <span className="text-sm font-medium">Yêu cầu đối với influencer</span>
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col gap-1">
-                    {campaignInfo.influencerRequirement.map((item: string, index: number) => (
+                    {campaignInfo.influencerRequirements.map((item: string, index: number) => (
                       <div key={index} className="flex items-center">
                         <span className="mr-2 text-muted-foreground">•</span>
                         <span className="text-sm text-muted-foreground">{item}</span>

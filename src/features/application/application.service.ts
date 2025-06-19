@@ -1,14 +1,13 @@
 import { baseApi } from '@/redux/baseApi';
 
 import type {
-  ApplicationBrandResponse,
-  ApplicationByInfluencerResponse,
+  ApplicationResponse,
   ApplicationsRequest,
 } from './application.type';
 
 export const applicationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getApplicationsByBrand: builder.query<ApplicationBrandResponse, ApplicationsRequest>({
+    getApplicationsByBrand: builder.query<ApplicationResponse, ApplicationsRequest>({
       query: (data) => ({
         url: '/campaigns/applications/brand',
         method: 'GET',
@@ -16,7 +15,7 @@ export const applicationApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Auth'],
     }),
-    getApplicationsByInfluencer: builder.query<ApplicationByInfluencerResponse,ApplicationsRequest>({
+    getApplicationsByInfluencer: builder.query<ApplicationResponse,ApplicationsRequest>({
       query: (data) => ({
         url: '/campaigns/applications/influencer',
         method: 'GET',

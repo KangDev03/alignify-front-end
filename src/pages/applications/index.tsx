@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { Search } from 'lucide-react';
@@ -27,7 +27,7 @@ const tabs = [
 export function ApplicationsPage() {
   const { id, role } = useSelector(selectAuthState);
   const [activeTab, setActiveTab] = useState('pending');
-  const [searchTerm, setSearchTerm] = useState('');
+  // const [searchTerm, setSearchTerm] = useState('');
 
   const influencerQuery = useGetApplicationsByInfluencerQuery(
     role === 'INFLUENCER' ? { pageNumber: 0, pageSize: 10 } : skipToken,
@@ -45,18 +45,30 @@ export function ApplicationsPage() {
       ? influencerQuery.currentData
       : role === 'BRAND'
         ? brandQuery.currentData
-        : undefined;
-  let applications: (Application & { campaignInfo?: Campaign })[] = [];
+        : undefined;  
+ const applications = useMemo(() => {
+  if (!rawData?.data || !Array.isArray(rawData.data)) return [];
 
-if (rawData?.data && Array.isArray(rawData.data)) {
-  applications = rawData.data.flatMap((entry) =>
-    entry.applications.map((app) => ({
-      ...app,
-      campaignInfo: entry.campaignResponse,
-    })),
+  return rawData.data.reduce(
+    (acc: (Application & { campaignInfo: Campaign })[], entry) => {
+      console.log('entry.applications:', entry.applications);
+console.log('isArray?', Array.isArray(entry.applications));
+
+      if (Array.isArray(entry.applications)) {
+        const combined = entry.applications.map((app) => ({
+          ...app,
+          campaignInfo: entry.campaignResponse,
+          
+        }));
+        acc.push(...combined);
+      }
+      return acc;
+    },
+    [],
   );
-}
+}, [rawData]);
 
+console.log('data', applications)
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Đơn ứng tuyển của tôi</h1>
