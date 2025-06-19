@@ -14,6 +14,7 @@ import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
 import { Settings } from '@/pages/setting';
 
+// import ApplicationsPage from './pages/applications';
 import RegisterPage from './pages/auth/sign-up';
 import MyCampaignPage from './pages/my-campaign';
 
@@ -69,7 +70,6 @@ function Router() {
               />
             }
           />
-          <Route path="/applications" element={<ApplicationsPage />} />
           <Route path="/applications" element={<ApplicationsPage />} />
           <Route path="/applicants" element={<Applicants />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />

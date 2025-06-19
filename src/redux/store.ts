@@ -9,7 +9,7 @@ import { baseApi } from './baseApi';
 const persistConfig = {
   key: 'auth',
   storage,
-  whitelist: ['id', 'token', 'role'] 
+  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name'] 
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);

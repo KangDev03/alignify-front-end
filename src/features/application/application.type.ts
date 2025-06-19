@@ -1,19 +1,49 @@
-export interface Application {
-  id: string;
-  title: string;
-  brand: string;
-  brandAvatar: string;
-  description: string;
-  budget: string;
-  status: string;
-  appliedDate: string; // ISO date string
-  // expectedResponse: string; // ISO date string
-  startDate: string; // ISO date string
-  endDate: string; // ISO date string
-  category: string[];
-  requirements: string[];
-  deliverables: string[];
-  contactPerson: string;
-  contactEmail: string;
-  contactPhone: string;
+import type { ApiReponseSuccess } from "../common.type";
+
+export interface ApplicationsRequest{
+    pageNumber: number | 0,
+    pageSize: number | 10
 }
+
+export interface Campaign  {
+    campaignId: string;
+    brandName: string;
+    campaignName: string;
+    content: string ;
+    imageUrl: string;
+    categories?: Category[]|[];
+    createdDate: number[];
+    endDate: number[];    
+    status: string;
+    budget: number;
+    campaignRequirements: {[key:string]:number};
+    influencerRequirements: string[];
+    influencerCountExpected:number;
+    influencerCountCurrent: number;
+    influencerCount: number;
+
+}
+
+interface Category {
+    categoryId: string;
+    categoryName: string;
+}
+
+interface ApplicationsByCampaginResponse  {
+        campaignResponse: Campaign;
+        applications: Application[];
+}
+
+export interface Application {
+    applicationId: string;
+    campaignId: string;
+    influencerId: string;
+    brandId: string;
+    limited: number;
+    status: string;
+    createdAt: number[];
+}
+export interface ApplicationResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]>{
+    data: ApplicationsByCampaginResponse[]
+}
+

@@ -1,0 +1,26 @@
+import type { ApiReponseSuccess } from "@/features/common.type";
+
+export interface ContentPostingRequest {
+  pageNumber: number | 0;
+  pageSize: number | 10;
+}
+
+export interface ContentPosting{
+  contentId: string;
+  userId: string;
+  userName: string;
+  content: string;
+  imageUrl: string;
+  categories?: Category[] | [];
+  createdDate: string;
+  isPublic: boolean;
+  commentCount: number;
+  likeCount: number;
+}
+interface Category {
+  categoryId: string;
+  categoryName: string;
+}
+export interface ContentPostingResponse extends ApiReponseSuccess<ContentPosting[]>{
+    data: ContentPosting[]
+}
