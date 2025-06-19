@@ -15,12 +15,12 @@ import { useAppSelector } from "@/hooks/redux"
 import type { RootState } from "@/redux/store"
 
 interface UserDropdownProps {
-  onPageChange: (page: "profile") => void
   onLogout: () => void
 }
 
-export function UserDropdown({onPageChange, onLogout }: UserDropdownProps) {
+export function UserDropdown({ onLogout }: UserDropdownProps) {
   const navigate = useNavigate()
+  const {name, avatarUrl, role} = useAppSelector((state: RootState) => state.auth)
 
   const handleToProfile = () => {
     navigate("/user-profile")
@@ -29,8 +29,6 @@ export function UserDropdown({onPageChange, onLogout }: UserDropdownProps) {
   const handleToSetting = () => {
     navigate("/settings")
   }
-
-  const {name, avatarUrl, role} = useAppSelector((state: RootState) => state.auth)
 
   const displayName = name || "User"
   const displayAvatar = avatarUrl || "/placeholder.svg"

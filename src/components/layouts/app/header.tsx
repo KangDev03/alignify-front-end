@@ -1,6 +1,7 @@
 'use client';
 
 import { useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 
@@ -10,39 +11,58 @@ import { ThemeToggle } from '@/components/theme/theme-toggle';
 import ChatSheet from '@/features/chatting/components/chat-sheet';
 import type { RootState } from '@/redux/store';
 
-type UserRole = 'influencer' | 'brand';
-type CurrentPage = 'home' | 'my-campaign' | 'applications';
+type UserRole = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
+type InfluencerPage = 'home' | 'my-campaign' | 'applications';
+type BrandPage = 'home' | 'campaign-management' | 'applicants';
+type CurrentPage = InfluencerPage | BrandPage;
 
 interface HeaderProps {
-  userRole: UserRole;
-  currentPage: CurrentPage;
-  onPageChange: (page: CurrentPage) => void;
   onLogout: () => void;
-  userName: string;
-  userAvatar: string;
 }
 
-export function AppHeader({
-  currentPage,
-  onPageChange,
-  onLogout,
-}: HeaderProps) {
-
+export function AppHeader({ onLogout }: HeaderProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const userRole = useSelector((state: RootState) => state.auth.role);
+
+  const currentPage = (): CurrentPage => {
+    if (userRole === 'INFLUENCER') {
+      if (location.pathname.includes('/my-campaign')) return 'my-campaign';
+      if (location.pathname.includes('/applications')) return 'applications';
+      return 'home';
+    } else {
+      if (location.pathname.includes('/campaign-management')) return 'campaign-management';
+      if (location.pathname.includes('/applicants')) return 'applicants';
+      return 'home';
+    }
+  };
+
+  const handlePageChange = (page: CurrentPage) => {
+    if (userRole === 'INFLUENCER') {
+      if (page === 'home') navigate('/home');
+      else if (page === 'my-campaign') navigate('/my-campaign');
+      else if (page === 'applications') navigate('/applications');
+    } else {
+      if (page === 'home') navigate('/home');
+      else if (page === 'campaign-management') navigate('/campaign-management');
+      else if (page === 'applicants') navigate('/applicants');
+    }
+  };
+
   const navigationItems =
     userRole === 'INFLUENCER'
       ? [
-          { id: 'home', label: 'Trang chủ', icon: Icons.home },
-          { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
-          { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
-          // { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
-        ]
+        { id: 'home', label: 'Trang chủ', icon: Icons.home },
+        { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
+        { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
+        // { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
+      ]
       : [
-          { id: 'home', label: 'Trang chủ', icon: Icons.home },
-          { id: 'my-campaign', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
-          { id: 'applications', label: 'Ứng viên', icon: Icons.fileText },
-          // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
-        ];
+        { id: 'home', label: 'Trang chủ', icon: Icons.home },
+        { id: 'my-campaign', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
+        { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
+        // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
+      ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -60,9 +80,9 @@ export function AppHeader({
               return (
                 <Button
                   key={item.id}
-                  variant={currentPage === item.id ? 'default' : 'ghost'}
+                  variant={currentPage() === item.id ? 'default' : 'ghost'}
                   size="sm"
-                  onClick={() => onPageChange(item.id as CurrentPage)}
+                  onClick={() => handlePageChange(item.id as CurrentPage)}
                   className="flex justify-center items-center space-x-2 h-9"
                 >
                   <Icon />
@@ -79,10 +99,7 @@ export function AppHeader({
               <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs"></span>
             </Button>
             <ThemeToggle />
-            <UserDropdown
-              onPageChange={onPageChange}
-              onLogout={onLogout}
-            />
+            <UserDropdown onLogout={onLogout} />
           </div>
         </div>
       </div>
