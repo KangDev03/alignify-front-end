@@ -45,7 +45,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
             <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <DialogTitle className="text-xl">{campaignInfo.content}</DialogTitle>
+            <DialogTitle className="text-xl">{campaignInfo.campaignName}</DialogTitle>
             <DialogDescription className="flex items-center">
               {campaignInfo.brandName} • {appliedDate.toLocaleDateString('vi-VN')}
             </DialogDescription>

@@ -34,12 +34,12 @@ const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
       <CardContent className="px-6">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={campaignInfo.imageUrl || "/placeholder.svg"} alt="brand avatar" />
+            <AvatarImage src={campaignInfo.imageUrl || "/placeholder.svg"} alt={campaignInfo.brandName} />
             <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback> 
           </Avatar>
           <div className="flex-1">
             <div className="flex flex-row items-center justify-center">
-              <h3 className="flex-1 font-semibold text-lg">{campaignInfo.campaignName}</h3>
+              <h3 className="flex-1 font-semibold text-lg line-clamp-1">{campaignInfo.campaignName}</h3>
               {StatusBadge(application.status)}
             </div>
             <p className="text-sm text-muted-foreground">{campaignInfo.brandName} • {appliedDate.toLocaleDateString("vi-VN")}</p>
