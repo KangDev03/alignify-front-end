@@ -7,8 +7,8 @@ interface AuthState {
   role: 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
   token: string | null;
   id: string | null;
-  avatarUrl: string | null;
-  name?: string | null;
+  avatarUrl?: string | null;
+  name: string | null;
 }
 
 const initialState: AuthState = {
