@@ -12,3 +12,61 @@ export interface ApiReponseError {
   timestamp: Date;
   path?: string;
 }
+
+export interface PageableResponse<T> {
+  content?: T[];
+  pageable?: {
+    pageNumber?: number;
+    pageSize?: number;
+    sort?: {
+      empty?: boolean;
+      sorted?: boolean;
+      unsorted?: boolean;
+    };
+    offset?: number;
+    paged?: boolean;
+    unpaged?: boolean;
+  };
+  totalPages?: number;
+  totalElements?: number;
+  last?: boolean;
+  numberOfElements?: number;
+  size?: number;
+  number?: number;
+  sort?: {
+    empty?: boolean;
+    sorted?: boolean;
+    unsorted?: boolean;
+  };
+  first?: boolean;
+  empty?: boolean;
+}
+
+// export interface PageableResponse<T> {
+//   content: T[];
+//   pageable: {
+//     pageNumber: number;
+//     pageSize: number;
+//     sort: {
+//       empty: boolean;
+//       sorted: boolean;
+//       unsorted: boolean;
+//     };
+//     offset: number;
+//     paged: boolean;
+//     unpaged: boolean;
+//   };
+//   totalPages: number;
+//   totalElements: number;
+//   last: boolean;
+//   numberOfElements: number;
+//   size: number;
+//   number: number;
+//   sort: {
+//     empty: boolean;
+//     sorted: boolean;
+//     unsorted: boolean;
+//   };
+//   first: boolean;
+//   empty: boolean;
+// }

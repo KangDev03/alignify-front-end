@@ -1,12 +1,13 @@
 import React from 'react';
 import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 import { Toaster } from 'sonner';
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // import { ClerkProvider } from '@clerk/clerk-react';
 import { ThemeProvider } from './components/theme/theme-provider';
-import { store } from './redux/store';
+import { persistor, store } from './redux/store';
 
 // const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -20,7 +21,9 @@ function Providers({ children }: { children: React.ReactNode }) {
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
           <ThemeProvider defaultTheme="system" storageKey="alignify-theme">
             {/* <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/"> */}
-            {children}
+            <PersistGate loading={null} persistor={persistor}>
+              {children}
+            </PersistGate>
             {/* </ClerkProvider> */}
             <Toaster />
           </ThemeProvider>

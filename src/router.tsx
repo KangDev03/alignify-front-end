@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router';
 
 // import avatar from "@/assets/avatar-small.png";
 import AppLayout from '@/components/layouts/app/app-layout';
+import { Applicants } from '@/pages/applicants';
 import { ApplicationsPage } from '@/pages/applications';
 import ForgotPasswordPage from '@/pages/auth/forgot-password';
 import ResetPasswordPage from '@/pages/auth/reset-password';
@@ -15,6 +16,7 @@ import { Settings } from '@/pages/setting';
 
 // import ApplicationsPage from './pages/applications';
 import RegisterPage from './pages/auth/sign-up';
+import MyCampaignPage from './pages/my-campaign';
 
 export const mockInfluencer = {
   id: '1',
@@ -45,6 +47,7 @@ function Router() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<LoginPage />} />
         <Route path="/auth">
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
@@ -56,15 +59,21 @@ function Router() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/settings" element={
-            <Settings
-              userRole="influencer"
-              userName="John"
-              userAvatar="avatar.png"
-              onBack={() => { }}
-            />}
+          <Route
+            path="/settings"
+            element={
+              <Settings
+                userRole="influencer"
+                userName="John"
+                userAvatar="avatar.png"
+                onBack={() => {}}
+              />
+            }
           />
-          <Route path='/applications' element={<ApplicationsPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
+          <Route path="/applicants" element={<Applicants />} />
+          <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
         </Route>
         <Route path="/contact" element={<ContactPage />} />

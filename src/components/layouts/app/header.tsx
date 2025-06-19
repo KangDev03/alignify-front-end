@@ -1,14 +1,17 @@
 'use client';
 
+import { useSelector } from 'react-redux';
+
 import { Button } from '@/components/ui/button';
 
 import { Icons } from '@/components/icons/icons';
 import { UserDropdown } from '@/components/layouts/app/user-dropdown';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import ChatSheet from '@/features/chatting/components/chat-sheet';
+import type { RootState } from '@/redux/store';
 
 type UserRole = 'influencer' | 'brand';
-type CurrentPage = 'home' | 'dashboard' | 'profile' | 'campaigns' | 'applications' | 'analytics';
+type CurrentPage = 'home' | 'my-campaign' | 'applications';
 
 interface HeaderProps {
   userRole: UserRole;
@@ -20,26 +23,27 @@ interface HeaderProps {
 }
 
 export function AppHeader({
-  userRole,
   currentPage,
   onPageChange,
   onLogout,
   userName,
   userAvatar,
 }: HeaderProps) {
+
+  const userRole = useSelector((state: RootState) => state.auth.role);
   const navigationItems =
-    userRole === 'influencer'
+    userRole === 'INFLUENCER'
       ? [
           { id: 'home', label: 'Trang chủ', icon: Icons.home },
-          { id: 'campaigns', label: 'Chiến dịch', icon: Icons.megaphone },
+          { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
           { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
-          { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
+          // { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
         ]
       : [
-          { id: 'home', label: 'Khám phá', icon: Icons.home },
-          { id: 'campaigns', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
+          { id: 'home', label: 'Trang chủ', icon: Icons.home },
+          { id: 'my-campaign', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
           { id: 'applications', label: 'Ứng viên', icon: Icons.fileText },
-          { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
+          // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
         ];
 
   return (

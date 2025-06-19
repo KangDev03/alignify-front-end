@@ -1,6 +1,7 @@
 // import { useState } from "react"
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
+import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -83,7 +84,13 @@ export default function SignInForm() {
     try {
       console.log('Submitting login with values:', values);
       const response = await login(values).unwrap();
+      
+      // Lưu token vào cookie
+      Cookies.set('authToken', response.data.token, { expires: 7 });
+      Cookies.set('userId', response.data.user.userId, { expires: 7 });
       dispatch(setCredentials(response));
+
+      console.log('response login:',response);
       navigate('/home');
     } catch (err) {
       console.error('Failed to login:', err);

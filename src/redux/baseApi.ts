@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import Cookies from 'js-cookie';
 
 import type { RootState } from '@/redux/store';
 
@@ -6,16 +7,17 @@ const baseQuery = fetchBaseQuery({
   // baseUrl: 'https://alignify-backend.onrender.com/api/v1/',
   baseUrl: 'http://localhost:8080/api/v1/',
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth?.token;
-
-    // if (!(headers.get('Content-Type') === 'multipart/form-data')) {
-    //   headers.set('Content-Type', 'application/json');
-    // }
-
-    if (token) {
-      headers.set('authorization', `Bearer ${token}`);
+    let token = (getState() as RootState).auth?.token;
+    let userId = (getState() as RootState).auth?.id;
+    if (!token) {
+      token = Cookies.get('authToken') || null;
     }
-
+    if (!userId) {
+      userId = Cookies.get('userId') || null;
+    }
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
     return headers;
   },
 });
@@ -23,5 +25,5 @@ const baseQuery = fetchBaseQuery({
 export const baseApi = createApi({
   baseQuery,
   endpoints: () => ({}),
-  tagTypes: ['Auth'],
+  tagTypes: ['Auth', 'ChatRoom', 'ChatSheet'],
 });

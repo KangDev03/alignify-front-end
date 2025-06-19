@@ -1,5 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 import { Icons } from '@/components/icons/icons';
 
@@ -16,7 +23,7 @@ export default function ChatSheet() {
       </SheetTrigger>
       <SheetContent className="w-[466px] gap-0" closeStyle="hidden">
         <SheetHeader className="flex flex-col items-start justify-center gap-4 p-6 border-b border-border">
-          <SheetTitle className='flex flex-row w-full'>
+          <SheetTitle className="flex flex-row w-full">
             <h1 className="text-xl font-semibold leading-6 flex-1">Tin nhắn</h1>
             <SheetClose title="x">
               <Icons.x className="h-6 w-6" />
