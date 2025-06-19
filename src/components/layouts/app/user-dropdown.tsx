@@ -16,7 +16,7 @@ import { Icons } from "@/components/icons/icons"
 interface UserDropdownProps {
   userName: string
   userAvatar: string
-  userRole: "influencer" | "brand"
+  userRole: 'INFLUENCER' | 'BRAND' | 'ADMIN'
   onPageChange: (page: "profile") => void
   onLogout: () => void
 }

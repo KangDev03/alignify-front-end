@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router';
 
 // import avatar from "@/assets/avatar-small.png";
 import AppLayout from '@/components/layouts/app/app-layout';
+import { Applicants } from '@/pages/applicants';
 import { ApplicationsPage } from '@/pages/applications';
 import ForgotPasswordPage from '@/pages/auth/forgot-password';
 import ResetPasswordPage from '@/pages/auth/reset-password';
@@ -14,6 +15,7 @@ import { UserProfilePage } from '@/pages/profile';
 import { Settings } from '@/pages/setting';
 
 import RegisterPage from './pages/auth/sign-up';
+import MyCampaignPage from './pages/my-campaign';
 
 export const mockInfluencer = {
   id: '1',
@@ -68,6 +70,9 @@ function Router() {
             }
           />
           <Route path="/applications" element={<ApplicationsPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
+          <Route path="/applicants" element={<Applicants />} />
+          <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
         </Route>
         <Route path="/contact" element={<ContactPage />} />

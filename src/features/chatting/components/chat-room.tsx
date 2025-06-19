@@ -53,7 +53,8 @@ export default function ChatRoom({ chatRoomId }: ChatRoomProps) {
   useEffect(() => {
     if (stompClientRef.current || !token) return;
 
-    const socket = new SockJS(`http://localhost:8080/ws`);
+    // const socket = new SockJS(`http://localhost:8080/ws`);
+    const socket = new SockJS(`https://alignify-backend.onrender.com/ws`);
     const client = Stomp.over(socket);
     client.debug = () => {};
     stompClientRef.current = client;

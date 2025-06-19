@@ -1,9 +1,9 @@
 import { forwardRef } from 'react';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 import { formatTime, parseTimestampToDate } from '@/utils/format';
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 
 import type { Message, UserDTO } from '../chat-sheet.type';
 
@@ -34,13 +34,11 @@ const MessageCard = forwardRef<HTMLDivElement, MessageCardProps>(
           <HoverCardTrigger>
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={userdto.avatarUrl || ''}
+                src={userdto.avatarUrl!}
                 alt={userdto.name}
                 className="rounded-full object-cover h-8 w-8"
               />
-              <AvatarFallback className="flex justify-center items-center">
-                {userdto.name.charAt(0)}
-              </AvatarFallback>
+              <AvatarFallback>{userdto.name.charAt(0)}</AvatarFallback>
             </Avatar>
           </HoverCardTrigger>
           <HoverCardContent
