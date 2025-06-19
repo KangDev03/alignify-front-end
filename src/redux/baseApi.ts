@@ -8,8 +8,12 @@ const baseQuery = fetchBaseQuery({
   // baseUrl: 'http://localhost:8080/api/v1/',
   prepareHeaders: (headers, { getState }) => {
     let token = (getState() as RootState).auth?.token;
+    let userId = (getState() as RootState).auth?.id;
     if (!token) {
       token = Cookies.get('authToken') || null;
+    }
+    if (!userId) {
+      userId = Cookies.get('userId') || null;
     }
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);

@@ -4,15 +4,19 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { LoginResponse } from './auth.type';
 
 interface AuthState {
+  role: 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
   token: string | null;
   id: string | null;
-  role: 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
+  avatarUrl: string | null;
+  name?: string | null;
 }
 
 const initialState: AuthState = {
   token: null,
   id: null,
   role: null,
+  avatarUrl: null,
+  name: null,
 };
 
 export const authSlice = createSlice({
@@ -21,8 +25,10 @@ export const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action: PayloadAction<LoginResponse>) => {
       state.token = action.payload.data.token;
-      state.id = action.payload.data.id;
+      state.id = action.payload.data.user.userId;
       state.role = action.payload.data.role;
+      state.avatarUrl = action.payload.data.user.avatarUrl;
+      state.name = action.payload.data.user.name;
     },
     logout: (state) => {
       state.token = null;

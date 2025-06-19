@@ -84,12 +84,13 @@ export default function SignInForm() {
     try {
       console.log('Submitting login with values:', values);
       const response = await login(values).unwrap();
-      dispatch(setCredentials(response));
-
+      
       // Lưu token vào cookie
       Cookies.set('authToken', response.data.token, { expires: 7 });
+      Cookies.set('userId', response.data.user.userId, { expires: 7 });
+      dispatch(setCredentials(response));
 
-      console.log(response);
+      console.log('response login:',response);
       navigate('/home');
     } catch (err) {
       console.error('Failed to login:', err);
