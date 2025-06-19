@@ -10,53 +10,56 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-import type { Application } from "@/features/application/application.type"
+import type { Application, Campaign } from "@/features/application/application.type"
 import ApplicationDetail from "@/features/application/components/application-detail"
 import { StatusBadge } from "@/features/application/components/status-badge"
 
-export default function ApplicationCard({ application }: { application: Application }) {
+
+interface ApplicationCardProps {
+  application: Application
+  campaignInfo: Campaign
+}
+export default function ApplicationCard({ application, campaignInfo }: ApplicationCardProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null)
-
-
-
-  const appliedDate = new Date(application.appliedDate);
-  const currentDate = new Date();
-  const timeDifference = currentDate.getTime() - appliedDate.getTime();
-  const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24));
-
+const currentDate = new Date()
+const [year, month, day] = application.createdAt;
+const appliedDate = new Date(year, month - 1, day);
+const timeDifference = currentDate.getTime() - appliedDate.getTime()
+const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
   return (
     <Card
-      key={application.id}
+      key={application.applicationId}
       className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     >
       <CardContent className="px-6">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={application.brandAvatar || "/placeholder.svg"} alt={application.brand} />
-            <AvatarFallback>{application.brand.charAt(0)}</AvatarFallback>
+            <AvatarImage src={campaignInfo.imageUrl || "/placeholder.svg"} alt={campaignInfo.brandName} />
+            <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback> 
           </Avatar>
           <div className="flex-1">
             <div className="flex flex-row items-center justify-center">
-              <h3 className="flex-1 font-semibold text-lg ">{application.title}</h3>
+              <h3 className="flex-1 font-semibold text-lg line-clamp-1">{campaignInfo.campaignName}</h3>
               {StatusBadge(application.status)}
             </div>
-            <p className="text-sm text-muted-foreground">{application.brand} • 5/6/2025</p>
+            <p className="text-sm text-muted-foreground">{campaignInfo.brandName} • {appliedDate.toLocaleDateString("vi-VN")}</p>
           </div>
         </div>
 
         <div className="flex items-center text-sm text-muted-foreground mb-4">
           <Calendar className="w-4 h-4 mr-2 text-primary" />
           <span>
-            {application.status === "Chờ duyệt"
+            {application.status === "PENDING"
               ? `Ứng tuyển ${daysSinceApplied} ngày trước`
-              : `Ngày ứng tuyển: ${appliedDate.toLocaleDateString("vi-VN")}`}
+              : `Ngày ứng tuyển: ${appliedDate.toLocaleDateString("vi-VN")}`
+            }
           </span>
         </div>
 
         <div className="flex justify-center">
           <Dialog
-            open={openDialog === application.id}
-            onOpenChange={(open) => setOpenDialog(open ? application.id : null)}
+            open={openDialog === application.applicationId}
+            onOpenChange={(open) => setOpenDialog(open ? application.applicationId : null)}
           >
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center w-full">
@@ -65,7 +68,7 @@ export default function ApplicationCard({ application }: { application: Applicat
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
-              <ApplicationDetail key={application.id} application={application} />
+              <ApplicationDetail application={application} campaignInfo={campaignInfo} />
             </DialogContent>
           </Dialog>
         </div>
