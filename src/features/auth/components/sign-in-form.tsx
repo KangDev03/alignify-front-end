@@ -81,19 +81,16 @@ export default function SignInForm() {
 
   async function onSubmit(values: { email: string; password: string }) {
     try {
-      console.log('Submitting login with values:', values);
       const response = await login(values).unwrap();
 
       dispatch(setCredentials(response));
-
-      console.log('response login:', response);
       navigate('/home');
     } catch (err) {
       console.error('Failed to login:', err);
 
       if (typeof err === 'object' && err !== null && 'status' in err) {
         const status = (err as { status?: any }).status;
-        if (status === 'FETCH_ERROR') {
+        if (status === 500) {
           toast.error('Không thể kết nối đến server. Vui lòng thử lại sau!');
         } else if (status === 401) {
           toast.error('Email hoặc mật khẩu không chính xác!');
