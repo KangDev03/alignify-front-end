@@ -12,7 +12,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -36,6 +43,7 @@ export default function ContentPopUp({
 }: PopUpContentProps) {
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const form = useForm<z.infer<typeof contentFormSchema>>({
+    mode: 'onSubmit',
     resolver: zodResolver(contentFormSchema),
     defaultValues: {
       title: '',
@@ -56,7 +64,7 @@ export default function ContentPopUp({
     }
   }
   return (
-    <DialogContent showCloseButton={false} className="p-0 py-6 w-[564px] text-base h-[80%]">
+    <DialogContent showCloseButton={false} className="p-0 py-6 w-[564px] text-base h-[72%]">
       <DialogHeader className="flex flex-col gap-1.5 px-6">
         <DialogTitle className="flex items-center gap-1 text-primary font-bold border-b-2 pb-1 border-primary w-fit">
           <Icons.penTool className="size-6 rotate-180" />
@@ -69,7 +77,7 @@ export default function ContentPopUp({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent px-6 pb-3"
+          className="flex flex-col gap-4 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent px-6"
         >
           <FormField
             control={form.control}
@@ -78,8 +86,9 @@ export default function ContentPopUp({
               <FormItem>
                 <FormLabel>Tiêu đề bài viết</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nhập tiêu đề bài viết" required {...field} />
+                  <Input placeholder="Nhập tiêu đề bài viết" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -120,9 +129,9 @@ export default function ContentPopUp({
                     className="h-24"
                     placeholder="Chia sẻ kinh nghiệm, mẹo hay, hoặc đặt câu hỏi..."
                     {...field}
-                    required
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

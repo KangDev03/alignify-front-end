@@ -152,7 +152,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
               <FormItem>
                 <FormLabel>Tiêu đề chiến dịch *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nhập tiêu đề chiến dịch" required {...field} />
+                  <Input placeholder="Nhập tiêu đề chiến dịch" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -168,7 +168,6 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                   <Textarea
                     placeholder="Mô tả chi tiết về chiến dịch"
                     className="h-24"
-                    required
                     {...field}
                   />
                 </FormControl>
@@ -284,7 +283,6 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                     <Input
                       type="number"
                       placeholder="10,000,000 VND"
-                      required
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
@@ -303,7 +301,6 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                     <Input
                       type="number"
                       placeholder="5"
-                      required
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
@@ -321,7 +318,6 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                   <FormControl>
                     <Input
                       type="date"
-                      required
                       value={field.value ? field.value.toISOString().split('T')[0] : ''}
                       onChange={(e) => field.onChange(new Date(e.target.value))}
                     />
@@ -339,7 +335,6 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                   <FormControl>
                     <Input
                       type="date"
-                      required
                       value={field.value ? field.value.toISOString().split('T')[0] : ''}
                       onChange={(e) => field.onChange(new Date(e.target.value))}
                     />
@@ -360,7 +355,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormControl>
-                          <Input {...field} placeholder="Yêu cầu" required />
+                          <Input {...field} placeholder="Yêu cầu" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -389,7 +384,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
           </div>
           <div className="flex flex-col">
             <FormItem>
-              <FormLabel className="">Nội dung yêu cầu *</FormLabel>
+              <FormLabel className="">Yêu cầu của bạn *</FormLabel>
               {contentFields.map((item, idx) => (
                 <div key={item.id} className="flex gap-2">
                   <FormField
@@ -398,7 +393,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormControl>
-                          <Input {...field} placeholder="Tên nội dung" required />
+                          <Input {...field} placeholder="Yêu cầu" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -415,7 +410,6 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                             type="number"
                             placeholder="Giá trị"
                             onChange={(e) => field.onChange(Number(e.target.value))}
-                            required
                           />
                         </FormControl>
                         <FormMessage />

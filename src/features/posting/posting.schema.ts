@@ -34,7 +34,7 @@ export const campaignFormSchema = z
     budget: z
       .number()
       .min(1000000, {
-        message: 'Ngân sách phải lớn hơn hoặc bằng 1,000,000 VND',
+        message: 'Ngân sách phải lớn từ 1,000,000 VND',
       })
       .max(1000000000, {
         message: 'Ngân sách không được vượt quá 1,000,000,000 VND',
@@ -42,16 +42,16 @@ export const campaignFormSchema = z
     influencerCountExpected: z
       .number()
       .min(1, {
-        message: 'Số lượng influencer phải lớn hơn hoặc bằng 1',
+        message: 'Số lượng influencer phải lớn hơn 0',
       })
       .max(10, {
         message: 'Số lượng influencer không được vượt quá 10',
       }),
     startAt: z.date().refine((date: Date) => date >= new Date(), {
-      message: 'Ngày bắt đầu phải là hôm nay hoặc trong tương lai',
+      message: 'Ngày bắt đầu phải trong tương lai',
     }),
     dueAt: z.date().refine((date: Date) => date >= new Date(), {
-      message: 'Ngày kết thúc phải là hôm nay hoặc trong tương lai',
+      message: 'Ngày kết thúc phải trong tương lai',
     }),
     influencerRequirements: z.array(
       z.object({

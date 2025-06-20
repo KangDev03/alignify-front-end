@@ -16,7 +16,7 @@ import ContentPopUp from './popUp-content';
 
 export default function PopUpTrigger() {
   const { role } = useAppSelector((state: RootState) => state.auth);
-  const { data: rawData, isLoading } = useGetCategoriesQuery();
+  const { data: rawData } = useGetCategoriesQuery();
   const categories = rawData?.data;
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const MAX_CATEGORIES = 3;
@@ -38,9 +38,7 @@ export default function PopUpTrigger() {
     userRole !== 'ADMIN' && (
       <Dialog>
         <DialogTrigger className="fixed bottom-6 right-10 cursor-pointer">
-          {isLoading ? (
-            <Skeleton className="w-14 h-14 rounded-full bg-primary" />
-          ) : userRole === 'INFLUENCER' ? (
+          {userRole === 'INFLUENCER' ? (
             <Tooltip delayDuration={500}>
               <TooltipTrigger>
                 <Button
