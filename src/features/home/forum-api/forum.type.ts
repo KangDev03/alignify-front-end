@@ -7,12 +7,13 @@ export interface ContentPostingRequest {
 
 export interface ContentPosting{
   contentId: string;
+  contentName: string;
   userId: string;
   userName: string;
   content: string;
   imageUrl: string;
   categories?: Category[] | [];
-  createdDate: string;
+  createdDate: number[];
   isPublic: boolean;
   commentCount: number;
   likeCount: number;
