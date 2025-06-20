@@ -57,7 +57,6 @@ export default function Forum() {
       {contentPosting?.map((post) => {
         const [year, month, day, hour, minute, second] = post.createdDate;
         const postDate = new Date(year, month - 1, day,hour, minute,second);
-        console.log('PostDAte: ',post.createdDate)
         return (
           <Card
             key={post.contentId}
