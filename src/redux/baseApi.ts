@@ -19,5 +19,5 @@ const baseQuery = fetchBaseQuery({
 export const baseApi = createApi({
   baseQuery,
   endpoints: () => ({}),
-  tagTypes: ['Auth', 'ChatRoom', 'ChatSheet', 'Post'],
+  tagTypes: ['Auth', 'ChatRoom', 'ChatSheet', 'Post', 'Common', 'Home'],
 });
