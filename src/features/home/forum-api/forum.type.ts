@@ -1,4 +1,4 @@
-import type { ApiReponseSuccess } from "@/features/common.type";
+import type { ApiReponseSuccess } from "@/features/common/common.type";
 
 export interface ContentPostingRequest {
   pageNumber: number | 0;

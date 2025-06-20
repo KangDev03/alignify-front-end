@@ -6,32 +6,6 @@ import { Icons } from '@/components/icons/icons';
 
 import { useGetAllContentPostingQuery } from '../forum-api/forum.service';
 
-const mockForumPosts = [
-  {
-    id: '1',
-    author: 'Nguyễn Thị Lan',
-    avatar: '/placeholder.svg?height=40&width=40',
-    title: 'Tips chụp ảnh sản phẩm đẹp với ánh sáng tự nhiên',
-    content: 'Chia sẻ một số mẹo nhỏ giúp các bạn influencer chụp ảnh sản phẩm đẹp hơn...',
-    likes: 156,
-    comments: 23,
-    views: 1200,
-    timeAgo: '2 giờ trước',
-    category: 'Làm đẹp',
-  },
-  {
-    id: '2',
-    author: 'Trần Văn Nam',
-    avatar: '/placeholder.svg?height=40&width=40',
-    title: 'Kinh nghiệm làm video review công nghệ thu hút người xem',
-    content: 'Sau 3 năm làm tech reviewer, tôi muốn chia sẻ những kinh nghiệm...',
-    likes: 89,
-    comments: 15,
-    views: 890,
-    timeAgo: '5 giờ trước',
-    category: 'Công nghệ',
-  },
-];
 function getTimeAgo(date: Date): string {
   const now = new Date()
   const diffInMs = now.getTime() - date.getTime()

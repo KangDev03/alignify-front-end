@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
-import { parseTimestampToDate } from '@/utils/format.ts';
+import { parseDateString } from '@/utils/format.ts';
 
 import { StatusBadge } from './status-badge.tsx';
 import type { Campaign } from '../campaign.type.ts';
@@ -33,7 +33,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <DialogTitle className="text-xl">{campaign.campaignName}</DialogTitle>
             <DialogDescription>
               {campaign.brandName} •{' '}
-              {parseTimestampToDate(campaign.createdAt).toLocaleDateString('vi-VN')}
+              {parseDateString(campaign.createdAt)}
             </DialogDescription>
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <h4 className="text-sm font-medium mb-1">Ngân sách</h4>
             <div className="flex items-center w-fit mr-4">
               <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
-              <p>{campaign.budget}</p>
+            <span>{`${Number(campaign.budget).toLocaleString("vi-VN")} VNĐ`}</span>
             </div>
           </div>
 
@@ -71,7 +71,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <h4 className="text-sm font-medium mb-1">Thời gian</h4>
             <div className="flex items-center w-fit">
               <Calendar className="w-4 h-4 mr-2 text-primary" />
-              <p>{`${parseTimestampToDate(campaign.startAt).toLocaleDateString('vi-VN')} - ${parseTimestampToDate(campaign.dueAt).toLocaleDateString('vi-VN')}`}</p>
+              <p>{`${parseDateString(campaign.startAt)} - ${parseDateString(campaign.dueAt)}`}</p>
             </div>
           </div>
         </div>
