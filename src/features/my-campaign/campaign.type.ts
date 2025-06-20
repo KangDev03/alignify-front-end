@@ -1,20 +1,33 @@
+import type { ApiReponseSuccess } from "../common.type";
+
+export interface CampaignRequest{
+  pageNumber: number | 0,
+  pageSize: number | 10
+}
 export interface Campaign {
-  id: string;
-  title: string;
-  description: string;
-  brand: string;
-  brandAvatar: string;
-  budget: string;
-  goals: string[];
-  status: "PENDING" | "IN PROGRESS" | "COMPLETED";
-  progress: number;
-  createdDate: string; // ISO date string
-  startDate: string; // ISO date string
-  endDate: string;   // ISO date string
-  category: string[];
-  deliverables: string[];
-  requirements: string[];
-  contactPerson: string;
-  contactEmail: string;
-  contactPhone: string;
+  campaignId: string;
+  brandName: string;
+  campaignName: string;
+  content: string;
+  imageUrl: string;
+  budget: number;
+  status: string;
+  createdDate: number[]; 
+  dueAt: number[];
+  startAt: number[];  
+  categories?: Category[] | [];
+  campaignRequirements: {[key:string]:number};
+    influencerRequirements: string[];
+    influencerCountExpected:number;
+    influencerCountCurrent: number;
+}
+interface Category {
+  categoryId: string;
+  categoryName: string;
+}
+export interface CampaignState {
+    campaigns: Campaign[]
+}
+export interface CampaignResponse extends ApiReponseSuccess<CampaignState>{
+  data: CampaignState
 }
