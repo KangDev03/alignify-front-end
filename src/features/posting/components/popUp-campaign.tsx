@@ -220,7 +220,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                                   className="object-contain max-w-full h-[600px]"
                                 />
                                 <div className="flex justify-end">
-                                  <DialogClose>
+                                  <DialogClose name="close-posterPopup">
                                     <Button type="button" variant="outline" size="sm">
                                       Đóng
                                     </Button>
@@ -439,7 +439,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
             <FormMessage />
           </div>
           <div className="flex justify-end gap-2.5">
-            <DialogClose ref={dialogCloseRef}>
+            <DialogClose name="close-campaignPopup" ref={dialogCloseRef}>
               <Button
                 variant={'outline'}
                 className="text-destructive hover:text-destructive"
@@ -454,6 +454,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
           </div>
         </form>
       </Form>
+      {/* <DialogClose ref={dialogCloseRef} className="hidden" /> */}
     </DialogContent>
   );
 }
