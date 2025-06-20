@@ -1,4 +1,4 @@
-import type { ApiReponseSuccess } from '../common.type';
+import type { ApiReponseSuccess } from '../common/common.type';
 
 export interface IChatRoom {
   chatRoomId: string;

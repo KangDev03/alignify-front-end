@@ -15,7 +15,7 @@ import { formatDateToTimestamp } from '@/utils/format';
 
 import MessageCard from './message-card';
 import { chatApi, useGetMessagesInRoomQuery } from '../chat-sheet.service';
-import type { ChatMessage, Message } from '../chat-sheet.type';
+import type { ChatMessage } from '../chat-sheet.type';
 
 interface ChatRoomProps {
   chatRoomId: string;
@@ -29,11 +29,19 @@ interface ReadStatusUpdate {
 interface ChatMessageState extends ChatMessage {
   isSending?: boolean;
 }
-
+interface MessageSending {
+  messageId?: string | null;
+  userId: string;
+  chatRoomId: string;
+  message: string;
+  sendAt: Date;
+  tempId?: string | null;
+  readBy: string[];
+}
 export default function ChatRoom({ chatRoomId }: ChatRoomProps) {
   const [message, setMessage] = useState<string>('');
   const stompClientRef = useRef<Stomp.Client | null>(null);
-  const { id: userId, token } = useAppSelector((state: RootState) => state.auth);
+  const { id: userId, token, avatarUrl, name } = useAppSelector((state: RootState) => state.auth);
   const { data } = useGetMessagesInRoomQuery({ roomId: chatRoomId });
   const [messages, setMessages] = useState<ChatMessageState[]>([]);
   const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -160,12 +168,14 @@ export default function ChatRoom({ chatRoomId }: ChatRoomProps) {
       chatRoomId
     ) {
       const tempId = uuidv4();
-      const input: Message = {
+      const current = new Date();
+      const input: MessageSending = {
         chatRoomId,
         userId: userId ?? '',
         message,
         readBy: [userId!],
         tempId: tempId,
+        sendAt: new Date(),
       };
       const currentMessage: ChatMessageState = {
         message: {
@@ -173,14 +183,13 @@ export default function ChatRoom({ chatRoomId }: ChatRoomProps) {
           userId: userId!,
           message,
           readBy: [userId!],
-          sendAt: formatDateToTimestamp(new Date()),
+          sendAt: formatDateToTimestamp(current),
           tempId,
         },
         userDTO: {
           userId: userId!,
-          name: 'Minh',
-          avatarUrl:
-            'https://res.cloudinary.com/dwnbcpg87/image/upload/v1750155800/alignify/images/878caae2-4a32-4a85-855f-44a40fce0073.jpg',
+          name: name!,
+          avatarUrl: avatarUrl!,
         },
         isSending: true,
       };

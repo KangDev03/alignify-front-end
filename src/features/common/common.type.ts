@@ -1,3 +1,5 @@
+export type RoleName = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
+
 export interface ApiReponseSuccess<T> {
   status: number | string;
   message: string;
@@ -70,3 +72,12 @@ export interface PageableResponse<T> {
 //   first: boolean;
 //   empty: boolean;
 // }
+
+export interface Category {
+  categoryId: string;
+  categoryName: string;
+}
+
+export interface CategoriesResponse extends ApiReponseSuccess<Category[]> {
+  data: Category[];
+}
