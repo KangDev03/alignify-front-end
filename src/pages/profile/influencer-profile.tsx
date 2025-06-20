@@ -1,34 +1,33 @@
 "use client"
 
 import { useState } from "react"
-import {
-  Calendar,
-  Edit,
-  ExternalLink,
-  Eye,
-  Facebook,
-  Heart,
-  Instagram,
-  MapPin,
-  MessageCircle,
-  Save,
-  Share2,
-  Star,
-  TrendingUp,
-  Users,
-  X,
-  Youtube,
-} from "lucide-react"
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Star,
+  MapPin,
+  Calendar,
+  Users,
+  TrendingUp,
+  Instagram,
+  Youtube,
+  Facebook,
+  Edit,
+  Save,
+  X,
+  ExternalLink,
+  Heart,
+  MessageCircle,
+  Eye,
+  Share2,
+} from "lucide-react"
 
 interface InfluencerData {
   id: string
@@ -353,68 +352,73 @@ export function InfluencerProfile({ influencer }: InfluencerProfileProps) {
           </TabsContent>
 
           <TabsContent value="posts" className="mt-6">
-            <div className="space-y-6">
+            <div className="space-y-4">
               {forumPosts.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {forumPosts.map((post) => (
-                    <Card
-                      key={post.id}
-                      className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
-                    >
-                      <CardContent className="p-0">
-                        {/* Post Image */}
-                        <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
-                          <img
-                            src={post.image || "/placeholder.svg"}
-                            alt={post.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-
-                        <div className="p-6">
-                          {/* Post Header */}
-                          <div className="flex items-center justify-between mb-3">
+                forumPosts.map((post) => (
+                  <Card
+                    key={post.id}
+                    className="border border-border bg-card hover:bg-muted/30 transition-all cursor-pointer"
+                  >
+                    <CardContent className="p-6">
+                      {/* Post Header */}
+                      <div className="flex items-start space-x-3 mb-4">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={influencer.avatar || "/placeholder.svg"} alt={influencer.name} />
+                          <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <h4 className="font-medium">{influencer.name}</h4>
+                            <span className="text-muted-foreground">•</span>
+                            <span className="text-sm text-muted-foreground">
+                              {new Date(post.createdAt).toLocaleDateString("vi-VN")}
+                            </span>
                             <Badge variant="outline" className="text-xs">
                               {post.category}
                             </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(post.createdAt).toLocaleDateString("vi-VN")}
-                            </span>
                           </div>
+                          <p className="text-sm text-muted-foreground">
+                            @{influencer.name.toLowerCase().replace(/\s+/g, "")}
+                          </p>
+                        </div>
+                      </div>
 
-                          {/* Post Title */}
-                          <h3 className="font-semibold text-lg mb-3 line-clamp-2">{post.title}</h3>
+                      {/* Post Content */}
+                      <div className="space-y-3">
+                        <h3 className="text-lg font-semibold leading-tight">{post.title}</h3>
+                        <div className="text-sm text-muted-foreground leading-relaxed">
+                          <p className="line-clamp-3">{post.content}</p>
+                          <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1">
+                            Đọc thêm
+                          </Button>
+                        </div>
+                      </div>
 
-                          {/* Post Content Preview */}
-                          <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{post.content}</p>
-
-                          {/* Post Stats */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                              <div className="flex items-center space-x-1">
-                                <Heart className="h-4 w-4" />
-                                <span>{post.likes}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <MessageCircle className="h-4 w-4" />
-                                <span>{post.comments}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Eye className="h-4 w-4" />
-                                <span>{post.views}</span>
-                              </div>
-                            </div>
-                            <Button variant="ghost" size="sm">
-                              <Share2 className="h-4 w-4" />
-                            </Button>
+                      {/* Post Footer */}
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
+                        <div className="flex items-center space-x-6">
+                          <button className="flex items-center space-x-2 text-muted-foreground hover:text-red-500 transition-colors group">
+                            <Heart className="h-4 w-4 group-hover:fill-current" />
+                            <span className="text-sm">{post.likes}</span>
+                          </button>
+                          <button className="flex items-center space-x-2 text-muted-foreground hover:text-blue-500 transition-colors">
+                            <MessageCircle className="h-4 w-4" />
+                            <span className="text-sm">{post.comments}</span>
+                          </button>
+                          <div className="flex items-center space-x-2 text-muted-foreground">
+                            <Eye className="h-4 w-4" />
+                            <span className="text-sm">{post.views} lượt xem</span>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                          <Share2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
               ) : (
-                <Card className="border-2 border-primary/20 bg-card shadow-lg">
+                <Card className="border-2 border-dashed border-muted bg-muted/20">
                   <CardContent className="p-12 text-center">
                     <div className="space-y-4">
                       <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
