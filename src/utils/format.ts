@@ -3,6 +3,13 @@ export const parseTimestampToDate = (timestamp: number[]): Date => {
   return new Date(year, month - 1, day, hour, minute, second, Math.floor(nanos / 1_000_000));
 };
 
+export const parseDateString = (date: number[]): string =>{
+    const [year, month, day] = date;
+    const format = new Date(year, month - 1, day);
+
+    return format.toLocaleDateString('vi-VN');
+};
+
 export const formatDateToTimestamp = (date: Date): number[] => {
   return [
     date.getFullYear(),

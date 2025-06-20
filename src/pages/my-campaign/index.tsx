@@ -28,6 +28,7 @@ const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
     (campaign) =>
       campaign.status === activeTab 
   )
+  console.log(campaigns)
   return (
     <div className="space-y-6">
           <h1 className="text-3xl font-bold">Chiến dịch của tôi</h1>

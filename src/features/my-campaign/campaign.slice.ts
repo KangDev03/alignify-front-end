@@ -1,16 +1,19 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { CampaignState, type CampaignResponse } from './campaign.type';
 
+import type {  CampaignResponse,  CampaignState, } from './campaign.type';
+
+    
 const initialState: CampaignState = {
-    campaign: [],
+    campaigns: [],
 }
 
 export const campaignSlice = createSlice({
     name: 'campaign',
     initialState,
     reducers:{
-        setCampagin: (state, action: PayloadAction<CampaignResponse>)=>{
-            state.campaign = action.payload.data;
+        setCampagin: (state, action: PayloadAction<CampaignResponse>) => {
+            state.campaigns = Array.isArray(action.payload?.data) ? action.payload.data : [];
+
         },
     }
 })

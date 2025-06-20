@@ -9,18 +9,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 import type { Campaign } from '@/features/my-campaign/campaign.type.ts';
+import { parseDateString } from '@/utils/format.ts';
 
 import CampaignDetail from './campaign-detail.tsx';
 import { StatusBadge } from './status-badge.tsx';
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
-  function formatDate(date: number[]): string {
-    const [year, month, day] = date;
-    const format = new Date(year, month - 1, day);
-
-    return format.toLocaleDateString('vi-VN');
-  }
 
   return (
     <Card
@@ -39,7 +34,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               {StatusBadge(campaign.status)}
             </div>
             <p className="text-sm text-muted-foreground">
-              {campaign.brandName} • {formatDate(campaign.createdDate)}
+              {campaign.brandName} • {parseDateString(campaign.createdAt)}
             </p>
           </div>
         </div>
@@ -51,12 +46,12 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         <div className="flex justify-between mb-4 text-sm text-muted-foreground">
           <div className="flex items-center w-fit mr-4">
             <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
-            <span>{`${campaign.budget}`}</span>
+            <span>{`${Number(campaign.budget).toLocaleString("vi-VN")} VNĐ`}</span>
           </div>
 
           <div className="flex items-center w-fit">
             <Calendar className="w-4 h-4 mr-2 text-primary" />
-            <span>{`${campaign.startAt} - ${campaign.dueAt}`}</span>
+            <span>{`${parseDateString(campaign.startAt)} - ${parseDateString(campaign.dueAt)}`}</span>
           </div>
         </div>
 

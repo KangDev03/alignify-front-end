@@ -45,7 +45,6 @@ function getTimeAgo(date: Date): string {
   const diffInDays = Math.floor(diffInHours / 24)
   if (diffInDays < 30) return `${diffInDays} ngày trước`
 
-  // Nếu lâu hơn 30 ngày thì hiển thị theo ngày tháng
   return date.toLocaleDateString('vi-VN')
 }
 
@@ -93,13 +92,15 @@ export default function Forum() {
                       <Icons.eye className="h-4 w-4" />
                       <span>0</span>
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {Array.isArray(post.categories)
-                        ? post.categories
-                            .map((cat) => (typeof cat === 'string' ? cat : cat.categoryName || ''))
-                            .join(', ')
-                        : ''}
-                    </Badge>
+        {post.categories.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {post.categories.map((cat: any, i: number) => (
+              <Badge key={cat.categoryId ?? i} variant="outline">
+                {cat.categoryName ?? cat}
+              </Badge>
+            ))}
+          </div>
+        )}
                   </div>
                 </div>
               </div>

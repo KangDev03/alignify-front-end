@@ -7,15 +7,16 @@ export interface CampaignRequest{
 export interface Campaign {
   campaignId: string;
   brandName: string;
+  brandAvartar: string;
   campaignName: string;
   content: string;
   imageUrl: string;
   budget: number;
   status: string;
-  createdDate: number[]; 
+  createdAt: number[]; 
   dueAt: number[];
   startAt: number[];  
-  categories?: Category[] | [];
+  categories: Category[];
   campaignRequirements: {[key:string]:number};
     influencerRequirements: string[];
     influencerCountExpected:number;
