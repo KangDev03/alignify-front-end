@@ -33,7 +33,7 @@ const mockForumPosts = [
   },
 ]
 export default function Forum() {
-    const { data: rawData } = useGetAllContentPostingQuery({ pageNumber: 0, pageSize: 10 })
+  const { data: rawData } = useGetAllContentPostingQuery({ pageNumber: 0, pageSize: 10 })
   const contentPosting = rawData?.data
   console.log(contentPosting)
   return (
@@ -70,10 +70,10 @@ export default function Forum() {
                   <Badge variant="outline" className="text-xs">
                     {Array.isArray(post.categories)
                       ? post.categories.map((cat) =>
-                          typeof cat === "string"
-                            ? cat
-                            : cat.categoryName || ""
-                        ).join(", ")
+                        typeof cat === "string"
+                          ? cat
+                          : cat.categoryName || ""
+                      ).join(", ")
                       : ""}
                   </Badge>
                 </div>

@@ -63,8 +63,8 @@ export function HomePage() {
   const [activeTab, setActiveTab] = useState("campaigns")
 
   return (
-    <div className="min-h-screen bg-transparent transition-colors duration-300 pl-[16px] pr-[16px]">
-      <div className="  ">
+    <div className="min-h-screen bg-transparent transition-colors duration-300">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Khám phá</h1>
         </div>
