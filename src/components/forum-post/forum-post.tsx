@@ -1,12 +1,11 @@
-// my-forum-post.tsx
-import { Eye, Heart, MessageCircle, Share2 } from "lucide-react"
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
-interface MyForumPostProps {
+import { Icons } from "@/components/icons/icons"
+
+interface ForumPostProps {
   post: {
     id: string
     title: string
@@ -24,10 +23,10 @@ interface MyForumPostProps {
   }
 }
 
-export function MyForumPost({ post, influencer }: MyForumPostProps) {
+export function ForumPost({ post, influencer }: ForumPostProps) {
   return (
-    <Card className="border border-border bg-card hover:bg-muted/30 transition-all cursor-pointer">
-      <CardContent className="p-6">
+    <Card className="border border-border bg-card hover:bg-muted/30 transition-all">
+      <CardContent className="px-6">
         {/* Post Header */}
         <div className="flex items-start space-x-3 mb-4">
           <Avatar className="h-10 w-10">
@@ -35,19 +34,16 @@ export function MyForumPost({ post, influencer }: MyForumPostProps) {
             <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
+            <h4 className="font-medium">{influencer.name}</h4>
             <div className="flex items-center space-x-2">
-              <h4 className="font-medium">{influencer.name}</h4>
-              <span className="text-muted-foreground">•</span>
               <span className="text-sm text-muted-foreground">
                 {new Date(post.createdAt).toLocaleDateString("vi-VN")}
               </span>
+              <span className="text-muted-foreground">•</span>
               <Badge variant="outline" className="text-xs">
                 {post.category}
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground">
-              @{influencer.name.toLowerCase().replace(/\s+/g, "")}
-            </p>
           </div>
         </div>
 
@@ -56,30 +52,38 @@ export function MyForumPost({ post, influencer }: MyForumPostProps) {
           <h3 className="text-lg font-semibold leading-tight">{post.title}</h3>
           <div className="text-sm text-muted-foreground leading-relaxed">
             <p className="line-clamp-3">{post.content}</p>
-            <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1">
+            {/* <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1">
               Đọc thêm
-            </Button>
+            </Button> */}
           </div>
+        </div>
+
+        <div className="w-full h-80 relative rounded-md mt-3">
+          <img
+            src="background-16x9.jpg"
+            alt="Chiến dịch quảng cáo sản phẩm làm đẹp mùa hè"
+            className="w-full h-full object-cover rounded-md"
+          />
         </div>
 
         {/* Post Footer */}
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
           <div className="flex items-center space-x-6">
             <button className="flex items-center space-x-2 text-muted-foreground hover:text-red-500 transition-colors group">
-              <Heart className="h-4 w-4 group-hover:fill-current" />
+              <Icons.heart className="h-4 w-4 group-hover:fill-current" />
               <span className="text-sm">{post.likes}</span>
             </button>
             <button className="flex items-center space-x-2 text-muted-foreground hover:text-blue-500 transition-colors">
-              <MessageCircle className="h-4 w-4" />
+              <Icons.messageCircle className="h-4 w-4" />
               <span className="text-sm">{post.comments}</span>
             </button>
-            <div className="flex items-center space-x-2 text-muted-foreground">
-              <Eye className="h-4 w-4" />
+            {/* <div className="flex items-center space-x-2 text-muted-foreground">
+              <Icons.eye className="h-4 w-4" />
               <span className="text-sm">{post.views} lượt xem</span>
-            </div>
+            </div> */}
           </div>
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-            <Share2 className="h-4 w-4" />
+            <Icons.share2 className="h-4 w-4" />
           </Button>
         </div>
       </CardContent>

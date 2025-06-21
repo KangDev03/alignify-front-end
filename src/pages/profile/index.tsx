@@ -1,15 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, Heart, MessageCircle, Share2 } from "lucide-react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-import { MyForumPost } from "@/components/common/my-forum-post"
+import { ForumPost } from "@/components/forum-post/forum-post"
+import { Icons } from "@/components/icons/icons"
 import { ProfileHeader } from "@/features/profile/components/profile-header"
 import { ProfileInfo } from "@/features/profile/components/profile-info"
 import { ProfilePerformance } from "@/features/profile/components/profile-performance"
@@ -125,22 +123,24 @@ export function UserProfilePage({ influencer }: InfluencerProfileProps) {
           <TabsContent value="posts" className="mt-6">
             <div className="space-y-4">
               {forumPosts.length > 0 ? (
-                forumPosts.map((post) => (
-                  <MyForumPost key={post.id} post={post} influencer={influencer} />
-                ))
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {forumPosts.map((post) => (
+                    <ForumPost key={post.id} post={post} influencer={influencer} />
+                  ))}
+                </div>
               ) : (
                 <Card className="border-2 border-dashed border-muted bg-muted/20">
                   <CardContent className="p-12 text-center">
                     <div className="space-y-4">
                       <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
-                        <MessageCircle className="h-8 w-8 text-muted-foreground" />
+                        <Icons.messageCircle className="h-8 w-8 text-muted-foreground" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">Chưa có bài viết nào</h3>
                         <p className="text-muted-foreground">Bạn chưa đăng bài viết nào trong forum.</p>
                       </div>
                       <Button>
-                        <MessageCircle className="h-4 w-4 mr-2" />
+                        <Icons.messageCircle className="h-4 w-4 mr-2" />
                         Viết bài đầu tiên
                       </Button>
                     </div>

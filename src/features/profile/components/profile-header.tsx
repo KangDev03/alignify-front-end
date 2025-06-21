@@ -99,7 +99,7 @@ export function ProfileHeader({
                   </div>
                 </div>
               </div>
-              <Button
+              {/* <Button
                 variant={isEditing ? 'destructive' : 'outline'}
                 size="sm"
                 onClick={isEditing ? onCancel : onEditToggle}
@@ -110,12 +110,12 @@ export function ProfileHeader({
                   <Icons.edit className="h-4 w-4 mr-2" />
                 )}
                 {isEditing ? 'Hủy' : 'Chỉnh sửa'}
-              </Button>
+              </Button> */}
             </div>
 
             <div className="flex flex-wrap gap-2">
               {influencer.category.map((cat, index) => (
-                <Badge key={index} variant="secondary">
+                <Badge key={index} variant="outline">
                   {cat}
                 </Badge>
               ))}

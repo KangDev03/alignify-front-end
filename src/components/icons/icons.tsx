@@ -31,6 +31,7 @@ import {
   Search,
   SendHorizontal,
   Settings,
+  Share2,
   Star,
   Store,
   TrendingUp,
@@ -80,5 +81,6 @@ export const Icons = {
   circleCheckBig: CircleCheckBig,
   circleX: CircleX,
   DollarSign: DollarSign,
+  share2: Share2,
 };
 
