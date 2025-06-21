@@ -5,7 +5,7 @@ export interface ContentPostingRequest {
   pageSize: number | 10;
 }
 
-export interface ContentPosting{
+export interface ContentPosting {
   contentId: string;
   contentName: string;
   userId: string;
@@ -17,11 +17,12 @@ export interface ContentPosting{
   isPublic: boolean;
   commentCount: number;
   likeCount: number;
+  userAvatar?: string | null;
 }
 interface Category {
   categoryId: string;
   categoryName: string;
 }
-export interface ContentPostingResponse extends ApiReponseSuccess<ContentPosting[]>{
-    data: ContentPosting[]
+export interface ContentPostingResponse extends ApiReponseSuccess<ContentPosting[]> {
+  data: ContentPosting[];
 }

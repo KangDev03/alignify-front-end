@@ -1,15 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { persistReducer,persistStore } from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
 import authReducer from '@/features/auth/auth.slice';
+import commonReducer from '@/features/common/common.slice';
 
 import { baseApi } from './baseApi';
 
 const persistConfig = {
   key: 'auth',
   storage,
-  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name'] 
+  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name'],
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
@@ -18,10 +19,11 @@ export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer, // Sử dụng reducer đã được persist
     [baseApi.reducerPath]: baseApi.reducer,
+    common: commonReducer,
   },
-  middleware: (getDefaultMiddleware) => 
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false // Tắt cảnh báo cho redux-persist
+      serializableCheck: false, // Tắt cảnh báo cho redux-persist
     }).concat(baseApi.middleware),
 });
 

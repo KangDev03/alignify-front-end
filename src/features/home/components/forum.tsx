@@ -1,31 +1,65 @@
+import { AlertCircleIcon } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { Icons } from '@/components/icons/icons';
 
 import { useGetAllContentPostingQuery } from '../forum-api/forum.service';
 
 function getTimeAgo(date: Date): string {
-  const now = new Date()
-  const diffInMs = now.getTime() - date.getTime()
-  const diffInSeconds = Math.floor(diffInMs / 1000)
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInSeconds = Math.floor(diffInMs / 1000);
 
-  if (diffInSeconds < 60) return `${diffInSeconds} giây trước`
-  const diffInMinutes = Math.floor(diffInSeconds / 60)
-  if (diffInMinutes < 60) return `${diffInMinutes} phút trước`
-  const diffInHours = Math.floor(diffInMinutes / 60)
-  if (diffInHours < 24) return `${diffInHours} giờ trước`
-  const diffInDays = Math.floor(diffInHours / 24)
-  if (diffInDays < 30) return `${diffInDays} ngày trước`
+  if (diffInSeconds < 60) return `${diffInSeconds} giây trước`;
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours} giờ trước`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) return `${diffInDays} ngày trước`;
 
   return date.toLocaleDateString('vi-VN')
 }
 
 export default function Forum() {
-  const { data: rawData } = useGetAllContentPostingQuery({ pageNumber: 0, pageSize: 10 });
+  const { data: rawData, isLoading } = useGetAllContentPostingQuery({
+    pageNumber: 0,
+    pageSize: 10,
+  });
   const contentPosting = rawData?.data;
-
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Card className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
+          <CardContent>
+            <div className="flex items-start space-x-3">
+              <Skeleton className="h-10 w-10 rounded-full bg-border" />
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Skeleton className="h-4 w-24 bg-border" />
+                  <Skeleton className="h-4 w-8 bg-border" />
+                  <Skeleton className="h-4 w-16 bg-border" />
+                </div>
+                <Skeleton className="h-5 w-40 bg-border" />
+                <Skeleton className="h-4 w-full bg-border" />
+                <div className="flex items-center space-x-6 mt-3">
+                  <Skeleton className="h-4 w-10 bg-border" />
+                  <Skeleton className="h-4 w-10 bg-border" />
+                  <Skeleton className="h-4 w-10 bg-border" />
+                  <Skeleton className="h-5 w-24 rounded bg-border" />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   return (
     <div className="space-y-4">
       {contentPosting?.map((post) => {
