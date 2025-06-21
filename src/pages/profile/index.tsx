@@ -2,6 +2,12 @@
 
 import { useState } from "react"
 
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+import { ForumPost } from "@/components/forum-post/forum-post"
+import { Icons } from "@/components/icons/icons"
 import { ProfileHeader } from "@/features/profile/components/profile-header"
 import { ProfileInfo } from "@/features/profile/components/profile-info"
 import { ProfilePerformance } from "@/features/profile/components/profile-performance"
@@ -12,6 +18,57 @@ import type { InfluencerData } from "@/features/profile/types/profile.types"
 interface InfluencerProfileProps {
   influencer: InfluencerData
 }
+
+const forumPosts = [
+  {
+    id: "1",
+    title: "Tips chụp ảnh sản phẩm đẹp với ánh sáng tự nhiên",
+    content:
+      "Chia sẻ một số mẹo nhỏ giúp các bạn influencer chụp ảnh sản phẩm đẹp hơn với ánh sáng tự nhiên. Đầu tiên, hãy chọn thời điểm golden hour (khoảng 1 giờ sau bình minh hoặc 1 giờ trước hoàng hôn) để có ánh sáng mềm mại nhất...",
+    category: "Làm đẹp",
+    createdAt: "2024-01-15",
+    likes: 156,
+    comments: 23,
+    views: 1200,
+    image: "/placeholder.svg?height=200&width=300",
+  },
+  {
+    id: "2",
+    title: "Kinh nghiệm làm việc với brand lần đầu",
+    content:
+      "Khi mới bắt đầu làm influencer, việc hợp tác với brand có thể khiến bạn cảm thấy lo lắng. Hôm nay mình sẽ chia sẻ những kinh nghiệm quý báu từ những lần hợp tác đầu tiên của mình...",
+    category: "Kinh nghiệm",
+    createdAt: "2024-01-10",
+    likes: 89,
+    comments: 15,
+    views: 890,
+    image: "/placeholder.svg?height=200&width=300",
+  },
+  {
+    id: "3",
+    title: "Cách tăng engagement rate hiệu quả",
+    content:
+      "Engagement rate là một trong những chỉ số quan trọng nhất đối với influencer. Sau 2 năm làm content creator, mình đã tìm ra những cách hiệu quả để tăng tỷ lệ tương tác...",
+    category: "Tips & Tricks",
+    createdAt: "2024-01-05",
+    likes: 234,
+    comments: 45,
+    views: 1850,
+    image: "/placeholder.svg?height=200&width=300",
+  },
+  {
+    id: "4",
+    title: "Review setup quay video tại nhà với budget thấp",
+    content:
+      "Nhiều bạn hỏi mình về setup quay video tại nhà mà không tốn quá nhiều tiền. Hôm nay mình sẽ chia sẻ setup hiện tại của mình với tổng chi phí chỉ khoảng 3 triệu đồng...",
+    category: "Công nghệ",
+    createdAt: "2023-12-28",
+    likes: 178,
+    comments: 32,
+    views: 1456,
+    image: "/placeholder.svg?height=200&width=300",
+  },
+]
 
 export function UserProfilePage({ influencer }: InfluencerProfileProps) {
   const [isEditing, setIsEditing] = useState(false)
@@ -36,34 +93,64 @@ export function UserProfilePage({ influencer }: InfluencerProfileProps) {
           onCancel={handleCancel}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <ProfileInfo
-              influencer={influencer}
-              editData={editData}
-              isEditing={isEditing}
-              onSave={handleSave}
-              onEditDataChange={setEditData}
-            />
+        <Tabs defaultValue="profile" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="profile">Thông tin cá nhân</TabsTrigger>
+            <TabsTrigger value="posts">Bài viết của tôi ({forumPosts.length})</TabsTrigger>
+          </TabsList>
 
-            <ProfileSocialLinks
-              socialMediaLinks={influencer.socialMediaLinks}
-            />
-          </div>
+          <TabsContent value="profile" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <ProfileInfo influencer={influencer} />
 
-          {/* Thống kê */}
-          <div className="space-y-6">
-            <ProfileStats
-              totalFollowers={influencer.totalFollowers}
-              followers={influencer.followers}
-            />
-            <ProfilePerformance
-              engagementRate={influencer.engagementRate}
-              rating={influencer.rating}
-              completedCampaigns={influencer.completedCampaigns}
-            />
-          </div>
-        </div>
+                <ProfileSocialLinks
+                  socialMediaLinks={influencer.socialMediaLinks}
+                />
+              </div>
+
+              {/* Thống kê */}
+              <div className="space-y-6">
+                <ProfileStats influencer={influencer} />
+                <ProfilePerformance
+                  engagementRate={influencer.engagementRate}
+                  rating={influencer.rating}
+                  completedCampaigns={influencer.completedCampaigns}
+                />
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="posts" className="mt-6">
+            <div className="space-y-4">
+              {forumPosts.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {forumPosts.map((post) => (
+                    <ForumPost key={post.id} post={post} influencer={influencer} />
+                  ))}
+                </div>
+              ) : (
+                <Card className="border-2 border-dashed border-muted bg-muted/20">
+                  <CardContent className="p-12 text-center">
+                    <div className="space-y-4">
+                      <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+                        <Icons.messageCircle className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">Chưa có bài viết nào</h3>
+                        <p className="text-muted-foreground">Bạn chưa đăng bài viết nào trong forum.</p>
+                      </div>
+                      <Button>
+                        <Icons.messageCircle className="h-4 w-4 mr-2" />
+                        Viết bài đầu tiên
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+
       </div>
     </div>
   )

@@ -34,6 +34,7 @@ import {
   Search,
   SendHorizontal,
   Settings,
+  Share2,
   Star,
   Store,
   Trash,
@@ -88,4 +89,5 @@ export const Icons = {
   fileImage: FileImage,
   trash: Trash,
   image: Image,
+  share2: Share2,
 };
