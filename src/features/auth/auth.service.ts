@@ -1,6 +1,8 @@
 import { baseApi } from '@/redux/baseApi';
 
 import {
+  type ForgotPasswordRequest,
+  type ForgotPasswordResponse,
   type GoogleLoginRequest,
   type LoginRequest,
   type LoginResponse,
@@ -8,6 +10,8 @@ import {
   type RegisterResponse,
   type RequestOTPRequest,
   type RequestOTPResponse,
+  type ResetPasswordRequest,
+  type ResetPasswordResponse,
   type RolesResponse,
   type VerifyOTPRequest,
   type VerifyOTPResponse,
@@ -60,6 +64,22 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
+    forgotPassword: builder.mutation<ForgotPasswordResponse, ForgotPasswordRequest>({
+      query: (data) => ({
+        url: '/auth/forgot-password',
+        method: 'POST',
+        params: { email: data.email },
+      }),
+    }),
+
+    resetPassword: builder.mutation<ResetPasswordResponse, ResetPasswordRequest>({
+      query: (data) => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
     logout: builder.mutation<{ success: boolean; message: string }, void>({
       query: () => ({
         url: '/auth/logout',
@@ -105,4 +125,6 @@ export const {
   useRequestOTPMutation,
   useVerifyOTPMutation,
   useGoogleLoginMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;

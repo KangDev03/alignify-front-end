@@ -58,3 +58,27 @@ export interface VerifyOTPRequest {
 }
 
 export type VerifyOTPResponse = ApiReponseSuccess<null>;
+
+// Gửi yêu cầu quên mật khẩu
+
+export type ForgotPasswordRequest = {
+  email: string;
+};
+
+export type ForgotPasswordResponse = {
+  success: boolean;
+  message: string;
+};
+
+// Đặt lại mật khẩu mới
+
+export type ResetPasswordRequest = {
+  password: string;
+  passwordConfirm: string;
+  token: string; // token từ email
+};
+
+export type ResetPasswordResponse = {
+  success: boolean;
+  message: string;
+};
