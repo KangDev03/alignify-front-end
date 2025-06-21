@@ -44,7 +44,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
             <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <DialogTitle className="text-xl pr-1">{campaignInfo.campaignName}</DialogTitle>
+            <DialogTitle className="text-lg pr-1">{campaignInfo.campaignName}</DialogTitle>
             <DialogDescription className="flex items-center">
               {campaignInfo.brandName} • {appliedDate.toLocaleDateString('vi-VN')}
             </DialogDescription>
@@ -77,10 +77,10 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
           <p className="text-sm font-medium ">Trạng thái:</p>
           {StatusBadge(application.status)}
         </div>
-            <h4 className="text-sm font-medium mb-1">Thông tin ứng tuyển</h4>
+        <h4 className="text-sm font-medium mb-1">Thông tin ứng tuyển</h4>
 
         <div className="grid grid-cols-2 gap-4">
-          
+
           <div className="w-full">
             <div className="flex items-center ">
               <Calendar className="h-4 w-4 text-blue-500 mr-2" />

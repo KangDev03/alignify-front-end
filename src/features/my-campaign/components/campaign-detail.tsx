@@ -18,8 +18,8 @@ import type { Campaign } from '../campaign.type.ts';
 
 export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
   return (
-    <>
-      <DialogHeader>
+    <div className='h-full'>
+      <DialogHeader className='pr-6'>
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage
@@ -29,7 +29,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <AvatarFallback>{campaign.brandName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <DialogTitle className="text-xl">{campaign.campaignName}</DialogTitle>
+            <DialogTitle className="text-lg">{campaign.campaignName}</DialogTitle>
             <DialogDescription>
               {campaign.brandName} •{' '}
               {parseDateString(campaign.createdAt)}
@@ -38,7 +38,16 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
         </div>
       </DialogHeader>
 
-      <div className="space-y-3">
+
+      <div className="pt-2 pr-6 h-[70%] space-y-3 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent">
+        <div className="w-full h-64 relative mt-4 rounded-lg overflow-hidden">
+          <img
+            src={campaign.imageUrl || "/placeholder.svg"}
+            alt={campaign.campaignName}
+            className="w-full h-full object-cover"
+          />
+        </div>
+
         <div>
           <h4 className="text-sm font-medium mb-1">Mô tả chiến dịch:</h4>
           <p className="text-sm text-muted-foreground">{campaign.content}</p>
@@ -61,7 +70,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <h4 className="text-sm font-medium mb-1">Ngân sách</h4>
             <div className="flex items-center w-fit mr-4">
               <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
-            <span>{`${Number(campaign.budget).toLocaleString("vi-VN")} VNĐ`}</span>
+              <span>{`${Number(campaign.budget).toLocaleString("vi-VN")} VNĐ`}</span>
             </div>
           </div>
 
@@ -128,6 +137,6 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             )}
         </Accordion>
       </div>
-    </>
+    </div>
   );
 }

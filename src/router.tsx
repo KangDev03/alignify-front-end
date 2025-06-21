@@ -123,7 +123,7 @@ function Router() {
           <Route path="/applicants" element={<Applicants />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
-          {/* <Route path="/user-profile" element={<BrandProfile brand={mockBrand} />} /> */}
+          <Route path="/user-profile2" element={<BrandProfile brand={mockBrand} />} />
         </Route>
         <Route path="/contact" element={<ContactPage />} />
       </Routes>

@@ -8,9 +8,11 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import { Separator } from "@/components/ui/separator"
 
 import { Icons } from "@/components/icons/icons"
+import type { Campaign } from "@/features/my-campaign/campaign.type"
+import CampaignCard from "@/features/my-campaign/components/campaign-card"
 
 
-const mockCampaigns = [
+const mockCampaigns2 = [
   {
     id: "1",
     title: "Chiến dịch quảng cáo sản phẩm làm đẹp mùa hè",
@@ -45,13 +47,68 @@ const mockCampaigns = [
   },
 ]
 
+const mockCampaigns: Campaign[] = [
+  {
+    campaignId: '1',
+    campaignName: 'Chiến dịch quảng cáo sản phẩm làm đẹp mùa hè',
+    brandName: 'Beauty Co.',
+    brandAvartar: '/placeholder.svg?height=40&width=40',
+    imageUrl: '/images/background-16x9.jpg',
+    content: 'Tìm kiếm influencer để quảng bá dòng sản phẩm chăm sóc da mùa hè.',
+    budget: 10000000,
+    status: 'active',
+    createdAt: [2024, 5, 15],
+    startAt: [2024, 6, 1],
+    dueAt: [2024, 7, 10],
+    categories: [
+      {
+        categoryId: 'beauty',
+        categoryName: 'Làm đẹp',
+      },
+    ],
+    campaignRequirements: {
+      followers: 10000,
+      ageMin: 18,
+      ageMax: 35,
+    },
+    influencerRequirements: ['Nữ', 'Follower > 10K'],
+    influencerCountExpected: 5,
+    influencerCountCurrent: 2,
+  },
+  {
+    campaignId: '2',
+    campaignName: 'Review sản phẩm công nghệ mới nhất',
+    brandName: 'TechViet',
+    brandAvartar: '/placeholder.svg?height=40&width=40',
+    imageUrl: '/images/background-16x9.jpg',
+    content: 'Cần influencer tech review các sản phẩm điện tử mới.',
+    budget: 15000000,
+    status: 'pending',
+    createdAt: [2024, 5, 25],
+    startAt: [2024, 6, 15],
+    dueAt: [2024, 7, 15],
+    categories: [
+      {
+        categoryId: 'tech',
+        categoryName: 'Công nghệ',
+      },
+    ],
+    campaignRequirements: {
+      followers: 50000,
+    },
+    influencerRequirements: ['Am hiểu công nghệ', 'Follower > 50K'],
+    influencerCountExpected: 3,
+    influencerCountCurrent: 1,
+  },
+]
+
 export default function Campaigns() {
-  const [selectedCampaign, setSelectedCampaign] = useState<(typeof mockCampaigns)[0] | null>(null)
+  const [selectedCampaign, setSelectedCampaign] = useState<(typeof mockCampaigns2)[0] | null>(null)
 
   return (
     <>
       <div className="space-y-4">
-        {mockCampaigns.map((campaign) => (
+        {/* {mockCampaigns2.map((campaign) => (
           <Card
             key={campaign.id}
             className="border-2 border-primary/20 pt-0 bg-card shadow-lg hover:shadow-xl transition-all overflow-hidden"
@@ -112,9 +169,12 @@ export default function Campaigns() {
               </div>
             </CardContent>
           </Card>
+        ))} */}
+        {mockCampaigns.map((campaign) => (
+          <CampaignCard key={campaign.campaignId} campaign={campaign} />
         ))}
       </div>
-      <Dialog open={!!selectedCampaign} onOpenChange={(open) => !open && setSelectedCampaign(null)}>
+      {/* <Dialog open={!!selectedCampaign} onOpenChange={(open) => !open && setSelectedCampaign(null)}>
         <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
           {selectedCampaign && (
             <>
@@ -209,7 +269,7 @@ export default function Campaigns() {
             </>
           )}
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </>
   )
 }
