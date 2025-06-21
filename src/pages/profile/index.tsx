@@ -1,87 +1,125 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { ForumPost } from "@/components/forum-post/forum-post"
-import { Icons } from "@/components/icons/icons"
-import { ProfileHeader } from "@/features/profile/components/profile-header"
-import { ProfileInfo } from "@/features/profile/components/profile-info"
-import { ProfilePerformance } from "@/features/profile/components/profile-performance"
-import { ProfileSocialLinks } from "@/features/profile/components/profile-social-links"
-import { ProfileStats } from "@/features/profile/components/profile-stats"
-import type { InfluencerData } from "@/features/profile/api/profile.types"
+import { ForumPost } from '@/components/forum-post/forum-post';
+import { Icons } from '@/components/icons/icons';
+import type { ContentPosting } from '@/features/home/forum-api/forum.type';
+import { ProfileHeader } from '@/features/profile/components/profile-header';
+import { ProfileInfo } from '@/features/profile/components/profile-info';
+import { ProfilePerformance } from '@/features/profile/components/profile-performance';
+import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
+import { ProfileStats } from '@/features/profile/components/profile-stats';
+import type { InfluencerData } from '@/features/profile/types/profile.types';
+import { formatDateToTimestamp } from '@/utils/format';
 
 interface InfluencerProfileProps {
-  influencer: InfluencerData
+  influencer: InfluencerData;
 }
 
-const forumPosts = [
+const forumPosts: ContentPosting[] = [
   {
-    id: "1",
-    title: "Tips chụp ảnh sản phẩm đẹp với ánh sáng tự nhiên",
+    contentId: '1',
+    contentName: 'Tips chụp ảnh sản phẩm đẹp với ánh sáng tự nhiên',
     content:
-      "Chia sẻ một số mẹo nhỏ giúp các bạn influencer chụp ảnh sản phẩm đẹp hơn với ánh sáng tự nhiên. Đầu tiên, hãy chọn thời điểm golden hour (khoảng 1 giờ sau bình minh hoặc 1 giờ trước hoàng hôn) để có ánh sáng mềm mại nhất...",
-    category: "Làm đẹp",
-    createdAt: "2024-01-15",
-    likes: 156,
-    comments: 23,
-    views: 1200,
-    image: "/placeholder.svg?height=200&width=300",
+      'Chia sẻ một số mẹo nhỏ giúp các bạn influencer chụp ảnh sản phẩm đẹp hơn với ánh sáng tự nhiên. Đầu tiên, hãy chọn thời điểm golden hour (khoảng 1 giờ sau bình minh hoặc 1 giờ trước hoàng hôn) để có ánh sáng mềm mại nhất...',
+    categories: [
+      {
+        categoryId: '1',
+        categoryName: 'Làm đẹp',
+      },
+    ],
+    createdDate: formatDateToTimestamp(new Date()),
+    likeCount: 156,
+    commentCount: 23,
+    // views: 1200,
+    imageUrl: '/placeholder.svg?height=200&wcontentIdth=300',
+    userAvatar: '/placeholder.svg?height=200&wcontentIdth=300',
+    isPublic: true,
+    userId: '1',
+    userName: 'Khang Nguyen',
   },
   {
-    id: "2",
-    title: "Kinh nghiệm làm việc với brand lần đầu",
+    contentId: '2',
+    contentName: 'Kinh nghiệm làm việc với brand lần đầu',
     content:
-      "Khi mới bắt đầu làm influencer, việc hợp tác với brand có thể khiến bạn cảm thấy lo lắng. Hôm nay mình sẽ chia sẻ những kinh nghiệm quý báu từ những lần hợp tác đầu tiên của mình...",
-    category: "Kinh nghiệm",
-    createdAt: "2024-01-10",
-    likes: 89,
-    comments: 15,
-    views: 890,
-    image: "/placeholder.svg?height=200&width=300",
+      'Khi mới bắt đầu làm influencer, việc hợp tác với brand có thể khiến bạn cảm thấy lo lắng. Hôm nay mình sẽ chia sẻ những kinh nghiệm quý báu từ những lần hợp tác đầu tiên của mình...',
+    categories: [
+      {
+        categoryId: '2',
+        categoryName: 'Kinh nghiệm',
+      },
+    ],
+    createdDate: formatDateToTimestamp(new Date()),
+    likeCount: 89,
+    commentCount: 15,
+    // views: 890,
+    imageUrl: '/placeholder.svg?height=200&wcontentIdth=300',
+    userAvatar: '/placeholder.svg?height=200&wcontentIdth=300',
+    isPublic: true,
+    userId: '1',
+    userName: 'Khang Nguyen',
   },
   {
-    id: "3",
-    title: "Cách tăng engagement rate hiệu quả",
+    contentId: '3',
+    contentName: 'Cách tăng engagement rate hiệu quả',
     content:
-      "Engagement rate là một trong những chỉ số quan trọng nhất đối với influencer. Sau 2 năm làm content creator, mình đã tìm ra những cách hiệu quả để tăng tỷ lệ tương tác...",
-    category: "Tips & Tricks",
-    createdAt: "2024-01-05",
-    likes: 234,
-    comments: 45,
-    views: 1850,
-    image: "/placeholder.svg?height=200&width=300",
+      'Engagement rate là một trong những chỉ số quan trọng nhất đối với influencer. Sau 2 năm làm content creator, mình đã tìm ra những cách hiệu quả để tăng tỷ lệ tương tác...',
+    categories: [
+      {
+        categoryId: '3',
+        categoryName: 'Tips & Tricks',
+      },
+    ],
+    createdDate: formatDateToTimestamp(new Date()),
+    likeCount: 234,
+    commentCount: 45,
+    // views: 1850,
+    imageUrl: '/placeholder.svg?height=200&wcontentIdth=300',
+    userAvatar: '/placeholder.svg?height=200&wcontentIdth=300',
+    isPublic: true,
+    userId: '1',
+    userName: 'Khang Nguyen',
   },
   {
-    id: "4",
-    title: "Review setup quay video tại nhà với budget thấp",
+    contentId: '4',
+    contentName: 'Review setup quay vcontentIdeo tại nhà với budget thấp',
     content:
-      "Nhiều bạn hỏi mình về setup quay video tại nhà mà không tốn quá nhiều tiền. Hôm nay mình sẽ chia sẻ setup hiện tại của mình với tổng chi phí chỉ khoảng 3 triệu đồng...",
-    category: "Công nghệ",
-    createdAt: "2023-12-28",
-    likes: 178,
-    comments: 32,
-    views: 1456,
-    image: "/placeholder.svg?height=200&width=300",
+      'Nhiều bạn hỏi mình về setup quay vcontentIdeo tại nhà mà không tốn quá nhiều tiền. Hôm nay mình sẽ chia sẻ setup hiện tại của mình với tổng chi phí chỉ khoảng 3 triệu đồng...',
+    categories: [
+      {
+        categoryId: '4',
+        categoryName: 'Công nghệ',
+      },
+    ],
+    createdDate: formatDateToTimestamp(new Date()),
+    likeCount: 178,
+    commentCount: 32,
+    // views: 1456,
+    imageUrl: '/placeholder.svg?height=200&wcontentIdth=300',
+    userAvatar: '/placeholder.svg?height=200&wcontentIdth=300',
+    isPublic: true,
+    userId: '1',
+    userName: 'Khang Nguyen',
   },
-]
+];
 
 export function UserProfilePage({ influencer }: InfluencerProfileProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [editData, setEditData] = useState<Partial<InfluencerData>>(influencer)
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState<Partial<InfluencerData>>(influencer);
 
   const handleSave = () => {
-    setIsEditing(false)
-  }
+    setIsEditing(false);
+  };
 
   const handleCancel = () => {
-    setEditData(influencer)
-    setIsEditing(false)
-  }
+    setEditData(influencer);
+    setIsEditing(false);
+  };
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
@@ -94,19 +132,17 @@ export function UserProfilePage({ influencer }: InfluencerProfileProps) {
         />
 
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grcontentId w-full grcontentId-cols-2">
             <TabsTrigger value="profile">Thông tin cá nhân</TabsTrigger>
             <TabsTrigger value="posts">Bài viết của tôi ({forumPosts.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grcontentId grcontentId-cols-1 lg:grcontentId-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
                 <ProfileInfo influencer={influencer} />
 
-                <ProfileSocialLinks
-                  socialMediaLinks={influencer.socialMediaLinks}
-                />
+                <ProfileSocialLinks socialMediaLinks={influencer.socialMediaLinks} />
               </div>
 
               {/* Thống kê */}
@@ -123,9 +159,9 @@ export function UserProfilePage({ influencer }: InfluencerProfileProps) {
           <TabsContent value="posts" className="mt-6">
             <div className="space-y-4">
               {forumPosts.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grcontentId grcontentId-cols-1 md:grcontentId-cols-2 gap-6">
                   {forumPosts.map((post) => (
-                    <ForumPost key={post.id} post={post} influencer={influencer} />
+                    <ForumPost key={post.contentId} contentPosting={post} />
                   ))}
                 </div>
               ) : (
@@ -137,7 +173,9 @@ export function UserProfilePage({ influencer }: InfluencerProfileProps) {
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">Chưa có bài viết nào</h3>
-                        <p className="text-muted-foreground">Bạn chưa đăng bài viết nào trong forum.</p>
+                        <p className="text-muted-foreground">
+                          Bạn chưa đăng bài viết nào trong forum.
+                        </p>
                       </div>
                       <Button>
                         <Icons.messageCircle className="h-4 w-4 mr-2" />
@@ -150,8 +188,7 @@ export function UserProfilePage({ influencer }: InfluencerProfileProps) {
             </div>
           </TabsContent>
         </Tabs>
-
       </div>
     </div>
-  )
+  );
 }

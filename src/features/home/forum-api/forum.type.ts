@@ -12,7 +12,7 @@ export interface ContentPosting {
   userName: string;
   content: string;
   imageUrl: string;
-  categories?: Category[] | [];
+  categories: Category[] | [];
   createdDate: number[];
   isPublic: boolean;
   commentCount: number;

@@ -11,10 +11,7 @@ import {
   useGetApplicationsByBrandQuery,
   useGetApplicationsByInfluencerQuery,
 } from '@/features/application/application.service';
-import type {
-  Application,
-  Campaign,
-} from '@/features/application/application.type';
+import type { Application, Campaign } from '@/features/application/application.type';
 import ApplicationCard from '@/features/application/components/application-card';
 import { selectAuthState } from '@/features/auth/auth.slice';
 
@@ -27,7 +24,6 @@ const tabs = [
 export function ApplicationsPage() {
   const { id, role } = useSelector(selectAuthState);
   const [activeTab, setActiveTab] = useState('pending');
-  // const [searchTerm, setSearchTerm] = useState('');
 
   const influencerQuery = useGetApplicationsByInfluencerQuery(
     role === 'INFLUENCER' ? { pageNumber: 0, pageSize: 10 } : skipToken,
@@ -36,39 +32,27 @@ export function ApplicationsPage() {
   const brandQuery = useGetApplicationsByBrandQuery(
     role === 'BRAND' ? { pageNumber: 0, pageSize: 10 } : skipToken,
   );
-
-  console.log('ROLE:', role, 'ID:', id);
-  console.log('influencerQuery:', influencerQuery);
-  console.log('brandQuery:', brandQuery);
   const rawData =
     role === 'INFLUENCER'
       ? influencerQuery.currentData
       : role === 'BRAND'
         ? brandQuery.currentData
-        : undefined;  
- const applications = useMemo(() => {
-  if (!rawData?.data || !Array.isArray(rawData.data)) return [];
+        : undefined;
+  const applications = useMemo(() => {
+    if (!rawData?.data || !Array.isArray(rawData.data)) return [];
 
-  return rawData.data.reduce(
-    (acc: (Application & { campaignInfo: Campaign })[], entry) => {
-      console.log('entry.applications:', entry.applications);
-console.log('isArray?', Array.isArray(entry.applications));
-
+    return rawData.data.reduce((acc: (Application & { campaignInfo: Campaign })[], entry) => {
       if (Array.isArray(entry.applications)) {
         const combined = entry.applications.map((app) => ({
           ...app,
           campaignInfo: entry.campaignResponse,
-          
         }));
         acc.push(...combined);
       }
       return acc;
-    },
-    [],
-  );
-}, [rawData]);
+    }, []);
+  }, [rawData]);
 
-console.log('data', applications)
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Đơn ứng tuyển của tôi</h1>
@@ -97,8 +81,7 @@ console.log('data', applications)
             {applications
               .filter(
                 (application) =>
-                  application.status === 'PENDING' &&
-                  application.campaignInfo !== undefined,
+                  application.status === 'PENDING' && application.campaignInfo !== undefined,
               )
               .map((application) => (
                 <ApplicationCard
@@ -115,8 +98,7 @@ console.log('data', applications)
             {applications
               .filter(
                 (application) =>
-                  application.status === 'ACCEPTED' &&
-                  application.campaignInfo !== undefined,
+                  application.status === 'ACCEPTED' && application.campaignInfo !== undefined,
               )
               .map((application) => (
                 <ApplicationCard
@@ -132,8 +114,7 @@ console.log('data', applications)
             {applications
               .filter(
                 (application) =>
-                  application.status === 'REJECTED' &&
-                  application.campaignInfo !== undefined,
+                  application.status === 'REJECTED' && application.campaignInfo !== undefined,
               )
               .map((application) => (
                 <ApplicationCard

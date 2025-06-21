@@ -9,28 +9,30 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
+
+import { parseDateString } from '@/utils/format.ts';
 
 import { StatusBadge } from './status-badge.tsx';
 import type { Campaign } from '../campaign.type.ts';
 
 export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
-  const startDate = new Date(campaign.startDate);
-  const endDate = new Date(campaign.endDate);
-
   return (
     <>
       <DialogHeader>
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={campaign.brandAvatar || '/placeholder.svg'} alt={campaign.brand} />
-            <AvatarFallback>{campaign.brand.charAt(0)}</AvatarFallback>
+            <AvatarImage
+              src={campaign.brandAvartar || '/placeholder.svg'}
+              alt={campaign.brandName}
+            />
+            <AvatarFallback>{campaign.brandName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <DialogTitle className="text-xl">{campaign.title}</DialogTitle>
+            <DialogTitle className="text-xl">{campaign.campaignName}</DialogTitle>
             <DialogDescription>
-              {campaign.brand} • {new Date(campaign.createdDate).toLocaleDateString('vi-VN')}
+              {campaign.brandName} •{' '}
+              {parseDateString(campaign.createdAt)}
             </DialogDescription>
           </div>
         </div>
@@ -39,15 +41,15 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
       <div className="space-y-3">
         <div>
           <h4 className="text-sm font-medium mb-1">Mô tả chiến dịch:</h4>
-          <p className="text-sm text-muted-foreground">{campaign.description}</p>
+          <p className="text-sm text-muted-foreground">{campaign.content}</p>
         </div>
 
-        {campaign.category?.length > 0 && (
+        {campaign.categories.length > 0 && (
           <div className="flex flex-wrap gap-2">
             <h4 className="text-sm font-medium">Danh mục:</h4>
-            {campaign.category.map((cat: string, i: number) => (
-              <Badge key={i} variant="outline">
-                {cat}
+            {campaign.categories.map((cat: any, i: number) => (
+              <Badge key={cat.categoryId ?? i} variant="outline">
+                {cat.categoryName ?? cat}
               </Badge>
             ))}
           </div>
@@ -59,7 +61,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <h4 className="text-sm font-medium mb-1">Ngân sách</h4>
             <div className="flex items-center w-fit mr-4">
               <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
-              <p>{campaign.budget}</p>
+            <span>{`${Number(campaign.budget).toLocaleString("vi-VN")} VNĐ`}</span>
             </div>
           </div>
 
@@ -68,7 +70,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <h4 className="text-sm font-medium mb-1">Thời gian</h4>
             <div className="flex items-center w-fit">
               <Calendar className="w-4 h-4 mr-2 text-primary" />
-              <p>{`${startDate.toLocaleDateString('vi-VN')} - ${endDate.toLocaleDateString('vi-VN')}`}</p>
+              <p>{`${parseDateString(campaign.startAt)} - ${parseDateString(campaign.dueAt)}`}</p>
             </div>
           </div>
         </div>
@@ -80,61 +82,52 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
           {StatusBadge(campaign.status)}
         </div>
 
-        {campaign.status === 'IN PROGRESS' && (
-          <div className="w-full mb-4">            
-            {/* Tiêu đề*/}
-            <p className ="text-sm font-medium mb-0.5">Tiến độ</p>
-
-            {/* Mô tả ngắn + Phần trăm */}
-            <div className="flex justify-between text-sm font-medium mb-1">
-              <p className="text-sm text-muted-foreground mb-2">Hoàn thành</p>
-              <span>{campaign.progress}%</span>
-            </div>
-            {/* Thanh progress */}
-            <Progress
-              value={campaign.progress}
-              className="h-2 bg-gray-200" // đây là màu nền (phần chưa hoàn thành)
-            />
-          </div>
-        )}
+        <Accordion type="multiple" className="w-full mb-4">
+          {campaign.campaignRequirements &&
+            Object.keys(campaign.campaignRequirements).length > 0 && (
+              <AccordionItem value="deliverables">
+                <AccordionTrigger>
+                  <span className="text-sm font-medium">Nội dung yêu cầu</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-1">
+                    {Object.entries(campaign.campaignRequirements).map(
+                      ([requirement, quantity], index) => (
+                        <div key={index} className="flex items-center">
+                          <span className="mr-2 text-muted-foreground">•</span>
+                          <span className="text-sm text-muted-foreground">
+                            {requirement}: {quantity}
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+        </Accordion>
 
         <Accordion type="multiple" className="w-full mb-4">
-          {campaign.deliverables?.length > 0 && (
-            <AccordionItem value="deliverables" className="border-none">
-              <AccordionTrigger>Nội dung yêu cầu</AccordionTrigger>
-              <AccordionContent>
-                {campaign.deliverables.map((item: string, idx: number) => (
-                  <div key={idx} className="flex items-center text-sm text-muted-foreground">
-                    <span className="mr-2">•</span>
-                    {item}
+          {Array.isArray(campaign.influencerRequirements) &&
+            campaign.influencerRequirements.length > 0 && (
+              <AccordionItem value="deliverables">
+                <AccordionTrigger>
+                  <span className="text-sm font-medium">Yêu cầu đối với influencer</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-1">
+                    {campaign.influencerRequirements.map((item: string, index: number) => (
+                      <div key={index} className="flex items-center">
+                        <span className="mr-2 text-muted-foreground">•</span>
+                        <span className="text-sm text-muted-foreground">{item}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-          )}
-          {campaign.goals?.length > 0 && (
-            <AccordionItem value="goals">
-              <AccordionTrigger>Mục tiêu chiến dịch</AccordionTrigger>
-              <AccordionContent>
-                {campaign.goals.map((goal: string, idx: number) => (
-                  <div key={idx} className="flex items-center text-sm text-muted-foreground">
-                    <span className="mr-2">•</span>
-                    {goal}
-                  </div>
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-          )}
+                </AccordionContent>
+              </AccordionItem>
+            )}
         </Accordion>
       </div>
-
-      {campaign.status === 'IN PROGRESS' && (
-        <div className="w-full flex justify-end mb-4">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded">
-            Cập nhật tiến độ
-          </button>
-        </div>
-      )}
     </>
   );
 }
