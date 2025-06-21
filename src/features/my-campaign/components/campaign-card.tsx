@@ -20,17 +20,27 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   return (
     <Card
       key={campaign.campaignId}
-      className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+      className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow pt-0"
     >
+      <div className="w-full h-64 relative">
+        <img
+          src={campaign.imageUrl || '/placeholder.svg'}
+          alt={campaign.campaignName}
+          className="w-full h-full object-cover"
+        />
+      </div>
       <CardContent className="px-6 w-full">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={campaign.imageUrl || '/placeholder.svg'} alt={campaign.brandName} />
+            <AvatarImage
+              src={campaign.brandAvartar || '/placeholder.svg'}
+              alt={campaign.brandName}
+            />
             <AvatarFallback>{campaign.brandName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex flex-row items-center justify-center">
-              <h3 className="flex-1 font-semibold text-lg ">{campaign.campaignName}</h3>
+              <h3 className="flex-1 font-semibold text-lg line-clamp-1">{campaign.campaignName}</h3>
               {StatusBadge(campaign.status)}
             </div>
             <p className="text-sm text-muted-foreground">
@@ -46,7 +56,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         <div className="flex justify-between mb-4 text-sm text-muted-foreground">
           <div className="flex items-center w-fit mr-4">
             <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
-            <span>{`${Number(campaign.budget).toLocaleString("vi-VN")} VNĐ`}</span>
+            <span>{`${Number(campaign.budget).toLocaleString('vi-VN')} VNĐ`}</span>
           </div>
 
           <div className="flex items-center w-fit">
@@ -66,7 +76,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 Xem chi tiết
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
+            <DialogContent showCloseButton={false} className="sm:max-w-[600px] h-[85%] pr-0">
               <CampaignDetail key={campaign.campaignId} campaign={campaign} />
             </DialogContent>
           </Dialog>

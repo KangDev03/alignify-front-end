@@ -1,8 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
-import { Icons } from '@/components/icons/icons';
+import { ForumPost } from '@/components/forum-post/forum-post';
 
 import { useGetAllContentPostingQuery, useToggleLikeMutation } from '../forum-api/forum.service';
 
@@ -23,7 +22,10 @@ function getTimeAgo(date: Date): string {
 }
 
 export default function Forum() {
-  const { data: rawData } = useGetAllContentPostingQuery({ pageNumber: 0, pageSize: 10 });
+  const { data: rawData, isLoading } = useGetAllContentPostingQuery({
+    pageNumber: 0,
+    pageSize: 10,
+  });
   const contentPosting = rawData?.data;
   const [toggleLike] = useToggleLikeMutation();
 

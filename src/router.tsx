@@ -12,6 +12,7 @@ import VerifyOtpPage from '@/pages/auth/verify-otp';
 import ContactPage from '@/pages/contact';
 import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
+import { BrandProfile } from '@/pages/profile/brand-profile';
 import { Settings } from '@/pages/setting';
 
 // import ApplicationsPage from './pages/applications';
@@ -41,6 +42,54 @@ export const mockInfluencer = {
   engagementRate: 5.2,
   completedCampaigns: 15,
   location: 'TP. Đà Nẵng',
+};
+
+const mockInfluencer2 = {
+  id: '1',
+  name: 'Nguyễn Thị Lan',
+  avatar: '/placeholder.svg?height=120&width=120',
+  dateOfBirth: '1995-03-15',
+  gender: 'Nữ',
+  bio: 'Content creator chuyên về lifestyle và beauty. Yêu thích chia sẻ những trải nghiệm cuộc sống và tips làm đẹp.',
+  socialMediaLinks: {
+    instagram: 'https://instagram.com/nguyenthilan',
+    tiktok: 'https://tiktok.com/@nguyenthilan',
+    youtube: 'https://youtube.com/nguyenthilan',
+    facebook: 'https://facebook.com/nguyenthilan',
+  },
+  rating: 4.8,
+  category: ['Thời trang', 'Làm đẹp', 'Lifestyle'],
+  followers: {
+    instagram: 125000,
+    tiktok: 89000,
+    youtube: 45000,
+    facebook: 67000,
+  },
+  totalFollowers: 326000,
+  engagementRate: 3.2,
+  completedCampaigns: 24,
+  location: 'TP. Hồ Chí Minh',
+};
+
+const mockBrand = {
+  id: '1',
+  name: 'Beauty Plus Vietnam',
+  avatar: '/placeholder.svg?height=120&width=120',
+  companyName: 'Công ty TNHH Beauty Plus Vietnam',
+  category: ['Làm đẹp', 'Chăm sóc da'],
+  bio: 'Thương hiệu mỹ phẩm hàng đầu Việt Nam, chuyên cung cấp các sản phẩm chăm sóc da và làm đẹp chất lượng cao.',
+  contactInfo: {
+    email: 'contact@beautyplus.vn',
+    phone: '+84 28 1234 5678',
+    address: '123 Nguyễn Huệ, Quận 1, TP. HCM',
+  },
+  website: 'https://beautyplus.vn',
+  establishedYear: 2018,
+  companySize: '50-100 nhân viên',
+  verificationStatus: 'verified' as const,
+  campaignHistory: 45,
+  budgetRange: '10-50 triệu VNĐ',
+  industry: 'Mỹ phẩm & Chăm sóc sức khỏe',
 };
 
 function Router() {
@@ -74,6 +123,7 @@ function Router() {
           <Route path="/applicants" element={<Applicants />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
+          <Route path="/user-profile2" element={<BrandProfile brand={mockBrand} />} />
         </Route>
         <Route path="/contact" element={<ContactPage />} />
       </Routes>
