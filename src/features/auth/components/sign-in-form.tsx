@@ -1,4 +1,3 @@
-// import { useState } from "react"
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -23,47 +22,12 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { type SignInFormValues, signInSchema } from '@/features/auth/auth.schema';
-// import type { LoginRequest, LoginResponse } from '@/features/auth/auth.type';
 import { useAppDispatch } from '@/hooks/redux';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
 
 import { useGoogleLoginMutation, useLoginMutation } from '../auth.service';
 import { setCredentials } from '../auth.slice';
-
-// const mockUsers = [
-//   {
-//     id: '1',
-//     email: 'minh@gmail.com',
-//     password: '123456',
-//     name: 'John Doe',
-//     role: 'influencer' as const,
-//     avatar: '/placeholder.svg',
-//   },
-//   {
-//     id: '2',
-//     email: 'brand@example.com',
-//     password: 'password123',
-//     name: 'Jane Smith',
-//     role: 'brand' as const,
-//     avatar: '/placeholder.svg',
-//   },
-// ];
-
-// export async function mockLogin(credentials: LoginRequest): Promise<LoginResponse> {
-//   await new Promise((resolve) => setTimeout(resolve, 1000));
-
-//   const user = mockUsers.find((u) => u.email === credentials.email);
-
-//   if (!user || user.password !== credentials.password) {
-//     throw new Error('Invalid credentials');
-//   }
-
-//   return {
-//     id: user.id,
-//     token: 'mock_jwt_token',
-//   };
-// }
 
 export default function SignInForm() {
   const dispatch = useAppDispatch();
@@ -116,21 +80,6 @@ export default function SignInForm() {
       toast.error('Đăng nhập với Google thất bại!');
     },
   });
-  // const [isLoading, setIsLoading] = useState(false);
-
-  // async function onSubmit(values: SignInFormValues) {
-  //   setIsLoading(true);
-  //   try {
-  //     const response = await mockLogin(values);
-  //     dispatch(setCredentials(response.data));
-  //     navigate("/home");
-  //   } catch (err) {
-  //     console.error('Failed to login:', err);
-  //     // Thêm toast notification ở đây nếu có
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }
 
   return (
     <Card className="w-full max-w-md border-2 bg-card shadow-lg">

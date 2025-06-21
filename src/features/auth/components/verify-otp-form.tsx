@@ -49,7 +49,6 @@ export default function VerifyOTPForm() {
     inputRefs.current = Array(otpDigits.length).fill(null);
   }, [otpDigits.length]);
 
-  // const registrationData = JSON.parse(localStorage.getItem('registrationData') || '{}');
   useEffect(() => {
     if (!email || !password || !roleId || !name || !passwordConfirm) {
       toast.error('Dữ liệu đăng ký không hợp lệ. Vui lòng thử lại!');
