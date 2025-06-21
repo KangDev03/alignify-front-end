@@ -20,7 +20,6 @@ export interface Campaign  {
     influencerRequirements: string[];
     influencerCountExpected:number;
     influencerCountCurrent: number;
-    influencerCount: number;
 
 }
 

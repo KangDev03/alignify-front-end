@@ -11,7 +11,7 @@ export const StatusBadge = (status: string) => {
           <p className="leading-6">Chưa bắt đầu</p>
         </Badge>
       );
-    case "IN PROGRESS":
+    case "RECRUITING":
       return (
         <Badge variant="default">
           <Icons.circleCheckBig size={12} className="mt-0.5" />

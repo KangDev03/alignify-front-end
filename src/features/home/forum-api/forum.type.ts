@@ -1,4 +1,4 @@
-import type { ApiReponseSuccess } from '@/features/common/common.type';
+import type { ApiReponseSuccess } from "@/features/common/common.type";
 
 export interface ContentPostingRequest {
   pageNumber: number | 0;
@@ -12,7 +12,7 @@ export interface ContentPosting {
   userName: string;
   content: string;
   imageUrl: string;
-  categories?: Category[] | [];
+  categories: Category[] | [];
   createdDate: number[];
   isPublic: boolean;
   commentCount: number;
