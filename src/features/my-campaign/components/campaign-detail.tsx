@@ -17,7 +17,6 @@ import { StatusBadge } from './status-badge.tsx';
 import type { Campaign } from '../campaign.type.ts';
 
 export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
-  console.log(campaign.campaignRequirements);
   return (
     <>
       <DialogHeader>
