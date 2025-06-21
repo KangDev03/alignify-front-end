@@ -26,7 +26,7 @@ export default function ChatSheet() {
           <SheetTitle className="flex flex-row w-full">
             <h1 className="text-xl font-semibold leading-6 flex-1">Tin nhắn</h1>
             <SheetClose title="x">
-              <Icons.x className="h-6 w-6" />
+              <Icons.x className="h-5 w-5" />
             </SheetClose>
           </SheetTitle>
           <ChatSearch />

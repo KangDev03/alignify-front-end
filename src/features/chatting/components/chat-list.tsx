@@ -22,7 +22,7 @@ export default function ChatList() {
   }
 
   return (
-    <div className="flex flex-col gap-0">
+    <div className="flex flex-col gap-0 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent">
       {rooms.map((room) => {
         return (
           <Sheet key={room.chatRoomId}>
@@ -31,7 +31,7 @@ export default function ChatList() {
             </SheetTrigger>
             <SheetContent className="w-[466px] gap-0 border-0" closeStyle="hidden">
               <SheetTitle className="hidden" />
-              <ChatRoom chatRoomId={room.chatRoomId} />
+              <ChatRoom roomName={room.roomName} chatRoomId={room.chatRoomId} />
             </SheetContent>
           </Sheet>
         );
