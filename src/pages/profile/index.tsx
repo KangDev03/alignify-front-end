@@ -62,7 +62,7 @@ export default function UserProfilePage() {
           <TabsContent value="posts" className="mt-6">
             <div className="space-y-4">
               {contentPosting?.data && contentPosting?.data.length > 0 ? (
-                <div className="grcontentId grcontentId-cols-1 md:grcontentId-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {contentPosting.data.map((post) => (
                     <ForumPost key={post.contentId} contentPosting={post} />
                   ))}
