@@ -81,3 +81,12 @@ export interface Category {
 export interface CategoriesResponse extends ApiReponseSuccess<Category[]> {
   data: Category[];
 }
+
+export interface Role {
+  roleId: string;
+  roleName: RoleName;
+}
+
+export interface RolesResponse extends ApiReponseSuccess<Role[]> {
+  data: Role[];
+}
