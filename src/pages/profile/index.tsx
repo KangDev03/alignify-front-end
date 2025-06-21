@@ -132,13 +132,13 @@ export function UserProfilePage({ influencer }: InfluencerProfileProps) {
         />
 
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grcontentId w-full grcontentId-cols-2">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="profile">Thông tin cá nhân</TabsTrigger>
             <TabsTrigger value="posts">Bài viết của tôi ({forumPosts.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="mt-6">
-            <div className="grcontentId grcontentId-cols-1 lg:grcontentId-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
                 <ProfileInfo influencer={influencer} />
 
@@ -159,7 +159,7 @@ export function UserProfilePage({ influencer }: InfluencerProfileProps) {
           <TabsContent value="posts" className="mt-6">
             <div className="space-y-4">
               {forumPosts.length > 0 ? (
-                <div className="grcontentId grcontentId-cols-1 md:grcontentId-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {forumPosts.map((post) => (
                     <ForumPost key={post.contentId} contentPosting={post} />
                   ))}
