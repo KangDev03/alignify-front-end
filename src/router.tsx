@@ -13,7 +13,6 @@ import ContactPage from '@/pages/contact';
 import { HomePage } from '@/pages/home';
 import { UserProfilePage } from '@/pages/profile';
 import { BrandProfile } from '@/pages/profile/brand-profile';
-import { InfluencerProfile } from '@/pages/profile/influencer-profile';
 import { Settings } from '@/pages/setting';
 
 // import ApplicationsPage from './pages/applications';
@@ -123,9 +122,8 @@ function Router() {
           <Route path="/applications" element={<ApplicationsPage />} />
           <Route path="/applicants" element={<Applicants />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />
-          {/* <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} /> */}
+          <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
           {/* <Route path="/user-profile" element={<BrandProfile brand={mockBrand} />} /> */}
-          <Route path="/user-profile" element={<InfluencerProfile influencer={mockInfluencer2} />} />
         </Route>
         <Route path="/contact" element={<ContactPage />} />
       </Routes>
