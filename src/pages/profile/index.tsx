@@ -13,7 +13,7 @@ import { ProfileInfo } from "@/features/profile/components/profile-info"
 import { ProfilePerformance } from "@/features/profile/components/profile-performance"
 import { ProfileSocialLinks } from "@/features/profile/components/profile-social-links"
 import { ProfileStats } from "@/features/profile/components/profile-stats"
-import type { InfluencerData } from "@/features/profile/types/profile.types"
+import type { InfluencerData } from "@/features/profile/api/profile.types"
 
 interface InfluencerProfileProps {
   influencer: InfluencerData

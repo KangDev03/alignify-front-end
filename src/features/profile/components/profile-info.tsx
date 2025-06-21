@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 
-import type { InfluencerData } from "../types/profile.types"
+import type { InfluencerData } from "../api/profile.types"
 
 export interface ProfileInfoProps {
   influencer: InfluencerData

@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Icons } from '@/components/icons/icons';
 
 import { useChangeAvatarMutation } from '../profile.service';
-import type { InfluencerData } from '../types/profile.types';
+import type { InfluencerData } from '../api/profile.types';
 
 interface ProfileHeaderProps {
   influencer: InfluencerData;
