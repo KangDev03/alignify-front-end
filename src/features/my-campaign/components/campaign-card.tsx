@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
-import type { Campaign } from '@/features/my-campaign/campaign.type.ts';
+import type { Campaign } from '@/features/common/common.type.ts';
 import { parseDateString } from '@/utils/format.ts';
 
 import CampaignDetail from './campaign-detail.tsx';
@@ -22,9 +22,9 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       key={campaign.campaignId}
       className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow pt-0"
     >
-      <div className="w-full h-64 relative">
+      <div className="w-full h-80 relative">
         <img
-          src={campaign.imageUrl || "/placeholder.svg"}
+          src={campaign.imageUrl || '/placeholder.svg'}
           alt={campaign.campaignName}
           className="w-full h-full object-cover"
         />
@@ -32,7 +32,10 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       <CardContent className="px-6 w-full">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={campaign.brandAvartar || '/placeholder.svg'} alt={campaign.brandName} />
+            <AvatarImage
+              src={campaign.brandAvartar || '/placeholder.svg'}
+              alt={campaign.brandName}
+            />
             <AvatarFallback>{campaign.brandName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
@@ -53,7 +56,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         <div className="flex justify-between mb-4 text-sm text-muted-foreground">
           <div className="flex items-center w-fit mr-4">
             <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
-            <span>{`${Number(campaign.budget).toLocaleString("vi-VN")} VNĐ`}</span>
+            <span>{`${Number(campaign.budget).toLocaleString('vi-VN')} VNĐ`}</span>
           </div>
 
           <div className="flex items-center w-fit">

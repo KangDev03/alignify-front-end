@@ -1,16 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 
-import type { InfluencerData } from "../types/profile.types"
+import type { InfluencerData } from '../profile.type';
 
 export interface ProfileInfoProps {
-  influencer: InfluencerData
+  influencer: InfluencerData;
 }
 
-export function ProfileInfo({
-  influencer,
-}: ProfileInfoProps) {
-
+export function ProfileInfo({ influencer }: ProfileInfoProps) {
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -34,5 +31,5 @@ export function ProfileInfo({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

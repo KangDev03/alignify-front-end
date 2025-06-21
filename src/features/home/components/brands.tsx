@@ -15,10 +15,13 @@ import { useGetBrandProfilesQuery } from '../home.service';
 export default function Brands() {
   const { role } = useAppSelector((state: RootState) => state.common);
   const brandRole = role?.find((role) => role.roleName === 'BRAND');
-  const { data: profiles, isLoading } = useGetBrandProfilesQuery({ roleId: brandRole!.roleId });
+  const { data: profiles, isLoading } = useGetBrandProfilesQuery(
+    { roleId: brandRole!.roleId },
+    { refetchOnMountOrArgChange: true },
+  );
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <Card className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
           <CardContent>
             <div className="flex items-center space-x-4">
