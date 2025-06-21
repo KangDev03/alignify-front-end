@@ -39,7 +39,6 @@ export default function Forum() {
       </div>
     );
   }
-  console.log(contentPosting);
   return (
     <div className="space-y-4">
       {contentPosting?.map((post) => {
