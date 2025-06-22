@@ -1,21 +1,142 @@
 // src/features/my-campaign/components/campaign-card.tsx
 
 import { useState } from 'react';
-import { Calendar, DollarSignIcon, Eye } from 'lucide-react';
+import { Calendar, DollarSignIcon, Edit, Eye, Play } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
-import type { Campaign } from '@/features/common/common.type.ts';
+import type { Campaign, RoleName } from '@/features/common/common.type.ts';
+import { useAppSelector } from '@/hooks/redux.ts';
+import type { RootState } from '@/redux/store.ts';
 import { parseDateString } from '@/utils/format.ts';
 
 import CampaignDetail from './campaign-detail.tsx';
 import { StatusBadge } from './status-badge.tsx';
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
+  const { role } = useAppSelector((state: RootState) => state.auth);
   const [openDialog, setOpenDialog] = useState<string | null>(null);
+
+  const userRole: RoleName = role;
+
+  const renderDialogButton = () => {
+    const commonProps = {
+      open: openDialog === campaign.campaignId,
+      onOpenChange: (open: boolean) => setOpenDialog(open ? campaign.campaignId : null),
+    };
+
+    switch (campaign.status) {
+      case 'DRAFT':
+        return (
+          <div className='w-full grid grid-cols-2 gap-2'>
+            <Dialog {...commonProps}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Edit className="h-4 w-4 mr-1" />
+                  Chỉnh sửa
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+                {/* <DraftDialog campaign={campaign} /> */}
+              </DialogContent>
+            </Dialog>
+
+            <Button
+              variant="default"
+              size="sm"
+              className="flex-1"
+            >
+              <Play className="h-4 w-4 mr-1" />
+              Đăng tuyển
+            </Button>
+          </div>
+        );
+      case 'RECRUITING':
+        return (
+          <Dialog {...commonProps}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center w-full">
+                <Eye className="h-4 w-4 mr-2" />
+                Xem chi tiết
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+              <CampaignDetail key={campaign.campaignId} campaign={campaign} />
+            </DialogContent>
+          </Dialog>
+        );
+      case 'PENDING':
+        return userRole === 'BRAND' ? (
+          <div className='w-full grid grid-cols-2 gap-2'>
+            <Dialog {...commonProps}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="flex-1">
+                  <Edit className="h-4 w-4 mr-1" />
+                  Chỉnh sửa
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+                {/* <PendingDialog campaign={campaign} /> */}
+              </DialogContent>
+            </Dialog>
+
+            <Button
+              variant="default"
+              size="sm"
+              className="flex-1"
+            >
+              <Play className="h-4 w-4 mr-1" />
+              Bắt đầu
+            </Button>
+          </div>
+        ) : (
+          <Dialog {...commonProps}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center w-full">
+                <Eye className="h-4 w-4 mr-2" />
+                Xem chi tiết
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+              <CampaignDetail key={campaign.campaignId} campaign={campaign} />
+            </DialogContent>
+          </Dialog>
+        );
+      case 'PARTICIPATING':
+        return (
+          <Dialog {...commonProps}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Eye className="w-4 h-4 mr-2" />
+                Theo dõi chiến dịch
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+              {/* <ParticipatingDialog campaign={campaign} /> */}
+            </DialogContent>
+          </Dialog>
+        );
+      case 'COMPLETED':
+        return (
+          <Dialog {...commonProps}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center w-full">
+                <Eye className="h-4 w-4 mr-2" />
+                Xem chi tiết
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+              <CampaignDetail key={campaign.campaignId} campaign={campaign} />
+            </DialogContent>
+          </Dialog>
+        );
+      default:
+        return null;
+    }
+  }
 
   return (
     <Card
@@ -66,20 +187,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         </div>
 
         <div className="flex justify-center">
-          <Dialog
-            open={openDialog === campaign.campaignId}
-            onOpenChange={(open) => setOpenDialog(open ? campaign.campaignId : null)}
-          >
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center w-full">
-                <Eye className="h-4 w-4 mr-2" />
-                Xem chi tiết
-              </Button>
-            </DialogTrigger>
-            <DialogContent showCloseButton={false} className="sm:max-w-[600px] h-[85%] pr-0">
-              <CampaignDetail key={campaign.campaignId} campaign={campaign} />
-            </DialogContent>
-          </Dialog>
+          {renderDialogButton()}
         </div>
       </CardContent>
     </Card>
