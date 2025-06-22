@@ -5,25 +5,25 @@ import { Icons } from '@/components/icons/icons';
 import type { ProfileInfoProps } from '@/features/profile/components/profile-info';
 import { formatNumber } from '@/utils/format';
 
-export function ProfileStats({ influencer }: ProfileInfoProps) {
+export function ProfileStats({ profile }: ProfileInfoProps) {
   const socialPlatforms = [
     {
       name: 'Instagram',
       icon: Icons.instagram,
       color: 'text-pink-500',
-      followers: influencer.followers.instagram,
+      followers: 10,
     },
     {
       name: 'YouTube',
       icon: Icons.youtube,
       color: 'text-red-500',
-      followers: influencer.followers.youtube,
+      followers: 10,
     },
     {
       name: 'Facebook',
       icon: Icons.facebook,
       color: 'text-blue-500',
-      followers: influencer.followers.facebook,
+      followers: 10,
     },
   ];
 
@@ -34,9 +34,7 @@ export function ProfileStats({ influencer }: ProfileInfoProps) {
       </CardHeader>
       <CardContent>
         <div className="text-center space-y-2">
-          <div className="text-3xl font-bold text-primary">
-            {formatNumber(influencer.totalFollowers)}
-          </div>
+          <div className="text-3xl font-bold text-primary">{1000}</div>
           <p className="text-sm text-muted-foreground">Tổng số người theo dõi</p>
         </div>
 

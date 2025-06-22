@@ -6,23 +6,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { Icons } from '@/components/icons/icons';
+import type { Campaign } from '@/features/my-campaign/campaign.type';
+import { parseDateString } from '@/utils/format';
 
+import type { BrandData, InfluencerData } from '../api/profile.types';
 import { useChangeAvatarMutation } from '../profile.service';
-import type { InfluencerData } from '../profile.type';
 
 interface ProfileHeaderProps {
-  influencer: InfluencerData;
-  isEditing: boolean;
-  onEditToggle: () => void;
-  onCancel: () => void;
+  profile: InfluencerData | BrandData;
+  campaignCompleted: number;
 }
 
-export function ProfileHeader({
-  influencer,
-  isEditing,
-  onEditToggle,
-  onCancel,
-}: ProfileHeaderProps) {
+export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps) {
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>();
@@ -53,6 +48,7 @@ export function ProfileHeader({
       console.error('Error uploading avatar:', error);
     }
   };
+
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
       <CardContent>
@@ -64,8 +60,8 @@ export function ProfileHeader({
               }}
             >
               <Avatar className="h-24 w-24">
-                <AvatarImage src={avatarUrl || '/placeholder.svg'} alt={influencer.name} />
-                <AvatarFallback className="text-2xl">{influencer.name.charAt(0)}</AvatarFallback>
+                <AvatarImage src={profile.avatarUrl || '/placeholder.svg'} alt={profile.name} />
+                <AvatarFallback className="text-2xl">{profile.name.charAt(0)}</AvatarFallback>
               </Avatar>
             </PopoverTrigger>
             <PopoverContent
@@ -86,15 +82,11 @@ export function ProfileHeader({
           <div className="flex-1 space-y-2">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold">{influencer.name}</h1>
+                <h1 className="text-2xl font-bold">{profile.name}</h1>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                   <div className="flex items-center space-x-1">
-                    <Icons.mapPin className="h-4 w-4" />
-                    <span>{influencer.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
                     <Icons.calendar className="h-4 w-4" />
-                    <span>{new Date(influencer.dateOfBirth).toLocaleDateString('vi-VN')}</span>
+                    {'doB' in profile && <span>{parseDateString(profile.doB)}</span>}
                   </div>
                 </div>
               </div>
@@ -113,9 +105,9 @@ export function ProfileHeader({
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {influencer.category.map((cat, index) => (
-                <Badge key={index} variant="outline">
-                  {cat}
+              {profile.categories.map((category) => (
+                <Badge key={category.categoryId} variant="outline" className="text-xs">
+                  {category.categoryName}
                 </Badge>
               ))}
             </div>
@@ -123,14 +115,16 @@ export function ProfileHeader({
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
                 <Icons.star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="font-medium">{influencer.rating}</span>
+
+                {'rating' in profile && <span className="font-medium"> {profile.rating}</span>}
               </div>
               {/* <div className="flex items-center space-x-1">
                                 <Icons.trendingUp className="h-4 w-4 text-green-500" />
                                 <span className="text-sm">{influencer.engagementRate}% engagement</span>
                             </div> */}
+
               <div className="text-sm text-muted-foreground">
-                {influencer.completedCampaigns} chiến dịch hoàn thành
+                {campaignCompleted} chiến dịch hoàn thành
               </div>
             </div>
           </div>

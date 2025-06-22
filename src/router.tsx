@@ -11,7 +11,7 @@ import LoginPage from '@/pages/auth/sign-in';
 import VerifyOtpPage from '@/pages/auth/verify-otp';
 import ContactPage from '@/pages/contact';
 import { HomePage } from '@/pages/home';
-import { UserProfilePage } from '@/pages/profile';
+import UserProfilePage from '@/pages/profile';
 import { BrandProfile } from '@/pages/profile/brand-profile';
 import { Settings } from '@/pages/setting';
 
