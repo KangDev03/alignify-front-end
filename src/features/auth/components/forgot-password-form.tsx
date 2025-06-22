@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,101 +11,101 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-import type { ForgotPasswordFormValues } from '@/features/auth/auth.schema';
-import { forgotPasswordSchema } from '@/features/auth/auth.schema';
 import { useForgotPasswordMutation } from '@/features/auth/auth.service';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function ForgotPasswordForm() {
-  const [forgotPassword, { isLoading, error }] = useForgotPasswordMutation();
+  const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const form = useForm<ForgotPasswordFormValues>({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: '',
-    },
-  });
+  const [forgotPassword, { isLoading, error }] = useForgotPasswordMutation();
 
-  async function onSubmit(values: ForgotPasswordFormValues) {
+  const getEmailProviderLink = (email: string) => {
+    if (email.includes('@gmail.com')) return 'https://mail.google.com/mail/u/0/#inbox';
+    if (email.includes('@outlook.com') || email.includes('@hotmail.com'))
+      return 'https://outlook.live.com/mail/inbox';
+    if (email.includes('@yahoo.com')) return 'https://mail.yahoo.com/d/folders/1';
+    return 'https://www.google.com'; // fallback
+  };
+
+  const handleSubmit = async (email: string) => {
     try {
       const baseUrl = window.location.origin;
-      const resetUrl = `${baseUrl}/auth/reset-password/`;
+      const resetUrl = `${baseUrl}/auth/reset-password`;
 
-      const response = await forgotPassword({
-        email: values.email,
-        url: resetUrl,
-      }).unwrap();
-
+      const response = await forgotPassword({ email, url: resetUrl }).unwrap();
       toast.success(response.message);
       setSubmitted(true);
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Email không tồn tại hoặc có lỗi xảy ra!');
+      console.error('Lỗi khi gửi email:', err);
     }
-  }
+  };
 
   return (
     <Card className="w-full max-w-md border-2 border-primary/20 bg-card shadow-lg">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl font-bold text-primary">Quên mật khẩu</CardTitle>
-        <CardDescription>Nhập email của bạn để nhận liên kết đặt lại mật khẩu</CardDescription>
+        <CardDescription>Nhập email của bạn để nhận mã xác nhận</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="example@example.com"
-                      className="border-input focus:border-primary"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            await handleSubmit(email);
+          }}
+          className="space-y-4"
+        >
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="example@example.com"
+              className="border-input focus:border-primary"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
+          </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-primary hover:bg-primary/90"
-              disabled={isLoading || submitted}
-            >
-              {isLoading ? 'Đang gửi...' : submitted ? 'Đã gửi email' : 'Gửi email xác nhận'}
-            </Button>
+          <Button
+            className="w-full bg-primary hover:bg-primary/90"
+            type="submit"
+            disabled={isLoading || submitted}
+          >
+            {isLoading
+              ? 'Đang gửi...'
+              : submitted
+              ? 'Email đã được gửi'
+              : 'Gửi email xác nhận'}
+          </Button>
 
-            {submitted && (
-              <div className="text-xs text-primary text-center mt-2">
-                Email khôi phục đã được gửi. Kiểm tra hộp thư đến hoặc thư rác.
-              </div>
-            )}
+          {submitted && (
+            <div className="text-sm text-primary text-center mt-2">
+              Email khôi phục đã được gửi,&nbsp;
+              <a
+                href={getEmailProviderLink(email)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-primary/80"
+              >
+                truy cập email
+              </a>
+              .
+            </div>
+          )}
 
-            {error && !submitted && (
-              <div className="text-sm text-red-500 text-center mt-2">
-                {'data' in error && (error as any).data?.message
-                  ? (error as any).data.message
-                  : 'Không thể gửi email, hãy thử lại sau'}
-              </div>
-            )}
-          </form>
-        </Form>
+          {error && (
+            <div className="text-red-500 text-sm mt-2">
+              {'data' in error && (error as any).data?.message
+                ? (error as any).data.message
+                : 'Không thể gửi email, hãy thử lại sau'}
+            </div>
+          )}
+        </form>
       </CardContent>
 
       <CardFooter className="flex justify-center items-center">
