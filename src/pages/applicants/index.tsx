@@ -65,18 +65,23 @@ export function Applicants() {
   return (
     <div className="flex gap-6 h-[633px]">
       <CampaignList applicationPlusCampaign={applicants!} />
-      <div className="flex-1 border rounded-lg bg-card">
-        {selectedCampaignData ? (
-          <div className="h-full flex flex-col">
-            <CampaignOverview campaign={selectedCampaignData.campaignResponse} />
-            <ApplicantTabs applicants={currentApplicants!} />
-          </div>
-        ) : (
-          <Alert variant="default">
-            <AlertCircleIcon />
-            <AlertTitle>Chọn một chiến dịch để xem ứng viên</AlertTitle>
-          </Alert>
-        )}
+      <div className="flex gap-6 h-[633px]">
+        <CampaignList applicationPlusCampaign={applicants!} />
+        <div className="flex-1 border rounded-lg bg-card">
+          {selectedCampaignData ? (
+            <div className="h-full flex flex-col">
+              <CampaignOverview campaign={selectedCampaignData.campaignResponse} />
+              <ApplicantTabs applicants={currentApplicants!} />
+              <CampaignOverview campaign={selectedCampaignData.campaignResponse} />
+              <ApplicantTabs applicants={currentApplicants!} />
+            </div>
+          ) : (
+            <Alert variant="default">
+              <AlertCircleIcon />
+              <AlertTitle>Chọn một chiến dịch để xem ứng viên</AlertTitle>
+            </Alert>
+          )}
+        </div>
       </div>
     </div>
   );
