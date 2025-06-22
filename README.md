@@ -1,7 +1,7 @@
 # Vite Code Base
 
 A modern React application template built with Vite, TypeScript, and best practices in mind.
-
+<!-- first commit -->
 ## 🚀 Features
 
 - ⚡️ [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
