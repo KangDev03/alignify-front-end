@@ -11,15 +11,15 @@ import { Badge } from '@/components/ui/badge';
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
+import type { Campaign } from '@/features/common/common.type.ts';
 import { parseDateString } from '@/utils/format.ts';
 
 import { StatusBadge } from './status-badge.tsx';
-import type { Campaign } from '../campaign.type.ts';
 
 export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
   return (
-    <div className='h-full'>
-      <DialogHeader className='pr-6'>
+    <div className="h-full">
+      <DialogHeader className="pr-6">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage
@@ -31,18 +31,16 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
           <div>
             <DialogTitle className="text-lg">{campaign.campaignName}</DialogTitle>
             <DialogDescription>
-              {campaign.brandName} •{' '}
-              {parseDateString(campaign.createdAt)}
+              {campaign.brandName} • {parseDateString(campaign.createdAt)}
             </DialogDescription>
           </div>
         </div>
       </DialogHeader>
 
-
       <div className="pt-2 pr-6 h-[70%] space-y-3 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent">
         <div className="w-full h-64 relative mt-4 rounded-lg overflow-hidden">
           <img
-            src={campaign.imageUrl || "/placeholder.svg"}
+            src={campaign.imageUrl || '/placeholder.svg'}
             alt={campaign.campaignName}
             className="w-full h-full object-cover"
           />
@@ -70,7 +68,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <h4 className="text-sm font-medium mb-1">Ngân sách</h4>
             <div className="flex items-center w-fit mr-4">
               <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
-              <span>{`${Number(campaign.budget).toLocaleString("vi-VN")} VNĐ`}</span>
+              <span>{`${Number(campaign.budget).toLocaleString('vi-VN')} VNĐ`}</span>
             </div>
           </div>
 

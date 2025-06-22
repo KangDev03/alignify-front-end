@@ -23,14 +23,7 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { type SignUpFormValues, signUpSchema } from '@/features/auth/auth.schema';
-import {
-  // useGetRolesQuery,
-  // useRegisterMutation,
-  useRequestOTPMutation,
-  // useRequestOTPQuery,
-} from '@/features/auth/auth.service';
-// import { setCredentials } from '@/features/auth/auth.slice';
-// import { useAppDispatch } from '@/hooks/redux';
+import { useRequestOTPMutation } from '@/features/auth/auth.service';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const FORM_FIELDS: {
@@ -66,14 +59,11 @@ const FORM_FIELDS: {
 export default function SignUpForm() {
   const location = useLocation();
   const navigate = useNavigate();
-  // const dispatch = useAppDispatch()
 
   const roleId = new URLSearchParams(location.search).get('roleId');
   const roleName = new URLSearchParams(location.search).get('roleName');
 
-  // const { data: rolesData } = useGetRolesQuery();
-  // const [register, { isLoading: isRegistering }] = useRegisterMutation();
-  const [requestOTP, { isLoading: isRequestingOTP }] = useRequestOTPMutation(); // Use mutation for OTP
+  const [requestOTP, { isLoading: isRequestingOTP }] = useRequestOTPMutation();
 
   useEffect(() => {
     if (!roleId) {
@@ -121,50 +111,15 @@ export default function SignUpForm() {
       const otpResponse = await requestOTP({ email: values.email }).unwrap();
       if (otpResponse.message) {
         toast.success(otpResponse.message);
-        // Store registration data in localStorage for use in OTP verification
-        // localStorage.setItem('registrationData', JSON.stringify(registerData));
         navigate('/auth/verify-otp', { state: registerData });
       }
-      // console.log('Step 1: Sending registration data:', registerData);
-
-      // const response = await register(registerData).unwrap();
-
-      // console.log('Step 2: Registration response:', response);
-
-      //   if (response.message) {
-      //     toast.success(response.message);
-      //     console.log('Step 3: Starting OTP request for email:', values.email);
-
-      //     try {
-      //       form.setValue('email', values.email);
-      //       const { data: otpData } = await requestOTP();
-      //       console.log('Step 4: OTP response:', otpData);
-
-      //       if (otpData?.message) {
-      //         toast.success(otpData.message);
-      //         console.log('Step 5: Navigating to verify-otp page');
-      //         // Store email for verify page
-      //         localStorage.setItem('verifyEmail', values.email);
-      //         navigate('/auth/verify-otp');
-      //       }
-      //     } catch (otpErr) {
-      //       console.error('OTP request failed:', otpErr);
-      //       toast.error('Không thể gửi mã OTP. Vui lòng thử lại!');
-      //     }
-      //   }
     } catch (err) {
-      // console.error('Registration failed:', err);
-      // toast.error('Đăng ký thất bại. Vui lòng thử lại!');
       console.error('OTP request failed:', err);
       toast.error('Không thể gửi mã OTP. Vui lòng thử lại!');
     }
   };
 
   const isLoading = isRequestingOTP;
-
-  // if (!rolesData?.roles) {
-  //     return <div>Đang tải...</div>;
-  // }
 
   const renderFormFields = () => {
     const fields = isInfluencer ? FORM_FIELDS.influencer : FORM_FIELDS.brand;

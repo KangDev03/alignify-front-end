@@ -3,8 +3,7 @@ import { Separator } from '@/components/ui/separator';
 
 import { Icons } from '@/components/icons/icons';
 import type { ProfileInfoProps } from '@/features/profile/components/profile-info';
-
-import { formatNumber } from '../utils/format-number';
+import { formatNumber } from '@/utils/format';
 
 export function ProfileStats({ profile }: ProfileInfoProps) {
   const socialPlatforms = [
@@ -43,6 +42,7 @@ export function ProfileStats({ profile }: ProfileInfoProps) {
 
         <div className="space-y-3">
           {socialPlatforms.map((platform) => {
+            const Icon = platform.icon;
             const Icon = platform.icon;
             return (
               <div key={platform.name} className="flex items-center justify-between">

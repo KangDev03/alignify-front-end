@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 
 import authReducer from '@/features/auth/auth.slice';
 import commonReducer from '@/features/common/common.slice';
+import homeRefetchReducer from '@/features/home/home.slice';
 
 import { baseApi } from './baseApi';
 
@@ -20,6 +21,7 @@ export const store = configureStore({
     auth: persistedAuthReducer, // Sử dụng reducer đã được persist
     [baseApi.reducerPath]: baseApi.reducer,
     common: commonReducer,
+    homeRefetch: homeRefetchReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

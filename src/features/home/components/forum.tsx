@@ -1,19 +1,21 @@
+import { AlertCircleIcon } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { ForumPost } from '@/components/forum-post/forum-post';
 
-import { useGetAllContentPostingQuery } from '../forum-api/forum.service';
+import { useGetAllContentPostingQuery } from '../home.service';
 
 export default function Forum() {
-  const { data: rawData, isLoading } = useGetAllContentPostingQuery({
-    pageNumber: 0,
-    pageSize: 10,
+  const { data: rawData, isLoading } = useGetAllContentPostingQuery(undefined, {
+    refetchOnMountOrArgChange: true,
   });
   const contentPosting = rawData?.data;
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <Card className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
           <CardContent>
             <div className="flex items-start space-x-3">
@@ -40,10 +42,20 @@ export default function Forum() {
     );
   }
   return (
-    <div className="space-y-4">
-      {contentPosting?.map((post) => {
-        return <ForumPost key={post.contentId} contentPosting={post} />;
-      })}
+    <div className="space-y-6">
+      {contentPosting && contentPosting.length > 0 ? (
+        contentPosting?.map((post) => {
+          return <ForumPost key={post.contentId} contentPosting={post} />;
+        })
+      ) : (
+        <Alert variant="default">
+          <AlertCircleIcon />
+          <AlertTitle>Không có bài đăng nào trong Forum</AlertTitle>
+          <AlertDescription>
+            Bạn có thể quay lại đây sau khi các bài đăng trong Forum xuất hiện.
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }

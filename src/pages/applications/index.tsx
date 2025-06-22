@@ -1,6 +1,5 @@
 'use client';
 import { useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { Search } from 'lucide-react';
 
@@ -11,9 +10,11 @@ import {
   useGetApplicationsByBrandQuery,
   useGetApplicationsByInfluencerQuery,
 } from '@/features/application/application.service';
-import type { Application, Campaign } from '@/features/application/application.type';
+import type { ApplicationByInfluencer } from '@/features/application/application.type';
 import ApplicationCard from '@/features/application/components/application-card';
-import { selectAuthState } from '@/features/auth/auth.slice';
+import type { Campaign } from '@/features/common/common.type';
+import { useAppSelector } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 
 const tabs = [
   { value: 'pending', label: 'Đang chờ duyệt' },
@@ -22,7 +23,7 @@ const tabs = [
 ];
 
 export function ApplicationsPage() {
-  const { id, role } = useSelector(selectAuthState);
+  const { role } = useAppSelector((state: RootState) => state.auth);
   const [activeTab, setActiveTab] = useState('pending');
 
   const influencerQuery = useGetApplicationsByInfluencerQuery(
@@ -41,16 +42,19 @@ export function ApplicationsPage() {
   const applications = useMemo(() => {
     if (!rawData?.data || !Array.isArray(rawData.data)) return [];
 
-    return rawData.data.reduce((acc: (Application & { campaignInfo: Campaign })[], entry) => {
-      if (Array.isArray(entry.applications)) {
-        const combined = entry.applications.map((app) => ({
-          ...app,
-          campaignInfo: entry.campaignResponse,
-        }));
-        acc.push(...combined);
-      }
-      return acc;
-    }, []);
+    return rawData.data.reduce(
+      (acc: (ApplicationByInfluencer & { campaignInfo: Campaign })[], entry) => {
+        if (Array.isArray(entry.applications)) {
+          const combined = entry.applications.map((app) => ({
+            ...app,
+            campaignInfo: entry.campaignResponse,
+          }));
+          acc.push(...combined);
+        }
+        return acc;
+      },
+      [],
+    );
   }, [rawData]);
 
   return (
