@@ -19,36 +19,36 @@ const tabs = [
 
 export default function MyCampaignPage() {
   const [activeTab, setActiveTab] = useState("PENDING")
-  const {data: campaignsResponse} = useGetAllCampaignsQuery({pageNumber: 0, pageSize: 10})
-const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
-  ? campaignsResponse.data.campaigns
-  : []
+  const { data: campaignsResponse } = useGetAllCampaignsQuery({ pageNumber: 0, pageSize: 10 })
+  const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
+    ? campaignsResponse.data.campaigns
+    : []
 
   const filteredCampaigns = campaigns.filter(
     (campaign) =>
-      campaign.status === activeTab 
+      campaign.status === activeTab
   )
   return (
     <div className="space-y-6">
-          <h1 className="text-3xl font-bold">Chiến dịch của tôi</h1>
-          <Tabs defaultValue="PENDING" value={activeTab} onValueChange={setActiveTab} className="w-full gap-6">
-            <div className="flex flex-row gap-6">
-              <TabsList className="grid w-full h-fit grid-cols-3 p-1">
-                {tabs.map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="h-full"
-                  >
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              <div className="relative w-2/5">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Tìm kiếm..." className="pl-8" />
-              </div>
-            </div>
+      <h1 className="text-3xl font-bold">Chiến dịch của tôi</h1>
+      <Tabs defaultValue="PENDING" value={activeTab} onValueChange={setActiveTab} className="w-full gap-6">
+        <div className="flex flex-row gap-6">
+          <TabsList className="grid w-full h-fit grid-cols-3 p-1">
+            {tabs.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="h-full"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <div className="relative w-2/5">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Tìm kiếm..." className="pl-8" />
+          </div>
+        </div>
 
 
         <TabsContent value={activeTab}>

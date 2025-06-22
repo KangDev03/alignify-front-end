@@ -18,6 +18,7 @@ import { Settings } from '@/pages/setting';
 // import ApplicationsPage from './pages/applications';
 import RegisterPage from './pages/auth/sign-up';
 import MyCampaignPage from './pages/my-campaign';
+import { CampaignManagement } from '@/pages/campaign-management';
 
 export const mockInfluencer = {
   id: '1',
@@ -115,13 +116,14 @@ function Router() {
                 userRole="influencer"
                 userName="John"
                 userAvatar="avatar.png"
-                onBack={() => {}}
+                onBack={() => { }}
               />
             }
           />
           <Route path="/applications" element={<ApplicationsPage />} />
           <Route path="/applicants" element={<Applicants />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />
+          <Route path="campaign-management" element={<CampaignManagement />} />
           <Route path="/user-profile" element={<UserProfilePage influencer={mockInfluencer} />} />
           <Route path="/user-profile2" element={<BrandProfile brand={mockBrand} />} />
         </Route>
