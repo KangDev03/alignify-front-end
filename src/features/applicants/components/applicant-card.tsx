@@ -23,7 +23,7 @@ export function ApplicantCard({
   const [confirmApplicant, { isLoading }] = useConfirmApplicationMutation();
   const handleConfirmApplicant = async (accepted: boolean) => {
     try {
-      const res = await confirmApplicant({
+      await confirmApplicant({
         accepted: accepted,
         applicationId: applicant.applicationId,
       }).unwrap();
