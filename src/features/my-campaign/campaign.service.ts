@@ -5,19 +5,29 @@ import type { CampaignRequest, CampaignResponse } from './campaign.type';
 export const campaignApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllCampaigns: builder.query<CampaignResponse, CampaignRequest>({
-      query: (data) => ({
+      query: () => ({
         url: '/campaigns',
         method: 'GET',
       }),
       providesTags: ['Auth'],
     }),
     getAllCampaignsOfInfluencer: builder.query<CampaignResponse, CampaignRequest>({
-      query: (data) => ({
+      query: () => ({
         url: '/campaigns/influencer',
         method: 'GET',
       }),
       providesTags: ['Auth'],
     }),
+    getCampaignByCategory: builder.query<CampaignResponse, CampaignRequest>({
+      query: (categoryId) => ({
+        url: `/filterByCategory/${categoryId}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
-export const { useGetAllCampaignsQuery, useGetAllCampaignsOfInfluencerQuery } = campaignApi;
+export const {
+  useGetAllCampaignsQuery,
+  useGetAllCampaignsOfInfluencerQuery,
+  useGetCampaignByCategoryQuery,
+} = campaignApi;

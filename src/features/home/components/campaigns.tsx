@@ -6,28 +6,50 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { useGetCampaignByCategoryQuery } from '@/features/my-campaign/campaign.service';
 import CampaignCard from '@/features/my-campaign/components/campaign-card';
 import { useAppSelector } from '@/hooks/redux';
 
 import { useGetCampaignsQuery } from '../home.service';
 import { setRefetch } from '../home.slice';
 
-export default function Campaigns() {
+interface CampaignsProps {
+  selectedCategory: string;
+}
+
+export default function Campaigns(C) {
   const dispatch = useDispatch();
   const { campaign } = useAppSelector((state) => state.homeRefetch);
+
+  const isAll = selectedCategory === 'Tất cả';
+
   const {
-    data: rawData,
-    isLoading,
-    refetch,
+    data: allData,
+    isLoading: isLoadingAll,
+    refetch: refetchAll,
   } = useGetCampaignsQuery(undefined, {
+    skip: !isAll,
     refetchOnMountOrArgChange: true,
   });
+
+  const {
+    data: categoryData,
+    isLoading: isLoadingCategory,
+    refetch: refetchCategory,
+  } = useGetCampaignByCategoryQuery(selectedCategory, {
+    skip: isAll,
+  });
+
   useEffect(() => {
     if (campaign) {
-      refetch();
+      if (isAll) refetchAll();
+      else refetchCategory();
       dispatch(setRefetch({ key: 'campaign', value: false }));
     }
-  }, [campaign, refetch, dispatch]);
+  }, [campaign, dispatch, isAll, refetchAll, refetchCategory]);
+
+  const isLoading = isAll ? isLoadingAll : isLoadingCategory;
+  const campaigns = isAll ? allData?.data?.campaigns : categoryData?.data?.campaigns;
   if (isLoading) {
     return (
       <div className="space-y-6">
