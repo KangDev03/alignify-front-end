@@ -28,3 +28,21 @@ export const verifyOTPSchema = z.object({
     .max(6, 'Mã OTP không được vượt quá 6 ký tự'),
 });
 export type VerifyOTPFormValues = z.infer<typeof verifyOTPSchema>;
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email({ message: 'Email không hợp lệ' }),
+});
+
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' }),
+    passwordConfirm: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: 'Mật khẩu xác nhận không khớp',
+    path: ['passwordConfirm'],
+  });
+
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;

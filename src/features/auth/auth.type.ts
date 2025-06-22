@@ -51,3 +51,21 @@ export interface VerifyOTPRequest {
 }
 
 export type VerifyOTPResponse = ApiReponseSuccess<null>;
+
+export type ForgotPasswordRequest = {
+  email: string;
+  url: string;
+};
+
+export type ForgotPasswordResponse = ApiReponseSuccess<null>;
+
+export type ResetPasswordRequest = {
+  password: string;
+  passwordConfirm: string; 
+  token: string;
+};
+
+export type ResetPasswordResponse = {
+  success: boolean;
+  message: string;
+};

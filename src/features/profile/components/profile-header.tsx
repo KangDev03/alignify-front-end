@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { Icons } from '@/components/icons/icons';
-import type { Campaign } from '@/features/my-campaign/campaign.type';
 import { parseDateString } from '@/utils/format';
 
 import type { BrandData, InfluencerData } from '../api/profile.types';
@@ -60,7 +59,10 @@ export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps
               }}
             >
               <Avatar className="h-24 w-24">
-                <AvatarImage src={profile.avatarUrl || '/placeholder.svg'} alt={profile.name} />
+                <AvatarImage
+                  src={avatarUrl ?? profile.avatarUrl ?? '/placeholder.svg'}
+                  alt={profile.name}
+                />
                 <AvatarFallback className="text-2xl">{profile.name.charAt(0)}</AvatarFallback>
               </Avatar>
             </PopoverTrigger>
