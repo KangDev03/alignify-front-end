@@ -7,10 +7,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 import { Icons } from '@/components/icons/icons';
 import type { Campaign } from '@/features/my-campaign/campaign.type';
+import { parseDateString } from '@/utils/format';
 
 import type { BrandData, InfluencerData } from '../api/profile.types';
 import { useChangeAvatarMutation } from '../profile.service';
-import { parseDateString } from '@/utils/format';
 
 interface ProfileHeaderProps {
   profile: InfluencerData | BrandData;

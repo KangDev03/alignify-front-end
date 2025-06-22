@@ -2,21 +2,21 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { ForumPost } from '@/components/forum-post/forum-post';
 import { Icons } from '@/components/icons/icons';
-import { useGetAllContentPostingQuery } from '@/features/home/forum-api/forum.service';
+import type { Campaign } from '@/features/common/common.type';
+import { useGetPostMeQuery } from '@/features/home/home.service';
 import { useGetAllCampaignsOfInfluencerQuery } from '@/features/my-campaign/campaign.service';
-import type { Campaign } from '@/features/my-campaign/campaign.type';
 import { useGetProfileUserQuery } from '@/features/profile/api/profile.service';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
 import { ProfileInfo } from '@/features/profile/components/profile-info';
 import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { ProfileStats } from '@/features/profile/components/profile-stats';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 
 export default function UserProfilePage() {
-  const { data: contentPosting, isLoading } = useGetAllContentPostingQuery({
+  const { data: contentPosting } = useGetPostMeQuery({
     pageNumber: 0,
     pageSize: 10,
   });
@@ -42,16 +42,10 @@ export default function UserProfilePage() {
         <ProfileHeader profile={profile} campaignCompleted={completedAppliedCampaigns.length} />
 
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 gap-x-6">
-            <TabsTrigger value="profile">
-              <Card className="border-2 border-primary/20 bg-card shadow-lg">
-                Thông tin cá nhân
-              </Card>
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="profile">Thông tin cá nhân</TabsTrigger>
             <TabsTrigger value="posts">
-              <Card className="border-2 border-primary/20 bg-card shadow-lg">
-                Bài viết của tôi ({contentPosting?.data.length})
-              </Card>
+              Bài viết của tôi ({contentPosting?.data.length})
             </TabsTrigger>
           </TabsList>
 
@@ -60,7 +54,22 @@ export default function UserProfilePage() {
               <div className="lg:col-span-2 space-y-6">
                 <ProfileInfo profile={profile} />
 
-                <ProfileSocialLinks socialMediaLinks={profile.socialMediaLinks} />
+                <ProfileSocialLinks
+                  socialMediaLinks={
+                    Array.isArray(profile.socialMediaLinks)
+                      ? Object.fromEntries(
+                          profile.socialMediaLinks.map((item: any) =>
+                            typeof item === 'object' &&
+                            item !== null &&
+                            'key' in item &&
+                            'value' in item
+                              ? [item.key, item.value]
+                              : [String(item[0]), String(item[1])],
+                          ),
+                        )
+                      : profile.socialMediaLinks
+                  }
+                />
               </div>
 
               {/* Thống kê */}

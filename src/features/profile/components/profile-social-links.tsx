@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/icons/icons';
 
 interface ProfileSocialLinksProps {
-  socialMediaLinks: [{ key: string }, string];
+  socialMediaLinks: Record<string, string>;
 }
 
 export function ProfileSocialLinks({ socialMediaLinks }: ProfileSocialLinksProps) {

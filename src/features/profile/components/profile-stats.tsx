@@ -34,7 +34,7 @@ export function ProfileStats({ profile }: ProfileInfoProps) {
       </CardHeader>
       <CardContent>
         <div className="text-center space-y-2">
-          <div className="text-3xl font-bold text-primary">100</div>
+          <div className="text-3xl font-bold text-primary">{1000}</div>
           <p className="text-sm text-muted-foreground">Tổng số người theo dõi</p>
         </div>
 
@@ -42,7 +42,6 @@ export function ProfileStats({ profile }: ProfileInfoProps) {
 
         <div className="space-y-3">
           {socialPlatforms.map((platform) => {
-            const Icon = platform.icon;
             const Icon = platform.icon;
             return (
               <div key={platform.name} className="flex items-center justify-between">
