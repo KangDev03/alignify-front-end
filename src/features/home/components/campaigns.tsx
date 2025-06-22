@@ -56,10 +56,6 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
   const isLoading = isAll ? isLoadingAll : isLoadingCategory;
   const campaigns = isAll ? allData?.data?.campaigns : categoryData?.data?.campaigns;
 
-  console.log('selectedCategoryId:', selectedCategoryId);
-  console.log('isAll:', allData);
-  console.log('categoryData:', categoryData);
-
   if (isLoading) {
     return (
       <div className="space-y-6">
