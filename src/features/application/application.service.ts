@@ -1,11 +1,11 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type { ApplicationByInfluencer } from './application.type';
+import type { ApplicationResponse } from './application.type';
 import type { CommonPageableRequest } from '../common/common.type';
 
 export const applicationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getApplicationsByInfluencer: builder.query<ApplicationByInfluencer, CommonPageableRequest>({
+    getApplicationsByInfluencer: builder.query<ApplicationResponse, CommonPageableRequest>({
       query: (data) => ({
         url: '/campaigns/applications/influencer',
         method: 'GET',

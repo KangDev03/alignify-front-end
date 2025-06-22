@@ -35,13 +35,6 @@ export const getProfileApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Home'],
     }),
-    getCampaigns: builder.query<CampaignResponse, CommonPageableRequest | void>({
-      query: () => ({
-        url: '/campaigns',
-        method: 'GET',
-      }),
-      providesTags: ['Home'],
-    }),
   }),
 });
 
