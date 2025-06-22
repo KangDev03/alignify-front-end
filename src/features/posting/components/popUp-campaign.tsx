@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { Icons } from '@/components/icons/icons';
 import type { Category } from '@/features/common/common.type';
+import { setRefetch } from '@/features/home/home.slice';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -40,6 +42,7 @@ const MAX_CATEGORIES = 3;
 export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const [postCampaign, { isLoading: isPosting }] = usePostCampaignMutation();
+  const dispatch = useDispatch();
 
   const form = useForm<CampaignFormValues>({
     mode: 'onSubmit',
@@ -106,6 +109,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
       const res = await postCampaign({ formData }).unwrap();
       dialogCloseRef.current?.click();
       form.reset();
+      dispatch(setRefetch({ key: 'campaign', value: true }));
       toast.error('Đăng bài thành công!');
     } catch (err) {
       console.log(err);

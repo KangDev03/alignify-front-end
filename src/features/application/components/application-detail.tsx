@@ -12,11 +12,12 @@ import { Button } from '@/components/ui/button';
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
-import type { Application, Campaign } from '@/features/application/application.type';
+import type { ApplicationByInfluencer } from '@/features/application/application.type';
 import { StatusBadge } from '@/features/application/components/status-badge';
+import type { Campaign } from '@/features/common/common.type';
 
 interface ApplicationDetailProps {
-  application: Application;
+  application: ApplicationByInfluencer;
   campaignInfo: Campaign;
 }
 
@@ -80,7 +81,6 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
         <h4 className="text-sm font-medium mb-1">Thông tin ứng tuyển</h4>
 
         <div className="grid grid-cols-2 gap-4">
-
           <div className="w-full">
             <div className="flex items-center ">
               <Calendar className="h-4 w-4 text-blue-500 mr-2" />

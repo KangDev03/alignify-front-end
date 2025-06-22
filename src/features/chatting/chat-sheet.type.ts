@@ -1,4 +1,4 @@
-import type { ApiReponseSuccess } from '../common/common.type';
+import type { ApiReponseSuccess, UserDTO } from '../common/common.type';
 
 export interface IChatRoom {
   chatRoomId: string;
@@ -17,12 +17,6 @@ export interface ChatRoomRequest {
 
 export interface ChatRoomResponse extends ApiReponseSuccess<IChatRoom[]> {
   data: IChatRoom[];
-}
-
-export interface UserDTO {
-  userId: string;
-  name: string;
-  avatarUrl: string | null;
 }
 
 export interface Message {

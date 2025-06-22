@@ -1,24 +1,24 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
 
-import { Icons } from "@/components/icons/icons";
+import { Icons } from '@/components/icons/icons';
 
 export const StatusBadge = (status: string) => {
   switch (status) {
-    case "PENDING":
+    case 'PENDING':
       return (
         <Badge variant="pending">
           <Icons.clock4 size={12} className="mt-0.5" />
           <p className="leading-6">Chưa bắt đầu</p>
         </Badge>
       );
-    case "RECRUITING":
+    case 'RECRUITING':
       return (
         <Badge variant="default">
           <Icons.circleCheckBig size={12} className="mt-0.5" />
           <p className="leading-6">Đang diễn ra</p>
         </Badge>
       );
-    case "COMPLETED":
+    case 'COMPLETED':
       return (
         <Badge variant="accepted">
           <Icons.circleX size={12} className="mt-0.5" />

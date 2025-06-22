@@ -1,31 +1,27 @@
-import { useState } from "react"
-import { Calendar, Eye } from "lucide-react"
+import { useState } from 'react';
+import { Calendar, Eye } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
-import type { Application, Campaign } from "@/features/application/application.type"
-import ApplicationDetail from "@/features/application/components/application-detail"
-import { StatusBadge } from "@/features/application/components/status-badge"
-
+import type { ApplicationByInfluencer } from '@/features/application/application.type';
+import ApplicationDetail from '@/features/application/components/application-detail';
+import { StatusBadge } from '@/features/application/components/status-badge';
+import type { Campaign } from '@/features/common/common.type';
 
 interface ApplicationCardProps {
-  application: Application
-  campaignInfo: Campaign
+  application: ApplicationByInfluencer;
+  campaignInfo: Campaign;
 }
 export default function ApplicationCard({ application, campaignInfo }: ApplicationCardProps) {
-  const [openDialog, setOpenDialog] = useState<string | null>(null)
-const currentDate = new Date()
-const [year, month, day] = application.createdAt;
-const appliedDate = new Date(year, month - 1, day);
-const timeDifference = currentDate.getTime() - appliedDate.getTime()
-const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
+  const [openDialog, setOpenDialog] = useState<string | null>(null);
+  const currentDate = new Date();
+  const [year, month, day] = application.createdAt;
+  const appliedDate = new Date(year, month - 1, day);
+  const timeDifference = currentDate.getTime() - appliedDate.getTime();
+  const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24));
   return (
     <Card
       key={application.applicationId}
@@ -34,25 +30,31 @@ const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
       <CardContent className="px-6">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={campaignInfo.imageUrl || "/placeholder.svg"} alt={campaignInfo.brandName} />
-            <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback> 
+            <AvatarImage
+              src={campaignInfo.imageUrl || '/placeholder.svg'}
+              alt={campaignInfo.brandName}
+            />
+            <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex flex-row items-center justify-center">
-              <h3 className="flex-1 font-semibold text-lg line-clamp-1">{campaignInfo.campaignName}</h3>
+              <h3 className="flex-1 font-semibold text-lg line-clamp-1">
+                {campaignInfo.campaignName}
+              </h3>
               {StatusBadge(application.status)}
             </div>
-            <p className="text-sm text-muted-foreground">{campaignInfo.brandName} • {appliedDate.toLocaleDateString("vi-VN")}</p>
+            <p className="text-sm text-muted-foreground">
+              {campaignInfo.brandName} • {appliedDate.toLocaleDateString('vi-VN')}
+            </p>
           </div>
         </div>
 
         <div className="flex items-center text-sm text-muted-foreground mb-4">
           <Calendar className="w-4 h-4 mr-2 text-primary" />
           <span>
-            {application.status === "PENDING"
+            {application.status === 'PENDING'
               ? `Ứng tuyển ${daysSinceApplied} ngày trước`
-              : `Ngày ứng tuyển: ${appliedDate.toLocaleDateString("vi-VN")}`
-            }
+              : `Ngày ứng tuyển: ${appliedDate.toLocaleDateString('vi-VN')}`}
           </span>
         </div>
 
@@ -74,5 +76,5 @@ const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24))
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

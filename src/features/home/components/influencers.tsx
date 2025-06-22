@@ -15,12 +15,13 @@ import { useGetInfluencerProfilesQuery } from '../home.service';
 export default function Influencers() {
   const { role } = useAppSelector((state: RootState) => state.common);
   const influencerRole = role?.find((role) => role.roleName === 'INFLUENCER');
-  const { data: profiles, isLoading } = useGetInfluencerProfilesQuery({
-    roleId: influencerRole!.roleId,
-  });
+  const { data: profiles, isLoading } = useGetInfluencerProfilesQuery(
+    { roleId: influencerRole!.roleId },
+    { refetchOnMountOrArgChange: true },
+  );
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <Card className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
           <CardContent>
             <div className="flex items-center space-x-4">
@@ -40,7 +41,7 @@ export default function Influencers() {
     );
   }
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {profiles?.data && profiles.data.length > 0 ? (
         profiles?.data.map((influencer) => (
           <Card

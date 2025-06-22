@@ -1,13 +1,11 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type {
-  ApplicationResponse,
-  ApplicationsRequest,
-} from './application.type';
+import type { ApplicationResponse } from './application.type';
+import type { CommonPageableRequest } from '../common/common.type';
 
 export const applicationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getApplicationsByBrand: builder.query<ApplicationResponse, ApplicationsRequest>({
+    getApplicationsByBrand: builder.query<ApplicationResponse, CommonPageableRequest>({
       query: (data) => ({
         url: '/campaigns/applications/brand',
         method: 'GET',
@@ -15,7 +13,7 @@ export const applicationApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Auth'],
     }),
-    getApplicationsByInfluencer: builder.query<ApplicationResponse,ApplicationsRequest>({
+    getApplicationsByInfluencer: builder.query<ApplicationResponse, CommonPageableRequest>({
       query: (data) => ({
         url: '/campaigns/applications/influencer',
         method: 'GET',
@@ -23,12 +21,8 @@ export const applicationApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Auth'],
     }),
-
   }),
 });
 
-export const {
-  useGetApplicationsByBrandQuery,
-  useGetApplicationsByInfluencerQuery,
-  
-} = applicationApi;
+export const { useGetApplicationsByBrandQuery, useGetApplicationsByInfluencerQuery } =
+  applicationApi;

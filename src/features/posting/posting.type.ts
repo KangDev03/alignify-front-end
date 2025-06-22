@@ -1,6 +1,6 @@
-import type { ApiReponseSuccess, Category } from '../common/common.type';
+import type { ApiReponseSuccess, Campaign } from '../common/common.type';
 
-export interface Campaign {
+export interface CampaignPosting {
   campaignName: string;
   content: string;
   budget: number;
@@ -16,28 +16,8 @@ export interface CampaignPostingRequest {
   formData: FormData;
 }
 
-export interface CampaignResponse {
-  campaignId: string;
-  brandName: string;
-  campaignName: string;
-  content: string;
-  imageUrl: string;
-  categories?: Category[] | [];
-  status: string;
-  budget: number;
-  campaignRequirements: { [key: string]: number };
-  influencerRequirements: string[];
-  influencerCountExpected: number;
-  influencerCountCurrent: number;
-  influencerCount: number;
-  applicationTotal: number;
-  startAt: number[];
-  dueAt: number[];
-  createdAt: number[];
-}
-
-export interface CampaignPostingResponse extends ApiReponseSuccess<CampaignResponse> {
-  data: CampaignResponse;
+export interface CampaignPostingResponse extends ApiReponseSuccess<Campaign> {
+  data: Campaign;
 }
 
 export interface ContentFormSchema {
