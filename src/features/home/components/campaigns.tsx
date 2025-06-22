@@ -14,14 +14,13 @@ import { useGetCampaignsQuery } from '../home.service';
 import { setRefetch } from '../home.slice';
 
 interface CampaignsProps {
-  selectedCategory: string;
+  selectedCategoryId: string;
 }
-
-export default function Campaigns(C) {
+export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
   const dispatch = useDispatch();
   const { campaign } = useAppSelector((state) => state.homeRefetch);
 
-  const isAll = selectedCategory === 'Tất cả';
+  const isAll = selectedCategoryId === 'all';
 
   const {
     data: allData,
@@ -36,10 +35,16 @@ export default function Campaigns(C) {
     data: categoryData,
     isLoading: isLoadingCategory,
     refetch: refetchCategory,
-  } = useGetCampaignByCategoryQuery(selectedCategory, {
-    skip: isAll,
-  });
-
+  } = useGetCampaignByCategoryQuery(
+    {
+      categoryId: selectedCategoryId,
+      pageNumber: 0,
+      pageSize: 10,
+    },
+    {
+      skip: isAll,
+    },
+  );
   useEffect(() => {
     if (campaign) {
       if (isAll) refetchAll();
@@ -50,6 +55,11 @@ export default function Campaigns(C) {
 
   const isLoading = isAll ? isLoadingAll : isLoadingCategory;
   const campaigns = isAll ? allData?.data?.campaigns : categoryData?.data?.campaigns;
+
+  console.log('selectedCategoryId:', selectedCategoryId);
+  console.log('isAll:', allData);
+  console.log('categoryData:', categoryData);
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -83,12 +93,11 @@ export default function Campaigns(C) {
       </div>
     );
   }
+
   return (
     <div className="space-y-6">
-      {rawData?.data.campaigns && rawData?.data.campaigns.length > 0 ? (
-        rawData?.data.campaigns.map((campaign) => (
-          <CampaignCard key={campaign.campaignId} campaign={campaign} />
-        ))
+      {campaigns && campaigns.length > 0 ? (
+        campaigns.map((campaign) => <CampaignCard key={campaign.campaignId} campaign={campaign} />)
       ) : (
         <Alert variant="default">
           <AlertCircleIcon />

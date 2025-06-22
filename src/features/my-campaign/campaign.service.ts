@@ -19,9 +19,10 @@ export const campaignApi = baseApi.injectEndpoints({
       providesTags: ['Auth'],
     }),
     getCampaignByCategory: builder.query<CampaignResponse, CampaignRequest>({
-      query: (categoryId) => ({
-        url: `/filterByCategory/${categoryId}`,
+      query: ({ categoryId, pageNumber, pageSize }) => ({
+        url: `campaigns/filterByCategory/${categoryId}`,
         method: 'GET',
+        params: { pageNumber, pageSize },
       }),
     }),
   }),

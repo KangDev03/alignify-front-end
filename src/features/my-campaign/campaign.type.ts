@@ -3,6 +3,7 @@ import type { ApiReponseSuccess, Campaign } from '../common/common.type';
 export interface CampaignRequest {
   pageNumber: number | 0;
   pageSize: number | 10;
+  categoryId?: string;
 }
 
 export interface CampaignState {
