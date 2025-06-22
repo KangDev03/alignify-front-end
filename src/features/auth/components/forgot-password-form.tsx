@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -76,11 +76,7 @@ export default function ForgotPasswordForm() {
             type="submit"
             disabled={isLoading || submitted}
           >
-            {isLoading
-              ? 'Đang gửi...'
-              : submitted
-              ? 'Email đã được gửi'
-              : 'Gửi email xác nhận'}
+            {isLoading ? 'Đang gửi...' : submitted ? 'Email đã được gửi' : 'Gửi email xác nhận'}
           </Button>
 
           {submitted && (

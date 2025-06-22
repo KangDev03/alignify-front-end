@@ -15,7 +15,7 @@ export const getProfileApi = baseApi.injectEndpoints({
       query: (param) => ({
         url: '/profiles',
         method: 'GET',
-        params: { roleId: param.roleId },
+        params: { roleId: param.roleId, pageSize: param.pageSize, pageNumber: param.pageNumber },
       }),
       providesTags: ['Home'],
     }),
@@ -23,7 +23,15 @@ export const getProfileApi = baseApi.injectEndpoints({
       query: (param) => ({
         url: '/profiles',
         method: 'GET',
-        params: { roleId: param.roleId },
+        params: { roleId: param.roleId, pageSize: param.pageSize, pageNumber: param.pageNumber },
+      }),
+      providesTags: ['Home'],
+    }),
+    getCampaigns: builder.query<CampaignResponse, CommonPageableRequest>({
+      query: (param) => ({
+        url: '/campaigns',
+        method: 'GET',
+        params: param,
       }),
       providesTags: ['Home'],
     }),
