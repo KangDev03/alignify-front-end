@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 import { Icons } from '@/components/icons/icons';
-import type { ContentPosting } from '@/features/home/forum-api/forum.type';
+import type { ContentPosting } from '@/features/home/home.type';
 import { formatDate, parseTimestampToDate } from '@/utils/format';
 
 interface ForumPostProps {

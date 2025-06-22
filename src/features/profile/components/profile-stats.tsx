@@ -26,6 +26,8 @@ export function ProfileStats({ profile }: ProfileInfoProps) {
       followers: 10,
     },
   ];
+  console.log(profile);
+
 
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">

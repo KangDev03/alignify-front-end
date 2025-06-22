@@ -106,7 +106,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
       const formData = new FormData();
       if (file) formData.append('image', file);
       formData.append('campaign', JSON.stringify(campaignRaw));
-      const res = await postCampaign({ formData }).unwrap();
+      await postCampaign({ formData }).unwrap();
       dialogCloseRef.current?.click();
       form.reset();
       dispatch(setRefetch({ key: 'campaign', value: true }));
