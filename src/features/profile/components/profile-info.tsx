@@ -19,10 +19,21 @@ export function ProfileInfo({ profile }: ProfileInfoProps) {
             <Label htmlFor="name">Họ và tên</Label>
             <p className="text-sm mt-1">{profile.name}</p>
           </div>
-          {/* <div>
+          <div>
             <Label htmlFor="gender">Giới tính</Label>
-            <p className="text-sm mt-1">{profile.gender}</p>
-          </div> */}
+
+            {'gender' in profile && (
+              <p className="text-sm mt-1">
+                {profile.gender === 'MALE'
+                  ? 'Nam'
+                  : profile.gender === 'NONE'
+                    ? 'Không'
+                    : profile.gender === 'FEMALE'
+                      ? 'Nữ'
+                      : 'Khác'}
+              </p>
+            )}
+          </div>
         </div>
 
         <div>

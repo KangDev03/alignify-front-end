@@ -6,10 +6,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ForumPost } from '@/components/forum-post/forum-post';
 import { Icons } from '@/components/icons/icons';
 import { useGetAllContentPostingQuery } from '@/features/home/forum-api/forum.service';
+import { useGetAllCampaignsOfInfluencerQuery } from '@/features/my-campaign/campaign.service';
+import type { Campaign } from '@/features/my-campaign/campaign.type';
 import { useGetProfileUserQuery } from '@/features/profile/api/profile.service';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
 import { ProfileInfo } from '@/features/profile/components/profile-info';
-import { ProfilePerformance } from '@/features/profile/components/profile-performance';
 import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { ProfileStats } from '@/features/profile/components/profile-stats';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
@@ -20,23 +21,37 @@ export default function UserProfilePage() {
     pageSize: 10,
   });
   const { data: profileRaw } = useGetProfileUserQuery();
-  console.log(contentPosting?.data);
+  const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery({
+    pageNumber: 0,
+    pageSize: 10,
+  });
 
   if (!profileRaw?.data) {
     return <div>Loading...</div>;
   }
   const profile = profileRaw?.data;
-
+  const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
+    ? campaignsResponse.data.campaigns
+    : [];
+  const completedAppliedCampaigns: Campaign[] = campaigns.filter(
+    (campaign) => campaign.status === 'COMPLETED',
+  );
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
+    <div className="min-h-screen bg-background transition-colors duration-300  gap-x-4">
       <div className="space-y-6">
-        <ProfileHeader profile={profile} />
+        <ProfileHeader profile={profile} campaignCompleted={completedAppliedCampaigns.length} />
 
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="profile">Thông tin cá nhân</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 gap-x-6">
+            <TabsTrigger value="profile">
+              <Card className="border-2 border-primary/20 bg-card shadow-lg">
+                Thông tin cá nhân
+              </Card>
+            </TabsTrigger>
             <TabsTrigger value="posts">
-              Bài viết của tôi ({contentPosting?.data.length})
+              <Card className="border-2 border-primary/20 bg-card shadow-lg">
+                Bài viết của tôi ({contentPosting?.data.length})
+              </Card>
             </TabsTrigger>
           </TabsList>
 
@@ -45,7 +60,7 @@ export default function UserProfilePage() {
               <div className="lg:col-span-2 space-y-6">
                 <ProfileInfo profile={profile} />
 
-                {/* <ProfileSocialLinks socialMediaLinks={profile.socialMediaLinks} /> */}
+                <ProfileSocialLinks socialMediaLinks={profile.socialMediaLinks} />
               </div>
 
               {/* Thống kê */}

@@ -7,15 +7,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { Icons } from '@/components/icons/icons';
+import type { Campaign } from '@/features/my-campaign/campaign.type';
 
 import type { BrandData, InfluencerData } from '../api/profile.types';
 import { useChangeAvatarMutation } from '../profile.service';
+import { parseDateString } from '@/utils/format';
 
 interface ProfileHeaderProps {
   profile: InfluencerData | BrandData;
+  campaignCompleted: number;
 }
 
-export function ProfileHeader({ profile }: ProfileHeaderProps) {
+export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps) {
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>();
@@ -46,6 +49,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       console.error('Error uploading avatar:', error);
     }
   };
+
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
       <CardContent>
@@ -57,7 +61,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
               }}
             >
               <Avatar className="h-24 w-24">
-                <AvatarImage src={avatarUrl || '/placeholder.svg'} alt={profile.name} />
+                <AvatarImage src={profile.avatarUrl || '/placeholder.svg'} alt={profile.name} />
                 <AvatarFallback className="text-2xl">{profile.name.charAt(0)}</AvatarFallback>
               </Avatar>
             </PopoverTrigger>
@@ -82,12 +86,8 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
                 <h1 className="text-2xl font-bold">{profile.name}</h1>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                   <div className="flex items-center space-x-1">
-                    <Icons.mapPin className="h-4 w-4" />
-                    <span>NAN</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
                     <Icons.calendar className="h-4 w-4" />
-                    <span>{new Date().toLocaleDateString('vi-VN')}</span>
+                    {'doB' in profile && <span>{parseDateString(profile.doB)}</span>}
                   </div>
                 </div>
               </div>
@@ -106,9 +106,9 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {profile.categories.map((cat) => (
-                <Badge key={cat.categoryId} variant="outline">
-                  {cat.categoryName}
+              {profile.categories.map((category) => (
+                <Badge key={category.categoryId} variant="outline" className="text-xs">
+                  {category.categoryName}
                 </Badge>
               ))}
             </div>
@@ -124,11 +124,9 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
                                 <span className="text-sm">{influencer.engagementRate}% engagement</span>
                             </div> */}
 
-              {/* {'' in profile && (
-                <div className="text-sm text-muted-foreground">
-                  {profile.completedCampaigns} chiến dịch hoàn thành
-                </div>
-              )} */}
+              <div className="text-sm text-muted-foreground">
+                {campaignCompleted} chiến dịch hoàn thành
+              </div>
             </div>
           </div>
         </div>

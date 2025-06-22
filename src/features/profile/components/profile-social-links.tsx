@@ -1,16 +1,10 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { Icons } from "@/components/icons/icons"
-
-interface SocialMediaLinks {
-  instagram: string
-  facebook: string
-  youtube: string
-}
+import { Icons } from '@/components/icons/icons';
 
 interface ProfileSocialLinksProps {
-  socialMediaLinks: SocialMediaLinks
+  socialMediaLinks: [{ key: string }, string];
 }
 
 export function ProfileSocialLinks({ socialMediaLinks }: ProfileSocialLinksProps) {
@@ -18,7 +12,7 @@ export function ProfileSocialLinks({ socialMediaLinks }: ProfileSocialLinksProps
     instagram: Icons.instagram,
     facebook: Icons.facebook,
     youtube: Icons.youtube,
-  }
+  };
 
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
@@ -27,8 +21,8 @@ export function ProfileSocialLinks({ socialMediaLinks }: ProfileSocialLinksProps
       </CardHeader>
       <CardContent className="space-y-3">
         {Object.entries(socialMediaLinks).map(([platform, link]) => {
-          const Icon = socialIcons[platform as keyof typeof socialIcons]
-          
+          const Icon = socialIcons[platform as keyof typeof socialIcons];
+
           return (
             <div
               key={platform}
@@ -40,18 +34,14 @@ export function ProfileSocialLinks({ socialMediaLinks }: ProfileSocialLinksProps
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-muted-foreground">{link}</span>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => window.open(link, '_blank')}
-                >
+                <Button variant="ghost" size="sm" onClick={() => window.open(link, '_blank')}>
                   <Icons.externalLink className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-          )
+          );
         })}
       </CardContent>
     </Card>
-  )
+  );
 }

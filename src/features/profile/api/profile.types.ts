@@ -9,7 +9,7 @@ export interface InfluencerData {
   name: string;
   email: string;
   roleId: string;
-  avartarUrl: string;
+  avatarUrl: string;
   backgroundUrl: string;
   doB: number[];
   gender: string;
@@ -26,7 +26,7 @@ export interface BrandData {
   name: string;
   email: string;
   roleId: string;
-  avartarUrl: string;
+  avatarUrl: string;
   backgroundUrl: string;
   bio: string;
   categories: Category[];
