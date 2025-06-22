@@ -13,12 +13,11 @@ export const parseTimestampToDate = (timestamp: number[]): DateTime => {
   }).setZone('Asia/Ho_Chi_Minh');
 };
 
+export const parseDateString = (date: number[]): string => {
+  const [year, month, day] = date;
+  const format = new Date(year, month - 1, day);
 
-export const parseDateString = (date: number[]): string =>{
-    const [year, month, day] = date;
-    const format = new Date(year, month - 1, day);
-
-    return format.toLocaleDateString('vi-VN');
+  return format.toLocaleDateString('vi-VN');
 };
 
 export const formatDateToTimestamp = (date: DateTime | Date): number[] => {
@@ -82,4 +81,14 @@ export const formatLastTimeSentMessage = (date: DateTime | string | Date): strin
   } else {
     return `${diffYears} năm`;
   }
+};
+
+export const formatNumber = (num: number) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
 };

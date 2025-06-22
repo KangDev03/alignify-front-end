@@ -1,33 +1,6 @@
-import type { ApiReponseSuccess } from '../common/common.type';
+import type { ApiReponseSuccess, Campaign } from '../common/common.type';
 
-export interface ApplicationsRequest {
-  pageNumber: number | 0;
-  pageSize: number | 10;
-}
-
-export interface Campaign {
-  campaignId: string;
-  brandName: string;
-  campaignName: string;
-  content: string;
-  imageUrl: string;
-  categories?: Category[] | [];
-  createdDate: number[];
-  endDate: number[];
-  status: string;
-  budget: number;
-  campaignRequirements: { [key: string]: number };
-  influencerRequirements: string[];
-  influencerCountExpected: number;
-  influencerCountCurrent: number;
-}
-
-interface Category {
-  categoryId: string;
-  categoryName: string;
-}
-
-export interface ApplicationsByInfluencer {
+interface ApplicationsByCampaginResponse {
   campaignResponse: Campaign;
   applications: ApplicationByInfluencer[];
 }
@@ -41,8 +14,6 @@ export interface ApplicationByInfluencer {
   status: string;
   createdAt: number[];
 }
-
-export interface ApplicationByInfluencerResponse
-  extends ApiReponseSuccess<ApplicationsByInfluencer[]> {
-  data: ApplicationsByInfluencer[];
+export interface ApplicationResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]> {
+  data: ApplicationsByCampaginResponse[];
 }

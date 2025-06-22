@@ -11,7 +11,7 @@ import LoginPage from '@/pages/auth/sign-in';
 import VerifyOtpPage from '@/pages/auth/verify-otp';
 import ContactPage from '@/pages/contact';
 import { HomePage } from '@/pages/home';
-import { UserProfilePage } from '@/pages/profile';
+import UserProfilePage from '@/pages/profile';
 import { BrandProfile } from '@/pages/profile/brand-profile';
 import { Settings } from '@/pages/setting';
 
@@ -101,7 +101,7 @@ function Router() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="reset-password" element={<ResetPasswordPage />} />
+          <Route path="reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="select-role" element={<SelectRolePage />} />
           <Route path="verify-otp" element={<VerifyOtpPage />} />
         </Route>

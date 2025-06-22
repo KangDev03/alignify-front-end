@@ -1,6 +1,4 @@
-import type { UserDTO } from '@/features/chatting/chat-sheet.type';
-
-import type { ApiReponseError, ApiReponseSuccess, RoleName } from '../common/common.type';
+import type { ApiReponseError, ApiReponseSuccess, RoleName, UserDTO } from '../common/common.type';
 
 export interface LoginRequest {
   email: string;
@@ -11,19 +9,14 @@ export interface GoogleLoginRequest {
   code: string;
 }
 
-export interface LoginReponse {
+interface ILoginReponse {
   token: string;
   role: RoleName;
   user: UserDTO;
 }
 
-export interface LoginResponse extends ApiReponseSuccess<LoginReponse> {
-  data: {
-    user: any;
-    id: string;
-    token: string;
-    role: RoleName;
-  };
+export interface LoginResponse extends ApiReponseSuccess<ILoginReponse> {
+  data: ILoginReponse;
 }
 
 export type ApiError = ApiReponseError;
@@ -58,3 +51,21 @@ export interface VerifyOTPRequest {
 }
 
 export type VerifyOTPResponse = ApiReponseSuccess<null>;
+
+export type ForgotPasswordRequest = {
+  email: string;
+  url: string;
+};
+
+export type ForgotPasswordResponse = ApiReponseSuccess<null>;
+
+export type ResetPasswordRequest = {
+  password: string;
+  passwordConfirm: string; 
+  token: string;
+};
+
+export type ResetPasswordResponse = {
+  success: boolean;
+  message: string;
+};

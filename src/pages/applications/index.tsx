@@ -24,16 +24,19 @@ export function ApplicationsPage() {
   const applications = useMemo(() => {
     if (!rawData?.data || !Array.isArray(rawData.data)) return [];
 
-    return rawData.data.reduce((acc: (Application & { campaignInfo: Campaign })[], entry) => {
-      if (Array.isArray(entry.applications)) {
-        const combined = entry.applications.map((app) => ({
-          ...app,
-          campaignInfo: entry.campaignResponse,
-        }));
-        acc.push(...combined);
-      }
-      return acc;
-    }, []);
+    return rawData.data.reduce(
+      (acc: (ApplicationByInfluencer & { campaignInfo: Campaign })[], entry) => {
+        if (Array.isArray(entry.applications)) {
+          const combined = entry.applications.map((app) => ({
+            ...app,
+            campaignInfo: entry.campaignResponse,
+          }));
+          acc.push(...combined);
+        }
+        return acc;
+      },
+      [],
+    );
   }, [rawData]);
 
   return (

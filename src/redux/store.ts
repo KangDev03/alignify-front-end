@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage';
 import applicantReducer from '@/features/applicants/applicant.slice';
 import authReducer from '@/features/auth/auth.slice';
 import commonReducer from '@/features/common/common.slice';
+import homeRefetchReducer from '@/features/home/home.slice';
 
 import { baseApi } from './baseApi';
 
