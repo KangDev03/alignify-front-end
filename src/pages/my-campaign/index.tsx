@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { AlertCircleIcon, Search } from 'lucide-react';
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -12,7 +13,7 @@ import CampaignCard from '@/features/my-campaign/components/campaign-card';
 
 const tabs = [
   { value: 'PENDING', label: 'Chưa bắt đầu' },
-  { value: 'RECRUITING', label: 'Đang diễn ra' },
+  { value: 'PARTICIPATING', label: 'Đang diễn ra' },
   { value: 'COMPLETED', label: 'Đã kết thúc' },
 ];
 
@@ -57,7 +58,14 @@ export default function MyCampaignPage() {
                 <CampaignCard key={campaign.campaignId} campaign={campaign} />
               ))
             ) : (
-              <p className="text-muted-foreground text-sm">Không có chiến dịch nào.</p>
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>
+                  {activeTab === 'PENDING' && 'Bạn chưa có chiến dịch nào đang chờ bắt đầu'}
+                  {activeTab === 'PARTICIPATING' && 'Bạn chưa có chiến dịch nào đang diễn ra'}
+                  {activeTab === 'COMPLETED' && 'Bạn chưa có chiến dịch nào đã kết thúc'}
+                </AlertTitle>
+              </Alert>
             )}
           </div>
         </TabsContent>
