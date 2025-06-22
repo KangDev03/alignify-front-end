@@ -1,20 +1,14 @@
 'use client';
 import { useMemo, useState } from 'react';
-import { skipToken } from '@reduxjs/toolkit/query';
 import { Search } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import {
-  useGetApplicationsByBrandQuery,
-  useGetApplicationsByInfluencerQuery,
-} from '@/features/application/application.service';
+import { useGetApplicationsByInfluencerQuery } from '@/features/application/application.service';
 import type { ApplicationByInfluencer } from '@/features/application/application.type';
 import ApplicationCard from '@/features/application/components/application-card';
 import type { Campaign } from '@/features/common/common.type';
-import { useAppSelector } from '@/hooks/redux';
-import type { RootState } from '@/redux/store';
 
 const tabs = [
   { value: 'pending', label: 'Đang chờ duyệt' },
@@ -23,22 +17,10 @@ const tabs = [
 ];
 
 export function ApplicationsPage() {
-  const { role } = useAppSelector((state: RootState) => state.auth);
   const [activeTab, setActiveTab] = useState('pending');
 
-  const influencerQuery = useGetApplicationsByInfluencerQuery(
-    role === 'INFLUENCER' ? { pageNumber: 0, pageSize: 10 } : skipToken,
-  );
+  const { data: rawData } = useGetApplicationsByInfluencerQuery({});
 
-  const brandQuery = useGetApplicationsByBrandQuery(
-    role === 'BRAND' ? { pageNumber: 0, pageSize: 10 } : skipToken,
-  );
-  const rawData =
-    role === 'INFLUENCER'
-      ? influencerQuery.currentData
-      : role === 'BRAND'
-        ? brandQuery.currentData
-        : undefined;
   const applications = useMemo(() => {
     if (!rawData?.data || !Array.isArray(rawData.data)) return [];
 
