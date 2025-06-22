@@ -1,6 +1,5 @@
 import * as z from 'zod';
 
-// Define form validation schema
 export const signInSchema = z.object({
   email: z.string().email({ message: 'Email không hợp lệ' }),
   password: z.string().min(3, { message: 'Mật khẩu phải có ít nhất 3 ký tự' }),
@@ -14,7 +13,6 @@ export const signUpSchema = z
     password: z.string().min(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' }),
     passwordConfirm: z.string(),
     name: z.string().min(2, { message: 'Tên phải có ít nhất 2 ký tự' }),
-    // location: z.string().min(2, { message: 'Địa chỉ không được để trống' }),
   })
   .refine((data) => data.password === data.passwordConfirm, {
     message: 'Mật khẩu xác nhận không khớp',

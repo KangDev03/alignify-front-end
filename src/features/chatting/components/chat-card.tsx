@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
@@ -26,7 +27,19 @@ export default function ChatCard({
         <AvatarFallback>{roomName.charAt(0)}</AvatarFallback>
       </Avatar>
       <div className="flex-1 flex flex-col min-w-0 items-start">
-        <h3 className="font-medium text-sm truncate w-full line-clamp-1">{roomName}</h3>
+        <Tooltip>
+          <TooltipTrigger>
+            <h3 className="font-medium text-sm truncate w-[300px] line-clamp-1 text-left">
+              {roomName}
+            </h3>
+          </TooltipTrigger>
+          <TooltipContent
+            className="bg-card-foreground backdrop-blur-sm "
+            toolColor="bg-card-foreground fill-card-foreground"
+          >
+            <p className="font-medium text-xs">{roomName}</p>
+          </TooltipContent>
+        </Tooltip>
         <div className="flex items-center gap-2 text-background mt-0.5">
           <span className="text-xs truncate text-muted-foreground">{name}</span>
           <span className="w-1 h-1 bg-muted-foreground rounded-full inline-block" />
@@ -34,7 +47,7 @@ export default function ChatCard({
             {formatLastTimeSentMessage(parseTimestampToDate(sendAt))} trước
           </span>
         </div>
-        <p className="text-sm text-muted-foreground truncate mt-1 w-full line-clamp-1">
+        <p className="text-sm text-muted-foreground truncate mt-1 w-full line-clamp-1 text-left">
           {lastMessage}
         </p>
       </div>

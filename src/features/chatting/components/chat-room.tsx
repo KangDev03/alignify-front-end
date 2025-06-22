@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SheetClose } from '@/components/ui/sheet';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { Icons } from '@/components/icons/icons';
 import { useAppSelector } from '@/hooks/redux';
@@ -15,10 +16,11 @@ import { formatDateToTimestamp } from '@/utils/format';
 
 import MessageCard from './message-card';
 import { chatApi, useGetMessagesInRoomQuery } from '../chat-sheet.service';
-import type { ChatMessage, Message } from '../chat-sheet.type';
+import type { ChatMessage } from '../chat-sheet.type';
 
 interface ChatRoomProps {
   chatRoomId: string;
+  roomName: string;
 }
 
 interface ReadStatusUpdate {
@@ -29,11 +31,19 @@ interface ReadStatusUpdate {
 interface ChatMessageState extends ChatMessage {
   isSending?: boolean;
 }
-
-export default function ChatRoom({ chatRoomId }: ChatRoomProps) {
+interface MessageSending {
+  messageId?: string | null;
+  userId: string;
+  chatRoomId: string;
+  message: string;
+  sendAt: Date;
+  tempId?: string | null;
+  readBy: string[];
+}
+export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
   const [message, setMessage] = useState<string>('');
   const stompClientRef = useRef<Stomp.Client | null>(null);
-  const { id: userId, token } = useAppSelector((state: RootState) => state.auth);
+  const { id: userId, token, avatarUrl, name } = useAppSelector((state: RootState) => state.auth);
   const { data } = useGetMessagesInRoomQuery({ roomId: chatRoomId });
   const [messages, setMessages] = useState<ChatMessageState[]>([]);
   const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -160,12 +170,14 @@ export default function ChatRoom({ chatRoomId }: ChatRoomProps) {
       chatRoomId
     ) {
       const tempId = uuidv4();
-      const input: Message = {
+      const current = new Date();
+      const input: MessageSending = {
         chatRoomId,
         userId: userId ?? '',
         message,
         readBy: [userId!],
         tempId: tempId,
+        sendAt: new Date(),
       };
       const currentMessage: ChatMessageState = {
         message: {
@@ -173,14 +185,13 @@ export default function ChatRoom({ chatRoomId }: ChatRoomProps) {
           userId: userId!,
           message,
           readBy: [userId!],
-          sendAt: formatDateToTimestamp(new Date()),
+          sendAt: formatDateToTimestamp(current),
           tempId,
         },
         userDTO: {
           userId: userId!,
-          name: 'Minh',
-          avatarUrl:
-            'https://res.cloudinary.com/dwnbcpg87/image/upload/v1750155800/alignify/images/878caae2-4a32-4a85-855f-44a40fce0073.jpg',
+          name: name!,
+          avatarUrl: avatarUrl!,
         },
         isSending: true,
       };
@@ -198,13 +209,24 @@ export default function ChatRoom({ chatRoomId }: ChatRoomProps) {
 
   return (
     <div className="flex flex-col h-full w-[466px] rounded-lg overflow-hidden border-2 border-border bg-background">
-      <div className="flex items-center justify-between h-16 px-6 border-b border-border">
+      <div className="flex items-center justify-between py-4 px-6 border-b border-border gap-4">
         <SheetClose title="arrow-left">
-          <Icons.arrowleft className="h-4 w-4" />
+          <Icons.arrowleft className="h-5 w-5" />
         </SheetClose>
-        <h2 className="text-lg font-bold w-fit">Chiến dịch thời trang tuần lễ thời trang</h2>
+
+        <Tooltip>
+          <TooltipTrigger>
+            <h2 className="text-lg font-bold w-fit line-clamp-1">{roomName}</h2>
+          </TooltipTrigger>
+          <TooltipContent
+            className="bg-card-foreground backdrop-blur-sm "
+            toolColor="bg-card-foreground fill-card-foreground"
+          >
+            <p className="font-medium text-xs">{roomName}</p>
+          </TooltipContent>
+        </Tooltip>
         <SheetClose title="x">
-          <Icons.x className="h-6 w-6" />
+          <Icons.x className="h-5 w-5" />
         </SheetClose>
       </div>
       <div className="flex-1 px-6 py-3 space-y-4 overflow-y-auto h-fit border-b gap-2.5 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent">

@@ -8,18 +8,18 @@ interface ProfilePerformanceProps {
   completedCampaigns: number
 }
 
-export function ProfilePerformance({ 
-  engagementRate, 
-  rating, 
-  completedCampaigns 
+export function ProfilePerformance({
+  engagementRate,
+  rating,
+  completedCampaigns
 }: ProfilePerformanceProps) {
   const metrics = [
-    {
-      icon: Icons.trendingUp,
-      label: "Tỷ lệ tương tác",
-      value: `${engagementRate.toFixed(1)}%`,
-      color: "text-blue-500"
-    },
+    // {
+    //   icon: Icons.trendingUp,
+    //   label: "Tỷ lệ tương tác",
+    //   value: `${engagementRate.toFixed(1)}%`,
+    //   color: "text-blue-500"
+    // },
     {
       icon: Icons.star,
       label: "Đánh giá",

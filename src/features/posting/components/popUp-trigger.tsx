@@ -1,32 +1,26 @@
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { Icons } from '@/components/icons/icons';
+import { useGetCategoriesQuery } from '@/features/common/common.service';
+import type { RoleName } from '@/features/common/common.type';
+import { useAppSelector } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
 
 import CampaignPopUp from './popUp-campaign';
 import ContentPopUp from './popUp-content';
 
-const categories = [
-  { id: '1', name: 'Thời gian' },
-  { id: '2', name: 'Thể thao' },
-  { id: '3', name: 'Làm đẹp' },
-  { id: '4', name: 'Du lịch' },
-  { id: '5', name: 'Ẩm thực' },
-  { id: '6', name: 'Công nghệ' },
-  { id: '7', name: 'Sức khỏe' },
-  { id: '8', name: 'Giáo dục' },
-  { id: '9', name: 'Kinh doanh' },
-  { id: '10', name: 'Nghệ thuật' },
-];
-type Role = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
-
-const userRole: Role = 'INFLUENCER';
-
 export default function PopUpTrigger() {
+  const { role } = useAppSelector((state: RootState) => state.auth);
+  const { data: rawData } = useGetCategoriesQuery();
+  const categories = rawData?.data;
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const MAX_CATEGORIES = 3;
+  const userRole: RoleName = role;
+
   function handleSelectCategory(categoryId: string) {
     setSelectedCategories((prev) => {
       if (prev.includes(categoryId)) {
@@ -40,31 +34,47 @@ export default function PopUpTrigger() {
     });
   }
   return (
-    userRole !== 'ADMIN' &&
-    userRole !== null && (
+    userRole !== 'ADMIN' && (
       <Dialog>
-        <DialogTrigger className="fixed bottom-5 right-5 cursor-pointer">
-          <Button
-            variant={'default'}
-            className="size-14 rounded-full flex justify-center items-center"
-          >
-            <Icons.plus className="bg-transparent rounded-full text-background size-6" />
-          </Button>
+        <DialogTrigger className="fixed bottom-6 right-10 cursor-pointer">
+          {userRole === 'INFLUENCER' ? (
+            <Tooltip delayDuration={500}>
+              <TooltipTrigger>
+                <Button
+                  variant="default"
+                  className="size-14 rounded-full flex justify-center items-center"
+                >
+                  <Icons.penTool className="size-6 rotate-180" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="text-xs font-medium p-1">
+                <p>Tạo bài viết mới</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Tooltip delayDuration={500}>
+              <TooltipTrigger>
+                <Button
+                  variant="default"
+                  className="size-14 rounded-full flex justify-center items-center"
+                >
+                  <Icons.megaphone className="size-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Tạo chiến dịch mới</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </DialogTrigger>
         {userRole === 'INFLUENCER' && (
           <ContentPopUp
-            categories={categories}
+            categories={categories!}
             selectedCategories={selectedCategories}
             onSelectCategory={handleSelectCategory}
           />
         )}
-        {userRole === 'BRAND' && (
-          <CampaignPopUp
-            categories={categories}
-            selectedCategories={selectedCategories}
-            onSelectCategory={handleSelectCategory}
-          />
-        )}
+        {userRole === 'BRAND' && <CampaignPopUp categories={categories!} />}
       </Dialog>
     )
   );

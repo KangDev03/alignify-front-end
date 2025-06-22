@@ -16,6 +16,8 @@ interface MessageCardProps {
 
 const MessageCard = forwardRef<HTMLDivElement, MessageCardProps>(
   ({ msg, userdto, me = true, isSending = false }, ref) => {
+    if (userdto.name === '#SYS')
+      return <p className="text-center text-muted-foreground text-sm">{msg.message}</p>;
     return me! ? (
       <div ref={ref} className="flex items-start gap-2 justify-end">
         <div className="flex flex-col items-end text-sm">

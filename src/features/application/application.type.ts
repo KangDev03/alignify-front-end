@@ -1,19 +1,19 @@
-export interface Application {
-  id: string;
-  title: string;
-  brand: string;
-  brandAvatar: string;
-  description: string;
-  budget: string;
+import type { ApiReponseSuccess, Campaign } from '../common/common.type';
+
+interface ApplicationsByCampaginResponse {
+  campaignResponse: Campaign;
+  applications: ApplicationByInfluencer[];
+}
+
+export interface ApplicationByInfluencer {
+  applicationId: string;
+  campaignId: string;
+  influencerId: string;
+  brandId: string;
+  limited: number;
   status: string;
-  appliedDate: string; // ISO date string
-  // expectedResponse: string; // ISO date string
-  startDate: string; // ISO date string
-  endDate: string; // ISO date string
-  category: string[];
-  requirements: string[];
-  deliverables: string[];
-  contactPerson: string;
-  contactEmail: string;
-  contactPhone: string;
+  createdAt: number[];
+}
+export interface ApplicationResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]> {
+  data: ApplicationsByCampaginResponse[];
 }
