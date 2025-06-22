@@ -103,39 +103,38 @@ const mockCampaigns: Campaign[] = [
 ]
 
 export default function Campaigns() {
-  const [selectedCampaign, setSelectedCampaign] = useState<(typeof mockCampaigns2)[0] | null>(null)
-
-  return (
-    <>
-      <div className="space-y-4">
-        {/* {mockCampaigns2.map((campaign) => (
-          <Card
-            key={campaign.id}
-            className="border-2 border-primary/20 pt-0 bg-card shadow-lg hover:shadow-xl transition-all overflow-hidden"
-          >
-            <div className="w-full h-64 relative">
-              <img
-                src={campaign.poster || "/placeholder.svg"}
-                alt={campaign.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute top-4 right-4">
-                <Badge variant="secondary" className="bg-white/80 backdrop-blur-sm text-black">
-                  {campaign.category}
-                </Badge>
-              </div>
-            </div>
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={campaign.brandAvatar || "/placeholder.svg"} alt={campaign.brand} />
-                    <AvatarFallback>{campaign.brand.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="text-lg">{campaign.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{campaign.brand}</p>
-                  </div>
+  const dispatch = useDispatch();
+  const { campaign } = useAppSelector((state) => state.homeRefetch);
+  const {
+    data: rawData,
+    isLoading,
+    refetch,
+  } = useGetCampaignsQuery(
+    {},
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
+  useEffect(() => {
+    if (campaign) {
+      refetch();
+      dispatch(setRefetch({ key: 'campaign', value: false }));
+    }
+  }, [campaign, refetch, dispatch]);
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Card className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow pt-0">
+          <div className="w-full h-64 relative">
+            <Skeleton className="w-full h-full object-cover" />
+          </div>
+          <CardContent className="px-6 w-full">
+            <div className="flex gap-3 mb-3">
+              <Skeleton className="h-10 w-10 rounded-full" />
+              <div className="flex-1">
+                <div className="flex flex-row items-center justify-between">
+                  <Skeleton className="h-6 w-100" />
+                  <Skeleton className="h-6 w-16 ml-2" />
                 </div>
               </div>
             </CardHeader>

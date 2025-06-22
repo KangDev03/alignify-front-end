@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 
 export const parseTimestampToDate = (timestamp: number[]): DateTime => {
-  const [year, month, day, hour, minute, second, nanos] = timestamp;
+  const [year, month, day, hour, minute, second, nanos = 0] = timestamp;
   return DateTime.fromObject({
     year,
     month,
@@ -9,7 +9,7 @@ export const parseTimestampToDate = (timestamp: number[]): DateTime => {
     hour,
     minute,
     second,
-    millisecond: Math.floor(nanos / 1_000_000),
+    millisecond: Math.floor((nanos || 0) / 1_000_000),
   }).setZone('Asia/Ho_Chi_Minh');
 };
 
