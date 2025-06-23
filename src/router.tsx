@@ -14,10 +14,10 @@ import UserProfilePage from '@/pages/profile';
 import { BrandProfile } from '@/pages/profile/brand-profile';
 import { Settings } from '@/pages/setting';
 
+import { useAppSelector } from './hooks/redux';
 // import ApplicationsPage from './pages/applications';
 import RegisterPage from './pages/auth/sign-up';
 import MyCampaignPage from './pages/my-campaign';
-import { useAppSelector } from './hooks/redux';
 import type { RootState } from './redux/store';
 
 const mockBrand = {
@@ -42,8 +42,8 @@ const mockBrand = {
 };
 
 function Router() {
-    const { role: roleName } = useAppSelector((state: RootState) => state.auth);
-  
+  const { role: roleName } = useAppSelector((state: RootState) => state.auth);
+
   return (
     <>
       <Routes>
@@ -63,11 +63,12 @@ function Router() {
           <Route path="/applications" element={<ApplicationsPage />} />
           <Route path="/applicants" element={<Applicants />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />
-          {roleName ==='INFLUENCER'&&
-          <Route path="/user-profile" element={<UserProfilePage />} />
-          }
-          {roleName ==='BRAND'&&
-          <Route path="/user-profile" element={<BrandProfile brand={mockBrand} />} />}
+          {roleName === 'INFLUENCER' && (
+            <Route path="/user-profile" element={<UserProfilePage />} />
+          )}
+          {roleName === 'BRAND' && (
+            <Route path="/user-profile" element={<BrandProfile brand={mockBrand} />} />
+          )}
         </Route>
       </Routes>
     </>

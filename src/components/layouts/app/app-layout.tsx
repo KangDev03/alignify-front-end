@@ -2,14 +2,16 @@ import { Outlet, useNavigate } from 'react-router';
 
 // import AppFooter from '@/components/layouts/app/footer';
 import { AppHeader } from '@/components/layouts/app/header';
+import { logout } from '@/features/auth/auth.slice';
 import PopUpTrigger from '@/features/posting/components/popUp-trigger';
+import { useAppDispatch } from '@/hooks/redux';
 
 function AppLayout() {
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   const handleLogout = () => {
+    dispatch(logout());
     navigate('/auth/login');
-    console.log('User logged out');
   };
 
   return (

@@ -9,31 +9,49 @@ export interface ChangeAvatarResponses extends ApiReponseSuccess<string> {
 }
 
 export interface InfluencerData {
-  id: string;
+  userId: string;
   name: string;
-  avatar: string;
-  dateOfBirth: string;
+  email: string;
+  roleId: string;
+  avatarUrl: string;
+  backgroundUrl: string;
+  doB: number[];
   gender: string;
   bio: string;
-  socialMediaLinks: {
-    instagram: string;
-    youtube: string;
-    facebook: string;
-  };
+  socialMediaLinks: [{ key: string }, string];
   rating: number;
-  category: string[];
-  followers: {
-    instagram: number;
-    youtube: number;
-    facebook: number;
-  };
-  totalFollowers: number;
-  engagementRate: number;
-  completedCampaigns: number;
-  location: string;
+  categories: Category[];
+  follower?: number | 0;
+  isPublic: boolean;
 }
 
+export interface ProfileRequest {
+  roleId: string;
+}
+export interface BrandData {
+  userId: string;
+  name: string;
+  email: string;
+  roleId: string;
+  avatarUrl: string;
+  backgroundUrl: string;
+  bio: string;
+  categories: Category[];
+  contacts: [{ key: string }, string];
+  socialMediaLinks: [{ key: string }, string];
+  establishDate: number[];
+}
+interface Category {
+  categoryId: string;
+  categoryName: string;
+}
 export interface EditableComponentProps {
   isEditing: boolean;
   onSave?: () => void;
+}
+export interface InfluencerProfileResponse extends ApiReponseSuccess<InfluencerData> {
+  data: InfluencerData;
+}
+export interface BrandProfileResponse extends ApiReponseSuccess<BrandData> {
+  data: BrandData;
 }
