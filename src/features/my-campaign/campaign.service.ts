@@ -9,6 +9,7 @@ export const campaignApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: '/campaigns',
         method: 'GET',
+        params: data,
       }),
       providesTags: ['Auth'],
     }),
@@ -16,6 +17,7 @@ export const campaignApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: '/campaigns/influencer',
         method: 'GET',
+        params: data,
       }),
       providesTags: ['Auth'],
     }),

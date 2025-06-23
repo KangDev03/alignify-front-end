@@ -108,6 +108,7 @@ export interface Campaign {
   influencerRequirements: string[];
   influencerCountExpected: number;
   influencerCountCurrent: number;
+  applicationTotal?: number | 0;
 }
 
 export interface CommonPageableRequest {

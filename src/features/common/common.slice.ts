@@ -14,7 +14,7 @@ const initialState: CommonState = {
 };
 
 export const commomSlice = createSlice({
-  name: 'auth',
+  name: 'common',
   initialState,
   reducers: {
     setRoles: (state, action: PayloadAction<RolesResponse | undefined>) => {

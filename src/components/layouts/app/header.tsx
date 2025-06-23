@@ -11,7 +11,6 @@ import { ThemeToggle } from '@/components/theme/theme-toggle';
 import ChatSheet from '@/features/chatting/components/chat-sheet';
 import type { RootState } from '@/redux/store';
 
-type UserRole = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
 type InfluencerPage = 'home' | 'my-campaign' | 'applications';
 type BrandPage = 'home' | 'campaign-management' | 'applicants';
 type CurrentPage = InfluencerPage | BrandPage;

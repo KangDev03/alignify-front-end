@@ -3,9 +3,10 @@ import { forwardRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
+import type { UserDTO } from '@/features/common/common.type';
 import { formatTime, parseTimestampToDate } from '@/utils/format';
 
-import type { Message, UserDTO } from '../chat-sheet.type';
+import type { Message } from '../chat-sheet.type';
 
 interface MessageCardProps {
   msg: Message;

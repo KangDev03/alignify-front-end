@@ -9,7 +9,6 @@ interface ProfilePerformanceProps {
 }
 
 export function ProfilePerformance({
-  engagementRate,
   rating,
   completedCampaigns
 }: ProfilePerformanceProps) {
