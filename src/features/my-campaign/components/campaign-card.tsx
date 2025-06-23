@@ -1,13 +1,12 @@
-// src/features/my-campaign/components/campaign-card.tsx
-
 import { useState } from 'react';
-import { Calendar, DollarSignIcon, Edit, Eye, Play } from 'lucide-react';
+import { useLocation } from 'react-router';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
+import { Icons } from '@/components/icons/icons.tsx';
 import type { Campaign, RoleName } from '@/features/common/common.type.ts';
 import { useAppSelector } from '@/hooks/redux.ts';
 import type { RootState } from '@/redux/store.ts';
@@ -19,6 +18,8 @@ import { StatusBadge } from './status-badge.tsx';
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const { role } = useAppSelector((state: RootState) => state.auth);
   const [openDialog, setOpenDialog] = useState<string | null>(null);
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   const userRole: RoleName = role;
 
@@ -35,7 +36,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
             <Dialog {...commonProps}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
-                  <Edit className="h-4 w-4 mr-1" />
+                  <Icons.edit className="h-4 w-4 mr-1" />
                   Chỉnh sửa
                 </Button>
               </DialogTrigger>
@@ -49,46 +50,96 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               size="sm"
               className="flex-1"
             >
-              <Play className="h-4 w-4 mr-1" />
+              <Icons.play className="h-4 w-4 mr-1" />
               Đăng tuyển
             </Button>
           </div>
         );
       case 'RECRUITING':
-        return (
-          <Dialog {...commonProps}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center w-full">
-                <Eye className="h-4 w-4 mr-2" />
-                Xem chi tiết
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
-              <CampaignDetail key={campaign.campaignId} campaign={campaign} />
-            </DialogContent>
-          </Dialog>
-        );
-      case 'PENDING':
-        return userRole === 'BRAND' ? (
-          <div className='w-full grid grid-cols-2 gap-2'>
+        if (currentPath === '/home') {
+          return (
             <Dialog {...commonProps}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="flex-1">
-                  <Edit className="h-4 w-4 mr-1" />
+                <Button variant="outline" size="sm" className="flex items-center w-full">
+                  <Icons.eye className="h-4 w-4 mr-2" />
+                  Xem chi tiết
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+                <CampaignDetail key={campaign.campaignId} campaign={campaign} />
+              </DialogContent>
+            </Dialog>
+          );
+        }
+        return (
+          <div className='w-full grid grid-cols-2 gap-2'>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center w-full">
+                  <Icons.eye className="h-4 w-4 mr-2" />
+                  Xem chi tiết
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+                <CampaignDetail key={campaign.campaignId} campaign={campaign} />
+              </DialogContent>
+            </Dialog>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Icons.edit className="h-4 w-4 mr-1" />
                   Chỉnh sửa
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
-                {/* <PendingDialog campaign={campaign} /> */}
+                {/* <DraftDialog campaign={campaign} /> */}
               </DialogContent>
             </Dialog>
 
             <Button
               variant="default"
               size="sm"
-              className="flex-1"
+              className="col-span-2 w-full"
             >
-              <Play className="h-4 w-4 mr-1" />
+              <Icons.play className="h-4 w-4 mr-1" />
+              Kết thúc tuyển
+            </Button>
+          </div>
+        );
+      case 'PENDING':
+        return userRole === 'BRAND' ? (
+          <div className='w-full grid grid-cols-2 gap-2'>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center w-full">
+                  <Icons.eye className="h-4 w-4 mr-2" />
+                  Xem chi tiết
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+                <CampaignDetail key={campaign.campaignId} campaign={campaign} />
+              </DialogContent>
+            </Dialog>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Icons.edit className="h-4 w-4 mr-1" />
+                  Chỉnh sửa
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+                {/* <DraftDialog campaign={campaign} /> */}
+              </DialogContent>
+            </Dialog>
+
+            <Button
+              variant="default"
+              size="sm"
+              className="col-span-2 w-full"
+            >
+              <Icons.play className="h-4 w-4 mr-1" />
               Bắt đầu
             </Button>
           </div>
@@ -96,7 +147,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           <Dialog {...commonProps}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center w-full">
-                <Eye className="h-4 w-4 mr-2" />
+                <Icons.eye className="h-4 w-4 mr-2" />
                 Xem chi tiết
               </Button>
             </DialogTrigger>
@@ -107,29 +158,40 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         );
       case 'PARTICIPATING':
         return (
-          <Dialog {...commonProps}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Eye className="w-4 h-4 mr-2" />
-                Theo dõi chiến dịch
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
-              {/* <ParticipatingDialog campaign={campaign} /> */}
-            </DialogContent>
-          </Dialog>
+          <div className='w-full grid grid-cols-2 gap-2'>
+            <Dialog {...commonProps}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Icons.eye className="w-4 h-4 mr-2" />
+                  Theo dõi chiến dịch
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
+                {/* <ParticipatingDialog campaign={campaign} /> */}
+              </DialogContent>
+            </Dialog>
+
+            <Button
+              variant="default"
+              size="sm"
+              className="flex-1"
+            >
+              <Icons.play className="h-4 w-4 mr-1" />
+              Kết thúc
+            </Button>
+          </div>
         );
       case 'COMPLETED':
         return (
           <Dialog {...commonProps}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center w-full">
-                <Eye className="h-4 w-4 mr-2" />
-                Xem chi tiết
+                <Icons.eye className="h-4 w-4 mr-2" />
+                Xem báo cáo
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] h-[85%] pr-0">
-              <CampaignDetail key={campaign.campaignId} campaign={campaign} />
+              {/* <CampaignDetail key={campaign.campaignId} campaign={campaign} /> */}
             </DialogContent>
           </Dialog>
         );
@@ -176,12 +238,12 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
         <div className="flex justify-between mb-4 text-sm text-muted-foreground">
           <div className="flex items-center w-fit mr-4">
-            <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
+            <Icons.DollarSign className="w-4 h-4 mr-2 text-green-500" />
             <span>{`${Number(campaign.budget).toLocaleString('vi-VN')} VNĐ`}</span>
           </div>
 
           <div className="flex items-center w-fit">
-            <Calendar className="w-4 h-4 mr-2 text-primary" />
+            <Icons.calendar className="w-4 h-4 mr-2 text-primary" />
             <span>{`${parseDateString(campaign.startAt)} - ${parseDateString(campaign.dueAt)}`}</span>
           </div>
         </div>
