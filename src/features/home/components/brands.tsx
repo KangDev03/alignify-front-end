@@ -19,16 +19,17 @@ export default function Brands() {
   const { role } = useAppSelector((state: RootState) => state.common);
   const { brand } = useAppSelector((state: RootState) => state.homeRefetch);
   const brandRole = role?.find((role) => role.roleName === 'BRAND');
-  const { data: profiles, isLoading, refetch } = useGetBrandProfilesQuery(
-    { roleId: brandRole!.roleId },
-    { refetchOnMountOrArgChange: true, },
-  );
+  const {
+    data: profiles,
+    isLoading,
+    refetch,
+  } = useGetBrandProfilesQuery({ roleId: brandRole!.roleId }, { refetchOnMountOrArgChange: true });
   useEffect(() => {
     if (brand) {
       refetch();
       dispatch(setRefetch({ key: 'brand', value: false }));
     }
-  }, [brand, dispatch]);
+  }, [brand, dispatch, refetch]);
   if (isLoading) {
     return (
       <div className="space-y-6">

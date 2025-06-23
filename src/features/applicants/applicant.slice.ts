@@ -22,15 +22,8 @@ export const applicantSlice = createSlice({
     },
     setSelectedCampaign: (state, action: PayloadAction<string>) => {
       const campaignId = action.payload;
-      if (state.applicants) {
-        const applicant = state.applicants.find((app) =>
-          app.applications.some((a) => a.campaignId === campaignId),
-        );
-        if (applicant) {
-          state.selectCapaignId = campaignId;
-        } else {
-          state.selectCapaignId = null;
-        }
+      if (state.applicants && campaignId) {
+        state.selectCapaignId = campaignId;
       } else {
         state.selectCapaignId = null;
       }

@@ -19,7 +19,11 @@ export default function Influencers() {
   const { role } = useAppSelector((state: RootState) => state.common);
   const { influencer } = useAppSelector((state: RootState) => state.homeRefetch);
   const influencerRole = role?.find((role) => role.roleName === 'INFLUENCER');
-  const { data: profiles, isLoading, refetch } = useGetInfluencerProfilesQuery(
+  const {
+    data: profiles,
+    isLoading,
+    refetch,
+  } = useGetInfluencerProfilesQuery(
     { roleId: influencerRole!.roleId },
     { refetchOnMountOrArgChange: true },
   );
@@ -28,7 +32,7 @@ export default function Influencers() {
       refetch();
       dispatch(setRefetch({ key: 'influencer', value: false }));
     }
-  }, [influencer, dispatch]);
+  }, [influencer, dispatch, refetch]);
   if (isLoading) {
     return (
       <div className="space-y-6">
