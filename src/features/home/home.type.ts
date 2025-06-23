@@ -1,5 +1,7 @@
 import type { ApiReponseSuccess, Category, CommonPageableRequest } from '../common/common.type';
 
+export type homeTab = 'campaign' | 'brand' | 'influencer' | 'forum';
+
 export interface ProfileRequest extends CommonPageableRequest {
   roleId: string;
 }

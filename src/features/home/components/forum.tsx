@@ -7,11 +7,23 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ForumPost } from '@/components/forum-post/forum-post';
 
 import { useGetAllContentPostingQuery } from '../home.service';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
+import { useEffect } from 'react';
+import { setRefetch } from '../home.slice';
 
 export default function Forum() {
-  const { data: rawData, isLoading } = useGetAllContentPostingQuery(undefined, {
+  const dispatch = useAppDispatch();
+  const { forum } = useAppSelector((state: RootState) => state.homeRefetch);
+  const { data: rawData, isLoading, refetch } = useGetAllContentPostingQuery({}, {
     refetchOnMountOrArgChange: true,
   });
+  useEffect(() => {
+    if (forum) {
+      refetch();
+      dispatch(setRefetch({ key: 'forum', value: false }));
+    }
+  }, [forum, dispatch]);
   const contentPosting = rawData?.data;
   if (isLoading) {
     return (

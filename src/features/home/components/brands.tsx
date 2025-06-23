@@ -7,18 +7,28 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { Icons } from '@/components/icons/icons';
-import { useAppSelector } from '@/hooks/redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
 import { useGetBrandProfilesQuery } from '../home.service';
+import { useEffect } from 'react';
+import { setRefetch } from '../home.slice';
 
 export default function Brands() {
+  const dispatch = useAppDispatch();
   const { role } = useAppSelector((state: RootState) => state.common);
+  const { brand } = useAppSelector((state: RootState) => state.homeRefetch);
   const brandRole = role?.find((role) => role.roleName === 'BRAND');
-  const { data: profiles, isLoading } = useGetBrandProfilesQuery(
+  const { data: profiles, isLoading, refetch } = useGetBrandProfilesQuery(
     { roleId: brandRole!.roleId },
-    { refetchOnMountOrArgChange: true },
+    { refetchOnMountOrArgChange: true, },
   );
+  useEffect(() => {
+    if (brand) {
+      refetch();
+      dispatch(setRefetch({ key: 'brand', value: false }));
+    }
+  }, [brand, dispatch]);
   if (isLoading) {
     return (
       <div className="space-y-6">

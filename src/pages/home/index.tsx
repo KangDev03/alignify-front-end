@@ -24,11 +24,13 @@ import Campaigns from '@/features/home/components/campaigns';
 import Forum from '@/features/home/components/forum';
 import Influencers from '@/features/home/components/influencers';
 import { useAppDispatch } from '@/hooks/redux';
+import { setRefetch } from '@/features/home/home.slice';
+import type { homeTab } from '@/features/home/home.type';
 
 const tabs = [
-  { value: 'campaigns', label: 'Chiến dịch' },
-  { value: 'brands', label: 'Brands' },
-  { value: 'influencers', label: 'Influencers' },
+  { value: 'campaign', label: 'Chiến dịch' },
+  { value: 'brand', label: 'Brands' },
+  { value: 'influencer', label: 'Influencers' },
   { value: 'forum', label: 'Forum' },
 ];
 
@@ -64,12 +66,16 @@ export function HomePage() {
     categoryId: 'all',
     categoryName: 'Tất cả',
   });
-  const [activeTab, setActiveTab] = useState('campaigns');
+  const [activeTab, setActiveTab] = useState('campaign');
 
   useEffect(() => {
     dispatch(setRoles(roles));
     dispatch(setCategories(categories));
   }, [categories, dispatch, roles]);
+
+  const handleTabRefetch = (tab: homeTab) => {
+    dispatch(setRefetch({ key: tab, value: true }));
+  }
 
   return (
     <div className="min-h-screen bg-transparent transition-colors duration-300">
@@ -121,24 +127,24 @@ export function HomePage() {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full h-fit grid-cols-4 p-1">
                 {tabs.map((tab) => (
-                  <TabsTrigger key={tab.value} value={tab.value} className="h-full">
+                  <TabsTrigger key={tab.value} value={tab.value} className="h-full" onClick={() => handleTabRefetch(tab.value as homeTab)}>
                     {tab.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
 
-              <TabsContent value="campaigns" className="mt-6">
+              <TabsContent value="campaign" className="mt-6">
                 <Campaigns
                   key={selectedCategory.categoryId}
                   selectedCategoryId={selectedCategory.categoryId}
                 />
               </TabsContent>
 
-              <TabsContent value="brands" className="mt-6">
+              <TabsContent value="brand" className="mt-6">
                 <Brands />
               </TabsContent>
 
-              <TabsContent value="influencers" className="mt-6">
+              <TabsContent value="influencer" className="mt-6">
                 <Influencers />
               </TabsContent>
 
