@@ -8,8 +8,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Icons } from '@/components/icons/icons';
 import { parseDateString } from '@/utils/format';
 
-import type { BrandData, InfluencerData } from '../api/profile.types';
 import { useChangeAvatarMutation } from '../profile.service';
+import type { BrandData, InfluencerData } from '../profile.type';
 
 interface ProfileHeaderProps {
   profile: InfluencerData | BrandData;
@@ -107,7 +107,7 @@ export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {profile.categories.map((category) => (
+              {profile.categories.map((category: { categoryId: string; categoryName: string }) => (
                 <Badge key={category.categoryId} variant="outline" className="text-xs">
                   {category.categoryName}
                 </Badge>
