@@ -15,15 +15,22 @@ import { setRefetch } from '../home.slice';
 export default function Forum() {
   const dispatch = useAppDispatch();
   const { forum } = useAppSelector((state: RootState) => state.homeRefetch);
-  const { data: rawData, isLoading, refetch } = useGetAllContentPostingQuery({}, {
-    refetchOnMountOrArgChange: true,
-  });
+  const {
+    data: rawData,
+    isLoading,
+    refetch,
+  } = useGetAllContentPostingQuery(
+    {},
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
   useEffect(() => {
     if (forum) {
       refetch();
       dispatch(setRefetch({ key: 'forum', value: false }));
     }
-  }, [forum, dispatch]);
+  }, [forum, dispatch, refetch]);
   const contentPosting = rawData?.data;
   if (isLoading) {
     return (
