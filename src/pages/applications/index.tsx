@@ -1,7 +1,8 @@
 'use client';
 import { useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
+import { AlertCircleIcon, Search } from 'lucide-react';
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -19,7 +20,10 @@ const tabs = [
 export function ApplicationsPage() {
   const [activeTab, setActiveTab] = useState('pending');
 
-  const { data: rawData } = useGetApplicationsByInfluencerQuery({});
+  const { data: rawData } = useGetApplicationsByInfluencerQuery(
+    {},
+    { refetchOnMountOrArgChange: true },
+  );
 
   const applications = useMemo(() => {
     if (!rawData?.data || !Array.isArray(rawData.data)) return [];
@@ -64,51 +68,85 @@ export function ApplicationsPage() {
 
         <TabsContent value="pending" className="">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {applications
-              .filter(
-                (application) =>
-                  application.status === 'PENDING' && application.campaignInfo !== undefined,
-              )
-              .map((application) => (
-                <ApplicationCard
-                  key={application.applicationId}
-                  application={application}
-                  campaignInfo={application.campaignInfo!}
-                />
-              ))}
+            {applications && applications.length > 0 ? (
+              applications
+                .filter(
+                  (application) =>
+                    application.status === 'PENDING' && application.campaignInfo !== undefined,
+                )
+                .map((application) => (
+                  <ApplicationCard
+                    key={application.applicationId}
+                    application={application}
+                    campaignInfo={application.campaignInfo!}
+                  />
+                ))
+            ) : (
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>Bạn không có đơn ứng tuyển nào ở trạng thái đang chờ duyệt</AlertTitle>
+                <AlertDescription>
+                  Bạn có thể quay lại đây sau khi ứng tuyển vào các chiến dịch mới.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </TabsContent>
 
         <TabsContent value="accepted" className="">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {applications
-              .filter(
-                (application) =>
-                  application.status === 'ACCEPTED' && application.campaignInfo !== undefined,
-              )
-              .map((application) => (
-                <ApplicationCard
-                  key={application.applicationId}
-                  application={application}
-                  campaignInfo={application.campaignInfo!}
-                />
-              ))}
+            {applications && applications.length > 0 ? (
+              applications
+                .filter(
+                  (application) =>
+                    application.status === 'ACCEPTED' && application.campaignInfo !== undefined,
+                )
+                .map((application) => (
+                  <ApplicationCard
+                    key={application.applicationId}
+                    application={application}
+                    campaignInfo={application.campaignInfo!}
+                  />
+                ))
+            ) : (
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>
+                  Bạn không có đơn ứng tuyển nào ở trạng thái đang đã chấp nhận
+                </AlertTitle>
+                <AlertDescription>
+                  Bạn có thể quay lại đây sau khi các nhà tuyển dụng xác nhận đơn ứng tuyển của bạn.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </TabsContent>
         <TabsContent value="rejected" className="">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {applications
-              .filter(
-                (application) =>
-                  application.status === 'REJECTED' && application.campaignInfo !== undefined,
-              )
-              .map((application) => (
-                <ApplicationCard
-                  key={application.applicationId}
-                  application={application}
-                  campaignInfo={application.campaignInfo!}
-                />
-              ))}
+            {applications && applications.length > 0 ? (
+              applications
+                .filter(
+                  (application) =>
+                    application.status === 'REJECTED' && application.campaignInfo !== undefined,
+                )
+                .map((application) => (
+                  <ApplicationCard
+                    key={application.applicationId}
+                    application={application}
+                    campaignInfo={application.campaignInfo!}
+                  />
+                ))
+            ) : (
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>
+                  Bạn không có đơn ứng tuyển nào ở trạng thái đang đã chấp nhận
+                </AlertTitle>
+                <AlertDescription>
+                  Bạn có thể quay lại đây sau khi các nhà tuyển dụng xác nhận đơn ứng tuyển của bạn.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </TabsContent>
       </Tabs>

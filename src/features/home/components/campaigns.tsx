@@ -23,13 +23,15 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
   const isAll = selectedCategoryId === 'all';
 
   const {
-    data: allData,
-    isLoading: isLoadingAll,
-    refetch: refetchAll,
-  } = useGetCampaignsQuery(undefined, {
-    skip: !isAll,
-    refetchOnMountOrArgChange: true,
-  });
+    data: rawData,
+    isLoading,
+    refetch,
+  } = useGetCampaignsQuery(
+    {},
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
 
   const {
     data: categoryData,

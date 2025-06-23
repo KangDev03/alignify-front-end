@@ -24,7 +24,7 @@ export default function ChatCard({
     >
       <Avatar className="h-12 w-12 flex-shrink-0">
         <AvatarImage src={roomAvatarUrl || '/placeholder.svg'} alt={roomName} />
-        <AvatarFallback>{roomName.charAt(0)}</AvatarFallback>
+        <AvatarFallback>{roomName?.charAt(0) ?? 'U'}</AvatarFallback>
       </Avatar>
       <div className="flex-1 flex flex-col min-w-0 items-start">
         <Tooltip>
