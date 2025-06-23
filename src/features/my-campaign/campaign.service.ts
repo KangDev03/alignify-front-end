@@ -42,4 +42,5 @@ export const {
   useGetAllCampaignsQuery,
   useGetAllCampaignsOfInfluencerQuery,
   useGetAllCampaignsOfBrandQuery,
+  useGetCampaignByCategoryQuery,
 } = campaignApi;
