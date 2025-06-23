@@ -24,7 +24,7 @@ import Campaigns from '@/features/home/components/campaigns';
 import Forum from '@/features/home/components/forum';
 import Influencers from '@/features/home/components/influencers';
 import { useAppDispatch } from '@/hooks/redux';
-import { setRefetch } from '@/features/home/home.slice';
+import { resetHomeState, setRefetch } from '@/features/home/home.slice';
 import type { homeTab } from '@/features/home/home.type';
 
 const tabs = [
@@ -75,6 +75,8 @@ export function HomePage() {
 
   const handleTabRefetch = (tab: homeTab) => {
     dispatch(setRefetch({ key: tab, value: true }));
+    setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
+    dispatch(resetHomeState());
   }
 
   return (
