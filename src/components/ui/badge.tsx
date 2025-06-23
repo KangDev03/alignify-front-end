@@ -12,8 +12,11 @@ const badgeVariants = cva(
         default:
           "py-0 bg-primary hover:bg-blue-700 cursor-default select-none transition-all duration-200 text-white rounded-full border-transparent",
         secondary:
-          'border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',
-        outline: 'h-6 text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
+          'py-0 bg-secondary hover:bg-slate-200 dark:hover:bg-background cursor-default select-none transition-all duration-200 text-secondary-foreground rounded-full border-transparent',
+        outline:
+          'h-6 text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
+        recruiting:
+          'py-0 bg-transparent hover:bg-primary/20 cursor-default select-none transition-all duration-200 text-primary rounded-full border-2 border-primary',
         destructive:
           'border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         accepted:
