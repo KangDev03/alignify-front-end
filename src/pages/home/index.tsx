@@ -23,9 +23,9 @@ import Brands from '@/features/home/components/brands';
 import Campaigns from '@/features/home/components/campaigns';
 import Forum from '@/features/home/components/forum';
 import Influencers from '@/features/home/components/influencers';
-import { useAppDispatch } from '@/hooks/redux';
-import { resetHomeState, setRefetch } from '@/features/home/home.slice';
+import { setRefetch } from '@/features/home/home.slice';
 import type { homeTab } from '@/features/home/home.type';
+import { useAppDispatch } from '@/hooks/redux';
 
 const tabs = [
   { value: 'campaign', label: 'Chiến dịch' },
@@ -64,7 +64,7 @@ export function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>({
     categoryId: 'all',
-    categoryName: 'Tất cả',
+    categoryName: 'Tất Cả',
   });
   const [activeTab, setActiveTab] = useState('campaign');
 
@@ -74,10 +74,10 @@ export function HomePage() {
   }, [categories, dispatch, roles]);
 
   const handleTabRefetch = (tab: homeTab) => {
+    // dispatch(resetHomeState());
     dispatch(setRefetch({ key: tab, value: true }));
     setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
-    dispatch(resetHomeState());
-  }
+  };
 
   return (
     <div className="min-h-screen bg-transparent transition-colors duration-300">
@@ -104,20 +104,26 @@ export function HomePage() {
                 value={selectedCategory.categoryId}
                 onValueChange={(value) => {
                   if (value === 'all') {
-                    setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
+                    setSelectedCategory({ categoryId: 'all', categoryName: 'Tất Cả' });
                   } else {
                     const found = categories?.data.find((cat) => cat.categoryId === value);
                     if (found) setSelectedCategory(found);
                   }
                 }}
               >
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px] capitalize">
                   <SelectValue placeholder="Chọn danh mục" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
+                  <SelectItem value="all" className="capitalize">
+                    Tất Cả
+                  </SelectItem>
                   {categories?.data.map((category) => (
-                    <SelectItem key={category.categoryId} value={category.categoryId}>
+                    <SelectItem
+                      key={category.categoryId}
+                      value={category.categoryId}
+                      className="capitalize"
+                    >
                       {category.categoryName}
                     </SelectItem>
                   ))}
@@ -129,7 +135,12 @@ export function HomePage() {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full h-fit grid-cols-4 p-1">
                 {tabs.map((tab) => (
-                  <TabsTrigger key={tab.value} value={tab.value} className="h-full" onClick={() => handleTabRefetch(tab.value as homeTab)}>
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="h-full"
+                    onClick={() => handleTabRefetch(tab.value as homeTab)}
+                  >
                     {tab.label}
                   </TabsTrigger>
                 ))}

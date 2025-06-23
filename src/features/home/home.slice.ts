@@ -38,11 +38,18 @@ const homeSlice = createSlice({
     resetHomeState: (state) => {
       state.contentPosting = [];
       state.campaignPosting = [];
-    }
+    },
   },
 });
 
-export const { setContentPosting, setCampaignPosting, addCampaignPosting, resetHomeState, resetCampaignPosting, resetContentPosting } = homeSlice.actions;
+export const {
+  setContentPosting,
+  setCampaignPosting,
+  addCampaignPosting,
+  resetHomeState,
+  resetCampaignPosting,
+  resetContentPosting,
+} = homeSlice.actions;
 export const homeReducer = homeSlice.reducer;
 
 interface RefetchState {
@@ -76,4 +83,3 @@ const refetchSlice = createSlice({
 
 export const { setRefetch, resetRefetch } = refetchSlice.actions;
 export const refetchReducer = refetchSlice.reducer;
-
