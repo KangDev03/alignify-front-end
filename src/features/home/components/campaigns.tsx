@@ -19,7 +19,7 @@ export default function Campaigns() {
     data: rawData,
     isLoading,
     refetch,
-  } = useGetCampaignsQuery(undefined, {
+  } = useGetCampaignsQuery({}, {
     refetchOnMountOrArgChange: true,
   });
   useEffect(() => {
