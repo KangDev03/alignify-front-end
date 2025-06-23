@@ -37,7 +37,7 @@ export default function UserProfilePage() {
     (campaign) => campaign.status === 'COMPLETED',
   );
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300  gap-x-4">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="space-y-6">
         <ProfileHeader profile={profile} campaignCompleted={completedAppliedCampaigns.length} />
 
@@ -58,15 +58,15 @@ export default function UserProfilePage() {
                   socialMediaLinks={
                     Array.isArray(profile.socialMediaLinks)
                       ? Object.fromEntries(
-                          profile.socialMediaLinks.map((item: any) =>
-                            typeof item === 'object' &&
+                        profile.socialMediaLinks.map((item: any) =>
+                          typeof item === 'object' &&
                             item !== null &&
                             'key' in item &&
                             'value' in item
-                              ? [item.key, item.value]
-                              : [String(item[0]), String(item[1])],
-                          ),
-                        )
+                            ? [item.key, item.value]
+                            : [String(item[0]), String(item[1])],
+                        ),
+                      )
                       : profile.socialMediaLinks
                   }
                 />

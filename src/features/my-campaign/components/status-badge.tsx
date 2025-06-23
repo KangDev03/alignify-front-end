@@ -4,6 +4,20 @@ import { Icons } from '@/components/icons/icons';
 
 export const StatusBadge = (status: string) => {
   switch (status) {
+    case 'DRAFT':
+      return (
+        <Badge variant="secondary">
+          <Icons.fileText size={12} className="mt-0.5" />
+          <p className="leading-6">Nháp</p>
+        </Badge>
+      );
+    case 'RECRUITING':
+      return (
+        <Badge variant="recruiting">
+          <Icons.users size={12} className="mt-0.5" />
+          <p className="leading-6">Đang tuyển</p>
+        </Badge>
+      );
     case 'PENDING':
       return (
         <Badge variant="pending">
@@ -11,10 +25,10 @@ export const StatusBadge = (status: string) => {
           <p className="leading-6">Chưa bắt đầu</p>
         </Badge>
       );
-    case 'RECRUITING':
+    case 'PARTICIPATING':
       return (
         <Badge variant="default">
-          <Icons.circleCheckBig size={12} className="mt-0.5" />
+          <Icons.play size={12} className="mt-0.5" />
           <p className="leading-6">Đang diễn ra</p>
         </Badge>
       );
