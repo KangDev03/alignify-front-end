@@ -33,7 +33,9 @@ export function Applicants() {
     dispatch(setSelectedCampaign(applicationPlusCampaign[0].campaignResponse.campaignId));
   }, [applicationPlusCampaign, dispatch, rawData]);
 
-  if (!applicants || applicants.length === 0) {
+  if (isLoading) {
+    return <SkeletonApplicants />;
+  } else if (!applicants || applicants.length === 0) {
     return (
       <div className="flex gap-6 h-[633px] justify-center">
         <Alert variant="default">
@@ -58,10 +60,6 @@ export function Applicants() {
       accepted: applicants.filter((applicant) => applicant.status === 'ACCEPTED'),
       rejected: applicants.filter((applicant) => applicant.status === 'REJECTED'),
     };
-  }
-
-  if (isLoading) {
-    return <SkeletonApplicants />;
   }
 
   return (
