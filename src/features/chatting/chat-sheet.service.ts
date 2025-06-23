@@ -24,7 +24,7 @@ export const chatApi = baseApi.injectEndpoints({
         method: 'GET',
         params: { pageSize: data.pageSize, pageNumber: data.pageNumber },
       }),
-      providesTags: (result, error, { roomId }) => [{ type: 'ChatRoom', id: roomId }],
+      providesTags: (_result, _error, { roomId }) => [{ type: 'ChatRoom', id: roomId }],
     }),
   }),
 });

@@ -1,43 +1,78 @@
-import { Check, Clock, X } from "lucide-react"
+import { AlertCircleIcon, Check, Clock, X } from 'lucide-react';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Alert, AlertTitle } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { ApplicantCard } from "./applicant-card"
+import { cn } from '@/lib/utils';
 
-export function ApplicantTabs({ applicants }: {
-  applicants: {
-    waiting: any[]
-    accepted: any[]
-    rejected: any[]
-  }
-}) {
+import { ApplicantCard } from './applicant-card';
+import type { SpecificApplicants } from '../applicant.type';
+
+export function ApplicantTabs({ applicants }: { applicants: SpecificApplicants }) {
+  const scrollStyle =
+    'overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent h-[94%]';
   return (
     <div className="flex-1 p-6">
       <Tabs defaultValue="waiting" className="h-full flex flex-col">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="waiting"><Clock className="h-4 w-4" /> Danh sách chờ ({applicants.waiting.length})</TabsTrigger>
-          <TabsTrigger value="accepted"><Check className="h-4 w-4" /> Đã chấp nhận ({applicants.accepted.length})</TabsTrigger>
-          <TabsTrigger value="rejected"><X className="h-4 w-4" /> Đã từ chối ({applicants.rejected.length})</TabsTrigger>
+          <TabsTrigger value="waiting">
+            <Clock className="h-4 w-4" /> Danh sách chờ ({applicants.waiting.length})
+          </TabsTrigger>
+          <TabsTrigger value="accepted" className="text-accepted">
+            <Check className="h-4 w-4" /> Đã chấp nhận ({applicants.accepted.length})
+          </TabsTrigger>
+          <TabsTrigger value="rejected" className="text-destructive">
+            <X className="h-4 w-4" /> Đã từ chối ({applicants.rejected.length})
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="waiting" className="mt-4 space-y-3">
+        <TabsContent value="waiting" className={(cn('mt-4 space-y-3'), scrollStyle)}>
           {applicants.waiting.length > 0 ? (
-            applicants.waiting.map((inf) => <ApplicantCard key={inf.id} influencer={inf} status="waiting" />)
-          ) : <p className="text-center text-muted-foreground py-8">Không có ứng viên đang chờ.</p>}
+            applicants.waiting.map((applicant) => (
+              <ApplicantCard key={applicant.applicationId} applicant={applicant} status="waiting" />
+            ))
+          ) : (
+            <Alert variant="default">
+              <AlertCircleIcon />
+              <AlertTitle> Không có ứng viên đang chờ.</AlertTitle>
+            </Alert>
+          )}
         </TabsContent>
 
-        <TabsContent value="accepted" className="mt-4 space-y-3">
+        <TabsContent value="accepted" className={(cn('mt-4 space-y-3'), scrollStyle)}>
           {applicants.accepted.length > 0 ? (
-            applicants.accepted.map((inf) => <ApplicantCard key={inf.id} influencer={inf} status="accepted" />)
-          ) : <p className="text-center text-muted-foreground py-8">Không có ứng viên đã chấp nhận.</p>}
+            applicants.accepted.map((applicant) => (
+              <ApplicantCard
+                key={applicant.applicationId}
+                applicant={applicant}
+                status="accepted"
+              />
+            ))
+          ) : (
+            <Alert variant="default">
+              <AlertCircleIcon />
+              <AlertTitle> Không có ứng viên đã chấp nhận.</AlertTitle>
+            </Alert>
+          )}
         </TabsContent>
 
-        <TabsContent value="rejected" className="mt-4 space-y-3">
+        <TabsContent value="rejected" className={(cn('mt-4 space-y-3'), scrollStyle)}>
           {applicants.rejected.length > 0 ? (
-            applicants.rejected.map((inf) => <ApplicantCard key={inf.id} influencer={inf} status="rejected" />)
-          ) : <p className="text-center text-muted-foreground py-8">Không có ứng viên đã từ chối.</p>}
+            applicants.rejected.map((applicant) => (
+              <ApplicantCard
+                key={applicant.applicationId}
+                applicant={applicant}
+                status="rejected"
+              />
+            ))
+          ) : (
+            <Alert variant="default">
+              <AlertCircleIcon />
+              <AlertTitle> Không có ứng viên đã từ chối</AlertTitle>
+            </Alert>
+          )}
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
