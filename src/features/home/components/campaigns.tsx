@@ -132,7 +132,7 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
       <InfiniteScroll
         dataLength={campaignPosting!.length}
         next={fetchMoreData}
-        hasMore={true}
+        hasMore={!isStopLoading}
         loader={!isStopLoading && <h4 className='text-center'>Loading...</h4>}
       >
         <div className="space-y-6">
