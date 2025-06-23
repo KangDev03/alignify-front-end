@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch } from 'react-redux';
 import { AlertCircleIcon } from 'lucide-react';
 
@@ -12,7 +13,6 @@ import { useAppSelector } from '@/hooks/redux';
 
 import { useGetCampaignsQuery } from '../home.service';
 import { addCampaignPosting, setCampaignPosting, setRefetch } from '../home.slice';
-import InfiniteScroll from "react-infinite-scroll-component";
 
 interface CampaignsProps {
   selectedCategoryId: string;

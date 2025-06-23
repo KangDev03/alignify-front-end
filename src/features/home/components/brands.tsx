@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AlertCircleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -11,7 +12,6 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
 import { useGetBrandProfilesQuery } from '../home.service';
-import { useEffect } from 'react';
 import { setRefetch } from '../home.slice';
 
 export default function Brands() {

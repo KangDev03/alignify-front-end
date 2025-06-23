@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AlertCircleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -5,11 +6,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { ForumPost } from '@/components/forum-post/forum-post';
-
-import { useGetAllContentPostingQuery } from '../home.service';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
-import { useEffect } from 'react';
+
+import { useGetAllContentPostingQuery } from '../home.service';
 import { setRefetch } from '../home.slice';
 
 export default function Forum() {

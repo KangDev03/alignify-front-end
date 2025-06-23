@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AlertCircleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -12,7 +13,6 @@ import type { RootState } from '@/redux/store';
 
 import { useGetInfluencerProfilesQuery } from '../home.service';
 import { setRefetch } from '../home.slice';
-import { useEffect } from 'react';
 
 export default function Influencers() {
   const dispatch = useAppDispatch();
