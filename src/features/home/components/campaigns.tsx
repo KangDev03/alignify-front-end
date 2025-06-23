@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { useGetCampaignByCategoryQuery } from '@/features/my-campaign/campaign.service';
+import { useGetAllCampaignsOfBrandQuery } from '@/features/my-campaign/campaign.service';
 import CampaignCard from '@/features/my-campaign/components/campaign-card';
 import { useAppSelector } from '@/hooks/redux';
 
@@ -40,7 +40,7 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
     data: categoryData,
     isLoading: isLoadingCategory,
     refetch: refetchCategory,
-  } = useGetCampaignByCategoryQuery(
+  } = useGetAllCampaignsOfBrandQuery(
     {
       categoryId: selectedCategoryId,
       pageNumber: 0,

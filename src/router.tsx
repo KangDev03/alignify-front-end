@@ -16,7 +16,6 @@ import { BrandProfile } from '@/pages/profile/brand-profile';
 import { Settings } from '@/pages/setting';
 
 import { useAppSelector } from './hooks/redux';
-import { useAppSelector } from './hooks/redux';
 // import ApplicationsPage from './pages/applications';
 import RegisterPage from './pages/auth/sign-up';
 import MyCampaignPage from './pages/my-campaign';
