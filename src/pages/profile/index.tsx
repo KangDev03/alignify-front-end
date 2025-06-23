@@ -9,11 +9,11 @@ import { Icons } from '@/components/icons/icons';
 import type { Campaign } from '@/features/common/common.type';
 import { useGetPostMeQuery } from '@/features/home/home.service';
 import { useGetAllCampaignsOfInfluencerQuery } from '@/features/my-campaign/campaign.service';
-import { useGetProfileUserQuery } from '@/features/profile/api/profile.service';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
 import { ProfileInfo } from '@/features/profile/components/profile-info';
 import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { ProfileStats } from '@/features/profile/components/profile-stats';
+import { useGetProfileUserQuery } from '@/features/profile/profile.service';
 
 export default function UserProfilePage() {
   const { data: contentPosting } = useGetPostMeQuery({

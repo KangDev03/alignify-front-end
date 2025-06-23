@@ -31,10 +31,11 @@ export const authSlice = createSlice({
       state.name = action.payload.data.user.name;
     },
     logout: (state) => {
-      console.log('logout');
       state.token = null;
       state.id = null;
       state.role = null;
+      state.avatarUrl = null;
+      state.name = null;
     },
   },
 });

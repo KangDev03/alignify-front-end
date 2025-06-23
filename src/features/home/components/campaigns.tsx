@@ -6,28 +6,60 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { useGetCampaignByCategoryQuery } from '@/features/my-campaign/campaign.service';
 import CampaignCard from '@/features/my-campaign/components/campaign-card';
 import { useAppSelector } from '@/hooks/redux';
 
 import { useGetCampaignsQuery } from '../home.service';
 import { setRefetch } from '../home.slice';
 
-export default function Campaigns() {
+interface CampaignsProps {
+  selectedCategoryId: string;
+}
+export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
   const dispatch = useDispatch();
   const { campaign } = useAppSelector((state) => state.homeRefetch);
+  const isAll = selectedCategoryId === 'all';
+
   const {
-    data: rawData,
-    isLoading,
-    refetch,
-  } = useGetCampaignsQuery({}, {
-    refetchOnMountOrArgChange: true,
-  });
+    data: allData,
+    isLoading: isLoadingAll,
+    refetch: refetchAll,
+  } = useGetCampaignsQuery(
+    {
+      pageNumber: 0,
+      pageSize: 10,
+    },
+    {
+      skip: !isAll,
+      refetchOnMountOrArgChange: true,
+    },
+  );
+  const {
+    data: categoryData,
+    isLoading: isLoadingCategory,
+    refetch: refetchCategory,
+  } = useGetCampaignByCategoryQuery(
+    {
+      categoryId: selectedCategoryId,
+      pageNumber: 0,
+      pageSize: 10,
+    },
+    {
+      skip: isAll,
+    },
+  );
   useEffect(() => {
     if (campaign) {
-      refetch();
+      if (isAll) refetchAll();
+      else refetchCategory();
       dispatch(setRefetch({ key: 'campaign', value: false }));
     }
-  }, [campaign, refetch, dispatch]);
+  }, [campaign, dispatch, isAll, refetchAll, refetchCategory]);
+
+  const isLoading = isAll ? isLoadingAll : isLoadingCategory;
+  const campaigns = isAll ? allData?.data?.campaigns : categoryData?.data?.campaigns;
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -61,12 +93,11 @@ export default function Campaigns() {
       </div>
     );
   }
+
   return (
     <div className="space-y-6">
-      {rawData?.data.campaigns && rawData?.data.campaigns.length > 0 ? (
-        rawData?.data.campaigns.map((campaign) => (
-          <CampaignCard key={campaign.campaignId} campaign={campaign} />
-        ))
+      {campaigns && campaigns.length > 0 ? (
+        campaigns.map((campaign) => <CampaignCard key={campaign.campaignId} campaign={campaign} />)
       ) : (
         <Alert variant="default">
           <AlertCircleIcon />

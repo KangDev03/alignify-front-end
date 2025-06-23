@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Icons } from '@/components/icons/icons';
 import { useGetCategoriesQuery, useGetRolesQuery } from '@/features/common/common.service';
 import { setCategories, setRoles } from '@/features/common/common.slice';
+import type { Category } from '@/features/common/common.type';
 import Brands from '@/features/home/components/brands';
 import Campaigns from '@/features/home/components/campaigns';
 import Forum from '@/features/home/components/forum';
@@ -59,7 +60,10 @@ export function HomePage() {
   const { data: roles } = useGetRolesQuery();
   const { data: categories } = useGetCategoriesQuery();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Tất cả');
+  const [selectedCategory, setSelectedCategory] = useState<Category>({
+    categoryId: 'all',
+    categoryName: 'Tất cả',
+  });
   const [activeTab, setActiveTab] = useState('campaigns');
 
   useEffect(() => {
@@ -88,13 +92,24 @@ export function HomePage() {
                   className="pl-10"
                 />
               </div>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <Select
+                value={selectedCategory.categoryId}
+                onValueChange={(value) => {
+                  if (value === 'all') {
+                    setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
+                  } else {
+                    const found = categories?.data.find((cat) => cat.categoryId === value);
+                    if (found) setSelectedCategory(found);
+                  }
+                }}
+              >
                 <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Chọn danh mục" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">Tất cả</SelectItem>
                   {categories?.data.map((category) => (
-                    <SelectItem key={category.categoryId} value={category.categoryName}>
+                    <SelectItem key={category.categoryId} value={category.categoryId}>
                       {category.categoryName}
                     </SelectItem>
                   ))}
@@ -113,7 +128,10 @@ export function HomePage() {
               </TabsList>
 
               <TabsContent value="campaigns" className="mt-6">
-                <Campaigns />
+                <Campaigns
+                  key={selectedCategory.categoryId}
+                  selectedCategoryId={selectedCategory.categoryId}
+                />
               </TabsContent>
 
               <TabsContent value="brands" className="mt-6">

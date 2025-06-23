@@ -29,10 +29,18 @@ export const campaignApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Auth'],
     }),
+    getCampaignByCategory: builder.query<CampaignResponse, CommonPageableRequest>({
+      query: ({ categoryId, pageNumber, pageSize }) => ({
+        url: `campaigns/filterByCategory/${categoryId}`,
+        method: 'GET',
+        params: { pageNumber, pageSize },
+      }),
+    }),
   }),
 });
 export const {
   useGetAllCampaignsQuery,
   useGetAllCampaignsOfInfluencerQuery,
   useGetAllCampaignsOfBrandQuery,
+  useGetCampaignByCategoryQuery,
 } = campaignApi;
