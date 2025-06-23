@@ -5,11 +5,13 @@ import { AppHeader } from '@/components/layouts/app/header';
 import { logout } from '@/features/auth/auth.slice';
 import PopUpTrigger from '@/features/posting/components/popUp-trigger';
 import { useAppDispatch } from '@/hooks/redux';
+import { baseApi } from '@/redux/baseApi';
 
 function AppLayout() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const handleLogout = () => {
+    dispatch(baseApi.util.resetApiState());
     dispatch(logout());
     navigate('/auth/login');
   };
