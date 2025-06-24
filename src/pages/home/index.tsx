@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { skipToken } from '@reduxjs/toolkit/query';
 import { Star, TrendingUp } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,8 +17,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Icons } from '@/components/icons/icons';
-import { useGetCategoriesQuery, useGetRolesQuery } from '@/features/common/common.service';
-import { setCategories, setRoles } from '@/features/common/common.slice';
+import {
+  useGetCategoriesQuery,
+  useGetRolesQuery,
+  useSearchCampaignsQuery,
+} from '@/features/common/common.service';
+import { setCampaigns, setCategories, setRoles } from '@/features/common/common.slice';
 import Brands from '@/features/home/components/brands';
 import Campaigns from '@/features/home/components/campaigns';
 import Forum from '@/features/home/components/forum';
@@ -61,11 +66,35 @@ export function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tất cả');
   const [activeTab, setActiveTab] = useState('campaigns');
+  const [searchTrigger, setSearchTrigger] = useState(false);
+
+  // Gọi API tìm kiếm khi searchTrigger đổi sang true
+  const { data: searchResult } = useSearchCampaignsQuery(
+    searchTrigger && searchTerm.trim() ? { term: searchTerm.trim() } : skipToken,
+  );
 
   useEffect(() => {
     dispatch(setRoles(roles));
     dispatch(setCategories(categories));
   }, [categories, dispatch, roles]);
+
+  // Lưu kết quả tìm kiếm vào store khi có kết quả
+  useEffect(() => {
+    if (searchResult) {
+      console.log('Search result:', searchResult);
+      dispatch(setCampaigns(searchResult));
+    }
+  }, [searchResult, dispatch]);
+
+  // Xử lý sự kiện Enter trên ô tìm kiếm
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (!searchTerm.trim()) {
+        dispatch(setCampaigns(undefined)); // Reset kết quả tìm kiếm
+      }
+      setSearchTrigger((prev) => !prev);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-transparent transition-colors duration-300">
@@ -85,6 +114,7 @@ export function HomePage() {
                   placeholder="Tìm kiếm..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
                   className="pl-10"
                 />
               </div>

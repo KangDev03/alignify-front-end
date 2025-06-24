@@ -15,6 +15,7 @@ import { setRefetch } from '../home.slice';
 export default function Campaigns() {
   const dispatch = useDispatch();
   const { campaign } = useAppSelector((state) => state.homeRefetch);
+  const campaignsFromSearch = useAppSelector((state) => state.common.campaigns);
   const {
     data: rawData,
     isLoading,
@@ -61,10 +62,15 @@ export default function Campaigns() {
       </div>
     );
   }
+  // Ưu tiên hiển thị kết quả tìm kiếm nếu có
+  const campaignsToShow =
+  Array.isArray(campaignsFromSearch) && campaignsFromSearch.length > 0
+    ? campaignsFromSearch
+    : rawData?.data.campaigns;
   return (
     <div className="space-y-6">
-      {rawData?.data.campaigns && rawData?.data.campaigns.length > 0 ? (
-        rawData?.data.campaigns.map((campaign) => (
+      {campaignsToShow && campaignsToShow.length > 0 ? (
+        campaignsToShow.map((campaign) => (
           <CampaignCard key={campaign.campaignId} campaign={campaign} />
         ))
       ) : (

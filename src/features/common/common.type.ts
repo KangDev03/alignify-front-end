@@ -82,6 +82,13 @@ export interface CategoriesResponse extends ApiReponseSuccess<Category[]> {
   data: Category[];
 }
 
+export interface SearchCampaignsResponse {
+  campaigns: Campaign[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+}
+
 export interface Role {
   roleId: string;
   roleName: RoleName;
