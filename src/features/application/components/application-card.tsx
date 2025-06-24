@@ -31,7 +31,7 @@ export default function ApplicationCard({ application, campaignInfo }: Applicati
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
             <AvatarImage
-              src={campaignInfo.imageUrl || '/placeholder.svg'}
+              src={campaignInfo.brandAvartar || '/placeholder.svg'}
               alt={campaignInfo.brandName}
             />
             <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback>

@@ -39,8 +39,8 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage
-              src={campaignInfo.imageUrl || '/placeholder.svg'}
-              alt={campaignInfo.campaignId}
+              src={campaignInfo.brandAvartar || '/placeholder.svg'}
+              alt={campaignInfo.brandName}
             />
             <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback>
           </Avatar>
