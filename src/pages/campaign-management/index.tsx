@@ -1,14 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { AlertCircleIcon } from 'lucide-react';
 
+import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Icons } from '@/components/icons/icons';
-import type { Campaign } from '@/features/common/common.type';
 import { useGetAllCampaignsOfBrandQuery } from '@/features/my-campaign/campaign.service';
+import { setCampagin } from '@/features/my-campaign/campaign.slice';
 import CampaignCard from '@/features/my-campaign/components/campaign-card';
+import { useAppDispatch } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 
 const tabs = [
   { value: 'draft', label: 'Nháp' },
@@ -19,17 +24,17 @@ const tabs = [
 ];
 
 export function CampaignManagement() {
-  const [activeTab, setActiveTab] = useState('DRAFT');
+  const dispatch = useAppDispatch();
+  const { campaigns } = useSelector((state: RootState) => state.campaign);
+  const [activeTab, setActiveTab] = useState('draft');
 
   const { data: campaignsResponse } = useGetAllCampaignsOfBrandQuery({
     pageNumber: 0,
     pageSize: 10,
   });
-  const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
-    ? campaignsResponse.data.campaigns
-    : [];
-
-  console.log('campaignsResponse:', campaigns);
+  useEffect(() => {
+    dispatch(setCampagin(campaignsResponse!));
+  }, [campaignsResponse, dispatch]);
 
   const filteredCampaigns = campaigns.filter(
     (campaign) => campaign.status === activeTab.toUpperCase(),
@@ -68,7 +73,20 @@ export function CampaignManagement() {
                 <CampaignCard key={campaign.campaignId} campaign={campaign} />
               ))
             ) : (
-              <p className="text-muted-foreground text-sm">Không có chiến dịch nào.</p>
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>
+                  {activeTab === 'draft' &&
+                    'Bạn chưa có chiến dịch nào đang trong trạng thái bản nháp'}
+                  {activeTab === 'recruiting' &&
+                    'Bạn chưa có chiến dịch nào đang trong trạng thái tuyển'}
+                  {activeTab === 'pending' &&
+                    'Bạn chưa có chiến dịch nào đang trong trạng thái chờ bắt đầu'}
+                  {activeTab === 'participating' &&
+                    'Bạn chưa có chiến dịch nào đang trong trạng thái đang diễn ra'}
+                  {activeTab === 'completed' && 'Bạn chưa có chiến dịch nào đã hoàn thành'}
+                </AlertTitle>
+              </Alert>
             )}
           </div>
         </TabsContent>

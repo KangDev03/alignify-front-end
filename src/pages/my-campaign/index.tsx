@@ -18,7 +18,7 @@ const tabs = [
 ];
 
 export default function MyCampaignPage() {
-  const [activeTab, setActiveTab] = useState('PENDING');
+  const [activeTab, setActiveTab] = useState('pending');
   const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery({
     pageNumber: 0,
     pageSize: 10,

@@ -9,6 +9,7 @@ import { Icons } from '@/components/icons/icons';
 import { UserDropdown } from '@/components/layouts/app/user-dropdown';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import ChatSheet from '@/features/chatting/components/chat-sheet';
+import NotificationTrigger from '@/features/notification/components/notification-trigger';
 import type { RootState } from '@/redux/store';
 
 type InfluencerPage = 'home' | 'my-campaign' | 'applications';
@@ -51,29 +52,28 @@ export function AppHeader({ onLogout }: HeaderProps) {
   const navigationItems =
     userRole === 'INFLUENCER'
       ? [
-        { id: 'home', label: 'Trang chủ', icon: Icons.home },
-        { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
-        { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
-        // { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
-      ]
+          { id: 'home', label: 'Trang chủ', icon: Icons.home },
+          { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
+          { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
+          // { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
+        ]
       : [
-        { id: 'home', label: 'Trang chủ', icon: Icons.home },
-        { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
-        { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
-        // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
-      ];
+          { id: 'home', label: 'Trang chủ', icon: Icons.home },
+          { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
+          { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
+          // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
+        ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-16">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1 cursor-pointer" onClick={() => navigate('/home')}>
-              <img
-                src="/Alignify_logo.png"
-                alt="Alignify logo"
-                className="h-16 object-contain"
-              />
+            <div
+              className="flex items-center space-x-1 cursor-pointer"
+              onClick={() => navigate('/home')}
+            >
+              <img src="/Alignify_logo.png" alt="Alignify logo" className="h-16 object-contain" />
               <span className="font-extrabold text-3xl text-primary">Alignify</span>
             </div>
           </div>
@@ -97,11 +97,8 @@ export function AppHeader({ onLogout }: HeaderProps) {
           </nav>
 
           <div className="flex items-center space-x-2">
+            <NotificationTrigger />
             <ChatSheet />
-            <Button variant="ghost" size="sm" className="relative">
-              <Icons.bell className="h-4 w-4" />
-              <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs"></span>
-            </Button>
             <ThemeToggle />
             <UserDropdown onLogout={onLogout} />
           </div>
