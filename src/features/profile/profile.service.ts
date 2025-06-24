@@ -5,6 +5,7 @@ import type {
   ChangeAvatarRequest,
   ChangeAvatarResponses,
   InfluencerProfileResponse,
+  TopInfluencerResponse,
 } from './profile.type';
 
 export const profileApi = baseApi.injectEndpoints({
@@ -32,10 +33,17 @@ export const profileApi = baseApi.injectEndpoints({
 
       providesTags: ['Profile'],
     }),
+    getTopInfluencer: builder.query<TopInfluencerResponse, void>({
+      query: () => ({
+        url: '/profiles/topInfluencer',
+        method: 'GET',
+      }),
+    }),
   }),
 });
 export const {
   useChangeAvatarMutation,
   useGetInfluencerProfileUserQuery,
   useGetBrandProfileUserQuery,
+  useGetTopInfluencerQuery,
 } = profileApi;
