@@ -1,6 +1,8 @@
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
+import { host } from '@/config';
+
 let stompClient: Stomp.Client | null = null;
 let isConnected = false;
 let connectPromise: Promise<Stomp.Client> | null = null;
@@ -12,7 +14,7 @@ export function getStompClient(token: string): Promise<Stomp.Client> {
   if (connectPromise) return connectPromise;
 
   connectPromise = new Promise((resolve, reject) => {
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS(`${host}/ws`);
     const client = Stomp.over(socket);
     client.debug = () => {};
     client.connect(
