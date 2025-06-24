@@ -24,9 +24,9 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Profile'],
     }),
-    getBrandProfileUser: builder.query<BrandProfileResponse, void>({
-      query: () => ({
-        url: '/profiles/me',
+    getBrandProfileUser: builder.query<BrandProfileResponse, undefined | string>({
+      query: (userId) => ({
+        url: `/profiles${userId ? `/${userId}` : '/me'}`,
         method: 'GET',
       }),
 

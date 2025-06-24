@@ -112,13 +112,17 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {profile.categories &&
-                profile.categories.length > 0 &&
+              {profile.categories && profile.categories.length > 0 ? (
                 profile.categories.map((category: { categoryId: string; categoryName: string }) => (
                   <Badge key={category.categoryId} variant="outline" className="text-xs">
                     {category.categoryName}
                   </Badge>
-                ))}
+                ))
+              ) : (
+                <Badge variant="outline" className="text-xs text-muted-foreground">
+                  Chưa có danh mục
+                </Badge>
+              )}
             </div>
 
             <div className="flex items-center space-x-4">
