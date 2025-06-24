@@ -42,7 +42,9 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
               src={campaignInfo.brandAvartar || '/placeholder.svg'}
               alt={campaignInfo.brandName}
             />
-            <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback>
+            <AvatarFallback>
+              {campaignInfo.imageUrl ? campaignInfo.imageUrl.charAt(0) : 'U'}
+            </AvatarFallback>
           </Avatar>
           <div>
             <DialogTitle className="text-lg pr-1">{campaignInfo.campaignName}</DialogTitle>

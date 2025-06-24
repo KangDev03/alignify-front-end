@@ -31,7 +31,9 @@ export default function ApplicationCard({ application, campaignInfo }: Applicati
               src={campaignInfo.brandAvartar || '/placeholder.svg'}
               alt={campaignInfo.brandName}
             />
-            <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback>
+            <AvatarFallback>
+              {campaignInfo.imageUrl ? campaignInfo.imageUrl.charAt(0) : 'U'}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex flex-row items-center justify-center">
