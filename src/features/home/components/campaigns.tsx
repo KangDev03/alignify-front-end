@@ -12,7 +12,7 @@ import { useGetCampaignByCategoryQuery } from '@/features/my-campaign/campaign.s
 import CampaignCard from '@/features/my-campaign/components/campaign-card';
 import { useAppSelector } from '@/hooks/redux';
 
-import { useGetCampaignsQuery } from '../home.service';
+import { useGetCampaignsQuery, useSearchCampaignsQuery } from '../home.service';
 import {
   addCampaignPosting,
   resetCampaignPosting,
@@ -22,8 +22,10 @@ import {
 
 interface CampaignsProps {
   selectedCategoryId: string;
+  searchTerm: string|null;
+  activeTab: string;
 }
-export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
+export default function Campaigns({ selectedCategoryId, searchTerm, activeTab }: CampaignsProps) {
   const dispatch = useDispatch();
   const { campaign } = useAppSelector((state) => state.homeRefetch);
   const { campaignPosting }: { campaignPosting: Campaign[] } = useAppSelector(
@@ -46,7 +48,6 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
     },
   );
 
-  const campaignsFromSearch = useAppSelector((state) => state.common.campaigns);
   const {
     data: categoryData,
     isLoading: isLoadingCategory,
@@ -63,13 +64,23 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
     },
   );
 
+  // Gọi API tìm kiếm khi searchTerm thay đổi và tab là 'campaign'
+  const shouldSearch = activeTab === 'campaign' && searchTerm && searchTerm.trim();
+  const { data: searchResult } = useSearchCampaignsQuery(
+    shouldSearch ? { term: searchTerm.trim() } : (false as any),
+    { skip: !shouldSearch },
+  );
+  // Lưu kết quả tìm kiếm vào store khi có kết quả
+
   const isContainValue = isAll
     ? (allData?.data?.campaigns?.length ?? 0) > 0
     : (categoryData?.data?.campaigns?.length ?? 0) > 0;
 
   useEffect(() => {
     if (pageNumber === 0) {
-      if (isAll && allData) {
+      if (shouldSearch && searchResult) {
+        dispatch(setCampaignPosting(searchResult));
+      } else if (isAll && allData) {
         dispatch(setCampaignPosting(allData));
       } else if (!isAll && categoryData) {
         dispatch(setCampaignPosting(categoryData));
@@ -77,7 +88,7 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
         dispatch(resetCampaignPosting());
       }
     }
-  }, [allData, categoryData, isAll, pageNumber, dispatch]);
+  }, [allData, categoryData, isAll, pageNumber, dispatch, shouldSearch, searchResult]);
 
   useEffect(() => {
     if (campaign) {
@@ -160,6 +171,9 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
     </div>
   );
 
+  // Ưu tiên hiển thị kết quả tìm kiếm nếu có
+  const campaignsFromSearch = useAppSelector((state) => state.common.campaigns);
+
   let isLoading = null;
 
   if (isLoadingAll && isAll) {
@@ -175,33 +189,36 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
     isLoading = false;
   }
 
-  // Ưu tiên hiển thị kết quả tìm kiếm nếu có
-  const campaignsToShow =
-  Array.isArray(campaignsFromSearch) && campaignsFromSearch.length > 0
-    ? campaignsFromSearch
-    : rawData?.data.campaigns;
   return (
     <InfiniteScroll
-      dataLength={campaignPosting.length}
+      dataLength={
+        shouldSearch && Array.isArray(campaignsFromSearch)
+          ? campaignsFromSearch.length
+          : campaignPosting.length
+      }
       next={fetchMoreData}
       hasMore={isContainValue}
       loader={isContainValue && loadingSkeletion}
     >
       <div className="space-y-6">
-        {campaignPosting.length > 0
-          ? campaignPosting.map((campaign) => (
-            <CampaignCard key={campaign.campaignId} campaign={campaign} />
-          ))
-          : campaignPosting.length === 0 &&
-          isLoading == null && (
-            <Alert variant="default">
-              <AlertCircleIcon />
-              <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
-              <AlertDescription>
-                Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
-              </AlertDescription>
-            </Alert>
-          )}
+        {shouldSearch && Array.isArray(campaignsFromSearch) && campaignsFromSearch.length > 0
+          ? campaignsFromSearch.map((campaign) => (
+              <CampaignCard key={campaign.campaignId} campaign={campaign} />
+            ))
+          : campaignPosting.length > 0
+            ? campaignPosting.map((campaign) => (
+                <CampaignCard key={campaign.campaignId} campaign={campaign} />
+              ))
+            : campaignPosting.length === 0 &&
+              isLoading == null && (
+                <Alert variant="default">
+                  <AlertCircleIcon />
+                  <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
+                  <AlertDescription>
+                    Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
+                  </AlertDescription>
+                </Alert>
+              )}
         {!isContainValue && (
           <Alert variant="default">
             <AlertCircleIcon />

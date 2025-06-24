@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
-import type { Campaign,CategoriesResponse, Category, Role, RolesResponse, SearchCampaignsResponse } from './common.type';
+import type { Campaign,CategoriesResponse, Category, Role, RolesResponse } from './common.type';
 
 interface CommonState {
   role: Role[] | null;
@@ -31,21 +31,8 @@ export const commomSlice = createSlice({
     setCategories: (state, action: PayloadAction<CategoriesResponse | undefined>) => {
       if (action.payload?.data) state.category = action.payload.data;
     },
-    setCampaigns: (state, action: PayloadAction<SearchCampaignsResponse | undefined>) => {
-      if (action.payload) {
-        state.campaigns = action.payload.campaigns ?? null;
-        state.currentPage = action.payload.currentPage ?? 0;
-        state.totalPages = action.payload.totalPages ?? 0;
-        state.totalItems = action.payload.totalItems ?? 0;
-      } else {
-        state.campaigns = null;
-        state.currentPage = 0;
-        state.totalPages = 0;
-        state.totalItems = 0;
-      }
-    },
   },
 });
 
-export const { setRoles, setCategories, setCampaigns } = commomSlice.actions;
+export const { setRoles, setCategories } = commomSlice.actions;
 export default commomSlice.reducer;

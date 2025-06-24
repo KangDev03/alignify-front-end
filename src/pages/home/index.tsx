@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { skipToken } from '@reduxjs/toolkit/query';
 import { Star, TrendingUp } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,12 +16,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Icons } from '@/components/icons/icons';
-import {
-  useGetCategoriesQuery,
-  useGetRolesQuery,
-  useSearchCampaignsQuery,
-} from '@/features/common/common.service';
-import { setCampaigns, setCategories, setRoles } from '@/features/common/common.slice';
+import { useGetCategoriesQuery, useGetRolesQuery } from '@/features/common/common.service';
+import { setCategories, setRoles } from '@/features/common/common.slice';
 import type { Category } from '@/features/common/common.type';
 import Brands from '@/features/home/components/brands';
 import Campaigns from '@/features/home/components/campaigns';
@@ -66,18 +61,13 @@ export function HomePage() {
   const dispatch = useAppDispatch();
   const { data: roles } = useGetRolesQuery();
   const { data: categories } = useGetCategoriesQuery();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTermChange, setSearchTermChange] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>({
     categoryId: 'all',
     categoryName: 'Tất Cả',
   });
   const [activeTab, setActiveTab] = useState('campaign');
-  const [searchTrigger, setSearchTrigger] = useState(false);
-
-  // Gọi API tìm kiếm khi searchTrigger đổi sang true
-  const { data: searchResult } = useSearchCampaignsQuery(
-    searchTrigger && searchTerm.trim() ? { term: searchTerm.trim() } : skipToken,
-  );
 
   useEffect(() => {
     dispatch(setRoles(roles));
@@ -85,42 +75,15 @@ export function HomePage() {
   }, [categories, dispatch, roles]);
 
   const handleTabRefetch = (tab: homeTab) => {
-    // dispatch(resetHomeState());
     dispatch(setRefetch({ key: tab, value: true }));
     setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
   };
 
-  // Lưu kết quả tìm kiếm vào store khi có kết quả
-  useEffect(() => {
-    if (searchResult) {
-      console.log('Search result:', searchResult);
-      dispatch(setCampaigns(searchResult));
-    }
-  }, [searchResult, dispatch]);
-
-  // Xử lý sự kiện Enter trên ô tìm kiếm
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      if (activeTab !== 'campaigns') return; // Chỉ tìm kiếm ở tab Chiến dịch
-      if (!searchTerm.trim()) {
-        dispatch(setCampaigns(undefined)); // Reset kết quả tìm kiếm
-      }
-      setSearchTrigger((prev) => !prev);
+    if (e.key === 'Enter' && searchTermChange) {
+      setSearchTerm(searchTermChange);
     }
   };
-
-  // Reset kết quả tìm kiếm khi chuyển tab hoặc xoá từ khoá
-  useEffect(() => {
-    if (activeTab !== 'campaigns') {
-      dispatch(setCampaigns(undefined));
-    }
-  }, [activeTab, dispatch]);
-
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      dispatch(setCampaigns(undefined));
-    }
-  }, [searchTerm, dispatch]);
 
   return (
     <div className="min-h-screen bg-transparent transition-colors duration-300">
@@ -138,8 +101,8 @@ export function HomePage() {
                 <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Tìm kiếm..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchTermChange}
+                  onChange={(e) => setSearchTermChange(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
                   className="pl-10"
                 />
@@ -195,6 +158,8 @@ export function HomePage() {
                 <Campaigns
                   key={selectedCategory.categoryId}
                   selectedCategoryId={selectedCategory.categoryId}
+                  searchTerm={searchTerm}
+                  activeTab={activeTab}
                 />
               </TabsContent>
 

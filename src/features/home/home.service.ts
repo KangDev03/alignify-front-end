@@ -35,11 +35,26 @@ export const getProfileApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Home'],
     }),
+    searchCampaigns: builder.query<
+      CampaignResponse,
+      { term: string; pageNumber?: number; pageSize?: number }
+    >({
+      query: ({ term, pageNumber = 0, pageSize = 10 }) => ({
+        url: `/campaigns/search`,
+        method: 'POST',
+        params: { term, pageNumber, pageSize },
+      }),
+      providesTags: ['Common'],
+    }),
   }),
 });
 
-export const { useGetBrandProfilesQuery, useGetInfluencerProfilesQuery, useGetCampaignsQuery } =
-  getProfileApi;
+export const {
+  useGetBrandProfilesQuery,
+  useGetInfluencerProfilesQuery,
+  useGetCampaignsQuery,
+  useSearchCampaignsQuery,
+} = getProfileApi;
 
 export const contentPostingApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
