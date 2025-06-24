@@ -24,7 +24,11 @@ export function AppHeader({ onLogout }: HeaderProps) {
   const location = useLocation();
   const userRole = useSelector((state: RootState) => state.auth.role);
 
-  const currentPage = (): CurrentPage => {
+  const currentPage = (): CurrentPage | undefined => {
+
+    if (location.pathname.includes('/user-profile')) return undefined;
+    if (location.pathname.includes('/settings')) return undefined;
+
     if (userRole === 'INFLUENCER') {
       if (location.pathname.includes('/my-campaign')) return 'my-campaign';
       if (location.pathname.includes('/applications')) return 'applications';

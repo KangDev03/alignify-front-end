@@ -96,7 +96,7 @@ export function Settings() {
           <SidebarContent className="p-2">
             {sidebarItems.map((group) => (
               <SidebarGroup key={group.group}>
-                <SidebarGroupLabel className="px-2 py-1 text-xs font-medium text-muted-foreground">
+                <SidebarGroupLabel className="px-2 py-1 text-xs font-medium text-muted-foreground ">
                   {group.group}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
@@ -108,7 +108,7 @@ export function Settings() {
                           <SidebarMenuButton
                             onClick={() => setActiveSection(item.id as SettingsSection)}
                             isActive={activeSection === item.id}
-                            className="w-full justify-start"
+                            className="w-full justify-start transition-colors duration-300 cursor-pointer"
                           >
                             <Icon className="h-4 w-4" />
                             <span>{item.label}</span>
