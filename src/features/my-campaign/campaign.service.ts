@@ -49,6 +49,12 @@ export const campaignApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Campaign'],
     }),
+    getCampaignTop3: builder.query<CampaignResponse, void>({
+      query: () => ({
+        url: `campaigns/top`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 export const {
@@ -57,5 +63,6 @@ export const {
   useGetAllCampaignsOfBrandQuery,
   useGetCampaignByCategoryQuery,
   useApplyCampaignMutation,
+  useGetCampaignTop3Query,
   useGetAllCampaignsOfBrandNoPageQuery,
 } = campaignApi;
