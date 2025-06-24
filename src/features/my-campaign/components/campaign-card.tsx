@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Icons } from '@/components/icons/icons.tsx';
 import type { Campaign, RoleName } from '@/features/common/common.type.ts';
 import { applyForApplciation } from '@/features/home/home.slice.ts';
-import { useApplyCampaignMutation } from '@/features/my-campaign/campaign.service.ts';
+import { useApplyCampaignMutation, useChangeStatusMutation } from '@/features/my-campaign/campaign.service.ts';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
 import type { RootState } from '@/redux/store.ts';
 import { parseDateString } from '@/utils/format.ts';
@@ -24,6 +24,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
+  const userRole: RoleName = role;
 
   const isApplied = campaign.appliedInfluencerIds?.includes(id!);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
@@ -39,7 +40,27 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
     }
   };
 
-  const userRole: RoleName = role;
+  const [changeStatus] = useChangeStatusMutation();
+
+  const handleEndRecuit = async () => {
+    try {
+      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PENDING' }).unwrap();
+      toast.success('Kết thúc tuyển thành công!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Kết thúc tuyển thất bại. Vui lòng thử lại.');
+    }
+  };
+
+  const handleStartCampaign = async () => {
+    try {
+      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PARTICIPATING' }).unwrap();
+      toast.success('Chiến dịch đã bắt đầu!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Bắt đầu chiến dịch thất bại');
+    }
+  };
 
   const renderDialogButton = () => {
     const commonProps = {
@@ -135,7 +156,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button variant="default" size="sm" className="col-span-2 w-full">
+            <Button variant="default" size="sm" className="col-span-2 w-full" onClick={handleEndRecuit}>
               <Icons.play className="h-4 w-4 mr-1" />
               Kết thúc tuyển
             </Button>
@@ -168,7 +189,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button variant="default" size="sm" className="col-span-2 w-full">
+            <Button variant="default" size="sm" className="col-span-2 w-full" onClick={handleStartCampaign}>
               <Icons.play className="h-4 w-4 mr-1" />
               Bắt đầu
             </Button>

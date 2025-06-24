@@ -55,6 +55,14 @@ export const campaignApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
     }),
+    changeStatus: builder.mutation<void, { campaignId: string; newStatus: string }>({
+      query: ({ campaignId, newStatus }) => ({
+        url: `/campaigns/${campaignId}/status`,
+        method: 'PUT',
+        body: { status: newStatus },
+      }),
+      invalidatesTags: ['Campaign'],
+    }),
   }),
 });
 export const {
@@ -65,4 +73,5 @@ export const {
   useApplyCampaignMutation,
   useGetCampaignTop3Query,
   useGetAllCampaignsOfBrandNoPageQuery,
+  useChangeStatusMutation,
 } = campaignApi;
