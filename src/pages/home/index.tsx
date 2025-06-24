@@ -59,8 +59,7 @@ export function HomePage() {
     dispatch(setRefetch({ key: tab, value: true }));
     setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
   };
-  console.log('top2Influencer', top2Influencer);
-  console.log('top3Campaign', top3Campaign);
+
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchTermChange.trim().length > 0) {
       setSearchTerm(searchTermChange);
@@ -174,7 +173,7 @@ export function HomePage() {
               </TabsContent>
 
               <TabsContent value="forum" className="mt-6">
-                <Forum />
+                <Forum searchTerm={searchTerm} />
               </TabsContent>
             </Tabs>
           </div>

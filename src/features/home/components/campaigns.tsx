@@ -225,7 +225,7 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
 
   return (
     <InfiniteScroll
-      dataLength={campaignPosting.length}
+      dataLength={campaignPosting ? campaignPosting.length : 0}
       next={fetchMoreData}
       hasMore={hasMore}
       loader={hasMore && loadingSkeletion}
