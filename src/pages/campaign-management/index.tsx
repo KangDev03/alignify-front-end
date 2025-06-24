@@ -1,25 +1,25 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useState } from 'react';
 
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { Icons } from "@/components/icons/icons"
-import type { Campaign } from "@/features/common/common.type"
-import { useGetAllCampaignsOfBrandQuery } from "@/features/my-campaign/campaign.service"
-import CampaignCard from "@/features/my-campaign/components/campaign-card"
+import { Icons } from '@/components/icons/icons';
+import type { Campaign } from '@/features/common/common.type';
+import { useGetAllCampaignsOfBrandQuery } from '@/features/my-campaign/campaign.service';
+import CampaignCard from '@/features/my-campaign/components/campaign-card';
 
 const tabs = [
-  { value: "DRAFT", label: "Nháp" },
-  { value: "RECRUITING", label: "Đang tuyển" },
-  { value: "PENDING", label: "Chưa bắt đầu" },
-  { value: "PARTICIPATING", label: "Đang diễn ra" },
-  { value: "COMPLETED", label: "Đã kết thúc" },
-]
+  { value: 'draft', label: 'Nháp' },
+  { value: 'recruiting', label: 'Đang tuyển' },
+  { value: 'pending', label: 'Chưa bắt đầu' },
+  { value: 'participating', label: 'Đang diễn ra' },
+  { value: 'completed', label: 'Đã kết thúc' },
+];
 
 export function CampaignManagement() {
-  const [activeTab, setActiveTab] = useState("DRAFT")
+  const [activeTab, setActiveTab] = useState('DRAFT');
 
   const { data: campaignsResponse } = useGetAllCampaignsOfBrandQuery({
     pageNumber: 0,
@@ -29,24 +29,29 @@ export function CampaignManagement() {
     ? campaignsResponse.data.campaigns
     : [];
 
-  console.log("campaignsResponse:", campaigns);
+  console.log('campaignsResponse:', campaigns);
 
-
-  const filteredCampaigns = campaigns.filter((campaign) => campaign.status === activeTab);
+  const filteredCampaigns = campaigns.filter(
+    (campaign) => campaign.status === activeTab.toUpperCase(),
+  );
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Quản lí chiến dịch</h1>
-      <Tabs defaultValue="DRAFT" value={activeTab} onValueChange={setActiveTab} className="w-full gap-6">
+      <Tabs
+        defaultValue="DRAFT"
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full gap-6"
+      >
         <div className="flex flex-row gap-6">
           <TabsList className="grid w-full h-fit grid-cols-5 p-1">
             {tabs.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="h-full"
-              >
-                {tab.label}
+              <TabsTrigger key={tab.value} value={tab.value} className="h-full">
+                {tab.label} (
+                {campaigns.filter((campaign) => campaign.status === tab.value.toUpperCase())
+                  .length ?? 0}
+                )
               </TabsTrigger>
             ))}
           </TabsList>
@@ -69,5 +74,5 @@ export function CampaignManagement() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
