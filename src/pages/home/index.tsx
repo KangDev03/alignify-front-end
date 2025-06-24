@@ -89,12 +89,26 @@ export function HomePage() {
   // Xử lý sự kiện Enter trên ô tìm kiếm
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      if (activeTab !== 'campaigns') return; // Chỉ tìm kiếm ở tab Chiến dịch
       if (!searchTerm.trim()) {
         dispatch(setCampaigns(undefined)); // Reset kết quả tìm kiếm
       }
       setSearchTrigger((prev) => !prev);
     }
   };
+
+  // Reset kết quả tìm kiếm khi chuyển tab hoặc xoá từ khoá
+  useEffect(() => {
+    if (activeTab !== 'campaigns') {
+      dispatch(setCampaigns(undefined));
+    }
+  }, [activeTab, dispatch]);
+
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      dispatch(setCampaigns(undefined));
+    }
+  }, [searchTerm, dispatch]);
 
   return (
     <div className="min-h-screen bg-transparent transition-colors duration-300">
