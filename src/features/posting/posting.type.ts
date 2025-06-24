@@ -1,4 +1,5 @@
 import type { ApiReponseSuccess, Campaign } from '../common/common.type';
+import type { ContentPosting } from '../home/home.type';
 
 export interface CampaignPosting {
   campaignName: string;
@@ -12,7 +13,13 @@ export interface CampaignPosting {
   categoryIds?: string[];
 }
 
-export interface CampaignPostingRequest {
+export interface ForumPosting {
+  contentName: string;
+  content: string;
+  categoryIds?: string[];
+}
+
+export interface PostingRequest {
   formData: FormData;
 }
 
@@ -20,8 +27,6 @@ export interface CampaignPostingResponse extends ApiReponseSuccess<Campaign> {
   data: Campaign;
 }
 
-export interface ContentFormSchema {
-  title: string;
-  content: string;
-  categoryIds?: string[];
+export interface ForumPostingResponse extends ApiReponseSuccess<ContentPosting> {
+  data: ContentPosting;
 }

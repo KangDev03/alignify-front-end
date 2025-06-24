@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -17,22 +15,8 @@ export default function PopUpTrigger() {
   const { role } = useAppSelector((state: RootState) => state.auth);
   const { data: rawData } = useGetCategoriesQuery();
   const categories = rawData?.data;
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const MAX_CATEGORIES = 3;
   const userRole: RoleName = role;
 
-  function handleSelectCategory(categoryId: string) {
-    setSelectedCategories((prev) => {
-      if (prev.includes(categoryId)) {
-        return prev.filter((id) => id !== categoryId);
-      }
-      if (prev.length >= MAX_CATEGORIES) {
-        const copy = [...prev].slice(0, MAX_CATEGORIES - 1);
-        return [...copy, categoryId];
-      }
-      return [...prev, categoryId];
-    });
-  }
   return (
     userRole !== 'ADMIN' && (
       <Dialog>
@@ -67,13 +51,7 @@ export default function PopUpTrigger() {
             </Tooltip>
           )}
         </DialogTrigger>
-        {userRole === 'INFLUENCER' && (
-          <ContentPopUp
-            categories={categories!}
-            selectedCategories={selectedCategories}
-            onSelectCategory={handleSelectCategory}
-          />
-        )}
+        {userRole === 'INFLUENCER' && <ContentPopUp categories={categories!} />}
         {userRole === 'BRAND' && <CampaignPopUp categories={categories!} />}
       </Dialog>
     )
