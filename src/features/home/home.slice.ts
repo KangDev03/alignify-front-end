@@ -29,6 +29,28 @@ const homeSlice = createSlice({
         state.campaignPosting = [...state.campaignPosting, ...action.payload];
       }
     },
+    applyForApplciation: (
+      state,
+      action: PayloadAction<{ campaignId: string; influencerId: string }>,
+    ) => {
+      const { campaignId, influencerId } = action.payload;
+      if (!campaignId || !influencerId) return;
+      const campaignIndex = state.campaignPosting.findIndex(
+        (campaign) => campaign.campaignId === campaignId,
+      );
+      if (campaignIndex !== -1) {
+        const campaign = state.campaignPosting[campaignIndex];
+        if (!campaign.appliedInfluencerIds) {
+          state.campaignPosting[campaignIndex].appliedInfluencerIds = [];
+        }
+        if (
+          campaign.appliedInfluencerIds &&
+          !campaign.appliedInfluencerIds.includes(influencerId)
+        ) {
+          campaign.appliedInfluencerIds.push(influencerId);
+        }
+      }
+    },
     resetCampaignPosting: (state) => {
       state.campaignPosting = [];
     },
@@ -49,6 +71,7 @@ export const {
   resetHomeState,
   resetCampaignPosting,
   resetContentPosting,
+  applyForApplciation,
 } = homeSlice.actions;
 export const homeReducer = homeSlice.reducer;
 

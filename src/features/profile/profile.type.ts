@@ -25,6 +25,12 @@ export interface InfluencerData {
   isPublic: boolean;
   completedCampaign?: number | 0;
 }
+export interface TopInfluencer {
+  userId: string;
+  name: string;
+  avatarUrl?: string | null;
+  follower?: number | 0;
+}
 
 export interface ProfileRequest {
   roleId: string;
@@ -41,6 +47,7 @@ export interface BrandData {
   contacts: [{ key: string }, string];
   socialMediaLinks: [{ key: string }, string];
   establishDate: number[];
+  totalCampaign: number | 0;
 }
 interface Category {
   categoryId: string;
@@ -52,6 +59,9 @@ export interface EditableComponentProps {
 }
 export interface InfluencerProfileResponse extends ApiReponseSuccess<InfluencerData> {
   data: InfluencerData;
+}
+export interface TopInfluencerResponse extends ApiReponseSuccess<TopInfluencer> {
+  data: TopInfluencer;
 }
 export interface BrandProfileResponse extends ApiReponseSuccess<BrandData> {
   data: BrandData;

@@ -68,7 +68,12 @@ export function AppHeader({ onLogout }: HeaderProps) {
       <div className="container mx-auto px-16">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 cursor-pointer" onClick={() => navigate('/home')}>
+              <img
+                src="/Alignify_logo.png"
+                alt="Alignify logo"
+                className="h-16 object-contain"
+              />
               <span className="font-extrabold text-3xl text-primary">Alignify</span>
             </div>
           </div>
