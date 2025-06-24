@@ -57,7 +57,7 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
 
         <div className="w-full h-80 relative rounded-md mt-3">
           <img
-            src="background-16x9.jpg"
+            src={contentPosting.imageUrl || 'background-16x9.jpg'}
             alt="Chiến dịch quảng cáo sản phẩm làm đẹp mùa hè"
             className="w-full h-full object-cover rounded-md"
           />
