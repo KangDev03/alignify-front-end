@@ -81,7 +81,17 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
       : { term: '', pageNumber: pageNumber, pageSize: 10 },
     { skip: !isSearching },
   );
-
+  let isLoading: boolean | null = null;
+  if (isSearching) {
+    isLoading = isLoadingSearch;
+  } else if (isAll) {
+    isLoading = isLoadingAll;
+  } else {
+    isLoading = isLoadingCategory;
+  }
+  if ((isLoadingAll || isLoadingCategory || isLoadingSearch) && campaignPosting.length === 0) {
+    isLoading = true;
+  }
   const hasMore = isSearching
     ? (searchResult?.data?.campaigns?.length ?? 0) === 10
     : isAll
@@ -89,9 +99,14 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
       : (categoryData?.data?.campaigns?.length ?? 0) === 10;
 
   useEffect(() => {
-    if (pageNumber === 0) {
+    if (pageNumber === 0 && !isLoading) {
       if (isSearching && searchResult) {
         dispatch(setCampaignPosting(searchResult));
+        // if (searchResult && searchResult.data && searchResult.data.campaigns) {
+        //   dispatch(setCampaignPosting(searchResult));
+        // } else {
+        //   dispatch(resetCampaignPosting());
+        // }
       } else if (isAll && allData) {
         dispatch(setCampaignPosting(allData));
       } else if (!isAll && categoryData) {
@@ -100,7 +115,7 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
         dispatch(resetCampaignPosting());
       }
     }
-  }, [allData, categoryData, isAll, pageNumber, dispatch, isSearching, searchResult]);
+  }, [allData, categoryData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading]);
 
   useEffect(() => {
     if (campaign) {
@@ -142,9 +157,32 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
             ),
           ),
         );
+      } else if (
+        isSearching &&
+        searchResult &&
+        searchResult.data &&
+        searchResult.data.campaigns &&
+        searchResult.data.campaigns.length > 0
+      ) {
+        dispatch(
+          addCampaignPosting(
+            searchResult.data.campaigns.filter(
+              (cam) => !campaignPosting.some((existing) => existing.campaignId === cam.campaignId),
+            ),
+          ),
+        );
       }
     }
-  }, [allData, categoryData, isAll, pageNumber, dispatch, campaignPosting]);
+  }, [
+    allData,
+    categoryData,
+    isAll,
+    pageNumber,
+    dispatch,
+    campaignPosting,
+    isSearching,
+    searchResult,
+  ]);
 
   const fetchMoreData = () => {
     if (!hasMore) return;
@@ -183,17 +221,6 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
     </div>
   );
 
-  let isLoading = false;
-  if (isSearching) {
-    isLoading = isLoadingSearch;
-  } else if (isAll) {
-    isLoading = isLoadingAll;
-  } else {
-    isLoading = isLoadingCategory;
-  }
-  if ((isLoadingAll || isLoadingCategory || isLoadingSearch) && campaignPosting.length === 0) {
-    isLoading = true;
-  }
   if (isLoading) return loadingSkeletion;
 
   return (

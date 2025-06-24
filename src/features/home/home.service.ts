@@ -46,6 +46,24 @@ export const getProfileApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Common'],
     }),
+    searchBrands: builder.query<any, { term: string; pageNumber?: number; pageSize?: number }>({
+      query: ({ term, pageNumber = 0, pageSize = 10 }) => ({
+        url: `/profiles/brands/search`,
+        method: 'POST',
+        params: { term, pageNumber, pageSize },
+      }),
+      providesTags: ['Common'],
+    }),
+    searchInfluencers: builder.query<any, { term: string; pageNumber?: number; pageSize?: number }>(
+      {
+        query: ({ term, pageNumber = 0, pageSize = 10 }) => ({
+          url: `/profiles/influencers/search`,
+          method: 'POST',
+          params: { term, pageNumber, pageSize },
+        }),
+        providesTags: ['Common'],
+      }
+    ),
   }),
 });
 
@@ -54,6 +72,8 @@ export const {
   useGetInfluencerProfilesQuery,
   useGetCampaignsQuery,
   useSearchCampaignsQuery,
+  useSearchBrandsQuery,
+  useSearchInfluencersQuery,
 } = getProfileApi;
 
 export const contentPostingApi = baseApi.injectEndpoints({

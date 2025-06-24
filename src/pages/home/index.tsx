@@ -82,10 +82,13 @@ export function HomePage() {
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchTermChange.trim().length > 0) {
       setSearchTerm(searchTermChange);
-    } else if (!searchTermChange.trim() || searchTermChange.trim().length === 0 || searchTermChange.trim() === '') {
-      console.log('Reset search');
+    } else if (
+      !searchTermChange.trim() ||
+      searchTermChange.trim().length === 0 ||
+      searchTermChange.trim() === ''
+    ) {
       setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
-      setSearchTermChange('')
+      setSearchTermChange('');
       setSearchTerm(null);
       dispatch(setRefetch({ key: activeTab, value: true }));
     }
@@ -154,7 +157,11 @@ export function HomePage() {
             </div>
 
             {/* Tabs */}
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as homeTab)} className="w-full">
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) => setActiveTab(value as homeTab)}
+              className="w-full"
+            >
               <TabsList className="grid w-full h-fit grid-cols-4 p-1">
                 {tabs.map((tab) => (
                   <TabsTrigger
@@ -177,11 +184,11 @@ export function HomePage() {
               </TabsContent>
 
               <TabsContent value="brand" className="mt-6">
-                <Brands />
+                <Brands searchTerm={searchTerm} />
               </TabsContent>
 
               <TabsContent value="influencer" className="mt-6">
-                <Influencers />
+                <Influencers searchTerm={searchTerm} />
               </TabsContent>
 
               <TabsContent value="forum" className="mt-6">

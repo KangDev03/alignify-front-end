@@ -21,8 +21,8 @@ const homeSlice = createSlice({
       state.contentPosting = action.payload.data;
     },
     setCampaignPosting: (state, action: PayloadAction<CampaignResponse>) => {
-      if (action.payload?.data?.campaigns?.length > 0)
-        state.campaignPosting = action.payload.data.campaigns;
+      console.log('searchResult', action.payload);
+      state.campaignPosting = action.payload?.data?.campaigns ?? [];
     },
     addCampaignPosting: (state, action: PayloadAction<Campaign[]>) => {
       if (action.payload && action.payload.length > 0) {
