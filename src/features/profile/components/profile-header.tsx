@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +8,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { Icons } from '@/components/icons/icons';
+import { changeUserAvtar } from '@/features/auth/auth.slice';
+import { useSendNotification } from '@/features/notification/useSendNotification';
+import { useAppDispatch } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 import { parseDateString } from '@/utils/format';
 
 import { useChangeAvatarMutation } from '../profile.service';
@@ -16,10 +22,14 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ profile }: ProfileHeaderProps) {
+  const dispatch = useAppDispatch();
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string>();
-  const [isOpenPopover, setOpenPopover] = useState<boolean>(false);
+  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
+  const [isPopoverOpen, setPopoverOpen] = useState(false);
+
+  const sendNotification = useSendNotification();
+
   const handleOnClickAvatar = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     if (fileInputRef.current) {
@@ -27,7 +37,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
     }
   };
   const handleChangeAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setOpenPopover(false);
+    setPopoverOpen(false);
     const file = event.target.files?.[0] || null;
     if (!file) return;
     if (!file.type.startsWith('image/')) {
@@ -37,12 +47,17 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
     image.append('image', file);
     try {
       const response = await changeAvatar({ image }).unwrap();
-
-      setAvatarUrl(response.data);
+      dispatch(changeUserAvtar({ url: response.data }));
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+      sendNotification({
+        userId: id!,
+        content: `${name} đã cập nhật ảnh đại diện thành công`,
+      });
+      // toast.success('Cập nhật ảnh đại diện thành công');
     } catch (error) {
+      toast.success('Cập nhật ảnh đại diện thất bại');
       console.error('Error uploading avatar:', error);
     }
   };
@@ -51,15 +66,11 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
       <CardContent>
         <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
-          <Popover open={isOpenPopover}>
-            <PopoverTrigger
-              onClick={() => {
-                setOpenPopover(!isOpenPopover);
-              }}
-            >
+          <Popover open={isPopoverOpen} onOpenChange={setPopoverOpen}>
+            <PopoverTrigger>
               <Avatar className="h-24 w-24">
                 <AvatarImage
-                  src={avatarUrl ?? profile.avatarUrl ?? '/placeholder.svg'}
+                  src={avatarUrl! ?? profile.avatarUrl ?? '/placeholder.svg'}
                   alt={profile.name}
                 />
                 <AvatarFallback className="text-2xl">

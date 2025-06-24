@@ -1,6 +1,10 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import type { NotificationSending, RecievedNotification } from './notification.type';
+import type {
+  NotificationResponse,
+  NotificationSending,
+  RecievedNotification,
+} from './notification.type';
 
 interface NotificationSlice {
   received: RecievedNotification[];
@@ -16,6 +20,9 @@ export const notificationSlice = createSlice({
   name: 'notification',
   initialState,
   reducers: {
+    setReceivedNotification: (state, action: PayloadAction<NotificationResponse>) => {
+      state.received = Array.isArray(action.payload?.data) ? action.payload.data : [];
+    },
     addReceivedNotification: (state, action: PayloadAction<RecievedNotification>) => {
       state.received = [action.payload, ...state.received];
     },
@@ -24,5 +31,6 @@ export const notificationSlice = createSlice({
     },
   },
 });
-export const { addReceivedNotification, setNotificationSending } = notificationSlice.actions;
+export const { setReceivedNotification, addReceivedNotification, setNotificationSending } =
+  notificationSlice.actions;
 export default notificationSlice.reducer;
