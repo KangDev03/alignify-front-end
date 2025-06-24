@@ -36,7 +36,7 @@ export function CampaignList({
                   </h3>
                   <p className="text-sm text-muted-foreground">{campaign.brandName}</p>
                   <div className="flex items-center justify-between">
-                    <Badge variant={'default'} className="text-xs">
+                    <Badge variant="recruiting" className="text-xs">
                       Đang tuyển
                     </Badge>
                     <span className="text-xs text-muted-foreground">
