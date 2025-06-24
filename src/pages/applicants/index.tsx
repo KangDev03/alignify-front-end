@@ -33,7 +33,9 @@ export function Applicants() {
     dispatch(setSelectedCampaign(applicationPlusCampaign[0].campaignResponse.campaignId));
   }, [applicationPlusCampaign, dispatch, rawData]);
 
-  if (!applicants || applicants.length === 0) {
+  if (isLoading) {
+    return <SkeletonApplicants />;
+  } else if (!applicants || applicants.length === 0) {
     return (
       <div className="flex gap-6 h-[633px] justify-center">
         <Alert variant="default">
@@ -60,18 +62,18 @@ export function Applicants() {
     };
   }
 
-  if (isLoading) {
-    return <SkeletonApplicants />;
-  }
-
   return (
     <div className="flex gap-6 h-[633px]">
       <CampaignList applicationPlusCampaign={applicants!} />
       <div className="flex-1 border rounded-lg bg-card">
-        {selectedCampaignData ? (
+        {selectCapaignId ? (
           <div className="h-full flex flex-col">
-            <CampaignOverview campaign={selectedCampaignData.campaignResponse} />
-            <ApplicantTabs applicants={currentApplicants!} />
+            <CampaignOverview campaign={selectedCampaignData!.campaignResponse} />
+            {currentApplicants ? <ApplicantTabs applicants={currentApplicants!} /> :
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>Bạn chưa có ứng viên nào</AlertTitle>
+              </Alert>}
           </div>
         ) : (
           <Alert variant="default">

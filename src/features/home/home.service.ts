@@ -35,13 +35,6 @@ export const getProfileApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Home'],
     }),
-    getCampaigns: builder.query<CampaignResponse, CommonPageableRequest | void>({
-      query: () => ({
-        url: '/campaigns',
-        method: 'GET',
-      }),
-      providesTags: ['Home'],
-    }),
   }),
 });
 
@@ -50,7 +43,7 @@ export const { useGetBrandProfilesQuery, useGetInfluencerProfilesQuery, useGetCa
 
 export const contentPostingApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllContentPosting: builder.query<ContentPostingResponse, CommonPageableRequest | undefined>({
+    getAllContentPosting: builder.query<ContentPostingResponse, CommonPageableRequest>({
       query: (data) => ({
         url: '/contentPosting',
         method: 'GET',

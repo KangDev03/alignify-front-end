@@ -20,8 +20,16 @@ export interface CampaignPostingResponse extends ApiReponseSuccess<Campaign> {
   data: Campaign;
 }
 
-export interface ContentFormSchema {
-  title: string;
+export interface ContentPostingRequest {
+  formData: FormData;
+}
+
+export interface ContentPostingResponse extends ApiReponseSuccess<null> {
+  data: null;
+}
+
+export interface ContentPosting {
+  contentName: string;
   content: string;
   categoryIds?: string[];
 }

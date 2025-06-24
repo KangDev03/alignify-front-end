@@ -9,11 +9,11 @@ import { Icons } from '@/components/icons/icons';
 import type { Campaign } from '@/features/common/common.type';
 import { useGetPostMeQuery } from '@/features/home/home.service';
 import { useGetAllCampaignsOfInfluencerQuery } from '@/features/my-campaign/campaign.service';
-import { useGetProfileUserQuery } from '@/features/profile/api/profile.service';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
 import { ProfileInfo } from '@/features/profile/components/profile-info';
 import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { ProfileStats } from '@/features/profile/components/profile-stats';
+import { useGetProfileUserQuery } from '@/features/profile/profile.service';
 
 export default function UserProfilePage() {
   const { data: contentPosting } = useGetPostMeQuery({
@@ -37,7 +37,7 @@ export default function UserProfilePage() {
     (campaign) => campaign.status === 'COMPLETED',
   );
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300  gap-x-4">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="space-y-6">
         <ProfileHeader profile={profile} campaignCompleted={completedAppliedCampaigns.length} />
 
@@ -58,15 +58,15 @@ export default function UserProfilePage() {
                   socialMediaLinks={
                     Array.isArray(profile.socialMediaLinks)
                       ? Object.fromEntries(
-                          profile.socialMediaLinks.map((item: any) =>
-                            typeof item === 'object' &&
+                        profile.socialMediaLinks.map((item: any) =>
+                          typeof item === 'object' &&
                             item !== null &&
                             'key' in item &&
                             'value' in item
-                              ? [item.key, item.value]
-                              : [String(item[0]), String(item[1])],
-                          ),
-                        )
+                            ? [item.key, item.value]
+                            : [String(item[0]), String(item[1])],
+                        ),
+                      )
                       : profile.socialMediaLinks
                   }
                 />
