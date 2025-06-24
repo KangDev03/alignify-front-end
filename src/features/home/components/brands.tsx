@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { AlertCircleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -7,18 +9,29 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { Icons } from '@/components/icons/icons';
-import { useAppSelector } from '@/hooks/redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
 import { useGetBrandProfilesQuery } from '../home.service';
+import { setRefetch } from '../home.slice';
 
 export default function Brands() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { role } = useAppSelector((state: RootState) => state.common);
+  const { brand } = useAppSelector((state: RootState) => state.homeRefetch);
   const brandRole = role?.find((role) => role.roleName === 'BRAND');
-  const { data: profiles, isLoading } = useGetBrandProfilesQuery(
-    { roleId: brandRole!.roleId },
-    { refetchOnMountOrArgChange: true },
-  );
+  const {
+    data: profiles,
+    isLoading,
+    refetch,
+  } = useGetBrandProfilesQuery({ roleId: brandRole!.roleId }, { refetchOnMountOrArgChange: true });
+  useEffect(() => {
+    if (brand) {
+      refetch();
+      dispatch(setRefetch({ key: 'brand', value: false }));
+    }
+  }, [brand, dispatch, refetch]);
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -79,7 +92,7 @@ export default function Brands() {
                   </div> */}
                   </div>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={() => navigate(`/brand/${brand.id}`)}>
                   Xem hồ sơ
                 </Button>
               </div>

@@ -8,15 +8,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Icons } from '@/components/icons/icons';
 import { parseDateString } from '@/utils/format';
 
-import type { BrandData, InfluencerData } from '../api/profile.types';
 import { useChangeAvatarMutation } from '../profile.service';
+import type { InfluencerData } from '../profile.type';
 
 interface ProfileHeaderProps {
-  profile: InfluencerData | BrandData;
-  campaignCompleted: number;
+  profile: InfluencerData;
 }
 
-export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps) {
+export function ProfileHeader({ profile }: ProfileHeaderProps) {
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>();
@@ -59,8 +58,13 @@ export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps
               }}
             >
               <Avatar className="h-24 w-24">
-                <AvatarImage src={avatarUrl ?? profile.avatarUrl ?? '/placeholder.svg'} alt={profile.name} />
-                <AvatarFallback className="text-2xl">{profile.name.charAt(0)}</AvatarFallback>
+                <AvatarImage
+                  src={avatarUrl ?? profile.avatarUrl ?? '/placeholder.svg'}
+                  alt={profile.name}
+                />
+                <AvatarFallback className="text-2xl">
+                  {profile.name.charAt(0) ?? 'U'}
+                </AvatarFallback>
               </Avatar>
             </PopoverTrigger>
             <PopoverContent
@@ -84,8 +88,12 @@ export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps
                 <h1 className="text-2xl font-bold">{profile.name}</h1>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                   <div className="flex items-center space-x-1">
-                    <Icons.calendar className="h-4 w-4" />
-                    {'doB' in profile && <span>{parseDateString(profile.doB)}</span>}
+                    {profile.doB && (
+                      <>
+                        <Icons.calendar className="h-4 w-4" />
+                        <span>{parseDateString(profile.doB)}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -104,18 +112,20 @@ export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {profile.categories.map((category) => (
-                <Badge key={category.categoryId} variant="outline" className="text-xs">
-                  {category.categoryName}
-                </Badge>
-              ))}
+              {profile.categories &&
+                profile.categories.length > 0 &&
+                profile.categories.map((category: { categoryId: string; categoryName: string }) => (
+                  <Badge key={category.categoryId} variant="outline" className="text-xs">
+                    {category.categoryName}
+                  </Badge>
+                ))}
             </div>
 
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
                 <Icons.star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
 
-                {'rating' in profile && <span className="font-medium"> {profile.rating}</span>}
+                <span className="font-medium"> {profile.rating}</span>
               </div>
               {/* <div className="flex items-center space-x-1">
                                 <Icons.trendingUp className="h-4 w-4 text-green-500" />
@@ -123,7 +133,7 @@ export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps
                             </div> */}
 
               <div className="text-sm text-muted-foreground">
-                {campaignCompleted} chiến dịch hoàn thành
+                {profile.completedCampaign ?? 0} chiến dịch hoàn thành
               </div>
             </div>
           </div>

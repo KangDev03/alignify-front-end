@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AlertCircleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -5,13 +6,31 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { ForumPost } from '@/components/forum-post/forum-post';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 
 import { useGetAllContentPostingQuery } from '../home.service';
+import { setRefetch } from '../home.slice';
 
 export default function Forum() {
-  const { data: rawData, isLoading } = useGetAllContentPostingQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
+  const dispatch = useAppDispatch();
+  const { forum } = useAppSelector((state: RootState) => state.homeRefetch);
+  const {
+    data: rawData,
+    isLoading,
+    refetch,
+  } = useGetAllContentPostingQuery(
+    {},
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
+  useEffect(() => {
+    if (forum) {
+      refetch();
+      dispatch(setRefetch({ key: 'forum', value: false }));
+    }
+  }, [forum, dispatch, refetch]);
   const contentPosting = rawData?.data;
   if (isLoading) {
     return (

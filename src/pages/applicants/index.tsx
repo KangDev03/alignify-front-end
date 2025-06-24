@@ -66,10 +66,14 @@ export function Applicants() {
     <div className="flex gap-6 h-[633px]">
       <CampaignList applicationPlusCampaign={applicants!} />
       <div className="flex-1 border rounded-lg bg-card">
-        {selectedCampaignData ? (
+        {selectCapaignId ? (
           <div className="h-full flex flex-col">
-            <CampaignOverview campaign={selectedCampaignData.campaignResponse} />
-            <ApplicantTabs applicants={currentApplicants!} />
+            <CampaignOverview campaign={selectedCampaignData!.campaignResponse} />
+            {currentApplicants ? <ApplicantTabs applicants={currentApplicants!} /> :
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>Bạn chưa có ứng viên nào</AlertTitle>
+              </Alert>}
           </div>
         ) : (
           <Alert variant="default">

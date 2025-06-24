@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { AlertCircleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -7,18 +9,32 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { Icons } from '@/components/icons/icons';
-import { useAppSelector } from '@/hooks/redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
 import { useGetInfluencerProfilesQuery } from '../home.service';
+import { setRefetch } from '../home.slice';
 
 export default function Influencers() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { role } = useAppSelector((state: RootState) => state.common);
+  const { influencer } = useAppSelector((state: RootState) => state.homeRefetch);
   const influencerRole = role?.find((role) => role.roleName === 'INFLUENCER');
-  const { data: profiles, isLoading } = useGetInfluencerProfilesQuery(
+  const {
+    data: profiles,
+    isLoading,
+    refetch,
+  } = useGetInfluencerProfilesQuery(
     { roleId: influencerRole!.roleId },
     { refetchOnMountOrArgChange: true },
   );
+  useEffect(() => {
+    if (influencer) {
+      refetch();
+      dispatch(setRefetch({ key: 'influencer', value: false }));
+    }
+  }, [influencer, dispatch, refetch]);
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -84,7 +100,13 @@ export default function Influencers() {
                   </div> */}
                   </div>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigate(`/influencer/${influencer.id}`);
+                  }}
+                >
                   Xem hồ sơ
                 </Button>
               </div>

@@ -29,6 +29,7 @@ import {
   MessageCircle,
   Minus,
   PenTool,
+  Play,
   Plus,
   Save,
   Search,
@@ -90,4 +91,5 @@ export const Icons = {
   trash: Trash,
   image: Image,
   share2: Share2,
+  play: Play,
 };

@@ -58,7 +58,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
       ]
       : [
         { id: 'home', label: 'Trang chủ', icon: Icons.home },
-        { id: 'my-campaign', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
+        { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
         { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
         // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
       ];

@@ -43,7 +43,7 @@ export const { useGetBrandProfilesQuery, useGetInfluencerProfilesQuery, useGetCa
 
 export const contentPostingApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllContentPosting: builder.query<ContentPostingResponse, CommonPageableRequest | undefined>({
+    getAllContentPosting: builder.query<ContentPostingResponse, CommonPageableRequest>({
       query: (data) => ({
         url: '/contentPosting',
         method: 'GET',
