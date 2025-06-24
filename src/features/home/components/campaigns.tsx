@@ -22,10 +22,9 @@ import {
 
 interface CampaignsProps {
   selectedCategoryId: string;
-  searchTerm: string|null;
-  activeTab: string;
+  searchTerm: string | null;
 }
-export default function Campaigns({ selectedCategoryId, searchTerm, activeTab }: CampaignsProps) {
+export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsProps) {
   const dispatch = useDispatch();
   const { campaign } = useAppSelector((state) => state.homeRefetch);
   const { campaignPosting }: { campaignPosting: Campaign[] } = useAppSelector(
@@ -64,21 +63,34 @@ export default function Campaigns({ selectedCategoryId, searchTerm, activeTab }:
     },
   );
 
-  // Gọi API tìm kiếm khi searchTerm thay đổi và tab là 'campaign'
-  const shouldSearch = activeTab === 'campaign' && searchTerm && searchTerm.trim();
-  const { data: searchResult } = useSearchCampaignsQuery(
-    shouldSearch ? { term: searchTerm.trim() } : (false as any),
-    { skip: !shouldSearch },
-  );
-  // Lưu kết quả tìm kiếm vào store khi có kết quả
+  useEffect(() => {
+    if (
+      !searchTerm ||
+      !searchTerm.trim() ||
+      searchTerm.trim().length === 0 ||
+      searchTerm.trim() === ''
+    ) {
+      setPageNumber(0);
+    }
+  }, [searchTerm]);
 
-  const isContainValue = isAll
-    ? (allData?.data?.campaigns?.length ?? 0) > 0
-    : (categoryData?.data?.campaigns?.length ?? 0) > 0;
+  const isSearching = searchTerm && searchTerm.trim() && searchTerm.length > 0 ? true : false;
+  const { data: searchResult, isLoading: isLoadingSearch } = useSearchCampaignsQuery(
+    isSearching
+      ? { term: searchTerm!.trim(), pageNumber: pageNumber, pageSize: 10 }
+      : { term: '', pageNumber: pageNumber, pageSize: 10 },
+    { skip: !isSearching },
+  );
+
+  const hasMore = isSearching
+    ? (searchResult?.data?.campaigns?.length ?? 0) === 10
+    : isAll
+      ? (allData?.data?.campaigns?.length ?? 0) === 10
+      : (categoryData?.data?.campaigns?.length ?? 0) === 10;
 
   useEffect(() => {
     if (pageNumber === 0) {
-      if (shouldSearch && searchResult) {
+      if (isSearching && searchResult) {
         dispatch(setCampaignPosting(searchResult));
       } else if (isAll && allData) {
         dispatch(setCampaignPosting(allData));
@@ -88,7 +100,7 @@ export default function Campaigns({ selectedCategoryId, searchTerm, activeTab }:
         dispatch(resetCampaignPosting());
       }
     }
-  }, [allData, categoryData, isAll, pageNumber, dispatch, shouldSearch, searchResult]);
+  }, [allData, categoryData, isAll, pageNumber, dispatch, isSearching, searchResult]);
 
   useEffect(() => {
     if (campaign) {
@@ -135,7 +147,7 @@ export default function Campaigns({ selectedCategoryId, searchTerm, activeTab }:
   }, [allData, categoryData, isAll, pageNumber, dispatch, campaignPosting]);
 
   const fetchMoreData = () => {
-    if (!isContainValue) return;
+    if (!hasMore) return;
     setPageNumber((prevPage) => prevPage + 1);
   };
 
@@ -171,55 +183,42 @@ export default function Campaigns({ selectedCategoryId, searchTerm, activeTab }:
     </div>
   );
 
-  // Ưu tiên hiển thị kết quả tìm kiếm nếu có
-  const campaignsFromSearch = useAppSelector((state) => state.common.campaigns);
-
-  let isLoading = null;
-
-  if (isLoadingAll && isAll) {
-    isLoading = true;
-    return loadingSkeletion;
-  } else if (isLoadingCategory && !isAll) {
-    isLoading = true;
-    return loadingSkeletion;
-  } else if ((isLoadingAll || isLoadingCategory) && campaignPosting.length === 0) {
-    isLoading = true;
-    return loadingSkeletion;
+  let isLoading = false;
+  if (isSearching) {
+    isLoading = isLoadingSearch;
+  } else if (isAll) {
+    isLoading = isLoadingAll;
   } else {
-    isLoading = false;
+    isLoading = isLoadingCategory;
   }
+  if ((isLoadingAll || isLoadingCategory || isLoadingSearch) && campaignPosting.length === 0) {
+    isLoading = true;
+  }
+  if (isLoading) return loadingSkeletion;
 
   return (
     <InfiniteScroll
-      dataLength={
-        shouldSearch && Array.isArray(campaignsFromSearch)
-          ? campaignsFromSearch.length
-          : campaignPosting.length
-      }
+      dataLength={campaignPosting.length}
       next={fetchMoreData}
-      hasMore={isContainValue}
-      loader={isContainValue && loadingSkeletion}
+      hasMore={hasMore}
+      loader={hasMore && loadingSkeletion}
     >
       <div className="space-y-6">
-        {shouldSearch && Array.isArray(campaignsFromSearch) && campaignsFromSearch.length > 0
-          ? campaignsFromSearch.map((campaign) => (
+        {campaignPosting.length > 0
+          ? campaignPosting.map((campaign) => (
               <CampaignCard key={campaign.campaignId} campaign={campaign} />
             ))
-          : campaignPosting.length > 0
-            ? campaignPosting.map((campaign) => (
-                <CampaignCard key={campaign.campaignId} campaign={campaign} />
-              ))
-            : campaignPosting.length === 0 &&
-              isLoading == null && (
-                <Alert variant="default">
-                  <AlertCircleIcon />
-                  <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
-                  <AlertDescription>
-                    Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
-                  </AlertDescription>
-                </Alert>
-              )}
-        {!isContainValue && (
+          : campaignPosting.length === 0 &&
+            isLoading == null && (
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
+                <AlertDescription>
+                  Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
+                </AlertDescription>
+              </Alert>
+            )}
+        {!hasMore && (
           <Alert variant="default">
             <AlertCircleIcon />
             <AlertTitle className="text-muted-foreground">
