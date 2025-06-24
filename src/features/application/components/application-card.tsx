@@ -10,6 +10,7 @@ import type { ApplicationByInfluencer } from '@/features/application/application
 import ApplicationDetail from '@/features/application/components/application-detail';
 import { StatusBadge } from '@/features/application/components/status-badge';
 import type { Campaign } from '@/features/common/common.type';
+import { formatLastTimeSentMessage, parseDateString, parseTimestampToDate } from '@/utils/format';
 
 interface ApplicationCardProps {
   application: ApplicationByInfluencer;
@@ -17,11 +18,7 @@ interface ApplicationCardProps {
 }
 export default function ApplicationCard({ application, campaignInfo }: ApplicationCardProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
-  const currentDate = new Date();
-  const [year, month, day] = application.createdAt;
-  const appliedDate = new Date(year, month - 1, day);
-  const timeDifference = currentDate.getTime() - appliedDate.getTime();
-  const daysSinceApplied = Math.floor(timeDifference / (1000 * 3600 * 24));
+
   return (
     <Card
       key={application.applicationId}
@@ -31,7 +28,7 @@ export default function ApplicationCard({ application, campaignInfo }: Applicati
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
             <AvatarImage
-              src={campaignInfo.imageUrl || '/placeholder.svg'}
+              src={campaignInfo.brandAvartar || '/placeholder.svg'}
               alt={campaignInfo.brandName}
             />
             <AvatarFallback>{campaignInfo.imageUrl.charAt(0)}</AvatarFallback>
@@ -44,7 +41,7 @@ export default function ApplicationCard({ application, campaignInfo }: Applicati
               {StatusBadge(application.status)}
             </div>
             <p className="text-sm text-muted-foreground">
-              {campaignInfo.brandName} • {appliedDate.toLocaleDateString('vi-VN')}
+              {campaignInfo.brandName} • {parseDateString(campaignInfo.createdAt)}
             </p>
           </div>
         </div>
@@ -53,8 +50,8 @@ export default function ApplicationCard({ application, campaignInfo }: Applicati
           <Calendar className="w-4 h-4 mr-2 text-primary" />
           <span>
             {application.status === 'PENDING'
-              ? `Ứng tuyển ${daysSinceApplied} ngày trước`
-              : `Ngày ứng tuyển: ${appliedDate.toLocaleDateString('vi-VN')}`}
+              ? `Ứng tuyển ${formatLastTimeSentMessage(parseTimestampToDate(application.createdAt))} trước`
+              : `Ngày ứng tuyển: ${parseDateString(application.createdAt)}`}
           </span>
         </div>
 
