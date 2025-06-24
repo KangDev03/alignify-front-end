@@ -1,6 +1,6 @@
 import type { ApiReponseSuccess, Campaign } from '../common/common.type';
 
-interface ApplicationsByCampaginResponse {
+export interface ApplicationsByCampaginResponse {
   campaignResponse: Campaign;
   applications: ApplicationByInfluencer[];
 }

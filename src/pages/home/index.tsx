@@ -23,7 +23,7 @@ import Brands from '@/features/home/components/brands';
 import Campaigns from '@/features/home/components/campaigns';
 import Forum from '@/features/home/components/forum';
 import Influencers from '@/features/home/components/influencers';
-import { setRefetch } from '@/features/home/home.slice';
+import { resetHomeState, setRefetch } from '@/features/home/home.slice';
 import type { homeTab } from '@/features/home/home.type';
 import { useAppDispatch } from '@/hooks/redux';
 
@@ -103,6 +103,7 @@ export function HomePage() {
               <Select
                 value={selectedCategory.categoryId}
                 onValueChange={(value) => {
+                  dispatch(resetHomeState());
                   if (value === 'all') {
                     setSelectedCategory({ categoryId: 'all', categoryName: 'Tất Cả' });
                   } else {
