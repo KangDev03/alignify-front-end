@@ -47,6 +47,7 @@ export interface BrandData {
   contacts: [{ key: string }, string];
   socialMediaLinks: [{ key: string }, string];
   establishDate: number[];
+  totalCampaign: number | 0;
 }
 interface Category {
   categoryId: string;
