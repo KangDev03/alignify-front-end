@@ -19,10 +19,11 @@ export interface InfluencerData {
   gender: string;
   bio: string;
   socialMediaLinks: [{ key: string }, string];
-  rating: number;
+  rating?: number | 0;
   categories: Category[];
   follower?: number | 0;
   isPublic: boolean;
+  completedCampaign?: number | 0;
 }
 
 export interface ProfileRequest {

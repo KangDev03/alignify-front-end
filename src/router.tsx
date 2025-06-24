@@ -71,6 +71,8 @@ function Router() {
           {roleName === 'BRAND' && (
             <Route path="/user-profile" element={<BrandProfile brand={mockBrand} />} />
           )}
+          <Route path="/influencer/:userId" element={<UserProfilePage />} />
+          <Route path="/brand/:userId" element={<BrandProfile brand={mockBrand} />} />
         </Route>
       </Routes>
     </>

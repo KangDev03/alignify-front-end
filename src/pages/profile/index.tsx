@@ -1,45 +1,50 @@
 'use client';
 
+import { useLocation } from 'react-router';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { ForumPost } from '@/components/forum-post/forum-post';
 import { Icons } from '@/components/icons/icons';
-import type { Campaign } from '@/features/common/common.type';
 import { useGetPostMeQuery } from '@/features/home/home.service';
-import { useGetAllCampaignsOfInfluencerQuery } from '@/features/my-campaign/campaign.service';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
 import { ProfileInfo } from '@/features/profile/components/profile-info';
 import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { ProfileStats } from '@/features/profile/components/profile-stats';
-import { useGetProfileUserQuery } from '@/features/profile/profile.service';
+import { useGetInfluencerProfileUserQuery } from '@/features/profile/profile.service';
 
 export default function UserProfilePage() {
+  const location = useLocation();
+  let userId = location.pathname.split('/').pop() || undefined;
+  userId = userId === 'user-profile' ? undefined : userId;
   const { data: contentPosting } = useGetPostMeQuery({
     pageNumber: 0,
     pageSize: 10,
   });
-  const { data: profileRaw } = useGetProfileUserQuery();
-  const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery({
-    pageNumber: 0,
-    pageSize: 10,
-  });
+
+  const { data: profileRaw } = useGetInfluencerProfileUserQuery(userId ? userId : undefined);
+  // const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery({
+  //   pageNumber: 0,
+  //   pageSize: 10,
+  // });
 
   if (!profileRaw?.data) {
     return <div>Loading...</div>;
   }
   const profile = profileRaw?.data;
-  const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
-    ? campaignsResponse.data.campaigns
-    : [];
-  const completedAppliedCampaigns: Campaign[] = campaigns.filter(
-    (campaign) => campaign.status === 'COMPLETED',
-  );
+  // const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
+  //   ? campaignsResponse.data.campaigns
+  //   : [];
+  // const completedAppliedCampaigns: Campaign[] = campaigns.filter(
+  //   (campaign) => campaign.status === 'COMPLETED',
+  // );
+
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="space-y-6">
-        <ProfileHeader profile={profile} campaignCompleted={completedAppliedCampaigns.length} />
+        <ProfileHeader profile={profile} />
 
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -58,15 +63,15 @@ export default function UserProfilePage() {
                   socialMediaLinks={
                     Array.isArray(profile.socialMediaLinks)
                       ? Object.fromEntries(
-                        profile.socialMediaLinks.map((item: any) =>
-                          typeof item === 'object' &&
+                          profile.socialMediaLinks.map((item: any) =>
+                            typeof item === 'object' &&
                             item !== null &&
                             'key' in item &&
                             'value' in item
-                            ? [item.key, item.value]
-                            : [String(item[0]), String(item[1])],
-                        ),
-                      )
+                              ? [item.key, item.value]
+                              : [String(item[0]), String(item[1])],
+                          ),
+                        )
                       : profile.socialMediaLinks
                   }
                 />

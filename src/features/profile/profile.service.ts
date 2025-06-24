@@ -17,7 +17,14 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Auth'],
     }),
-    getProfileUser: builder.query<InfluencerProfileResponse | BrandProfileResponse, void>({
+    getInfluencerProfileUser: builder.query<InfluencerProfileResponse, undefined | string>({
+      query: (userId) => ({
+        url: `/profiles${userId ? `/${userId}` : '/me'}`,
+        method: 'GET',
+      }),
+      providesTags: ['Profile'],
+    }),
+    getBrandProfileUser: builder.query<BrandProfileResponse, void>({
       query: () => ({
         url: '/profiles/me',
         method: 'GET',
@@ -27,4 +34,8 @@ export const profileApi = baseApi.injectEndpoints({
     }),
   }),
 });
-export const { useChangeAvatarMutation, useGetProfileUserQuery } = profileApi;
+export const {
+  useChangeAvatarMutation,
+  useGetInfluencerProfileUserQuery,
+  useGetBrandProfileUserQuery,
+} = profileApi;

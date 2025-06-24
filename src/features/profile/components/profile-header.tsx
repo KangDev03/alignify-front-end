@@ -9,14 +9,13 @@ import { Icons } from '@/components/icons/icons';
 import { parseDateString } from '@/utils/format';
 
 import { useChangeAvatarMutation } from '../profile.service';
-import type { BrandData, InfluencerData } from '../profile.type';
+import type { InfluencerData } from '../profile.type';
 
 interface ProfileHeaderProps {
-  profile: InfluencerData | BrandData;
-  campaignCompleted: number;
+  profile: InfluencerData;
 }
 
-export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps) {
+export function ProfileHeader({ profile }: ProfileHeaderProps) {
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>();
@@ -88,7 +87,7 @@ export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                   <div className="flex items-center space-x-1">
                     <Icons.calendar className="h-4 w-4" />
-                    {'doB' in profile && <span>{parseDateString(profile.doB)}</span>}
+                    <span>{parseDateString(profile.doB)}</span>
                   </div>
                 </div>
               </div>
@@ -118,7 +117,7 @@ export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps
               <div className="flex items-center space-x-1">
                 <Icons.star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
 
-                {'rating' in profile && <span className="font-medium"> {profile.rating}</span>}
+                <span className="font-medium"> {profile.rating}</span>
               </div>
               {/* <div className="flex items-center space-x-1">
                                 <Icons.trendingUp className="h-4 w-4 text-green-500" />
@@ -126,7 +125,7 @@ export function ProfileHeader({ profile, campaignCompleted }: ProfileHeaderProps
                             </div> */}
 
               <div className="text-sm text-muted-foreground">
-                {campaignCompleted} chiến dịch hoàn thành
+                {profile.completedCampaign ?? 0} chiến dịch hoàn thành
               </div>
             </div>
           </div>

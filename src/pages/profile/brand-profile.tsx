@@ -1,6 +1,7 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useState } from 'react';
+import { useLocation } from 'react-router';
 import {
   BarChart3,
   Building2,
@@ -15,68 +16,78 @@ import {
   Save,
   Users,
   X,
-} from "lucide-react"
+} from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 
 interface BrandData {
-  id: string
-  name: string
-  avatar: string
-  companyName: string
-  category: string[]
-  bio: string
+  id: string;
+  name: string;
+  avatar: string;
+  companyName: string;
+  category: string[];
+  bio: string;
   contactInfo: {
-    email: string
-    phone: string
-    address: string
-  }
-  website: string
-  establishedYear: number
-  companySize: string
-  verificationStatus: "verified" | "pending" | "unverified"
-  campaignHistory: number
-  budgetRange: string
-  industry: string
+    email: string;
+    phone: string;
+    address: string;
+  };
+  website: string;
+  establishedYear: number;
+  companySize: string;
+  verificationStatus: 'verified' | 'pending' | 'unverified';
+  campaignHistory: number;
+  budgetRange: string;
+  industry: string;
 }
 
 interface BrandProfileProps {
-  brand: BrandData
+  brand: BrandData;
 }
 
 export function BrandProfile({ brand }: BrandProfileProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [editData, setEditData] = useState(brand)
+  const location = useLocation();
+  let userId = location.pathname.split('/').pop() || undefined;
+  userId = userId === 'user-profile' ? undefined : userId;
+  console.log(userId);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState(brand);
 
   const handleSave = () => {
     // Xử lý lưu dữ liệu
-    setIsEditing(false)
-  }
+    setIsEditing(false);
+  };
 
   const handleCancel = () => {
-    setEditData(brand)
-    setIsEditing(false)
-  }
+    setEditData(brand);
+    setIsEditing(false);
+  };
 
   const getVerificationBadge = () => {
     switch (brand.verificationStatus) {
-      case "verified":
-        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Đã xác minh</Badge>
-      case "pending":
+      case 'verified':
         return (
-          <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Đang xác minh</Badge>
-        )
+          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+            Đã xác minh
+          </Badge>
+        );
+      case 'pending':
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+            Đang xác minh
+          </Badge>
+        );
       default:
-        return <Badge variant="secondary">Chưa xác minh</Badge>
+        return <Badge variant="secondary">Chưa xác minh</Badge>;
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
@@ -86,7 +97,7 @@ export function BrandProfile({ brand }: BrandProfileProps) {
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={brand.avatar || "/placeholder.svg"} alt={brand.name} />
+                <AvatarImage src={brand.avatar || '/placeholder.svg'} alt={brand.name} />
                 <AvatarFallback className="text-2xl">{brand.name.charAt(0)}</AvatarFallback>
               </Avatar>
 
@@ -107,12 +118,12 @@ export function BrandProfile({ brand }: BrandProfileProps) {
                     </div>
                   </div>
                   <Button
-                    variant={isEditing ? "destructive" : "outline"}
+                    variant={isEditing ? 'destructive' : 'outline'}
                     size="sm"
                     onClick={isEditing ? handleCancel : () => setIsEditing(true)}
                   >
                     {isEditing ? <X className="h-4 w-4 mr-2" /> : <Edit className="h-4 w-4 mr-2" />}
-                    {isEditing ? "Hủy" : "Chỉnh sửa"}
+                    {isEditing ? 'Hủy' : 'Chỉnh sửa'}
                   </Button>
                 </div>
 
@@ -273,7 +284,9 @@ export function BrandProfile({ brand }: BrandProfileProps) {
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Trạng thái xác minh</span>
                   <div className="flex items-center space-x-2">
-                    {brand.verificationStatus === "verified" && <CheckCircle className="h-4 w-4 text-green-500" />}
+                    {brand.verificationStatus === 'verified' && (
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    )}
                     {getVerificationBadge()}
                   </div>
                 </div>
@@ -329,5 +342,5 @@ export function BrandProfile({ brand }: BrandProfileProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
