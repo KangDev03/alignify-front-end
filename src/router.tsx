@@ -19,27 +19,6 @@ import RegisterPage from './pages/auth/sign-up';
 import MyCampaignPage from './pages/my-campaign';
 import type { RootState } from './redux/store';
 
-const mockBrand = {
-  id: '1',
-  name: 'Beauty Plus Vietnam',
-  avatar: '/placeholder.svg?height=120&width=120',
-  companyName: 'Công ty TNHH Beauty Plus Vietnam',
-  category: ['Làm đẹp', 'Chăm sóc da'],
-  bio: 'Thương hiệu mỹ phẩm hàng đầu Việt Nam, chuyên cung cấp các sản phẩm chăm sóc da và làm đẹp chất lượng cao.',
-  contactInfo: {
-    email: 'contact@beautyplus.vn',
-    phone: '+84 28 1234 5678',
-    address: '123 Nguyễn Huệ, Quận 1, TP. HCM',
-  },
-  website: 'https://beautyplus.vn',
-  establishedYear: 2018,
-  companySize: '50-100 nhân viên',
-  verificationStatus: 'verified' as const,
-  campaignHistory: 45,
-  budgetRange: '10-50 triệu VNĐ',
-  industry: 'Mỹ phẩm & Chăm sóc sức khỏe',
-};
-
 function Router() {
   const { role: roleName } = useAppSelector((state: RootState) => state.auth);
 
@@ -66,11 +45,9 @@ function Router() {
           {roleName === 'INFLUENCER' && (
             <Route path="/user-profile" element={<InfluencerProfilePage />} />
           )}
-          {roleName === 'BRAND' && (
-            <Route path="/user-profile" element={<BrandProfilePage brand={mockBrand} />} />
-          )}
+          {roleName === 'BRAND' && <Route path="/user-profile" element={<BrandProfilePage />} />}
           <Route path="/influencer/:userId" element={<InfluencerProfilePage />} />
-          <Route path="/brand/:userId" element={<BrandProfilePage brand={mockBrand} />} />
+          <Route path="/brand/:userId" element={<BrandProfilePage />} />
         </Route>
       </Routes>
     </>
