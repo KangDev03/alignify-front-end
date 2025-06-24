@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router';
+import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 import { Icons } from '@/components/icons/icons.tsx';
 import type { Campaign, RoleName } from '@/features/common/common.type.ts';
+import { useApplyCampaignMutation } from '@/features/my-campaign/campaign.service.ts';
 import { useAppSelector } from '@/hooks/redux.ts';
 import type { RootState } from '@/redux/store.ts';
 import { parseDateString } from '@/utils/format.ts';
@@ -20,6 +22,20 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
+
+  const [hasApplied, setHasApplied] = useState(false);
+  const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
+
+  const handleApplyCampaign = async () => {
+    try {
+      await applyCampaign(campaign.campaignId).unwrap();
+      setHasApplied(true);
+      toast.success('Ứng tuyển thành công.');
+    } catch (error) {
+      console.log(error);
+      toast.error('Ứng tuyển thất bại. Vui lòng thử lại sau.');
+    }
+  }
 
   const userRole: RoleName = role;
 
@@ -87,9 +103,14 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 variant="default"
                 size="sm"
                 className="flex-1"
+                onClick={handleApplyCampaign}
+                disabled={isApplying || hasApplied}
               >
-                {/* <Icons.play className="h-4 w-4 mr-1" /> */}
-                Ứng tuyển
+                {isApplying
+                  ? 'Đang ứng tuyển...'
+                  : hasApplied
+                    ? 'Đã ứng tuyển'
+                    : 'Ứng tuyển'}
               </Button>
             </div>
           );

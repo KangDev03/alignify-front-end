@@ -36,6 +36,13 @@ export const campaignApi = baseApi.injectEndpoints({
         params: { pageNumber, pageSize },
       }),
     }),
+    applyCampaign: builder.mutation<void, string>({
+      query: (campaignId) => ({
+        url: `/campaigns/${campaignId}/applications/apply`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Campaign'],
+    }),
   }),
 });
 export const {
@@ -43,4 +50,5 @@ export const {
   useGetAllCampaignsOfInfluencerQuery,
   useGetAllCampaignsOfBrandQuery,
   useGetCampaignByCategoryQuery,
+  useApplyCampaignMutation,
 } = campaignApi;
