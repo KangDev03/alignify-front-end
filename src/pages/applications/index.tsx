@@ -40,20 +40,18 @@ export function ApplicationsPage() {
   //     [],
   //   );
   // }, [rawData]);
-  console.log('rawData', rawData);
   const applications: ApplicationsByCampaginResponse[] = rawData?.data || [];
   const groupedApplications = {
     waiting: applications.filter((group) =>
-      group?.applications?.filter((application) => application?.status === 'PENDING'),
+      group?.applications?.some((application) => application?.status === 'PENDING'),
     ),
     accepted: applications.filter((group) =>
-      group?.applications?.filter((application) => application?.status === 'PENDING'),
+      group?.applications?.some((application) => application?.status === 'ACCEPTED'),
     ),
     rejected: applications.filter((group) =>
-      group?.applications?.filter((application) => application?.status === 'PENDING'),
+      group?.applications?.some((application) => application?.status === 'REJECTED'),
     ),
   };
-
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Đơn ứng tuyển của tôi</h1>

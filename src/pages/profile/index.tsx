@@ -50,7 +50,7 @@ export default function UserProfilePage() {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="profile">Thông tin cá nhân</TabsTrigger>
             <TabsTrigger value="posts">
-              Bài viết của tôi ({contentPosting?.data.length})
+              Bài viết của tôi ({contentPosting?.data.length ?? 0})
             </TabsTrigger>
           </TabsList>
 

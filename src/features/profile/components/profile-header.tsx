@@ -62,7 +62,9 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
                   src={avatarUrl ?? profile.avatarUrl ?? '/placeholder.svg'}
                   alt={profile.name}
                 />
-                <AvatarFallback className="text-2xl">{profile.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="text-2xl">
+                  {profile.name.charAt(0) ?? 'U'}
+                </AvatarFallback>
               </Avatar>
             </PopoverTrigger>
             <PopoverContent
@@ -86,8 +88,12 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
                 <h1 className="text-2xl font-bold">{profile.name}</h1>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                   <div className="flex items-center space-x-1">
-                    <Icons.calendar className="h-4 w-4" />
-                    <span>{parseDateString(profile.doB)}</span>
+                    {profile.doB && (
+                      <>
+                        <Icons.calendar className="h-4 w-4" />
+                        <span>{parseDateString(profile.doB)}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -106,11 +112,13 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {profile.categories.map((category: { categoryId: string; categoryName: string }) => (
-                <Badge key={category.categoryId} variant="outline" className="text-xs">
-                  {category.categoryName}
-                </Badge>
-              ))}
+              {profile.categories &&
+                profile.categories.length > 0 &&
+                profile.categories.map((category: { categoryId: string; categoryName: string }) => (
+                  <Badge key={category.categoryId} variant="outline" className="text-xs">
+                    {category.categoryName}
+                  </Badge>
+                ))}
             </div>
 
             <div className="flex items-center space-x-4">
