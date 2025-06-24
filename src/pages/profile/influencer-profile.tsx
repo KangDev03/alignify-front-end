@@ -15,7 +15,7 @@ import { ProfileSocialLinks } from '@/features/profile/components/profile-social
 import { ProfileStats } from '@/features/profile/components/profile-stats';
 import { useGetInfluencerProfileUserQuery } from '@/features/profile/profile.service';
 
-export default function UserProfilePage() {
+export default function InfluencerProfilePage() {
   const location = useLocation();
   let userId = location.pathname.split('/').pop() || undefined;
   userId = userId === 'user-profile' ? undefined : userId;
@@ -63,15 +63,15 @@ export default function UserProfilePage() {
                   socialMediaLinks={
                     Array.isArray(profile.socialMediaLinks)
                       ? Object.fromEntries(
-                          profile.socialMediaLinks.map((item: any) =>
-                            typeof item === 'object' &&
+                        profile.socialMediaLinks.map((item: any) =>
+                          typeof item === 'object' &&
                             item !== null &&
                             'key' in item &&
                             'value' in item
-                              ? [item.key, item.value]
-                              : [String(item[0]), String(item[1])],
-                          ),
-                        )
+                            ? [item.key, item.value]
+                            : [String(item[0]), String(item[1])],
+                        ),
+                      )
                       : profile.socialMediaLinks
                   }
                 />
