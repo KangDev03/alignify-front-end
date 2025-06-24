@@ -25,6 +25,7 @@ import Forum from '@/features/home/components/forum';
 import Influencers from '@/features/home/components/influencers';
 import { resetHomeState, setRefetch } from '@/features/home/home.slice';
 import type { homeTab } from '@/features/home/home.type';
+import { useGetCampaignTop3Query } from '@/features/my-campaign/campaign.service';
 import { useAppDispatch } from '@/hooks/redux';
 
 const tabs = [
@@ -61,13 +62,13 @@ export function HomePage() {
   const dispatch = useAppDispatch();
   const { data: roles } = useGetRolesQuery();
   const { data: categories } = useGetCategoriesQuery();
+  const { data: top3Campaign } = useGetCampaignTop3Query();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>({
     categoryId: 'all',
     categoryName: 'Tất Cả',
   });
   const [activeTab, setActiveTab] = useState('campaign');
-
   useEffect(() => {
     dispatch(setRoles(roles));
     dispatch(setCategories(categories));
@@ -179,20 +180,16 @@ export function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
-                  <h4 className="font-medium text-sm">
-                    Chiến dịch quảng cáo sản phẩm làm đẹp mùa hè
-                  </h4>
-                  <p className="text-xs text-muted-foreground mt-1">Beauty Co.</p>
-                </div>
-                <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
-                  <h4 className="font-medium text-sm">Review công nghệ AI mới nhất</h4>
-                  <p className="text-xs text-muted-foreground mt-1">TechViet</p>
-                </div>
-                <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
-                  <h4 className="font-medium text-sm">Fashion Week 2024</h4>
-                  <p className="text-xs text-muted-foreground mt-1">Fashion House</p>
-                </div>
+                {Array.isArray(top3Campaign?.data) &&
+                  top3Campaign.data.map((campaign) => (
+                    <div
+                      key={campaign.campaignId}
+                      className="p-3 border rounded-lg hover:bg-muted cursor-pointer"
+                    >
+                      <h4 className="font-medium text-sm">{campaign.campaignName}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{campaign.brandName}</p>
+                    </div>
+                  ))}
               </CardContent>
             </Card>
 
