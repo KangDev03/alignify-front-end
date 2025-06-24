@@ -93,6 +93,7 @@ export interface RolesResponse extends ApiReponseSuccess<Role[]> {
 
 export interface Campaign {
   campaignId: string;
+  brandId: string;
   brandName: string;
   brandAvartar: string;
   campaignName: string;

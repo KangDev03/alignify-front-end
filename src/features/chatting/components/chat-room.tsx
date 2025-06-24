@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '@/components/ui/button';
@@ -11,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { Icons } from '@/components/icons/icons';
 import { useAppSelector } from '@/hooks/redux';
+import { getStompClient } from '@/lib/stom-client';
 import type { RootState } from '@/redux/store';
 import { formatDateToTimestamp } from '@/utils/format';
 
@@ -23,10 +22,10 @@ interface ChatRoomProps {
   roomName: string;
 }
 
-interface ReadStatusUpdate {
-  messageId: string;
-  readBy: string[];
-}
+// interface ReadStatusUpdate {
+//   messageId: string;
+//   readBy: string[];
+// }
 
 interface ChatMessageState extends ChatMessage {
   isSending?: boolean;
@@ -40,19 +39,15 @@ interface MessageSending {
   tempId?: string | null;
   readBy: string[];
 }
+
 export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
   const [message, setMessage] = useState<string>('');
-  const stompClientRef = useRef<Stomp.Client | null>(null);
   const { id: userId, token, avatarUrl, name } = useAppSelector((state: RootState) => state.auth);
   const { data } = useGetMessagesInRoomQuery({ roomId: chatRoomId });
   const [messages, setMessages] = useState<ChatMessageState[]>([]);
   const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const dispatch = useDispatch();
   const currentMessageRef = useRef<HTMLDivElement>(null);
-
-  if (stompClientRef.current) {
-    stompClientRef.current.debug = () => {};
-  }
 
   useEffect(() => {
     if (data?.data) {
@@ -61,63 +56,48 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
   }, [data]);
 
   useEffect(() => {
-    if (stompClientRef.current || !token) return;
-
-    // const socket = new SockJS(`http://localhost:8080/ws`);
-    const socket = new SockJS(`https://alignify-backend.onrender.com/ws`);
-    const client = Stomp.over(socket);
-    client.debug = () => {};
-    stompClientRef.current = client;
-    client.connect(
-      { Authorization: `Bearer ${token}` },
-      () => {
-        client.subscribe(`/topic/messages/${chatRoomId}`, (res: Stomp.Message) => {
-          try {
-            const receivedMessage: ChatMessage = JSON.parse(res.body);
-            setMessages((prev) => {
-              const updatedMessages = prev.map((msg) =>
-                msg.message.tempId === receivedMessage.message.tempId
-                  ? { ...receivedMessage, isSending: false }
-                  : msg,
-              );
-              if (!prev.some((msg) => msg.message.tempId === receivedMessage.message.tempId)) {
-                updatedMessages.push(receivedMessage);
-              }
-              return updatedMessages;
-            });
-            dispatch(
-              chatApi.util.invalidateTags(['ChatSheet', { type: 'ChatRoom', id: chatRoomId }]),
+    if (!token) return;
+    let subMsg: any, subRead: any;
+    getStompClient(token).then((client) => {
+      subMsg = client.subscribe(`/topic/messages/${chatRoomId}`, (res: any) => {
+        try {
+          const receivedMessage: ChatMessage = JSON.parse(res.body);
+          setMessages((prev) => {
+            const updatedMessages = prev.map((msg) =>
+              msg.message.tempId === receivedMessage.message.tempId
+                ? { ...receivedMessage, isSending: false }
+                : msg,
             );
-          } catch (error) {
-            console.error('Error parsing STOMP message:', error);
-          }
-        });
-        client.subscribe(`/topic/read/${chatRoomId}`, (res: Stomp.Message) => {
-          try {
-            const update: ReadStatusUpdate = JSON.parse(res.body);
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.message.messageId === update.messageId
-                  ? { ...msg, message: { ...msg.message, readBy: update.readBy } }
-                  : msg,
-              ),
-            );
-          } catch (error) {
-            console.error('Error parsing STOMP read update:', error);
-          }
-        });
-      },
-      (error) => {
-        console.error('STOMP connection error:', error);
-      },
-    );
+            if (!prev.some((msg) => msg.message.tempId === receivedMessage.message.tempId)) {
+              updatedMessages.push(receivedMessage);
+            }
+            return updatedMessages;
+          });
+          dispatch(
+            chatApi.util.invalidateTags(['ChatSheet', { type: 'ChatRoom', id: chatRoomId }]),
+          );
+        } catch (error) {
+          console.error('Error parsing STOMP message:', error);
+        }
+      });
+      // subRead = client.subscribe(`/topic/read/${chatRoomId}`, (res: any) => {
+      //   try {
+      //     const update: ReadStatusUpdate = JSON.parse(res.body);
+      //     setMessages((prev) =>
+      //       prev.map((msg) =>
+      //         msg.message.messageId === update.messageId
+      //           ? { ...msg, message: { ...msg.message, readBy: update.readBy } }
+      //           : msg,
+      //       ),
+      //     );
+      //   } catch (error) {
+      //     console.error('Error parsing STOMP read update:', error);
+      //   }
+      // });
+    });
     return () => {
-      if (client.connected) {
-        client.disconnect(() => {
-          console.log('Disconnected');
-        });
-      }
-      stompClientRef.current = null;
+      if (subMsg) subMsg.unsubscribe();
+      if (subRead) subRead.unsubscribe();
     };
   }, [chatRoomId, token, dispatch]);
 
@@ -125,21 +105,19 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && stompClientRef.current && stompClientRef.current.connected) {
-            const messageId = entry.target.getAttribute('data-message-id');
-            if (
-              messageId &&
-              !messages
-                .find((msg) => msg.message.messageId === messageId)
-                ?.message.readBy.includes(userId!)
-            ) {
-              stompClientRef.current.send(
-                `/app/read/${chatRoomId}`,
-                {},
-                JSON.stringify({ messageId }),
-              );
+          getStompClient(token!).then((client) => {
+            if (entry.isIntersecting && client.connected) {
+              const messageId = entry.target.getAttribute('data-message-id');
+              if (
+                messageId &&
+                !messages
+                  .find((msg) => msg.message.messageId === messageId)
+                  ?.message.readBy.includes(userId!)
+              ) {
+                client.send(`/app/read/${chatRoomId}`, {}, JSON.stringify({ messageId }));
+              }
             }
-          }
+          });
         });
       },
       { threshold: 0.5 },
@@ -152,7 +130,7 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
     return () => {
       observer.disconnect();
     };
-  }, [messages, chatRoomId, userId]);
+  }, [messages, chatRoomId, userId, token]);
 
   useEffect(() => {
     currentMessageRef.current?.scrollIntoView({ behavior: 'auto' });
@@ -163,47 +141,48 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
   };
 
   const sendMessage = () => {
-    if (
-      message.trim() &&
-      stompClientRef.current &&
-      stompClientRef.current.connected &&
-      chatRoomId
-    ) {
-      const tempId = uuidv4();
-      const current = new Date();
-      const input: MessageSending = {
-        chatRoomId,
-        userId: userId ?? '',
-        message,
-        readBy: [userId!],
-        tempId: tempId,
-        sendAt: new Date(),
-      };
-      const currentMessage: ChatMessageState = {
-        message: {
-          chatRoomId,
-          userId: userId!,
-          message,
-          readBy: [userId!],
-          sendAt: formatDateToTimestamp(current),
-          tempId,
-        },
-        userDTO: {
-          userId: userId!,
-          name: name!,
-          avatarUrl: avatarUrl!,
-        },
-        isSending: true,
-      };
-      setMessages((prev) => {
-        if (prev.some((msg) => msg.message.tempId === tempId)) {
-          return prev;
+    if (message.trim() && chatRoomId && token) {
+      getStompClient(token).then((client) => {
+        if (client.connected) {
+          const tempId = uuidv4();
+          const current = new Date();
+          const input: MessageSending = {
+            chatRoomId,
+            userId: userId ?? '',
+            message,
+            readBy: [userId!],
+            tempId: tempId,
+            sendAt: new Date(),
+          };
+          const currentMessage: ChatMessageState = {
+            message: {
+              chatRoomId,
+              userId: userId!,
+              message,
+              readBy: [userId!],
+              sendAt: formatDateToTimestamp(current),
+              tempId,
+            },
+            userDTO: {
+              userId: userId!,
+              name: name!,
+              avatarUrl: avatarUrl!,
+            },
+            isSending: true,
+          };
+          setMessages((prev) => {
+            if (prev.some((msg) => msg.message.tempId === tempId)) {
+              return prev;
+            }
+            return [...prev, currentMessage];
+          });
+          client.send(`/app/chat/${chatRoomId}`, {}, JSON.stringify(input));
+          setMessage('');
+          dispatch(
+            chatApi.util.invalidateTags(['ChatSheet', { type: 'ChatRoom', id: chatRoomId }]),
+          );
         }
-        return [...prev, currentMessage];
       });
-      stompClientRef.current.send(`/app/chat/${chatRoomId}`, {}, JSON.stringify(input));
-      setMessage('');
-      dispatch(chatApi.util.invalidateTags(['ChatSheet', { type: 'ChatRoom', id: chatRoomId }]));
     }
   };
 
@@ -235,7 +214,7 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
             key={msg.message.messageId || msg.message.tempId}
             msg={msg.message}
             userdto={msg.userDTO}
-            me={msg.userDTO.userId === userId}
+            me={msg.userDTO?.userId === userId!}
             isSending={msg.isSending}
             ref={(el) => {
               if (el && msg.message.messageId) {

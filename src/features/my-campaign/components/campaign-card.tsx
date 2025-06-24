@@ -11,6 +11,7 @@ import { Icons } from '@/components/icons/icons.tsx';
 import type { Campaign, RoleName } from '@/features/common/common.type.ts';
 import { applyForApplciation } from '@/features/home/home.slice.ts';
 import { useApplyCampaignMutation } from '@/features/my-campaign/campaign.service.ts';
+import { useSendNotification } from '@/features/notification/useSendNotification.ts';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
 import type { RootState } from '@/redux/store.ts';
 import { parseDateString } from '@/utils/format.ts';
@@ -20,17 +21,21 @@ import { StatusBadge } from './status-badge.tsx';
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const dispatch = useAppDispatch();
-  const { role, id } = useAppSelector((state: RootState) => state.auth);
+  const { role, id, name } = useAppSelector((state: RootState) => state.auth);
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
-
+  const sendNotification = useSendNotification();
   const isApplied = campaign.appliedInfluencerIds?.includes(id!);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
 
   const handleApplyCampaign = async () => {
     try {
       await applyCampaign(campaign.campaignId).unwrap();
+      sendNotification({
+        userId: campaign.brandId,
+        content: `${name} đã ứng tuyển\n${campaign?.campaignName}`,
+      });
       dispatch(applyForApplciation({ campaignId: campaign.campaignId, influencerId: id! }));
       toast.success('Ứng tuyển thành công.');
     } catch (error) {

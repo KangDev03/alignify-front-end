@@ -19,7 +19,7 @@ const tabs = [
 ];
 
 export function CampaignManagement() {
-  const [activeTab, setActiveTab] = useState('DRAFT');
+  const [activeTab, setActiveTab] = useState('draft');
 
   const { data: campaignsResponse } = useGetAllCampaignsOfBrandQuery({
     pageNumber: 0,
@@ -28,8 +28,6 @@ export function CampaignManagement() {
   const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
     ? campaignsResponse.data.campaigns
     : [];
-
-  console.log('campaignsResponse:', campaigns);
 
   const filteredCampaigns = campaigns.filter(
     (campaign) => campaign.status === activeTab.toUpperCase(),

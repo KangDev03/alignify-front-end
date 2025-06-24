@@ -6,7 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 import { Icons } from '@/components/icons/icons';
-import { useAppDispatch } from '@/hooks/redux';
+import type { Campaign } from '@/features/common/common.type';
+import { useSendNotification } from '@/features/notification/useSendNotification';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 
 import { useConfirmApplicationMutation } from '../applicant.service';
 import { setConfirmApplicant } from '../applicant.slice';
@@ -21,12 +24,27 @@ export function ApplicantCard({
 }) {
   const dispatch = useAppDispatch();
   const [confirmApplicant, { isLoading }] = useConfirmApplicationMutation();
+  const { applicants: allAplicants, selectCapaignId } = useAppSelector(
+    (state: RootState) => state.applicant,
+  );
+  const sendNotification = useSendNotification();
+
+  const campaign: Campaign | undefined = allAplicants?.find(
+    (item) => item.campaignResponse.campaignId === selectCapaignId,
+  )?.campaignResponse;
+
   const handleConfirmApplicant = async (accepted: boolean) => {
     try {
       await confirmApplicant({
         accepted: accepted,
         applicationId: applicant.applicationId,
       }).unwrap();
+      sendNotification({
+        userId: applicant.influencerId,
+        content: accepted
+          ? `${campaign?.brandName} đã chấp nhận đơn của bạn\n${campaign?.campaignName}`
+          : `${campaign?.brandName} đã từ chối đơn của bạn\n${campaign?.campaignName}`,
+      });
       dispatch(setConfirmApplicant({ applicationId: applicant.applicationId, accepted }));
       toast.success(`Xác nhận ứng viên ${applicant.influencerName} thành công!`);
     } catch (error) {

@@ -58,8 +58,6 @@ export function HomePage() {
     dispatch(setRefetch({ key: tab, value: true }));
     setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
   };
-  console.log('top2Influencer', top2Influencer);
-  console.log('top3Campaign', top3Campaign);
   return (
     <div className="min-h-screen bg-transparent transition-colors duration-300">
       <div className="space-y-6">
