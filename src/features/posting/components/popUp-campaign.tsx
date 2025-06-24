@@ -102,7 +102,6 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
         ),
         influencerRequirements: influencerRequirements.map((item) => item.requirement),
       };
-      console.log(campaignRaw);
       const formData = new FormData();
       if (file) formData.append('image', file);
       formData.append('campaign', JSON.stringify(campaignRaw));
@@ -453,7 +452,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
               </Button>
             </DialogClose>
             <Button variant={'default'} type="submit" disabled={isPosting}>
-              {isPosting ? 'Đang tạo...' : 'Đăng chiến dịch'}
+              {isPosting ? 'Đang đăng...' : 'Đăng chiến dịch'}
             </Button>
           </div>
         </form>

@@ -1,12 +1,20 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type { CampaignPostingRequest, CampaignPostingResponse } from './posting.type';
+import type { CampaignPostingResponse, ForumPostingResponse, PostingRequest } from './posting.type';
 
 export const postingApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    postCampaign: builder.mutation<CampaignPostingResponse, CampaignPostingRequest>({
+    postCampaign: builder.mutation<CampaignPostingResponse, PostingRequest>({
       query: (formData) => ({
         url: '/campaigns',
+        method: 'POST',
+        body: formData.formData,
+      }),
+      invalidatesTags: ['Post'],
+    }),
+    postContent: builder.mutation<ForumPostingResponse, PostingRequest>({
+      query: (formData) => ({
+        url: '/contentPosting',
         method: 'POST',
         body: formData.formData,
       }),
@@ -15,4 +23,4 @@ export const postingApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { usePostCampaignMutation } = postingApi;
+export const { usePostCampaignMutation, usePostContentMutation } = postingApi;
