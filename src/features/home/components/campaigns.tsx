@@ -12,7 +12,7 @@ import { useGetCampaignByCategoryQuery } from '@/features/my-campaign/campaign.s
 import CampaignCard from '@/features/my-campaign/components/campaign-card';
 import { useAppSelector } from '@/hooks/redux';
 
-import { useGetCampaignsQuery } from '../home.service';
+import { useGetCampaignsQuery, useSearchCampaignsQuery } from '../home.service';
 import {
   addCampaignPosting,
   resetCampaignPosting,
@@ -22,8 +22,9 @@ import {
 
 interface CampaignsProps {
   selectedCategoryId: string;
+  searchTerm: string | null;
 }
-export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
+export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsProps) {
   const dispatch = useDispatch();
   const { campaign } = useAppSelector((state) => state.homeRefetch);
   const { campaignPosting }: { campaignPosting: Campaign[] } = useAppSelector(
@@ -62,13 +63,51 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
     },
   );
 
-  const isContainValue = isAll
-    ? (allData?.data?.campaigns?.length ?? 0) > 0
-    : (categoryData?.data?.campaigns?.length ?? 0) > 0;
+  useEffect(() => {
+    if (
+      !searchTerm ||
+      !searchTerm.trim() ||
+      searchTerm.trim().length === 0 ||
+      searchTerm.trim() === ''
+    ) {
+      setPageNumber(0);
+    }
+  }, [searchTerm]);
+
+  const isSearching = searchTerm && searchTerm.trim() && searchTerm.length > 0 ? true : false;
+  const { data: searchResult, isLoading: isLoadingSearch } = useSearchCampaignsQuery(
+    isSearching
+      ? { term: searchTerm!.trim(), pageNumber: pageNumber, pageSize: 10 }
+      : { term: '', pageNumber: pageNumber, pageSize: 10 },
+    { skip: !isSearching },
+  );
+  let isLoading: boolean | null = null;
+  if (isSearching) {
+    isLoading = isLoadingSearch;
+  } else if (isAll) {
+    isLoading = isLoadingAll;
+  } else {
+    isLoading = isLoadingCategory;
+  }
+  if ((isLoadingAll || isLoadingCategory || isLoadingSearch) && campaignPosting.length === 0) {
+    isLoading = true;
+  }
+  const hasMore = isSearching
+    ? (searchResult?.data?.campaigns?.length ?? 0) === 10
+    : isAll
+      ? (allData?.data?.campaigns?.length ?? 0) === 10
+      : (categoryData?.data?.campaigns?.length ?? 0) === 10;
 
   useEffect(() => {
-    if (pageNumber === 0) {
-      if (isAll && allData) {
+    if (pageNumber === 0 && !isLoading) {
+      if (isSearching && searchResult) {
+        dispatch(setCampaignPosting(searchResult));
+        // if (searchResult && searchResult.data && searchResult.data.campaigns) {
+        //   dispatch(setCampaignPosting(searchResult));
+        // } else {
+        //   dispatch(resetCampaignPosting());
+        // }
+      } else if (isAll && allData) {
         dispatch(setCampaignPosting(allData));
       } else if (!isAll && categoryData) {
         dispatch(setCampaignPosting(categoryData));
@@ -76,7 +115,7 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
         dispatch(resetCampaignPosting());
       }
     }
-  }, [allData, categoryData, isAll, pageNumber, dispatch]);
+  }, [allData, categoryData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading]);
 
   useEffect(() => {
     if (campaign) {
@@ -118,12 +157,35 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
             ),
           ),
         );
+      } else if (
+        isSearching &&
+        searchResult &&
+        searchResult.data &&
+        searchResult.data.campaigns &&
+        searchResult.data.campaigns.length > 0
+      ) {
+        dispatch(
+          addCampaignPosting(
+            searchResult.data.campaigns.filter(
+              (cam) => !campaignPosting.some((existing) => existing.campaignId === cam.campaignId),
+            ),
+          ),
+        );
       }
     }
-  }, [allData, categoryData, isAll, pageNumber, dispatch, campaignPosting]);
+  }, [
+    allData,
+    categoryData,
+    isAll,
+    pageNumber,
+    dispatch,
+    campaignPosting,
+    isSearching,
+    searchResult,
+  ]);
 
   const fetchMoreData = () => {
-    if (!isContainValue) return;
+    if (!hasMore) return;
     setPageNumber((prevPage) => prevPage + 1);
   };
 
@@ -159,27 +221,14 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
     </div>
   );
 
-  let isLoading = null;
-
-  if (isLoadingAll && isAll) {
-    isLoading = true;
-    return loadingSkeletion;
-  } else if (isLoadingCategory && !isAll) {
-    isLoading = true;
-    return loadingSkeletion;
-  } else if ((isLoadingAll || isLoadingCategory) && campaignPosting.length === 0) {
-    isLoading = true;
-    return loadingSkeletion;
-  } else {
-    isLoading = false;
-  }
+  if (isLoading) return loadingSkeletion;
 
   return (
     <InfiniteScroll
-      dataLength={campaignPosting.length}
+      dataLength={campaignPosting ? campaignPosting.length : 0}
       next={fetchMoreData}
-      hasMore={isContainValue}
-      loader={isContainValue && loadingSkeletion}
+      hasMore={hasMore}
+      loader={hasMore && loadingSkeletion}
     >
       <div className="space-y-6">
         {campaignPosting.length > 0
@@ -196,7 +245,7 @@ export default function Campaigns({ selectedCategoryId }: CampaignsProps) {
                 </AlertDescription>
               </Alert>
             )}
-        {!isContainValue && (
+        {!hasMore && (
           <Alert variant="default">
             <AlertCircleIcon />
             <AlertTitle className="text-muted-foreground">

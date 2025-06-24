@@ -22,7 +22,7 @@ export default defineConfig({
     proxy: {
       '/api/v1': {
         // target: 'https://alignify-backend.onrender.com',
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8081',
         changeOrigin: true,
         secure: false,
       },

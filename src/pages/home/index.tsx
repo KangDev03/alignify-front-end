@@ -42,22 +42,47 @@ export function HomePage() {
   const { data: categories } = useGetCategoriesQuery();
   const { data: top3Campaign } = useGetCampaignTop3Query();
   const { data: top2Influencer } = useGetTopInfluencerQuery();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTermChange, setSearchTermChange] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>({
     categoryId: 'all',
     categoryName: 'Tất Cả',
   });
-  const [activeTab, setActiveTab] = useState('campaign');
+  const [activeTab, setActiveTab] = useState<homeTab>('campaign');
+
   useEffect(() => {
     dispatch(setRoles(roles));
     dispatch(setCategories(categories));
   }, [categories, dispatch, roles]);
 
   const handleTabRefetch = (tab: homeTab) => {
-    // dispatch(resetHomeState());
     dispatch(setRefetch({ key: tab, value: true }));
     setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
   };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchTermChange.trim().length > 0) {
+      setSearchTerm(searchTermChange);
+    } else if (
+      !searchTermChange.trim() ||
+      searchTermChange.trim().length === 0 ||
+      searchTermChange.trim() === ''
+    ) {
+      setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
+      setSearchTermChange('');
+      setSearchTerm(null);
+      dispatch(setRefetch({ key: activeTab, value: true }));
+    }
+  };
+
+  useEffect(() => {
+    if (!searchTermChange.trim()) {
+      setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
+      setSearchTerm(null);
+      dispatch(setRefetch({ key: activeTab, value: true }));
+    }
+  }, [searchTermChange, dispatch, activeTab]);
+
   return (
     <div className="min-h-screen bg-transparent transition-colors duration-300">
       <div className="space-y-6">
@@ -74,8 +99,9 @@ export function HomePage() {
                 <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Tìm kiếm..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchTermChange}
+                  onChange={(e) => setSearchTermChange(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
                   className="pl-10"
                 />
               </div>
@@ -112,7 +138,11 @@ export function HomePage() {
             </div>
 
             {/* Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) => setActiveTab(value as homeTab)}
+              className="w-full"
+            >
               <TabsList className="grid w-full h-fit grid-cols-4 p-1">
                 {tabs.map((tab) => (
                   <TabsTrigger
@@ -130,19 +160,20 @@ export function HomePage() {
                 <Campaigns
                   key={selectedCategory.categoryId}
                   selectedCategoryId={selectedCategory.categoryId}
+                  searchTerm={searchTerm}
                 />
               </TabsContent>
 
               <TabsContent value="brand" className="mt-6">
-                <Brands />
+                <Brands searchTerm={searchTerm} />
               </TabsContent>
 
               <TabsContent value="influencer" className="mt-6">
-                <Influencers />
+                <Influencers searchTerm={searchTerm} />
               </TabsContent>
 
               <TabsContent value="forum" className="mt-6">
-                <Forum />
+                <Forum searchTerm={searchTerm} />
               </TabsContent>
             </Tabs>
           </div>
