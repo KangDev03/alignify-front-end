@@ -183,7 +183,7 @@ export function HomePage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {Array.isArray(top2Influencer?.data) &&
-                  top2Influencer.data.map((influencer, index) => (
+                  top2Influencer?.data.map((influencer, index) => (
                     <div key={influencer.userId} className="flex items-center space-x-3">
                       <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">
                         {index + 1}
