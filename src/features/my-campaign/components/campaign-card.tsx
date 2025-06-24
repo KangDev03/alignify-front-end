@@ -9,8 +9,9 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 import { Icons } from '@/components/icons/icons.tsx';
 import type { Campaign, RoleName } from '@/features/common/common.type.ts';
+import { applyForApplciation } from '@/features/home/home.slice.ts';
 import { useApplyCampaignMutation } from '@/features/my-campaign/campaign.service.ts';
-import { useAppSelector } from '@/hooks/redux.ts';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
 import type { RootState } from '@/redux/store.ts';
 import { parseDateString } from '@/utils/format.ts';
 
@@ -18,24 +19,25 @@ import CampaignDetail from './campaign-detail.tsx';
 import { StatusBadge } from './status-badge.tsx';
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
-  const { role } = useAppSelector((state: RootState) => state.auth);
+  const dispatch = useAppDispatch();
+  const { role, id } = useAppSelector((state: RootState) => state.auth);
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const [hasApplied, setHasApplied] = useState(false);
+  const isApplied = campaign.appliedInfluencerIds?.includes(id!);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
 
   const handleApplyCampaign = async () => {
     try {
       await applyCampaign(campaign.campaignId).unwrap();
-      setHasApplied(true);
+      dispatch(applyForApplciation({ campaignId: campaign.campaignId, influencerId: id! }));
       toast.success('Ứng tuyển thành công.');
     } catch (error) {
       console.log(error);
       toast.error('Ứng tuyển thất bại. Vui lòng thử lại sau.');
     }
-  }
+  };
 
   const userRole: RoleName = role;
 
@@ -48,7 +50,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
     switch (campaign.status) {
       case 'DRAFT':
         return (
-          <div className='w-full grid grid-cols-2 gap-2'>
+          <div className="w-full grid grid-cols-2 gap-2">
             <Dialog {...commonProps}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -61,11 +63,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button
-              variant="default"
-              size="sm"
-              className="flex-1"
-            >
+            <Button variant="default" size="sm" className="flex-1">
               <Icons.play className="h-4 w-4 mr-1" />
               Đăng tuyển
             </Button>
@@ -86,7 +84,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
           ) : (
-            <div className='w-full grid grid-cols-2 gap-2'>
+            <div className="w-full grid grid-cols-2 gap-2">
               <Dialog {...commonProps}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="flex items-center w-full">
@@ -104,19 +102,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 size="sm"
                 className="flex-1"
                 onClick={handleApplyCampaign}
-                disabled={isApplying || hasApplied}
+                disabled={isApplying || isApplied}
               >
-                {isApplying
-                  ? 'Đang ứng tuyển...'
-                  : hasApplied
-                    ? 'Đã ứng tuyển'
-                    : 'Ứng tuyển'}
+                {isApplying ? 'Đang ứng tuyển...' : isApplied ? 'Đã ứng tuyển' : 'Ứng tuyển'}
               </Button>
             </div>
           );
         }
         return (
-          <div className='w-full grid grid-cols-2 gap-2'>
+          <div className="w-full grid grid-cols-2 gap-2">
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center w-full">
@@ -141,11 +135,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button
-              variant="default"
-              size="sm"
-              className="col-span-2 w-full"
-            >
+            <Button variant="default" size="sm" className="col-span-2 w-full">
               <Icons.play className="h-4 w-4 mr-1" />
               Kết thúc tuyển
             </Button>
@@ -153,7 +143,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         );
       case 'PENDING':
         return userRole === 'BRAND' ? (
-          <div className='w-full grid grid-cols-2 gap-2'>
+          <div className="w-full grid grid-cols-2 gap-2">
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center w-full">
@@ -178,11 +168,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button
-              variant="default"
-              size="sm"
-              className="col-span-2 w-full"
-            >
+            <Button variant="default" size="sm" className="col-span-2 w-full">
               <Icons.play className="h-4 w-4 mr-1" />
               Bắt đầu
             </Button>
@@ -202,7 +188,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         );
       case 'PARTICIPATING':
         return (
-          <div className='w-full grid grid-cols-2 gap-2'>
+          <div className="w-full grid grid-cols-2 gap-2">
             <Dialog {...commonProps}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -215,11 +201,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button
-              variant="default"
-              size="sm"
-              className="flex-1"
-            >
+            <Button variant="default" size="sm" className="flex-1">
               <Icons.play className="h-4 w-4 mr-1" />
               Kết thúc
             </Button>
@@ -242,7 +224,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       default:
         return null;
     }
-  }
+  };
 
   return (
     <Card
@@ -292,9 +274,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           </div>
         </div>
 
-        <div className="flex justify-center">
-          {renderDialogButton()}
-        </div>
+        <div className="flex justify-center">{renderDialogButton()}</div>
       </CardContent>
     </Card>
   );
