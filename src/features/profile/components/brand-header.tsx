@@ -8,9 +8,10 @@ import type { BrandData } from '@/features/profile/profile.type';
 
 interface BrandHeaderProps {
   profile: BrandData;
+  campaignCompleted: number;
 }
 
-export function BrandHeaderCard({ profile }: BrandHeaderProps) {
+export function BrandHeaderCard({ profile, campaignCompleted }: BrandHeaderProps) {
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
       <CardContent>
@@ -23,7 +24,9 @@ export function BrandHeaderCard({ profile }: BrandHeaderProps) {
             <h1 className="text-2xl font-bold m-0">{profile.name}</h1>
             <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1">
               <Calendar className="h-4 w-4" />
-              <span>Thành lập {profile.establishDate ? profile.establishDate : "(chưa cung cấp)"}</span>
+              <span>
+                Thành lập {profile.establishDate ? profile.establishDate : '(chưa cung cấp)'}
+              </span>
             </div>
             <div className="flex flex-wrap gap-2">
               {profile.categories && profile.categories.length > 0 ? (
@@ -40,7 +43,7 @@ export function BrandHeaderCard({ profile }: BrandHeaderProps) {
             </div>
             <div className="flex items-center space-x-1 text-sm">
               <BarChart3 className="h-4 w-4 text-blue-500" />
-              <span>{profile.completedCampaign ?? 0} chiến dịch</span>
+              <span>{campaignCompleted ?? 0} chiến dịch</span>
             </div>
           </div>
         </div>

@@ -91,7 +91,10 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
                     {profile.doB && (
                       <>
                         <Icons.calendar className="h-4 w-4" />
-                        <span>{parseDateString(profile.doB)}</span>
+                        <span>
+                          Ngày sinh:{' '}
+                          {profile.doB ? parseDateString(profile.doB) : '(chưa cung cấp)'}
+                        </span>
                       </>
                     )}
                   </div>

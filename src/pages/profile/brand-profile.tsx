@@ -5,63 +5,33 @@ import { useLocation } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
+import { useGetAllCampaignsOfBrandNoPageQuery } from '@/features/my-campaign/campaign.service';
 import { ContactInfoCard } from '@/features/profile/components/brand-contact';
 import { BrandHeaderCard } from '@/features/profile/components/brand-header';
 import { BrandInfoCard } from '@/features/profile/components/brand-info';
-import { SocialMediaCard } from '@/features/profile/components/brand-social-links';
+import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { useGetBrandProfileUserQuery } from '@/features/profile/profile.service';
 
-interface BrandData {
-  id: string;
-  name: string;
-  avatar: string;
-  companyName: string;
-  category: string[];
-  bio: string;
-  contactInfo: {
-    email: string;
-    phone: string;
-    address: string;
-  };
-  website: string;
-  establishedYear: number;
-  companySize: string;
-  verificationStatus: 'verified' | 'pending' | 'unverified';
-  campaignHistory: number;
-  budgetRange: string;
-  industry: string;
-}
-
-interface BrandProfileProps {
-  brand: BrandData;
-}
-
-export function BrandProfilePage({ brand }: BrandProfileProps) {
+export function BrandProfilePage() {
   const location = useLocation();
   let userId = location.pathname.split('/').pop() || undefined;
   userId = userId === 'user-profile' ? undefined : userId;
   console.log(userId);
 
   const { data: profileRaw, isLoading } = useGetBrandProfileUserQuery(userId);
+  const { data: campaignsRaw } = useGetAllCampaignsOfBrandNoPageQuery();
+  const campaigns = Array.isArray(campaignsRaw?.data) ? campaignsRaw.data : [];
 
+  const runningCampaigns = campaigns.filter((c) => c.status === 'RECRUITING');
+  const completedCampaigns = campaigns.filter((c) => c.status === 'COMPLETED');
   if (isLoading || !profileRaw?.data) {
     return <div>Loading...</div>;
   }
 
   const profile = profileRaw?.data;
-
-  const socialMediaLinks = Array.isArray(profile.socialMediaLinks)
-    ? Object.fromEntries(
-      profile.socialMediaLinks.map((item: any) =>
-        typeof item === 'object' &&
-          item !== null &&
-          'key' in item &&
-          'value' in item
-          ? [item.key, item.value]
-          : [String(item[0]), String(item[1])],
-      ),
-    )
-    : {};
+  const contactMap = Array.isArray(profile.contacts)
+    ? Object.fromEntries(profile.contacts.map((c: any) => [c.key, c.value]))
+    : profile.contacts || {};
 
   // const getVerificationBadge = () => {
   //   switch (brand.verificationStatus) {
@@ -85,14 +55,34 @@ export function BrandProfilePage({ brand }: BrandProfileProps) {
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="space-y-6">
-        <BrandHeaderCard profile={profile} />
+        <BrandHeaderCard profile={profile} campaignCompleted={completedCampaigns.length} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Thông tin công ty */}
           <div className="lg:col-span-2 space-y-6">
             <BrandInfoCard profile={profile} />
-            <ContactInfoCard {...brand.contactInfo} />
-            <SocialMediaCard socialMediaLinks={socialMediaLinks} />
+            <ContactInfoCard
+              email={contactMap.email}
+              phone={contactMap.phone}
+              address={contactMap.address}
+            />
+
+            <ProfileSocialLinks
+              socialMediaLinks={
+                Array.isArray(profile.socialMediaLinks)
+                  ? Object.fromEntries(
+                      profile.socialMediaLinks.map((item: any) =>
+                        typeof item === 'object' &&
+                        item !== null &&
+                        'key' in item &&
+                        'value' in item
+                          ? [item.key, item.value]
+                          : [String(item[0]), String(item[1])],
+                      ),
+                    )
+                  : profile.socialMediaLinks
+              }
+            />
           </div>
 
           {/* Thống kê và trạng thái */}
@@ -137,7 +127,9 @@ export function BrandProfilePage({ brand }: BrandProfileProps) {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center space-y-2">
-                  <div className="text-3xl font-bold text-primary">{brand.campaignHistory}</div>
+                  <div className="text-3xl font-bold text-primary">
+                    {runningCampaigns.length + completedCampaigns.length}
+                  </div>
                   <p className="text-sm text-muted-foreground">Tổng số chiến dịch</p>
                 </div>
 
@@ -146,15 +138,11 @@ export function BrandProfilePage({ brand }: BrandProfileProps) {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Chiến dịch đang chạy</span>
-                    <span className="font-medium">3</span>
+                    <span className="font-medium">{runningCampaigns.length}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Chiến dịch hoàn thành</span>
-                    <span className="font-medium">{brand.campaignHistory - 3}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Tỷ lệ thành công</span>
-                    <span className="font-medium text-green-600">94%</span>
+                    <span className="font-medium">{completedCampaigns.length}</span>
                   </div>
                 </div>
               </CardContent>

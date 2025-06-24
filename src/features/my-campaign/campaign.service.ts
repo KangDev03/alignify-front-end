@@ -29,6 +29,12 @@ export const campaignApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Auth'],
     }),
+    getAllCampaignsOfBrandNoPage: builder.query<CampaignResponse, void>({
+      query: () => ({
+        url: '/campaigns/brandNoPage',
+        method: 'GET',
+      }),
+    }),
     getCampaignByCategory: builder.query<CampaignResponse, CommonPageableRequest>({
       query: ({ categoryId, pageNumber, pageSize }) => ({
         url: `campaigns/filterByCategory/${categoryId}`,
@@ -51,4 +57,5 @@ export const {
   useGetAllCampaignsOfBrandQuery,
   useGetCampaignByCategoryQuery,
   useApplyCampaignMutation,
+  useGetAllCampaignsOfBrandNoPageQuery,
 } = campaignApi;
