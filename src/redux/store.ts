@@ -6,6 +6,7 @@ import applicantReducer from '@/features/applicants/applicant.slice';
 import authReducer from '@/features/auth/auth.slice';
 import commonReducer from '@/features/common/common.slice';
 import { homeReducer, refetchReducer } from '@/features/home/home.slice';
+import { campaignSlice } from '@/features/my-campaign/campaign.slice';
 import { notificationSlice } from '@/features/notification/notification.slice';
 
 import { baseApi } from './baseApi';
@@ -27,6 +28,7 @@ export const store = configureStore({
     applicant: applicantReducer,
     home: homeReducer,
     notification: notificationSlice.reducer,
+    campaign: campaignSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

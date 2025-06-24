@@ -21,6 +21,7 @@ import { parseDateString } from '@/utils/format.ts';
 
 import CampaignDetail from './campaign-detail.tsx';
 import { StatusBadge } from './status-badge.tsx';
+import { changeCampaignStatus } from '../campaign.slice.ts';
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const dispatch = useAppDispatch();
@@ -50,23 +51,81 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
   const [changeStatus] = useChangeStatusMutation();
 
+  const sendNotificationForAll = (influencerIds: string[], notification: string) => {
+    influencerIds.forEach((id) => {
+      sendNotification({
+        userId: id,
+        content: notification,
+      });
+    });
+  };
+
+  const handleStartRecruit = async () => {
+    try {
+      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'RECRUITING' }).unwrap();
+      dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'RECRUITING' }));
+      toast.success('Chiến dịch bắt đầu tuyển!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Chuyển giai đoạn thất bại!');
+    }
+  };
+
   const handleEndRecuit = async () => {
     try {
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PENDING' }).unwrap();
+      sendNotificationForAll(
+        campaign.appliedInfluencerIds ?? [],
+        `${name} đã kết thúc tuyển\n${campaign?.campaignName}`,
+      );
+      setTimeout(() => {
+        sendNotificationForAll(
+          campaign.appliedInfluencerIds ?? [],
+          `${campaign?.campaignName}\nĐang chờ ${campaign.brandName} bắt đầu`,
+        );
+      }, 1000 * 60);
+
+      dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'PENDING' }));
       toast.success('Kết thúc tuyển thành công!');
     } catch (error) {
       console.error(error);
-      toast.error('Kết thúc tuyển thất bại. Vui lòng thử lại.');
+      toast.error('Chuyển giai đoạn thất bại!');
     }
   };
 
   const handleStartCampaign = async () => {
     try {
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PARTICIPATING' }).unwrap();
+      sendNotificationForAll(
+        campaign.appliedInfluencerIds ?? [],
+        `${name} đã bắt đầu chiến dịch\n${campaign?.campaignName}`,
+      );
+      dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'PARTICIPATING' }));
       toast.success('Chiến dịch đã bắt đầu!');
     } catch (error) {
       console.error(error);
-      toast.error('Bắt đầu chiến dịch thất bại');
+      toast.error('Chuyển giai đoạn thất bại!');
+    }
+  };
+
+  const handleEndCampaign = async () => {
+    try {
+      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'COMPLETED' }).unwrap();
+      sendNotificationForAll(
+        campaign.appliedInfluencerIds ?? [],
+        `${name} đã kết thúc chiến dịch\n${campaign?.campaignName}`,
+      );
+      setTimeout(() => {
+        sendNotificationForAll(
+          campaign.appliedInfluencerIds ?? [],
+          `${name}\n${campaign?.campaignName} đã hoàn thành`,
+        );
+      }, 1000 * 60);
+      dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'COMPLETED' }));
+      toast.success('Chiến dịch đã kết thúc!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Chuyển giai đoạn thất bại!');
     }
   };
 
@@ -92,7 +151,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button variant="default" size="sm" className="flex-1">
+            <Button variant="default" size="sm" className="flex-1" onClick={handleStartRecruit}>
               <Icons.play className="h-4 w-4 mr-1" />
               Đăng tuyển
             </Button>
@@ -240,7 +299,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button variant="default" size="sm" className="flex-1">
+            <Button variant="default" size="sm" className="flex-1" onClick={handleEndCampaign}>
               <Icons.play className="h-4 w-4 mr-1" />
               Kết thúc
             </Button>
