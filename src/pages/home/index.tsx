@@ -181,7 +181,7 @@ export function HomePage() {
           {/* Sidebar - 1/3 width */}
           <div className="space-y-6">
             {/* Trending Campaigns */}
-            <Card className="border-2 shadow-lg">
+            <Card className="border-2 shadow-lg gap-0">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <TrendingUp className="h-5 w-5 text-blue-500" />
@@ -203,7 +203,7 @@ export function HomePage() {
             </Card>
 
             {/* Top Influencers */}
-            <Card className="border-2 border-primary/20 bg-card shadow-lg">
+            <Card className="border-2 border-primary/20 bg-card shadow-lg gap-0">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <Star className="h-5 w-5 text-yellow-500" />
@@ -235,30 +235,6 @@ export function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
-            <Card className="border-2 border-primary/20 bg-card shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Thống kê nhanh</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Chiến dịch đang chạy</span>
-                  <span className="font-semibold">24</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Brands hoạt động</span>
-                  <span className="font-semibold">156</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Influencers online</span>
-                  <span className="font-semibold">89</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Bài viết forum hôm nay</span>
-                  <span className="font-semibold">12</span>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
