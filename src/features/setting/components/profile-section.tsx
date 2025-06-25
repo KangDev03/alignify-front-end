@@ -1,158 +1,257 @@
-"use client"
+'use client';
 
-import type React from "react"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { Camera, Plus, Save, Star, X } from "lucide-react"
-import { toast } from "sonner"
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+import { Camera, Plus, Save, Star, X } from 'lucide-react';
+import { DateTime } from 'luxon';
+import { toast } from 'sonner';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 
-import { profileFormSchema, type ProfileFormValues } from "@/features/setting/setting.schema"
-import { useAppSelector } from "@/hooks/redux"
-import { cn } from "@/lib/utils"
-import type { RootState } from "@/redux/store"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { changeUserAvtar } from '@/features/auth/auth.slice';
+import { useSendNotification } from '@/features/notification/useSendNotification';
+import {
+  useChangeAvatarMutation,
+  useGetBrandProfileUserQuery,
+  useGetInfluencerProfileUserQuery,
+} from '@/features/profile/profile.service';
+import { profileFormSchema, type ProfileFormValues } from '@/features/setting/setting.schema';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { cn } from '@/lib/utils';
+import type { RootState } from '@/redux/store';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { useEditProfileMutation } from '../setting.service';
+import type { BrandProfileRequest, InfluencerProfileRequest } from '../setting.type';
 
 interface Category {
-  categoryId: string
-  categoryName: string
+  categoryId: string;
+  categoryName: string;
 }
 
 export default function ProfileSection() {
-  const { role: roleName } = useAppSelector((state: RootState) => state.auth)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [newSocialMedia, setNewSocialMedia] = useState({ platform: "", url: "" })
-  const [newContact, setNewContact] = useState({ type: "", value: "" })
+  const { role: roleName } = useAppSelector((state: RootState) => state.auth);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newSocialMedia, setNewSocialMedia] = useState({ platform: '', url: '' });
+  const [newContact, setNewContact] = useState({ type: '', value: '' });
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | undefined>(undefined);
+  const [isPopoverOpen, setPopoverOpen] = useState(false);
+  const [changeAvatar] = useChangeAvatarMutation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [editProfile] = useEditProfileMutation();
 
-  const MAX_CATEGORIES = 3
+  const brandProfile = useGetBrandProfileUserQuery(undefined);
+  const influencerProfile = useGetInfluencerProfileUserQuery(undefined);
+
+  const profileData = roleName === 'BRAND' ? brandProfile.data : influencerProfile.data;
+
+  const genderDisplayMap: Record<'male' | 'female' | 'other', string> = {
+    male: 'Nam',
+    female: 'Nữ',
+    other: 'Khác',
+  };
+
+  const MAX_CATEGORIES = 3;
 
   const availableCategories: Category[] = [
-    { categoryId: "1", categoryName: "Thời trang" },
-    { categoryId: "2", categoryName: "Làm đẹp" },
-    { categoryId: "3", categoryName: "Lifestyle" },
-    { categoryId: "4", categoryName: "Công nghệ" },
-    { categoryId: "5", categoryName: "Ẩm thực" },
-    { categoryId: "6", categoryName: "Du lịch" },
-    { categoryId: "7", categoryName: "Thể thao" },
-    { categoryId: "8", categoryName: "Giải trí" },
-    { categoryId: "9", categoryName: "Giáo dục" },
-    { categoryId: "10", categoryName: "Sức khỏe" },
-  ]
+    { categoryId: '1', categoryName: 'Thời trang' },
+    { categoryId: '2', categoryName: 'Làm đẹp' },
+    { categoryId: '3', categoryName: 'Lifestyle' },
+    { categoryId: '4', categoryName: 'Công nghệ' },
+    { categoryId: '5', categoryName: 'Ẩm thực' },
+    { categoryId: '6', categoryName: 'Du lịch' },
+    { categoryId: '7', categoryName: 'Thể thao' },
+    { categoryId: '8', categoryName: 'Giải trí' },
+    { categoryId: '9', categoryName: 'Giáo dục' },
+    { categoryId: '10', categoryName: 'Sức khỏe' },
+  ];
 
-  const getDefaultValues = () => {
-    if (roleName === "BRAND") {
-      return {
-        name: "Beauty Co.",
-        email: "contact@beautyco.vn",
-        bio: "Thương hiệu mỹ phẩm hàng đầu Việt Nam với hơn 10 năm kinh nghiệm trong ngành làm đẹp.",
-        establishDate: "2014-05-20",
-        isPublic: true,
-        categoryIds: ["1", "2"],
-        socialMediaLinks: [
-          { platform: "facebook", url: "https://facebook.com/beautyco" },
-          { platform: "instagram", url: "https://instagram.com/beautyco_official" },
-        ],
-        contacts: [
-          { type: "phone", value: "+84 901 234 567" },
-          { type: "website", value: "https://beautyco.vn" },
-          { type: "address", value: "123 Nguyễn Huệ, Q1, TP.HCM" },
-        ],
-      }
-    } else {
-      return {
-        name: "Nguyễn Thị Lan",
-        email: "lan@example.com",
-        bio: "Content creator chuyên về lifestyle và beauty.",
-        gender: "female" as const,
-        doB: "1995-03-15",
-        follower: 326000,
-        isPublic: true,
-        categoryIds: ["1", "2", "3"],
-        socialMediaLinks: [
-          { platform: "instagram", url: "https://instagram.com/nguyenthilan" },
-          { platform: "tiktok", url: "https://tiktok.com/@nguyenthilan" },
-        ],
-      }
-    }
-  }
+  useEffect(() => {
+    if (!profileData?.data) return;
+
+    const profile = profileData.data;
+
+    const formattedData: ProfileFormValues = {
+      name: profile.name,
+      email: profile.email,
+      bio: profile.bio || '',
+      isPublic: 'isPublic' in profile ? profile.isPublic : true,
+      gender:
+        'gender' in profile && ['male', 'female', 'other'].includes(profile.gender?.toLowerCase?.())
+          ? (profile.gender.toLowerCase() as 'male' | 'female' | 'other')
+          : undefined,
+
+      doB:
+        'doB' in profile && profile.doB
+          ? DateTime.fromObject(
+              {
+                year: profile.doB[0],
+                month: profile.doB[1],
+                day: profile.doB[2],
+              },
+              { zone: 'Asia/Ho_Chi_Minh' },
+            ).toFormat('yyyy-MM-dd')
+          : undefined,
+
+      establishDate:
+        'establishDate' in profile && profile.establishDate
+          ? profile.establishDate.join('-')
+          : undefined,
+      categoryIds: profile.categories?.map((c) => c.categoryId) || [],
+      avatarFile: undefined,
+
+      follower: 'follower' in profile ? profile.follower : undefined,
+      socialMediaLinks:
+        (profile.socialMediaLinks ?? []).length > 0
+          ? (profile.socialMediaLinks ?? []).reduce((acc: any[], val: any, idx: number) => {
+              if (idx % 2 === 0) {
+                acc.push({ platform: val.key, url: (profile.socialMediaLinks ?? [])[idx + 1] });
+              }
+              return acc;
+            }, [])
+          : [],
+      contacts:
+        'contacts' in profile && profile.contacts?.length > 0
+          ? profile.contacts.reduce((acc: any[], val: any, idx: number) => {
+              if (idx % 2 === 0) {
+                acc.push({ type: val.key, value: profile.contacts[idx + 1] });
+              }
+              return acc;
+            }, [])
+          : [],
+    };
+    setAvatarPreviewUrl(profile.avatarUrl ?? undefined);
+    form.reset(formattedData);
+  }, [profileData]);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues: getDefaultValues(),
-  })
+    defaultValues: {
+      avatarFile: undefined,
+      backgroundFile: undefined,
+      bio: profileData?.data.bio ?? '',
+      categoryIds: profileData?.data.categories?.map((category) => category.categoryId) ?? [],
+      socialMediaLinks: Array.isArray(profileData?.data.socialMediaLinks)
+        ? profileData.data.socialMediaLinks
+            .filter((_, idx) => idx % 2 === 0)
+            .map((item, idx) => ({
+              platform: (item as { key: string }).key,
+              url: profileData.data.socialMediaLinks?.[idx * 2 + 1] as string,
+            }))
+        : [],
+    },
+  });
 
   const handleSelectCategory = (categoryId: string) => {
-    const current = form.getValues("categoryIds") || []
+    const current = form.getValues('categoryIds') || [];
     if (current.includes(categoryId)) {
       form.setValue(
-        "categoryIds",
+        'categoryIds',
         current.filter((id) => id !== categoryId),
-      )
+      );
     } else {
       if (current.length >= MAX_CATEGORIES) {
-        const copy = [...current].slice(0, MAX_CATEGORIES - 1)
-        form.setValue("categoryIds", [...copy, categoryId])
+        const copy = [...current].slice(0, MAX_CATEGORIES - 1);
+        form.setValue('categoryIds', [...copy, categoryId]);
       } else {
-        form.setValue("categoryIds", [...current, categoryId])
+        form.setValue('categoryIds', [...current, categoryId]);
       }
     }
-  }
+  };
 
   const formatFollowerCount = (count: number) => {
     if (count >= 1000000) {
-      return (count / 1000000).toFixed(1) + "M"
+      return (count / 1000000).toFixed(1) + 'M';
     }
     if (count >= 1000) {
-      return (count / 1000).toFixed(1) + "K"
+      return (count / 1000).toFixed(1) + 'K';
     }
-    return count.toString()
-  }
+    return count.toString();
+  };
 
   const addSocialMedia = () => {
     if (newSocialMedia.platform && newSocialMedia.url) {
-      const currentLinks = form.getValues("socialMediaLinks") || []
-      const newLinks = [...currentLinks, newSocialMedia]
-      form.setValue("socialMediaLinks", newLinks)
-      setNewSocialMedia({ platform: "", url: "" })
+      const currentLinks = form.getValues('socialMediaLinks') || [];
+      const newLinks = [...currentLinks, newSocialMedia];
+      form.setValue('socialMediaLinks', newLinks);
+      setNewSocialMedia({ platform: '', url: '' });
     }
-  }
+  };
 
   const removeSocialMedia = (index: number) => {
-    const currentLinks = form.getValues("socialMediaLinks") || []
-    const newLinks = currentLinks.filter((_, i) => i !== index)
-    form.setValue("socialMediaLinks", newLinks)
-  }
+    const currentLinks = form.getValues('socialMediaLinks') || [];
+    const newLinks = currentLinks.filter((_, i) => i !== index);
+    form.setValue('socialMediaLinks', newLinks);
+  };
 
   const addContact = () => {
     if (newContact.type && newContact.value) {
-      const currentContacts = form.getValues("contacts") || []
-      const newContacts = [...currentContacts, newContact]
-      form.setValue("contacts", newContacts)
-      setNewContact({ type: "", value: "" })
+      const currentContacts = form.getValues('contacts') || [];
+      const newContacts = [...currentContacts, newContact];
+      form.setValue('contacts', newContacts);
+      setNewContact({ type: '', value: '' });
     }
-  }
+  };
 
   const removeContact = (index: number) => {
-    const currentContacts = form.getValues("contacts") || []
-    const newContacts = currentContacts.filter((_, i) => i !== index)
-    form.setValue("contacts", newContacts)
-  }
+    const currentContacts = form.getValues('contacts') || [];
+    const newContacts = currentContacts.filter((_, i) => i !== index);
+    form.setValue('contacts', newContacts);
+  };
+  const dispatch = useAppDispatch();
+  const sendNotification = useSendNotification();
+  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
 
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      form.setValue("avatarFile", file)
+  const handleChangeAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPopoverOpen(false);
+    const file = event.target.files?.[0] || null;
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      return;
     }
-  }
+    const image = new FormData();
+    image.append('image', file);
+    try {
+      const response = await changeAvatar({ image }).unwrap();
+      dispatch(changeUserAvtar({ url: response.data }));
+      setAvatarPreviewUrl(response.data);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      sendNotification({
+        userId: id!,
+        content: `${name} đã cập nhật ảnh đại diện thành công`,
+      });
+      // toast.success('Cập nhật ảnh đại diện thành công');
+    } catch (error) {
+      toast.success('Cập nhật ảnh đại diện thất bại');
+      console.error('Error uploading avatar:', error);
+    }
+  };
 
   // const handleBackgroundChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   const file = event.target.files?.[0]
@@ -163,53 +262,68 @@ export default function ProfileSection() {
 
   const onSubmit = async (values: ProfileFormValues) => {
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
 
-      const formData = new FormData()
+      const formData = new FormData();
 
       if (values.avatarFile) {
-        formData.append("avatar", values.avatarFile)
+        formData.append('avatar', values.avatarFile);
       }
+
       if (values.backgroundFile) {
-        formData.append("background", values.backgroundFile)
+        formData.append('background', values.backgroundFile);
       }
 
-      let profileData: any
+      let profileData: InfluencerProfileRequest | BrandProfileRequest;
 
-      if (roleName === "BRAND") {
+      if (roleName === 'BRAND') {
         profileData = {
           ...values,
-          establishDate: values.establishDate ? values.establishDate.split("-").map(Number) : null,
-          socialMediaLinks: values.socialMediaLinks?.flatMap((link) => [{ key: link.platform }, link.url]) || [],
-          contacts: values.contacts?.flatMap((contact) => [{ key: contact.type }, contact.value]) || [],
-        }
+          establishDate: values.establishDate
+            ? values.establishDate.split('-').map(Number)
+            : undefined,
+          socialMediaLinks:
+            values.socialMediaLinks?.reduce((acc: { [key: string]: string }, link) => {
+              if (link.platform && link.url) {
+                acc[link.platform] = link.url;
+              }
+              return acc;
+            }, {}) || {},
+          contacts:
+            values.contacts?.reduce((acc: { [key: string]: string }, contact) => {
+              if (contact.type && contact.value) {
+                acc[contact.type] = contact.value;
+              }
+              return acc;
+            }, {}) || {},
+        };
       } else {
         profileData = {
           ...values,
-          doB: values.doB ? values.doB.split("-").map(Number) : null,
-          socialMediaLinks: values.socialMediaLinks?.flatMap((link) => [{ key: link.platform }, link.url]) || [],
-        }
+          doB: values.doB ? values.doB.split('-').map(Number) : null,
+          socialMediaLinks:
+            values.socialMediaLinks?.flatMap((link) => [{ key: link.platform }, link.url]) || [],
+        };
       }
 
-      formData.append("profile", JSON.stringify(profileData))
+      await editProfile(profileData).unwrap();
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      toast.success("Cập nhật hồ sơ thành công!")
+      toast.success('Cập nhật hồ sơ thành công!');
     } catch (error) {
-      console.error("Error updating profile:", error)
-      toast.error("Cập nhật hồ sơ thất bại. Vui lòng thử lại!")
+      console.error('Error updating profile:', error);
+      toast.error('Cập nhật hồ sơ thất bại. Vui lòng thử lại!');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">Hồ sơ cá nhân</h3>
-        <p className="text-sm text-muted-foreground">Cập nhật thông tin hồ sơ và ảnh đại diện của bạn.</p>
+        <p className="text-sm text-muted-foreground">
+          Cập nhật thông tin hồ sơ và ảnh đại diện của bạn.
+        </p>
       </div>
 
       <Form {...form}>
@@ -246,18 +360,29 @@ export default function ProfileSection() {
 
               <div className="flex items-center space-x-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src="/placeholder.svg?height=80&width=80" />
-                  <AvatarFallback>{form.watch("name")?.charAt(0) || "U"}</AvatarFallback>
+                  <AvatarImage
+                    src={
+                      form.watch('avatarFile')
+                        ? URL.createObjectURL(form.watch('avatarFile') as File)
+                        : avatarPreviewUrl || '/placeholder.svg?height=80&width=80'
+                    }
+                  />
+                  <AvatarFallback>{form.watch('name')?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
+
                 <div className="space-y-2">
                   <input
                     id="avatar-upload"
                     type="file"
                     accept="image/jpeg,image/png"
-                    style={{ display: "none" }}
-                    onChange={handleAvatarChange}
+                    style={{ display: 'none' }}
+                    onChange={handleChangeAvatar}
                   />
-                  <Button type="button" size="sm" onClick={() => document.getElementById("avatar-upload")?.click()}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => document.getElementById('avatar-upload')?.click()}
+                  >
                     <Camera className="h-4 w-4 mr-2" />
                     Thay đổi ảnh đại diện
                   </Button>
@@ -277,9 +402,11 @@ export default function ProfileSection() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{roleName === "BRAND" ? "Tên thương hiệu *" : "Họ và tên *"}</FormLabel>
+                    <FormLabel>
+                      {roleName === 'BRAND' ? 'Tên thương hiệu *' : 'Họ và tên *'}
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder={roleName === "BRAND" ? "Nhập tên thương hiệu" : "Nhập họ và tên"} {...field} />
+                      <Input {...field} readOnly className="cursor-not-allowed bg-muted" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -293,14 +420,19 @@ export default function ProfileSection() {
                   <FormItem>
                     <FormLabel>Email *</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="Nhập email" {...field} />
+                      <Input
+                        type="email"
+                        {...field}
+                        readOnly
+                        className="cursor-not-allowed bg-muted"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {roleName === "INFLUENCER" && (
+              {roleName === 'INFLUENCER' && (
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -322,7 +454,7 @@ export default function ProfileSection() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Giới tính *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || undefined}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Chọn giới tính" />
@@ -362,7 +494,9 @@ export default function ProfileSection() {
                   <FormItem className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="space-y-0.5">
                       <FormLabel>Hồ sơ công khai</FormLabel>
-                      <p className="text-sm text-muted-foreground">Cho phép mọi người xem hồ sơ của bạn</p>
+                      <p className="text-sm text-muted-foreground">
+                        Cho phép mọi người xem hồ sơ của bạn
+                      </p>
                     </div>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -373,7 +507,7 @@ export default function ProfileSection() {
             </CardContent>
           </Card>
 
-          {roleName === "INFLUENCER" && (
+          {roleName === 'INFLUENCER' && (
             <>
               <Card>
                 <CardHeader>
@@ -383,23 +517,30 @@ export default function ProfileSection() {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center p-4 border rounded-lg">
                       <div className="text-2xl font-bold text-blue-600">
-                        {formatFollowerCount(form.watch("follower") || 0)}
+                        {formatFollowerCount(form.watch('follower') || 0)}
                       </div>
-                      <div className="text-sm text-muted-foreground">Followers</div>
                     </div>
                     <div className="text-center p-4 border rounded-lg">
                       <div className="flex items-center justify-center text-2xl font-bold text-yellow-600">
                         <Star className="h-6 w-6 mr-1 fill-current" />
-                        4.8
+                        <div>
+                          {profileData?.data && 'rating' in profileData.data
+                            ? `${profileData.data.rating} ★`
+                            : 'Chưa có đánh giá'}
+                        </div>{' '}
                       </div>
                       <div className="text-sm text-muted-foreground">Đánh giá</div>
                     </div>
                     <div className="text-center p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">24</div>
+                      <div className="text-2xl font-bold text-green-600">
+                        {' '}
+                        {profileData?.data && 'completedCampaign' in profileData.data
+                          ? `${profileData.data.completedCampaign} `
+                          : 0}
+                      </div>
                       <div className="text-sm text-muted-foreground">Chiến dịch hoàn thành</div>
                     </div>
                   </div>
-
                 </CardContent>
               </Card>
 
@@ -409,23 +550,33 @@ export default function ProfileSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex flex-col gap-2">
-                    <p className="text-sm text-muted-foreground">Chọn tối đa 3 lĩnh vực chuyên môn của bạn</p>
+                    <p className="text-sm text-muted-foreground">
+                      Chọn tối đa 3 lĩnh vực chuyên môn của bạn
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {availableCategories.map((category) => (
                         <Badge
                           key={category.categoryId}
-                          variant={form.watch("categoryIds")?.includes(category.categoryId) ? "default" : "outline"}
+                          variant={
+                            form.watch('categoryIds')?.includes(category.categoryId)
+                              ? 'default'
+                              : 'outline'
+                          }
                           className={cn(
-                            "flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize",
+                            'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize',
                           )}
                           onClick={() => handleSelectCategory(category.categoryId)}
                         >
                           {category.categoryName}
-                          {form.watch("categoryIds")?.includes(category.categoryId) && <X className="h-3 w-3" />}
+                          {form.watch('categoryIds')?.includes(category.categoryId) && (
+                            <X className="h-3 w-3" />
+                          )}
                         </Badge>
                       ))}
                     </div>
-                    <p className="text-xs text-muted-foreground">Đã chọn: {form.watch("categoryIds")?.length || 0}/3</p>
+                    <p className="text-xs text-muted-foreground">
+                      Đã chọn: {form.watch('categoryIds')?.length || 0}/3
+                    </p>
                   </div>
                   <FormMessage />
                 </CardContent>
@@ -437,7 +588,7 @@ export default function ProfileSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    {form.watch("socialMediaLinks")?.map((social, index) => (
+                    {form.watch('socialMediaLinks')?.map((social, index) => (
                       <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
                         <div className="flex-1">
                           <div className="font-medium capitalize">{social.platform}</div>
@@ -460,7 +611,9 @@ export default function ProfileSection() {
                     <div className="grid grid-cols-2 gap-2">
                       <Select
                         value={newSocialMedia.platform}
-                        onValueChange={(value) => setNewSocialMedia({ ...newSocialMedia, platform: value })}
+                        onValueChange={(value) =>
+                          setNewSocialMedia({ ...newSocialMedia, platform: value })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Chọn platform" />
@@ -476,7 +629,9 @@ export default function ProfileSection() {
                       <Input
                         placeholder="URL"
                         value={newSocialMedia.url}
-                        onChange={(e) => setNewSocialMedia({ ...newSocialMedia, url: e.target.value })}
+                        onChange={(e) =>
+                          setNewSocialMedia({ ...newSocialMedia, url: e.target.value })
+                        }
                       />
                     </div>
                     <Button type="button" onClick={addSocialMedia} size="sm" className="w-full">
@@ -489,7 +644,7 @@ export default function ProfileSection() {
             </>
           )}
 
-          {roleName === "BRAND" && (
+          {roleName === 'BRAND' && (
             <>
               {/* Company Information */}
               <Card>
@@ -520,23 +675,33 @@ export default function ProfileSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex flex-col gap-2">
-                    <p className="text-sm text-muted-foreground">Chọn tối đa 3 lĩnh vực kinh doanh của công ty</p>
+                    <p className="text-sm text-muted-foreground">
+                      Chọn tối đa 3 lĩnh vực kinh doanh của công ty
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {availableCategories.map((category) => (
                         <Badge
                           key={category.categoryId}
-                          variant={form.watch("categoryIds")?.includes(category.categoryId) ? "default" : "outline"}
+                          variant={
+                            form.watch('categoryIds')?.includes(category.categoryId)
+                              ? 'default'
+                              : 'outline'
+                          }
                           className={cn(
-                            "flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize",
+                            'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize',
                           )}
                           onClick={() => handleSelectCategory(category.categoryId)}
                         >
                           {category.categoryName}
-                          {form.watch("categoryIds")?.includes(category.categoryId) && <X className="h-3 w-3" />}
+                          {form.watch('categoryIds')?.includes(category.categoryId) && (
+                            <X className="h-3 w-3" />
+                          )}
                         </Badge>
                       ))}
                     </div>
-                    <p className="text-xs text-muted-foreground">Đã chọn: {form.watch("categoryIds")?.length || 0}/3</p>
+                    <p className="text-xs text-muted-foreground">
+                      Đã chọn: {form.watch('categoryIds')?.length || 0}/3
+                    </p>
                   </div>
                   <FormMessage />
                 </CardContent>
@@ -549,7 +714,7 @@ export default function ProfileSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    {form.watch("contacts")?.map((contact, index) => (
+                    {form.watch('contacts')?.map((contact, index) => (
                       <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
                         <div className="flex-1">
                           <div className="font-medium capitalize">{contact.type}</div>
@@ -606,7 +771,7 @@ export default function ProfileSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    {form.watch("socialMediaLinks")?.map((social, index) => (
+                    {form.watch('socialMediaLinks')?.map((social, index) => (
                       <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
                         <div className="flex-1">
                           <div className="font-medium capitalize">{social.platform}</div>
@@ -629,7 +794,9 @@ export default function ProfileSection() {
                     <div className="grid grid-cols-2 gap-2">
                       <Select
                         value={newSocialMedia.platform}
-                        onValueChange={(value) => setNewSocialMedia({ ...newSocialMedia, platform: value })}
+                        onValueChange={(value) =>
+                          setNewSocialMedia({ ...newSocialMedia, platform: value })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Chọn platform" />
@@ -645,7 +812,9 @@ export default function ProfileSection() {
                       <Input
                         placeholder="URL"
                         value={newSocialMedia.url}
-                        onChange={(e) => setNewSocialMedia({ ...newSocialMedia, url: e.target.value })}
+                        onChange={(e) =>
+                          setNewSocialMedia({ ...newSocialMedia, url: e.target.value })
+                        }
                       />
                     </div>
                     <Button type="button" onClick={addSocialMedia} size="sm" className="w-full">
@@ -661,11 +830,11 @@ export default function ProfileSection() {
           <div className="flex justify-end">
             <Button type="submit" disabled={isSubmitting}>
               <Save className="h-4 w-4 mr-2" />
-              {isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
+              {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
             </Button>
           </div>
         </form>
       </Form>
     </div>
-  )
+  );
 }

@@ -19,15 +19,15 @@ export const changepasswordSchema = z
 export type ChangepasswordFormValues = z.infer<typeof changepasswordSchema>;
 
 export const profileFormSchema = z.object({
-  name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
-  email: z.string().email('Email không hợp lệ'),
+  // name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
+  // email: z.string().email('Email không hợp lệ'),
   bio: z.string().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   doB: z.string().optional(),
   establishDate: z.string().optional(), // For BRAND
   follower: z.number().min(0, 'Số followers phải lớn hơn 0').optional(),
   isPublic: z.boolean(),
-  categoryIds: z.array(z.string()).max(3, 'Chỉ được chọn tối đa 3 danh mục'),
+  categoryIds: z.array(z.string()).max(3, 'Chỉ được chọn tối đa 3 danh mục').optional(),
   avatarFile: z.instanceof(File).optional(),
   backgroundFile: z.instanceof(File).optional(),
   socialMediaLinks: z
