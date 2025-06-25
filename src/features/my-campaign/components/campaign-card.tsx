@@ -41,6 +41,10 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         userId: campaign.brandId,
         content: `${name} đã ứng tuyển\n${campaign?.campaignName}`,
       });
+      sendNotification({
+        userId: id!,
+        content: `Bạn đã ứng tuyển\n${campaign?.campaignName}`,
+      });
       dispatch(applyForApplciation({ campaignId: campaign.campaignId, influencerId: id! }));
       toast.success('Ứng tuyển thành công.');
     } catch (error) {
@@ -63,6 +67,10 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const handleStartRecruit = async () => {
     try {
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'RECRUITING' }).unwrap();
+      sendNotification({
+        userId: id!,
+        content: `${campaign?.campaignName} bắt đầu tuyển dụng`,
+      });
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'RECRUITING' }));
       toast.success('Chiến dịch bắt đầu tuyển!');
     } catch (error) {
@@ -78,12 +86,16 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         campaign.appliedInfluencerIds ?? [],
         `${name} đã kết thúc tuyển\n${campaign?.campaignName}`,
       );
-      setTimeout(() => {
-        sendNotificationForAll(
-          campaign.appliedInfluencerIds ?? [],
-          `${campaign?.campaignName}\nĐang chờ ${campaign.brandName} bắt đầu`,
-        );
-      }, 1000 * 60);
+      sendNotification({
+        userId: id!,
+        content: `${campaign?.campaignName} đã kết thúc tuyển`,
+      });
+      // setTimeout(() => {
+      //   sendNotificationForAll(
+      //     campaign.appliedInfluencerIds ?? [],
+      //     `${campaign?.campaignName}\nĐang chờ ${campaign.brandName} bắt đầu`,
+      //   );
+      // }, 1000 * 60);
 
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'PENDING' }));
       toast.success('Kết thúc tuyển thành công!');
@@ -100,6 +112,10 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         campaign.appliedInfluencerIds ?? [],
         `${name} đã bắt đầu chiến dịch\n${campaign?.campaignName}`,
       );
+      sendNotification({
+        userId: id!,
+        content: `${campaign?.campaignName} đã bắt đầu`,
+      });
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'PARTICIPATING' }));
       toast.success('Chiến dịch đã bắt đầu!');
     } catch (error) {
@@ -115,6 +131,10 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         campaign.appliedInfluencerIds ?? [],
         `${name} đã kết thúc chiến dịch\n${campaign?.campaignName}`,
       );
+      sendNotification({
+        userId: id!,
+        content: `${campaign?.campaignName} đã kết thúc`,
+      });
       setTimeout(() => {
         sendNotificationForAll(
           campaign.appliedInfluencerIds ?? [],
