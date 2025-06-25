@@ -1,55 +1,40 @@
-import { useState } from 'react';
-import { Camera, Plus, Save, Star, X } from 'lucide-react';
+"use client"
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+import type React from "react"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { Camera, Plus, Save, Star, X } from "lucide-react"
+import { toast } from "sonner"
 
-import type { Category } from '@/features/common/common.type';
-import type { InfluencerData } from '@/features/profile/profile.type';
-import { useAppSelector } from '@/hooks/redux';
-import { cn } from '@/lib/utils';
-import type { RootState } from '@/redux/store';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+
+import { profileFormSchema, type ProfileFormValues } from "@/features/setting/setting.schema"
+import { useAppSelector } from "@/hooks/redux"
+import { cn } from "@/lib/utils"
+import type { RootState } from "@/redux/store"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+interface Category {
+  categoryId: string
+  categoryName: string
+}
 
 export default function ProfileSection() {
-  const { role: roleName } = useAppSelector((state: RootState) => state.auth);
-  const [newSocialMedia, setNewSocialMedia] = useState({ platform: '', url: '' });
-
-  const [profileData, setProfileData] = useState<InfluencerData>({
-    userId: "user123",
-    name: "Nguyễn Thị Lan",
-    email: "lan@example.com",
-    roleId: "influencer",
-    avatarUrl: "/placeholder.svg?height=80&width=80",
-    backgroundUrl: "/placeholder.svg?height=200&width=800",
-    doB: [1995, 3, 15], // March 15, 1995
-    gender: "female",
-    bio: "Content creator chuyên về lifestyle và beauty. Yêu thích chia sẻ những trải nghiệm cuộc sống và tips làm đẹp.",
-    socialMediaLinks: [
-      { key: "instagram" }, "https://instagram.com/nguyenthilan",
-      { key: "tiktok" }, "https://tiktok.com/@nguyenthilan",
-      { key: "youtube" }, "https://youtube.com/nguyenthilan"
-    ],
-    rating: 4.8,
-    categories: [
-      { categoryId: "1", categoryName: "Thời trang" },
-      { categoryId: "2", categoryName: "Làm đẹp" },
-      { categoryId: "3", categoryName: "Lifestyle" }
-    ],
-    follower: 326000,
-    isPublic: true,
-    completedCampaign: 24
-  });
+  const { role: roleName } = useAppSelector((state: RootState) => state.auth)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [newSocialMedia, setNewSocialMedia] = useState({ platform: "", url: "" })
+  const [newContact, setNewContact] = useState({ type: "", value: "" })
 
   const MAX_CATEGORIES = 3
 
-  // Mock available categories - trong thực tế sẽ lấy từ API
   const availableCategories: Category[] = [
     { categoryId: "1", categoryName: "Thời trang" },
     { categoryId: "2", categoryName: "Làm đẹp" },
@@ -63,347 +48,624 @@ export default function ProfileSection() {
     { categoryId: "10", categoryName: "Sức khỏe" },
   ]
 
-  const handleSelectCategory = (category: Category) => {
-    const current = profileData.categories || []
-    const isSelected = current.some((cat) => cat.categoryId === category.categoryId)
-
-    if (isSelected) {
-      // Remove category
-      const updatedCategories = current.filter((cat) => cat.categoryId !== category.categoryId)
-      setProfileData({ ...profileData, categories: updatedCategories })
+  const getDefaultValues = () => {
+    if (roleName === "BRAND") {
+      return {
+        name: "Beauty Co.",
+        email: "contact@beautyco.vn",
+        bio: "Thương hiệu mỹ phẩm hàng đầu Việt Nam với hơn 10 năm kinh nghiệm trong ngành làm đẹp.",
+        establishDate: "2014-05-20",
+        isPublic: true,
+        categoryIds: ["1", "2"],
+        socialMediaLinks: [
+          { platform: "facebook", url: "https://facebook.com/beautyco" },
+          { platform: "instagram", url: "https://instagram.com/beautyco_official" },
+        ],
+        contacts: [
+          { type: "phone", value: "+84 901 234 567" },
+          { type: "website", value: "https://beautyco.vn" },
+          { type: "address", value: "123 Nguyễn Huệ, Q1, TP.HCM" },
+        ],
+      }
     } else {
-      // Add category (with max limit)
-      if (current.length >= MAX_CATEGORIES) {
-        // Replace the last category if at max limit
-        const updatedCategories = [...current.slice(0, MAX_CATEGORIES - 1), category]
-        setProfileData({ ...profileData, categories: updatedCategories })
-      } else {
-        // Add new category
-        const updatedCategories = [...current, category]
-        setProfileData({ ...profileData, categories: updatedCategories })
+      return {
+        name: "Nguyễn Thị Lan",
+        email: "lan@example.com",
+        bio: "Content creator chuyên về lifestyle và beauty.",
+        gender: "female" as const,
+        doB: "1995-03-15",
+        follower: 326000,
+        isPublic: true,
+        categoryIds: ["1", "2", "3"],
+        socialMediaLinks: [
+          { platform: "instagram", url: "https://instagram.com/nguyenthilan" },
+          { platform: "tiktok", url: "https://tiktok.com/@nguyenthilan" },
+        ],
       }
     }
   }
 
-  const formatDateForInput = (doB?: number[] | null) => {
-    if (!doB || doB.length !== 3) return '';
-    const [year, month, day] = doB;
-    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-  };
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: getDefaultValues(),
+  })
 
-  // Convert date string to doB array
-  const parseDateFromInput = (dateString: string): number[] | null => {
-    if (!dateString) return null;
-    const [year, month, day] = dateString.split('-').map(Number);
-    return [year, month, day];
-  };
-
-  // Format follower count
-  const formatFollowerCount = (count: number) => {
-    if (count >= 1000000) {
-      return (count / 1000000).toFixed(1) + 'M';
-    }
-    if (count >= 1000) {
-      return (count / 1000).toFixed(1) + 'K';
-    }
-    return count.toString();
-  };
-
-  // Handle social media links
-  const addSocialMedia = () => {
-    if (newSocialMedia.platform && newSocialMedia.url) {
-      const currentLinks = Array.isArray(profileData.socialMediaLinks) ? profileData.socialMediaLinks : [];
-      const newLinks = [...currentLinks, { key: newSocialMedia.platform }, newSocialMedia.url];
-      setProfileData({ ...profileData, socialMediaLinks: newLinks as [{ key: string }, string] | [] });
-      setNewSocialMedia({ platform: '', url: '' });
-    }
-  };
-
-  const removeSocialMedia = (index: number) => {
-    if (Array.isArray(profileData.socialMediaLinks)) {
-      const newLinks = [...profileData.socialMediaLinks];
-      newLinks.splice(index * 2, 2); // Remove both key and value
-      setProfileData({ ...profileData, socialMediaLinks: newLinks as [{ key: string }, string] | [] });
-    }
-  };
-
-  // Get social media pairs
-  const getSocialMediaPairs = () => {
-    if (!Array.isArray(profileData.socialMediaLinks)) return [];
-    const pairs = [];
-    for (let i = 0; i < profileData.socialMediaLinks.length; i += 2) {
-      if (i + 1 < profileData.socialMediaLinks.length) {
-        const key = (profileData.socialMediaLinks[i] as { key: string }).key;
-        const url = profileData.socialMediaLinks[i + 1] as string;
-        pairs.push({ key, url, index: i / 2 });
+  const handleSelectCategory = (categoryId: string) => {
+    const current = form.getValues("categoryIds") || []
+    if (current.includes(categoryId)) {
+      form.setValue(
+        "categoryIds",
+        current.filter((id) => id !== categoryId),
+      )
+    } else {
+      if (current.length >= MAX_CATEGORIES) {
+        const copy = [...current].slice(0, MAX_CATEGORIES - 1)
+        form.setValue("categoryIds", [...copy, categoryId])
+      } else {
+        form.setValue("categoryIds", [...current, categoryId])
       }
     }
-    return pairs;
-  };
+  }
+
+  const formatFollowerCount = (count: number) => {
+    if (count >= 1000000) {
+      return (count / 1000000).toFixed(1) + "M"
+    }
+    if (count >= 1000) {
+      return (count / 1000).toFixed(1) + "K"
+    }
+    return count.toString()
+  }
+
+  const addSocialMedia = () => {
+    if (newSocialMedia.platform && newSocialMedia.url) {
+      const currentLinks = form.getValues("socialMediaLinks") || []
+      const newLinks = [...currentLinks, newSocialMedia]
+      form.setValue("socialMediaLinks", newLinks)
+      setNewSocialMedia({ platform: "", url: "" })
+    }
+  }
+
+  const removeSocialMedia = (index: number) => {
+    const currentLinks = form.getValues("socialMediaLinks") || []
+    const newLinks = currentLinks.filter((_, i) => i !== index)
+    form.setValue("socialMediaLinks", newLinks)
+  }
+
+  const addContact = () => {
+    if (newContact.type && newContact.value) {
+      const currentContacts = form.getValues("contacts") || []
+      const newContacts = [...currentContacts, newContact]
+      form.setValue("contacts", newContacts)
+      setNewContact({ type: "", value: "" })
+    }
+  }
+
+  const removeContact = (index: number) => {
+    const currentContacts = form.getValues("contacts") || []
+    const newContacts = currentContacts.filter((_, i) => i !== index)
+    form.setValue("contacts", newContacts)
+  }
+
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      form.setValue("avatarFile", file)
+    }
+  }
+
+  // const handleBackgroundChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0]
+  //   if (file) {
+  //     form.setValue("backgroundFile", file)
+  //   }
+  // }
+
+  const onSubmit = async (values: ProfileFormValues) => {
+    try {
+      setIsSubmitting(true)
+
+      const formData = new FormData()
+
+      if (values.avatarFile) {
+        formData.append("avatar", values.avatarFile)
+      }
+      if (values.backgroundFile) {
+        formData.append("background", values.backgroundFile)
+      }
+
+      let profileData: any
+
+      if (roleName === "BRAND") {
+        profileData = {
+          ...values,
+          establishDate: values.establishDate ? values.establishDate.split("-").map(Number) : null,
+          socialMediaLinks: values.socialMediaLinks?.flatMap((link) => [{ key: link.platform }, link.url]) || [],
+          contacts: values.contacts?.flatMap((contact) => [{ key: contact.type }, contact.value]) || [],
+        }
+      } else {
+        profileData = {
+          ...values,
+          doB: values.doB ? values.doB.split("-").map(Number) : null,
+          socialMediaLinks: values.socialMediaLinks?.flatMap((link) => [{ key: link.platform }, link.url]) || [],
+        }
+      }
+
+      formData.append("profile", JSON.stringify(profileData))
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      toast.success("Cập nhật hồ sơ thành công!")
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      toast.error("Cập nhật hồ sơ thất bại. Vui lòng thử lại!")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">Hồ sơ cá nhân</h3>
-        <p className="text-sm text-muted-foreground">
-          Cập nhật thông tin hồ sơ và ảnh đại diện của bạn.
-        </p>
+        <p className="text-sm text-muted-foreground">Cập nhật thông tin hồ sơ và ảnh đại diện của bạn.</p>
       </div>
 
-      {/* Avatar and Background */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Ảnh đại diện và ảnh bìa</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Background Image */}
-          {/* <div className="space-y-2">
-            <Label>Ảnh bìa</Label>
-            <div className="relative">
-              <div
-                className="w-full h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg bg-cover bg-center"
-                style={{
-                  backgroundImage: profileData.backgroundUrl ? `url(${profileData.backgroundUrl})` : undefined
-                }}
-              />
-              <Button
-                size="sm"
-                className="absolute bottom-2 right-2"
-                variant="secondary"
-              >
-                <Camera className="h-4 w-4 mr-2" />
-                Thay đổi ảnh bìa
-              </Button>
-            </div>
-          </div> */}
-
-          {/* Avatar */}
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={profileData.avatarUrl || "/placeholder.svg?height=80&width=80"} />
-              <AvatarFallback>{profileData.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="space-y-2">
-              <Button size="sm">
-                <Camera className="h-4 w-4 mr-2" />
-                Thay đổi ảnh đại diện
-              </Button>
-              <p className="text-sm text-muted-foreground">JPG, GIF hoặc PNG. Tối đa 1MB.</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Basic Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Thông tin cơ bản</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Họ và tên</Label>
-            <Input
-              id="name"
-              value={profileData.name}
-              onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={profileData.email}
-              onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="dob">Ngày sinh</Label>
-              <Input
-                id="dob"
-                type="date"
-                value={formatDateForInput(profileData.doB)}
-                onChange={(e) => setProfileData({
-                  ...profileData,
-                  doB: parseDateFromInput(e.target.value)
-                })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="gender">Giới tính</Label>
-              <Select
-                value={profileData.gender}
-                onValueChange={(value) => setProfileData({ ...profileData, gender: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Nam</SelectItem>
-                  <SelectItem value="female">Nữ</SelectItem>
-                  <SelectItem value="other">Khác</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bio">Giới thiệu bản thân</Label>
-            <Textarea
-              id="bio"
-              value={profileData.bio || ''}
-              onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
-              rows={3}
-            />
-          </div>
-
-          {/* Privacy Setting */}
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div className="space-y-0.5">
-              <Label>Hồ sơ công khai</Label>
-              <p className="text-sm text-muted-foreground">
-                Cho phép mọi người xem hồ sơ của bạn
-              </p>
-            </div>
-            <Switch
-              checked={profileData.isPublic}
-              onCheckedChange={(checked) => setProfileData({ ...profileData, isPublic: checked })}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Influencer Specific Information */}
-      {roleName === 'INFLUENCER' && (
-        <>
-          {/* Statistics */}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Thống kê</CardTitle>
+              <CardTitle>Ảnh đại diện và ảnh bìa</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {formatFollowerCount(profileData.follower || 0)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Followers</div>
-                </div>
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="flex items-center justify-center text-2xl font-bold text-yellow-600">
-                    <Star className="h-6 w-6 mr-1 fill-current" />
-                    {profileData.rating || 0}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Đánh giá</div>
-                </div>
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">
-                    {profileData.completedCampaign || 0}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Chiến dịch hoàn thành</div>
-                </div>
-              </div>
-
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Lĩnh vực chuyên môn</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col gap-2">
-                <p className="text-sm text-muted-foreground">Chọn tối đa 3 lĩnh vực chuyên môn của bạn</p>
-                <div className="flex flex-wrap gap-2">
-                  {availableCategories.map((category) => (
-                    <Badge
-                      key={category.categoryId}
-                      variant={profileData.categories?.some((cat) => cat.categoryId === category.categoryId)
-                        ? "default"
-                        : "outline"
-                      }
-                      className={cn(
-                        "flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize",
-                      )}
-                      onClick={() => handleSelectCategory(category)}
-                    >
-                      {category.categoryName}
-                      {profileData.categories?.some((cat) => cat.categoryId === category.categoryId) && <X className="h-3 w-3" />}
-                    </Badge>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground">Đã chọn: {profileData.categories?.length || 0}/3</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Social Media Links */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Liên kết mạng xã hội</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                {getSocialMediaPairs().map((social) => (
-                  <div key={social.index} className="flex items-center gap-2 p-3 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="font-medium capitalize">{social.key}</div>
-                      <div className="text-sm text-muted-foreground">{social.url}</div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeSocialMedia(social.index)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <Select
-                    value={newSocialMedia.platform}
-                    onValueChange={(value) => setNewSocialMedia({ ...newSocialMedia, platform: value })}
+            <CardContent className="space-y-6">
+              {/* Background Image */}
+              {/* <div className="space-y-2">
+                <Label>Ảnh bìa</Label>
+                <div className="relative">
+                  <div className="w-full h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg bg-cover bg-center" />
+                  <input
+                    id="background-upload"
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    style={{ display: "none" }}
+                    onChange={handleBackgroundChange}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="absolute bottom-2 right-2"
+                    variant="secondary"
+                    onClick={() => document.getElementById("background-upload")?.click()}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn platform" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="instagram">Instagram</SelectItem>
-                      <SelectItem value="tiktok">TikTok</SelectItem>
-                      <SelectItem value="youtube">YouTube</SelectItem>
-                      <SelectItem value="facebook">Facebook</SelectItem>
-                      <SelectItem value="twitter">Twitter</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    placeholder="URL"
-                    value={newSocialMedia.url}
-                    onChange={(e) => setNewSocialMedia({ ...newSocialMedia, url: e.target.value })}
+                    <Camera className="h-4 w-4 mr-2" />
+                    Thay đổi ảnh bìa
+                  </Button>
+                </div>
+              </div> */}
+
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src="/placeholder.svg?height=80&width=80" />
+                  <AvatarFallback>{form.watch("name")?.charAt(0) || "U"}</AvatarFallback>
+                </Avatar>
+                <div className="space-y-2">
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    style={{ display: "none" }}
+                    onChange={handleAvatarChange}
+                  />
+                  <Button type="button" size="sm" onClick={() => document.getElementById("avatar-upload")?.click()}>
+                    <Camera className="h-4 w-4 mr-2" />
+                    Thay đổi ảnh đại diện
+                  </Button>
+                  <p className="text-sm text-muted-foreground">JPG, GIF hoặc PNG. Tối đa 1MB.</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Thông tin cơ bản</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{roleName === "BRAND" ? "Tên thương hiệu *" : "Họ và tên *"}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={roleName === "BRAND" ? "Nhập tên thương hiệu" : "Nhập họ và tên"} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email *</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="Nhập email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {roleName === "INFLUENCER" && (
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="doB"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ngày sinh</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Giới tính *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn giới tính" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="male">Nam</SelectItem>
+                            <SelectItem value="female">Nữ</SelectItem>
+                            <SelectItem value="other">Khác</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <Button onClick={addSocialMedia} size="sm" className="w-full">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Thêm liên kết
-                </Button>
-              </div>
+              )}
+
+              <FormField
+                control={form.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Giới thiệu bản thân</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Viết giới thiệu về bản thân..." rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="isPublic"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="space-y-0.5">
+                      <FormLabel>Hồ sơ công khai</FormLabel>
+                      <p className="text-sm text-muted-foreground">Cho phép mọi người xem hồ sơ của bạn</p>
+                    </div>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
-        </>
-      )}
 
-      <div className="flex justify-end">
-        <Button>
-          <Save className="h-4 w-4 mr-2" />
-          Lưu thay đổi
-        </Button>
-      </div>
+          {roleName === "INFLUENCER" && (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Thống kê</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {formatFollowerCount(form.watch("follower") || 0)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Followers</div>
+                    </div>
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="flex items-center justify-center text-2xl font-bold text-yellow-600">
+                        <Star className="h-6 w-6 mr-1 fill-current" />
+                        4.8
+                      </div>
+                      <div className="text-sm text-muted-foreground">Đánh giá</div>
+                    </div>
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">24</div>
+                      <div className="text-sm text-muted-foreground">Chiến dịch hoàn thành</div>
+                    </div>
+                  </div>
+
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Lĩnh vực chuyên môn</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm text-muted-foreground">Chọn tối đa 3 lĩnh vực chuyên môn của bạn</p>
+                    <div className="flex flex-wrap gap-2">
+                      {availableCategories.map((category) => (
+                        <Badge
+                          key={category.categoryId}
+                          variant={form.watch("categoryIds")?.includes(category.categoryId) ? "default" : "outline"}
+                          className={cn(
+                            "flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize",
+                          )}
+                          onClick={() => handleSelectCategory(category.categoryId)}
+                        >
+                          {category.categoryName}
+                          {form.watch("categoryIds")?.includes(category.categoryId) && <X className="h-3 w-3" />}
+                        </Badge>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Đã chọn: {form.watch("categoryIds")?.length || 0}/3</p>
+                  </div>
+                  <FormMessage />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Liên kết mạng xã hội</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    {form.watch("socialMediaLinks")?.map((social, index) => (
+                      <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
+                        <div className="flex-1">
+                          <div className="font-medium capitalize">{social.platform}</div>
+                          <div className="text-sm text-muted-foreground">{social.url}</div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSocialMedia(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select
+                        value={newSocialMedia.platform}
+                        onValueChange={(value) => setNewSocialMedia({ ...newSocialMedia, platform: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn platform" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="instagram">Instagram</SelectItem>
+                          <SelectItem value="tiktok">TikTok</SelectItem>
+                          <SelectItem value="youtube">YouTube</SelectItem>
+                          <SelectItem value="facebook">Facebook</SelectItem>
+                          <SelectItem value="twitter">Twitter</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        placeholder="URL"
+                        value={newSocialMedia.url}
+                        onChange={(e) => setNewSocialMedia({ ...newSocialMedia, url: e.target.value })}
+                      />
+                    </div>
+                    <Button type="button" onClick={addSocialMedia} size="sm" className="w-full">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm liên kết
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
+
+          {roleName === "BRAND" && (
+            <>
+              {/* Company Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Thông tin công ty</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="establishDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ngày thành lập</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Categories */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Lĩnh vực kinh doanh</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm text-muted-foreground">Chọn tối đa 3 lĩnh vực kinh doanh của công ty</p>
+                    <div className="flex flex-wrap gap-2">
+                      {availableCategories.map((category) => (
+                        <Badge
+                          key={category.categoryId}
+                          variant={form.watch("categoryIds")?.includes(category.categoryId) ? "default" : "outline"}
+                          className={cn(
+                            "flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize",
+                          )}
+                          onClick={() => handleSelectCategory(category.categoryId)}
+                        >
+                          {category.categoryName}
+                          {form.watch("categoryIds")?.includes(category.categoryId) && <X className="h-3 w-3" />}
+                        </Badge>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Đã chọn: {form.watch("categoryIds")?.length || 0}/3</p>
+                  </div>
+                  <FormMessage />
+                </CardContent>
+              </Card>
+
+              {/* Contact Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Thông tin liên hệ</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    {form.watch("contacts")?.map((contact, index) => (
+                      <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
+                        <div className="flex-1">
+                          <div className="font-medium capitalize">{contact.type}</div>
+                          <div className="text-sm text-muted-foreground">{contact.value}</div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeContact(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select
+                        value={newContact.type}
+                        onValueChange={(value) => setNewContact({ ...newContact, type: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Loại liên hệ" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="phone">Số điện thoại</SelectItem>
+                          <SelectItem value="website">Website</SelectItem>
+                          <SelectItem value="address">Địa chỉ</SelectItem>
+                          <SelectItem value="fax">Fax</SelectItem>
+                          <SelectItem value="hotline">Hotline</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        placeholder="Thông tin liên hệ"
+                        value={newContact.value}
+                        onChange={(e) => setNewContact({ ...newContact, value: e.target.value })}
+                      />
+                    </div>
+                    <Button type="button" onClick={addContact} size="sm" className="w-full">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm thông tin liên hệ
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Social Media Links */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Liên kết mạng xã hội</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    {form.watch("socialMediaLinks")?.map((social, index) => (
+                      <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
+                        <div className="flex-1">
+                          <div className="font-medium capitalize">{social.platform}</div>
+                          <div className="text-sm text-muted-foreground">{social.url}</div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSocialMedia(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select
+                        value={newSocialMedia.platform}
+                        onValueChange={(value) => setNewSocialMedia({ ...newSocialMedia, platform: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn platform" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="facebook">Facebook</SelectItem>
+                          <SelectItem value="instagram">Instagram</SelectItem>
+                          <SelectItem value="twitter">Twitter</SelectItem>
+                          <SelectItem value="linkedin">LinkedIn</SelectItem>
+                          <SelectItem value="youtube">YouTube</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        placeholder="URL"
+                        value={newSocialMedia.url}
+                        onChange={(e) => setNewSocialMedia({ ...newSocialMedia, url: e.target.value })}
+                      />
+                    </div>
+                    <Button type="button" onClick={addSocialMedia} size="sm" className="w-full">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm liên kết
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
+
+          <div className="flex justify-end">
+            <Button type="submit" disabled={isSubmitting}>
+              <Save className="h-4 w-4 mr-2" />
+              {isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
-  );
+  )
 }
