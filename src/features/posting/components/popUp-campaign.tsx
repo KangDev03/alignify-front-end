@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Icons } from '@/components/icons/icons';
 import type { Category } from '@/features/common/common.type';
 import { setRefetch } from '@/features/home/home.slice';
+import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
+import type { RootState } from '@/redux/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { campaignFormSchema, type CampaignFormValues } from '../posting.schema';
@@ -43,6 +45,8 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const [postCampaign, { isLoading: isPosting }] = usePostCampaignMutation();
   const dispatch = useDispatch();
+  const sendNotification = useSendNotification();
+  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
 
   const form = useForm<CampaignFormValues>({
     mode: 'onSubmit',
@@ -109,7 +113,13 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
       dialogCloseRef.current?.click();
       form.reset();
       dispatch(setRefetch({ key: 'campaign', value: true }));
-      toast.error('Đăng bài thành công!');
+      sendNotification({
+        userId: id!,
+        content: `Bạn đã đăng bài chiến dịch thành công`,
+        name: name!,
+        avatarUrl: avatarUrl!,
+      });
+      // toast.success('Đăng bài thành công!');
     } catch (err) {
       console.log(err);
       toast.error('Đăng bài thất bại. Vui lòng thử lại!');

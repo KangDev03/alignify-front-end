@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +26,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Icons } from '@/components/icons/icons';
 import type { Category } from '@/features/common/common.type';
 import { setRefetch } from '@/features/home/home.slice';
+import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
+import type { RootState } from '@/redux/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
 
@@ -42,6 +44,9 @@ export default function ContentPopUp({ categories }: PopUpContentProps) {
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const [postContent, { isLoading: isPosting }] = usePostContentMutation();
   const dispatch = useDispatch();
+  const sendNotification = useSendNotification();
+  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
+
   const form = useForm<ContentFormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(contentFormSchema),
@@ -63,7 +68,13 @@ export default function ContentPopUp({ categories }: PopUpContentProps) {
       dialogCloseRef.current?.click();
       form.reset();
       dispatch(setRefetch({ key: 'forum', value: true }));
-      toast.error('Đăng bài thành công!');
+      sendNotification({
+        userId: id!,
+        content: `Bạn đã đăng bài thành công`,
+        name: name!,
+        avatarUrl: avatarUrl!,
+      });
+      // toast.success('Đăng bài thành công!');
     } catch (err) {
       console.log(err);
       toast.error('Đăng bài thất bại. Vui lòng thử lại!');
