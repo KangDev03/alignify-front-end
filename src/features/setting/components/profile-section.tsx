@@ -300,9 +300,14 @@ export default function ProfileSection() {
       } else {
         profileData = {
           ...values,
-          doB: values.doB ? values.doB.split('-').map(Number) : null,
+          doB: values.doB ? values.doB.split('-').map(Number) : undefined,
           socialMediaLinks:
-            values.socialMediaLinks?.flatMap((link) => [{ key: link.platform }, link.url]) || [],
+            values.socialMediaLinks?.reduce((acc: { [key: string]: string }, link) => {
+              if (link.platform && link.url) {
+                acc[link.platform] = link.url;
+              }
+              return acc;
+            }, {}) || {},
         };
       }
 
@@ -367,7 +372,7 @@ export default function ProfileSection() {
                         : avatarPreviewUrl || '/placeholder.svg?height=80&width=80'
                     }
                   />
-                  <AvatarFallback>{form.watch('name')?.charAt(0) || 'U'}</AvatarFallback>
+                  <AvatarFallback>{profileData?.data?.name?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
 
                 <div className="space-y-2">
@@ -397,40 +402,24 @@ export default function ProfileSection() {
               <CardTitle>Thông tin cơ bản</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {roleName === 'BRAND' ? 'Tên thương hiệu *' : 'Họ và tên *'}
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} readOnly className="cursor-not-allowed bg-muted" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="mb-4">
+                <FormLabel>{roleName === 'BRAND' ? 'Tên thương hiệu *' : 'Họ và tên *'}</FormLabel>
+                <Input
+                  value={profileData?.data?.name || ''}
+                  readOnly
+                  className="cursor-not-allowed bg-muted"
+                />
+              </div>
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        {...field}
-                        readOnly
-                        className="cursor-not-allowed bg-muted"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="mb-4">
+                <FormLabel>Email *</FormLabel>
+                <Input
+                  type="email"
+                  value={profileData?.data?.email || ''}
+                  readOnly
+                  className="cursor-not-allowed bg-muted"
+                />
+              </div>
 
               {roleName === 'INFLUENCER' && (
                 <div className="grid grid-cols-2 gap-4">
