@@ -9,8 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 import { Icons } from '@/components/icons/icons';
 import { changeUserAvtar } from '@/features/auth/auth.slice';
-import { useSendNotification } from '@/features/notification/useSendNotification';
 import { useAppDispatch } from '@/hooks/redux';
+import { useSendNotification } from '@/hooks/useSendNotification';
 import type { RootState } from '@/redux/store';
 import { parseDateString } from '@/utils/format';
 
@@ -54,7 +54,9 @@ export function ProfileHeader({ profile, me }: ProfileHeaderProps) {
       }
       sendNotification({
         userId: id!,
-        content: `${name} đã cập nhật ảnh đại diện thành công`,
+        content: `Bạn đã cập nhật ảnh đại diện thành công`,
+        name: name!,
+        avatarUrl: avatarUrl!,
       });
       // toast.success('Cập nhật ảnh đại diện thành công');
     } catch (error) {

@@ -4,8 +4,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { getStompClient } from '@/lib/stom-client';
 import type { RootState } from '@/redux/store';
 
-import { setNotificationSending } from './notification.slice';
-import type { NotificationSending } from './notification.type';
+import { setNotificationSending } from '../features/notification/notification.slice';
+import type { NotificationSending } from '../features/notification/notification.type';
 
 export function useSendNotification() {
   const dispatch = useAppDispatch();

@@ -14,8 +14,8 @@ import {
   useApplyCampaignMutation,
   useChangeStatusMutation,
 } from '@/features/my-campaign/campaign.service.ts';
-import { useSendNotification } from '@/features/notification/useSendNotification.ts';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
+import { useSendNotification } from '@/hooks/useSendNotification.ts';
 import type { RootState } from '@/redux/store.ts';
 import { parseDateString } from '@/utils/format.ts';
 
@@ -25,7 +25,7 @@ import { changeCampaignStatus } from '../campaign.slice.ts';
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const dispatch = useAppDispatch();
-  const { role, id, name } = useAppSelector((state: RootState) => state.auth);
+  const { role, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
@@ -39,11 +39,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       await applyCampaign(campaign.campaignId).unwrap();
       sendNotification({
         userId: campaign.brandId,
-        content: `${name} đã ứng tuyển\n${campaign?.campaignName}`,
+        content: `${name!} đã ứng tuyển\n${campaign?.campaignName}`,
+        avatarUrl: avatarUrl!,
+        name: campaign.brandName!,
       });
       sendNotification({
         userId: id!,
-        content: `Bạn đã ứng tuyển\n${campaign?.campaignName}`,
+        content: `Ứng tuyển thành công\n${campaign?.campaignName}`,
+        avatarUrl: avatarUrl!,
+        name: name!,
       });
       dispatch(applyForApplciation({ campaignId: campaign.campaignId, influencerId: id! }));
       toast.success('Ứng tuyển thành công.');
@@ -55,11 +59,18 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
   const [changeStatus] = useChangeStatusMutation();
 
-  const sendNotificationForAll = (influencerIds: string[], notification: string) => {
-    influencerIds.forEach((id) => {
+  const sendNotificationForAll = (
+    influencerIds: string[],
+    notification: string,
+    name: string,
+    avatarUrl: string,
+  ) => {
+    influencerIds.forEach((influencerId) => {
       sendNotification({
-        userId: id,
+        userId: influencerId!,
         content: notification,
+        name: name,
+        avatarUrl: avatarUrl,
       });
     });
   };
@@ -70,6 +81,8 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       sendNotification({
         userId: id!,
         content: `${campaign?.campaignName} bắt đầu tuyển dụng`,
+        name: name!,
+        avatarUrl: avatarUrl!,
       });
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'RECRUITING' }));
       toast.success('Chiến dịch bắt đầu tuyển!');
@@ -84,11 +97,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PENDING' }).unwrap();
       sendNotificationForAll(
         campaign.appliedInfluencerIds ?? [],
-        `${name} đã kết thúc tuyển\n${campaign?.campaignName}`,
+        `Đã kết thúc tuyển chiến dịch\n${campaign?.campaignName}`,
+        name!,
+        avatarUrl!,
       );
       sendNotification({
         userId: id!,
-        content: `${campaign?.campaignName} đã kết thúc tuyển`,
+        content: `Bạn đã kết thúc tuyển chiến dịch\n${campaign?.campaignName}`,
+        name: name!,
+        avatarUrl: avatarUrl!,
       });
       // setTimeout(() => {
       //   sendNotificationForAll(
@@ -110,11 +127,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PARTICIPATING' }).unwrap();
       sendNotificationForAll(
         campaign.appliedInfluencerIds ?? [],
-        `${name} đã bắt đầu chiến dịch\n${campaign?.campaignName}`,
+        `Đã bắt đầu chiến dịch\n${campaign?.campaignName}`,
+        name!,
+        avatarUrl!,
       );
       sendNotification({
         userId: id!,
-        content: `${campaign?.campaignName} đã bắt đầu`,
+        content: `Bạn đã bắt đầu chiến dịch\n${campaign?.campaignName}`,
+        name: name!,
+        avatarUrl: avatarUrl!,
       });
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'PARTICIPATING' }));
       toast.success('Chiến dịch đã bắt đầu!');
@@ -129,16 +150,22 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'COMPLETED' }).unwrap();
       sendNotificationForAll(
         campaign.appliedInfluencerIds ?? [],
-        `${name} đã kết thúc chiến dịch\n${campaign?.campaignName}`,
+        `Đã hoàn thành chiến dịch\n${campaign?.campaignName}`,
+        name!,
+        avatarUrl!,
       );
       sendNotification({
         userId: id!,
-        content: `${campaign?.campaignName} đã kết thúc`,
+        content: `Bạn đã kết thúc chiến dịch\n${campaign?.campaignName}`,
+        name: name!,
+        avatarUrl: avatarUrl!,
       });
       setTimeout(() => {
         sendNotificationForAll(
           campaign.appliedInfluencerIds ?? [],
-          `${name}\n${campaign?.campaignName} đã hoàn thành`,
+          `Đã hoàn thành chiến dịch\n${campaign?.campaignName}`,
+          '',
+          '',
         );
       }, 1000 * 60);
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'COMPLETED' }));

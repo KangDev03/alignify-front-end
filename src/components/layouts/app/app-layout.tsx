@@ -33,7 +33,7 @@ function AppLayout() {
         try {
           const received: RecievedNotification = JSON.parse(res.body);
           if (received && received.userId === userId) {
-            const [title, description] = received.content.split('\\n');
+            const { name: title, content: description } = received;
             toast.success(title, { description });
           }
           dispatch(addReceivedNotification(received));

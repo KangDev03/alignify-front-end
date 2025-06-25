@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { cn } from '@/lib/utils';
 import { formatLastTimeSentMessage, parseTimestampToDate } from '@/utils/format';
@@ -30,9 +31,17 @@ export default function NotificationCard({ notification }: { notification: Recie
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-foreground">{title}</div>
+        <p className="text-sm font-medium text-foreground">{notification.name}</p>
+        <p className="text-xs text-muted-foreground line-clamp-1 font-semibold">{title}</p>
         {description && (
-          <div className="text-xs text-muted-foreground line-clamp-2">{description}</div>
+          <Tooltip>
+            <TooltipTrigger className="p-0">
+              <p className="text-xs text-muted-foreground line-clamp-1 text-left">{description}</p>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" align="center">
+              <p className="text-xs">{description}</p>
+            </TooltipContent>
+          </Tooltip>
         )}
         <div className="text-xs text-muted-foreground mt-1">
           {formatLastTimeSentMessage(parseTimestampToDate(notification.createdAt))} trước
