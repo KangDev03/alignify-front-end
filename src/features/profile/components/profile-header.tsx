@@ -19,9 +19,10 @@ import type { InfluencerData } from '../profile.type';
 
 interface ProfileHeaderProps {
   profile: InfluencerData;
+  me: boolean;
 }
 
-export function ProfileHeader({ profile }: ProfileHeaderProps) {
+export function ProfileHeader({ profile, me }: ProfileHeaderProps) {
   const dispatch = useAppDispatch();
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -70,7 +71,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
             <PopoverTrigger>
               <Avatar className="h-24 w-24">
                 <AvatarImage
-                  src={avatarUrl! ?? profile.avatarUrl ?? '/placeholder.svg'}
+                  src={(me ? avatarUrl! : profile.avatarUrl) ?? '/placeholder.svg'}
                   alt={profile.name}
                 />
                 <AvatarFallback className="text-2xl">

@@ -20,9 +20,10 @@ import { useChangeAvatarMutation } from '../profile.service';
 interface BrandHeaderProps {
   profile: BrandData;
   campaignCompleted: number;
+  me: boolean;
 }
 
-export function BrandHeaderCard({ profile, campaignCompleted }: BrandHeaderProps) {
+export function BrandHeaderCard({ profile, campaignCompleted, me }: BrandHeaderProps) {
   const dispatch = useAppDispatch();
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -70,7 +71,7 @@ export function BrandHeaderCard({ profile, campaignCompleted }: BrandHeaderProps
             <PopoverTrigger>
               <Avatar className="h-24 w-24">
                 <AvatarImage
-                  src={avatarUrl! ?? profile.avatarUrl ?? '/placeholder.svg'}
+                  src={(me ? avatarUrl! : profile.avatarUrl) ?? '/placeholder.svg'}
                   alt={profile.name}
                 />
                 <AvatarFallback className="text-2xl">
