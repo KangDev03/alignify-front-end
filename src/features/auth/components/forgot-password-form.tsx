@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { baseUrl } from '@/config';
 import { useForgotPasswordMutation } from '@/features/auth/auth.service';
 
 export default function ForgotPasswordForm() {
@@ -32,8 +33,8 @@ export default function ForgotPasswordForm() {
 
   const handleSubmit = async (email: string) => {
     try {
-      const baseUrl = window.location.origin;
-      const resetUrl = `${baseUrl}/auth/reset-password`;
+      // const baseUrl = window.location.origin;
+      const resetUrl = `${baseUrl}auth/reset-password`;
 
       const response = await forgotPassword({ email, url: resetUrl }).unwrap();
       toast.success(response.message);

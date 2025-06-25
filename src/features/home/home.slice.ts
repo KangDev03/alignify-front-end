@@ -21,12 +21,39 @@ const homeSlice = createSlice({
       state.contentPosting = action.payload.data;
     },
     setCampaignPosting: (state, action: PayloadAction<CampaignResponse>) => {
-      if (action.payload?.data?.campaigns?.length > 0)
+      if (Array.isArray(action.payload?.data)) {
+        state.campaignPosting = action.payload.data;
+      } else if (action.payload?.data?.campaigns) {
         state.campaignPosting = action.payload.data.campaigns;
+      } else {
+        state.campaignPosting = [];
+      }
     },
     addCampaignPosting: (state, action: PayloadAction<Campaign[]>) => {
       if (action.payload && action.payload.length > 0) {
         state.campaignPosting = [...state.campaignPosting, ...action.payload];
+      }
+    },
+    applyForApplciation: (
+      state,
+      action: PayloadAction<{ campaignId: string; influencerId: string }>,
+    ) => {
+      const { campaignId, influencerId } = action.payload;
+      if (!campaignId || !influencerId) return;
+      const campaignIndex = state.campaignPosting.findIndex(
+        (campaign) => campaign.campaignId === campaignId,
+      );
+      if (campaignIndex !== -1) {
+        const campaign = state.campaignPosting[campaignIndex];
+        if (!campaign.appliedInfluencerIds) {
+          state.campaignPosting[campaignIndex].appliedInfluencerIds = [];
+        }
+        if (
+          campaign.appliedInfluencerIds &&
+          !campaign.appliedInfluencerIds.includes(influencerId)
+        ) {
+          campaign.appliedInfluencerIds.push(influencerId);
+        }
       }
     },
     resetCampaignPosting: (state) => {
@@ -49,6 +76,7 @@ export const {
   resetHomeState,
   resetCampaignPosting,
   resetContentPosting,
+  applyForApplciation,
 } = homeSlice.actions;
 export const homeReducer = homeSlice.reducer;
 

@@ -11,6 +11,7 @@ import type { SpecificApplicants } from '../applicant.type';
 export function ApplicantTabs({ applicants }: { applicants: SpecificApplicants }) {
   const scrollStyle =
     'overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent h-[94%]';
+
   return (
     <div className="flex-1 p-6">
       <Tabs defaultValue="waiting" className="h-full flex flex-col">

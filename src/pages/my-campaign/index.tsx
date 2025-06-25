@@ -12,13 +12,13 @@ import { useGetAllCampaignsOfInfluencerQuery } from '@/features/my-campaign/camp
 import CampaignCard from '@/features/my-campaign/components/campaign-card';
 
 const tabs = [
-  { value: 'PENDING', label: 'Chưa bắt đầu' },
-  { value: 'PARTICIPATING', label: 'Đang diễn ra' },
-  { value: 'COMPLETED', label: 'Đã kết thúc' },
+  { value: 'pending', label: 'Chưa bắt đầu' },
+  { value: 'participating', label: 'Đang diễn ra' },
+  { value: 'completed', label: 'Đã kết thúc' },
 ];
 
 export default function MyCampaignPage() {
-  const [activeTab, setActiveTab] = useState('PENDING');
+  const [activeTab, setActiveTab] = useState('pending');
   const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery({
     pageNumber: 0,
     pageSize: 10,
@@ -41,7 +41,8 @@ export default function MyCampaignPage() {
           <TabsList className="grid w-full h-fit grid-cols-3 p-1">
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} className="h-full">
-                {tab.label}
+                {tab.label} (
+                {campaigns.filter((campaign) => campaign.status === tab.value).length ?? 0})
               </TabsTrigger>
             ))}
           </TabsList>
@@ -61,9 +62,12 @@ export default function MyCampaignPage() {
               <Alert variant="default">
                 <AlertCircleIcon />
                 <AlertTitle>
-                  {activeTab === 'PENDING' && 'Bạn chưa có chiến dịch nào đang chờ bắt đầu'}
-                  {activeTab === 'PARTICIPATING' && 'Bạn chưa có chiến dịch nào đang diễn ra'}
-                  {activeTab === 'COMPLETED' && 'Bạn chưa có chiến dịch nào đã kết thúc'}
+                  {activeTab.toUpperCase() === 'PENDING' &&
+                    'Bạn chưa có chiến dịch nào đang chờ bắt đầu'}
+                  {activeTab.toUpperCase() === 'PARTICIPATING' &&
+                    'Bạn chưa có chiến dịch nào đang diễn ra'}
+                  {activeTab.toUpperCase() === 'COMPLETED' &&
+                    'Bạn chưa có chiến dịch nào đã kết thúc'}
                 </AlertTitle>
               </Alert>
             )}

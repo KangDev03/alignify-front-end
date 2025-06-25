@@ -10,14 +10,16 @@ import { useGetApplicationsByInfluencerQuery } from '@/features/application/appl
 import type { ApplicationsByCampaginResponse } from '@/features/application/application.type';
 import ApplicationCard from '@/features/application/components/application-card';
 
-const tabs = [
+type TabKey = 'pending' | 'accepted' | 'rejected';
+
+const tabs: { value: TabKey; label: string }[] = [
   { value: 'pending', label: 'Đang chờ duyệt' },
   { value: 'accepted', label: 'Đã chấp nhận' },
   { value: 'rejected', label: 'Bị từ chối' },
 ];
 
 export function ApplicationsPage() {
-  const [activeTab, setActiveTab] = useState('pending');
+  const [activeTab, setActiveTab] = useState<TabKey>('pending');
 
   const { data: rawData } = useGetApplicationsByInfluencerQuery(
     {},
@@ -38,11 +40,9 @@ export function ApplicationsPage() {
   //       return acc;
   //     },
   //     [],
-  //   );
-  // }, [rawData]);
   const applications: ApplicationsByCampaginResponse[] = rawData?.data || [];
-  const groupedApplications = {
-    waiting: applications.filter((group) =>
+  const groupedApplications: Record<TabKey, ApplicationsByCampaginResponse[]> = {
+    pending: applications.filter((group) =>
       group?.applications?.some((application) => application?.status === 'PENDING'),
     ),
     accepted: applications.filter((group) =>
@@ -52,20 +52,21 @@ export function ApplicationsPage() {
       group?.applications?.some((application) => application?.status === 'REJECTED'),
     ),
   };
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Đơn ứng tuyển của tôi</h1>
       <Tabs
         defaultValue="pending"
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={(value) => setActiveTab(value as TabKey)}
         className="w-full gap-6"
       >
         <div className="flex flex-row gap-6">
           <TabsList className="grid w-full h-fit grid-cols-3 p-1">
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} className="h-full">
-                {tab.label}
+                {tab.label} ({groupedApplications[tab.value].length})
               </TabsTrigger>
             ))}
           </TabsList>
@@ -77,8 +78,8 @@ export function ApplicationsPage() {
 
         <TabsContent value="pending" className="">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {groupedApplications.waiting.length > 0 ? (
-              groupedApplications.waiting.map(
+            {groupedApplications.pending.length > 0 ? (
+              groupedApplications.pending.map(
                 (group) =>
                   group.applications &&
                   group.applications.length > 0 &&

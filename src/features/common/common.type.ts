@@ -82,6 +82,13 @@ export interface CategoriesResponse extends ApiReponseSuccess<Category[]> {
   data: Category[];
 }
 
+export interface SearchCampaignsResponse {
+  campaigns: Campaign[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+}
+
 export interface Role {
   roleId: string;
   roleName: RoleName;
@@ -93,22 +100,24 @@ export interface RolesResponse extends ApiReponseSuccess<Role[]> {
 
 export interface Campaign {
   campaignId: string;
+  brandId: string;
   brandName: string;
   brandAvartar: string;
   campaignName: string;
   content: string;
-  imageUrl: string;
+  imageUrl: string | null;
   budget: number;
   status: string;
   createdAt: number[];
   dueAt: number[];
   startAt: number[];
-  categories: Category[];
+  categories: Category[] | [];
   campaignRequirements: { [key: string]: number };
   influencerRequirements: string[];
   influencerCountExpected: number;
-  influencerCountCurrent: number;
-  applicationTotal?: number | 0;
+  influencerCountCurrent: number | 0;
+  applicationTotal: number | 0;
+  appliedInfluencerIds?: string[];
 }
 
 export interface CommonPageableRequest {

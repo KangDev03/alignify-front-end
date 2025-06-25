@@ -1,52 +1,62 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { AlertCircleIcon } from 'lucide-react';
 
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Alert, AlertTitle } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { Icons } from "@/components/icons/icons"
-import type { Campaign } from "@/features/common/common.type"
-import { useGetAllCampaignsOfBrandQuery } from "@/features/my-campaign/campaign.service"
-import CampaignCard from "@/features/my-campaign/components/campaign-card"
+import { Icons } from '@/components/icons/icons';
+import { useGetAllCampaignsOfBrandQuery } from '@/features/my-campaign/campaign.service';
+import { setCampagin } from '@/features/my-campaign/campaign.slice';
+import CampaignCard from '@/features/my-campaign/components/campaign-card';
+import { useAppDispatch } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 
 const tabs = [
-  { value: "DRAFT", label: "Nháp" },
-  { value: "RECRUITING", label: "Đang tuyển" },
-  { value: "PENDING", label: "Chưa bắt đầu" },
-  { value: "PARTICIPATING", label: "Đang diễn ra" },
-  { value: "COMPLETED", label: "Đã kết thúc" },
-]
+  { value: 'draft', label: 'Nháp' },
+  { value: 'recruiting', label: 'Đang tuyển' },
+  { value: 'pending', label: 'Chưa bắt đầu' },
+  { value: 'participating', label: 'Đang diễn ra' },
+  { value: 'completed', label: 'Đã kết thúc' },
+];
 
 export function CampaignManagement() {
-  const [activeTab, setActiveTab] = useState("DRAFT")
+  const dispatch = useAppDispatch();
+  const { campaigns } = useSelector((state: RootState) => state.campaign);
+  const [activeTab, setActiveTab] = useState('draft');
 
   const { data: campaignsResponse } = useGetAllCampaignsOfBrandQuery({
     pageNumber: 0,
     pageSize: 10,
   });
-  const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
-    ? campaignsResponse.data.campaigns
-    : [];
+  useEffect(() => {
+    dispatch(setCampagin(campaignsResponse!));
+  }, [campaignsResponse, dispatch]);
 
-  console.log("campaignsResponse:", campaigns);
-
-
-  const filteredCampaigns = campaigns.filter((campaign) => campaign.status === activeTab);
+  const filteredCampaigns = campaigns.filter(
+    (campaign) => campaign.status === activeTab.toUpperCase(),
+  );
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Quản lí chiến dịch</h1>
-      <Tabs defaultValue="DRAFT" value={activeTab} onValueChange={setActiveTab} className="w-full gap-6">
+      <Tabs
+        defaultValue="DRAFT"
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full gap-6"
+      >
         <div className="flex flex-row gap-6">
           <TabsList className="grid w-full h-fit grid-cols-5 p-1">
             {tabs.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="h-full"
-              >
-                {tab.label}
+              <TabsTrigger key={tab.value} value={tab.value} className="h-full">
+                {tab.label} (
+                {campaigns.filter((campaign) => campaign.status === tab.value.toUpperCase())
+                  .length ?? 0}
+                )
               </TabsTrigger>
             ))}
           </TabsList>
@@ -63,11 +73,24 @@ export function CampaignManagement() {
                 <CampaignCard key={campaign.campaignId} campaign={campaign} />
               ))
             ) : (
-              <p className="text-muted-foreground text-sm">Không có chiến dịch nào.</p>
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>
+                  {activeTab === 'draft' &&
+                    'Bạn chưa có chiến dịch nào đang trong trạng thái bản nháp'}
+                  {activeTab === 'recruiting' &&
+                    'Bạn chưa có chiến dịch nào đang trong trạng thái tuyển'}
+                  {activeTab === 'pending' &&
+                    'Bạn chưa có chiến dịch nào đang trong trạng thái chờ bắt đầu'}
+                  {activeTab === 'participating' &&
+                    'Bạn chưa có chiến dịch nào đang trong trạng thái đang diễn ra'}
+                  {activeTab === 'completed' && 'Bạn chưa có chiến dịch nào đã hoàn thành'}
+                </AlertTitle>
+              </Alert>
             )}
           </div>
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

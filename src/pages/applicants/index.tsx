@@ -69,11 +69,14 @@ export function Applicants() {
         {selectCapaignId ? (
           <div className="h-full flex flex-col">
             <CampaignOverview campaign={selectedCampaignData!.campaignResponse} />
-            {currentApplicants ? <ApplicantTabs applicants={currentApplicants!} /> :
+            {currentApplicants ? (
+              <ApplicantTabs applicants={currentApplicants!} />
+            ) : (
               <Alert variant="default">
                 <AlertCircleIcon />
                 <AlertTitle>Bạn chưa có ứng viên nào</AlertTitle>
-              </Alert>}
+              </Alert>
+            )}
           </div>
         ) : (
           <Alert variant="default">

@@ -1,16 +1,24 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
-import type { CategoriesResponse, Category, Role, RolesResponse } from './common.type';
+import type { Campaign,CategoriesResponse, Category, Role, RolesResponse } from './common.type';
 
 interface CommonState {
   role: Role[] | null;
   category: Category[] | null;
+  campaigns: Campaign[] | null;
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
 }
 
 const initialState: CommonState = {
   role: null,
   category: null,
+  campaigns: null,
+  currentPage: 0,
+  totalPages: 0,
+  totalItems: 0,
 };
 
 export const commomSlice = createSlice({

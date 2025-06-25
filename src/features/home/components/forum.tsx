@@ -9,12 +9,30 @@ import { ForumPost } from '@/components/forum-post/forum-post';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
-import { useGetAllContentPostingQuery } from '../home.service';
+import { useGetAllContentPostingQuery, useSearchForumContentQuery } from '../home.service';
 import { setRefetch } from '../home.slice';
 
-export default function Forum() {
+interface ForumProps {
+  searchTerm: string | null;
+}
+
+export default function Forum({ searchTerm }: ForumProps) {
   const dispatch = useAppDispatch();
   const { forum } = useAppSelector((state: RootState) => state.homeRefetch);
+
+  const isSearching = !!(searchTerm && searchTerm.trim() && searchTerm.length > 0);
+  const pageNumber = 0;
+  const pageSize = 10;
+
+  const {
+    data: searchData,
+    isLoading: isLoadingSearch,
+    refetch: refetchSearch,
+  } = useSearchForumContentQuery(
+    isSearching ? { term: searchTerm!.trim(), pageNumber, pageSize } : { term: '', pageNumber, pageSize },
+    { skip: !isSearching }
+  );
+
   const {
     data: rawData,
     isLoading,
@@ -23,16 +41,24 @@ export default function Forum() {
     {},
     {
       refetchOnMountOrArgChange: true,
+      skip: isSearching,
     },
   );
+
   useEffect(() => {
     if (forum) {
-      refetch();
+      if (isSearching) refetchSearch();
+      else refetch();
       dispatch(setRefetch({ key: 'forum', value: false }));
     }
-  }, [forum, dispatch, refetch]);
-  const contentPosting = rawData?.data;
-  if (isLoading) {
+  }, [forum, dispatch, refetch, isSearching, refetchSearch]);
+
+  const contentPosting = isSearching
+    ? searchData?.data?.contents ?? []
+    : rawData?.data ?? [];
+  const loading = isSearching ? isLoadingSearch : isLoading;
+
+  if (loading) {
     return (
       <div className="space-y-6">
         <Card className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
@@ -63,7 +89,7 @@ export default function Forum() {
   return (
     <div className="space-y-6">
       {contentPosting && contentPosting.length > 0 ? (
-        contentPosting?.map((post) => {
+        contentPosting.map((post: any) => {
           return <ForumPost key={post.contentId} contentPosting={post} />;
         })
       ) : (

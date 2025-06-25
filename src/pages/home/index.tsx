@@ -25,6 +25,8 @@ import Forum from '@/features/home/components/forum';
 import Influencers from '@/features/home/components/influencers';
 import { resetHomeState, setRefetch } from '@/features/home/home.slice';
 import type { homeTab } from '@/features/home/home.type';
+import { useGetCampaignTop3Query } from '@/features/my-campaign/campaign.service';
+import { useGetTopInfluencerQuery } from '@/features/profile/profile.service';
 import { useAppDispatch } from '@/hooks/redux';
 
 const tabs = [
@@ -34,39 +36,19 @@ const tabs = [
   { value: 'forum', label: 'Forum' },
 ];
 
-const mockInfluencers = [
-  {
-    id: '1',
-    name: 'Nguyễn Thị Lan',
-    avatar: '/placeholder.svg?height=60&width=60',
-    category: 'Làm đẹp',
-    followers: '125K',
-    engagement: '3.2%',
-    rating: 4.8,
-    location: 'TP. HCM',
-  },
-  {
-    id: '2',
-    name: 'Trần Văn Nam',
-    avatar: '/placeholder.svg?height=60&width=60',
-    category: 'Công nghệ',
-    followers: '89K',
-    engagement: '4.1%',
-    rating: 4.6,
-    location: 'Hà Nội',
-  },
-];
-
 export function HomePage() {
   const dispatch = useAppDispatch();
   const { data: roles } = useGetRolesQuery();
   const { data: categories } = useGetCategoriesQuery();
-  const [searchTerm, setSearchTerm] = useState('');
+  const { data: top3Campaign } = useGetCampaignTop3Query();
+  const { data: top2Influencer } = useGetTopInfluencerQuery();
+  const [searchTermChange, setSearchTermChange] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>({
     categoryId: 'all',
     categoryName: 'Tất Cả',
   });
-  const [activeTab, setActiveTab] = useState('campaign');
+  const [activeTab, setActiveTab] = useState<homeTab>('campaign');
 
   useEffect(() => {
     dispatch(setRoles(roles));
@@ -74,10 +56,32 @@ export function HomePage() {
   }, [categories, dispatch, roles]);
 
   const handleTabRefetch = (tab: homeTab) => {
-    // dispatch(resetHomeState());
     dispatch(setRefetch({ key: tab, value: true }));
     setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
   };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchTermChange.trim().length > 0) {
+      setSearchTerm(searchTermChange);
+    } else if (
+      !searchTermChange.trim() ||
+      searchTermChange.trim().length === 0 ||
+      searchTermChange.trim() === ''
+    ) {
+      setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
+      setSearchTermChange('');
+      setSearchTerm(null);
+      dispatch(setRefetch({ key: activeTab, value: true }));
+    }
+  };
+
+  useEffect(() => {
+    if (!searchTermChange.trim()) {
+      setSelectedCategory({ categoryId: 'all', categoryName: 'Tất cả' });
+      setSearchTerm(null);
+      dispatch(setRefetch({ key: activeTab, value: true }));
+    }
+  }, [searchTermChange, dispatch, activeTab]);
 
   return (
     <div className="min-h-screen bg-transparent transition-colors duration-300">
@@ -95,8 +99,9 @@ export function HomePage() {
                 <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Tìm kiếm..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchTermChange}
+                  onChange={(e) => setSearchTermChange(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
                   className="pl-10"
                 />
               </div>
@@ -133,7 +138,11 @@ export function HomePage() {
             </div>
 
             {/* Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) => setActiveTab(value as homeTab)}
+              className="w-full"
+            >
               <TabsList className="grid w-full h-fit grid-cols-4 p-1">
                 {tabs.map((tab) => (
                   <TabsTrigger
@@ -151,19 +160,20 @@ export function HomePage() {
                 <Campaigns
                   key={selectedCategory.categoryId}
                   selectedCategoryId={selectedCategory.categoryId}
+                  searchTerm={searchTerm}
                 />
               </TabsContent>
 
               <TabsContent value="brand" className="mt-6">
-                <Brands />
+                <Brands searchTerm={searchTerm} />
               </TabsContent>
 
               <TabsContent value="influencer" className="mt-6">
-                <Influencers />
+                <Influencers searchTerm={searchTerm} />
               </TabsContent>
 
               <TabsContent value="forum" className="mt-6">
-                <Forum />
+                <Forum searchTerm={searchTerm} />
               </TabsContent>
             </Tabs>
           </div>
@@ -179,20 +189,16 @@ export function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
-                  <h4 className="font-medium text-sm">
-                    Chiến dịch quảng cáo sản phẩm làm đẹp mùa hè
-                  </h4>
-                  <p className="text-xs text-muted-foreground mt-1">Beauty Co.</p>
-                </div>
-                <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
-                  <h4 className="font-medium text-sm">Review công nghệ AI mới nhất</h4>
-                  <p className="text-xs text-muted-foreground mt-1">TechViet</p>
-                </div>
-                <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
-                  <h4 className="font-medium text-sm">Fashion Week 2024</h4>
-                  <p className="text-xs text-muted-foreground mt-1">Fashion House</p>
-                </div>
+                {Array.isArray(top3Campaign?.data) &&
+                  top3Campaign.data.map((campaign) => (
+                    <div
+                      key={campaign.campaignId}
+                      className="p-3 border rounded-lg hover:bg-muted cursor-pointer"
+                    >
+                      <h4 className="font-medium text-sm">{campaign.campaignName}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{campaign.brandName}</p>
+                    </div>
+                  ))}
               </CardContent>
             </Card>
 
@@ -205,26 +211,27 @@ export function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {mockInfluencers.slice(0, 3).map((influencer, index) => (
-                  <div key={influencer.id} className="flex items-center space-x-3">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">
-                      {index + 1}
+                {Array.isArray(top2Influencer?.data) &&
+                  top2Influencer?.data.map((influencer, index) => (
+                    <div key={influencer.userId} className="flex items-center space-x-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                        {index + 1}
+                      </div>
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={influencer.avatarUrl || '/placeholder.svg'}
+                          alt={influencer.name}
+                        />
+                        <AvatarFallback>{influencer.name?.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{influencer.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {influencer.follower ?? 0} followers
+                        </p>
+                      </div>
                     </div>
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={influencer.avatar || '/placeholder.svg'}
-                        alt={influencer.name}
-                      />
-                      <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{influencer.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {influencer.followers} followers
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </CardContent>
             </Card>
 

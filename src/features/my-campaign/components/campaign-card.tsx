@@ -9,35 +9,125 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 import { Icons } from '@/components/icons/icons.tsx';
 import type { Campaign, RoleName } from '@/features/common/common.type.ts';
-import { useApplyCampaignMutation } from '@/features/my-campaign/campaign.service.ts';
-import { useAppSelector } from '@/hooks/redux.ts';
+import { applyForApplciation } from '@/features/home/home.slice.ts';
+import {
+  useApplyCampaignMutation,
+  useChangeStatusMutation,
+} from '@/features/my-campaign/campaign.service.ts';
+import { useSendNotification } from '@/features/notification/useSendNotification.ts';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
 import type { RootState } from '@/redux/store.ts';
 import { parseDateString } from '@/utils/format.ts';
 
 import CampaignDetail from './campaign-detail.tsx';
 import { StatusBadge } from './status-badge.tsx';
+import { changeCampaignStatus } from '../campaign.slice.ts';
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
-  const { role } = useAppSelector((state: RootState) => state.auth);
+  const dispatch = useAppDispatch();
+  const { role, id, name } = useAppSelector((state: RootState) => state.auth);
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
-
-  const [hasApplied, setHasApplied] = useState(false);
+  const userRole: RoleName = role;
+  const sendNotification = useSendNotification();
+  const isApplied = campaign.appliedInfluencerIds?.includes(id!);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
 
   const handleApplyCampaign = async () => {
     try {
       await applyCampaign(campaign.campaignId).unwrap();
-      setHasApplied(true);
+      sendNotification({
+        userId: campaign.brandId,
+        content: `${name} đã ứng tuyển\n${campaign?.campaignName}`,
+      });
+      dispatch(applyForApplciation({ campaignId: campaign.campaignId, influencerId: id! }));
       toast.success('Ứng tuyển thành công.');
     } catch (error) {
       console.log(error);
       toast.error('Ứng tuyển thất bại. Vui lòng thử lại sau.');
     }
-  }
+  };
 
-  const userRole: RoleName = role;
+  const [changeStatus] = useChangeStatusMutation();
+
+  const sendNotificationForAll = (influencerIds: string[], notification: string) => {
+    influencerIds.forEach((id) => {
+      sendNotification({
+        userId: id,
+        content: notification,
+      });
+    });
+  };
+
+  const handleStartRecruit = async () => {
+    try {
+      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'RECRUITING' }).unwrap();
+      dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'RECRUITING' }));
+      toast.success('Chiến dịch bắt đầu tuyển!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Chuyển giai đoạn thất bại!');
+    }
+  };
+
+  const handleEndRecuit = async () => {
+    try {
+      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PENDING' }).unwrap();
+      sendNotificationForAll(
+        campaign.appliedInfluencerIds ?? [],
+        `${name} đã kết thúc tuyển\n${campaign?.campaignName}`,
+      );
+      setTimeout(() => {
+        sendNotificationForAll(
+          campaign.appliedInfluencerIds ?? [],
+          `${campaign?.campaignName}\nĐang chờ ${campaign.brandName} bắt đầu`,
+        );
+      }, 1000 * 60);
+
+      dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'PENDING' }));
+      toast.success('Kết thúc tuyển thành công!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Chuyển giai đoạn thất bại!');
+    }
+  };
+
+  const handleStartCampaign = async () => {
+    try {
+      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PARTICIPATING' }).unwrap();
+      sendNotificationForAll(
+        campaign.appliedInfluencerIds ?? [],
+        `${name} đã bắt đầu chiến dịch\n${campaign?.campaignName}`,
+      );
+      dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'PARTICIPATING' }));
+      toast.success('Chiến dịch đã bắt đầu!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Chuyển giai đoạn thất bại!');
+    }
+  };
+
+  const handleEndCampaign = async () => {
+    try {
+      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'COMPLETED' }).unwrap();
+      sendNotificationForAll(
+        campaign.appliedInfluencerIds ?? [],
+        `${name} đã kết thúc chiến dịch\n${campaign?.campaignName}`,
+      );
+      setTimeout(() => {
+        sendNotificationForAll(
+          campaign.appliedInfluencerIds ?? [],
+          `${name}\n${campaign?.campaignName} đã hoàn thành`,
+        );
+      }, 1000 * 60);
+      dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'COMPLETED' }));
+      toast.success('Chiến dịch đã kết thúc!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Chuyển giai đoạn thất bại!');
+    }
+  };
 
   const renderDialogButton = () => {
     const commonProps = {
@@ -48,7 +138,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
     switch (campaign.status) {
       case 'DRAFT':
         return (
-          <div className='w-full grid grid-cols-2 gap-2'>
+          <div className="w-full grid grid-cols-2 gap-2">
             <Dialog {...commonProps}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -61,11 +151,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button
-              variant="default"
-              size="sm"
-              className="flex-1"
-            >
+            <Button variant="default" size="sm" className="flex-1" onClick={handleStartRecruit}>
               <Icons.play className="h-4 w-4 mr-1" />
               Đăng tuyển
             </Button>
@@ -86,7 +172,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
           ) : (
-            <div className='w-full grid grid-cols-2 gap-2'>
+            <div className="w-full grid grid-cols-2 gap-2">
               <Dialog {...commonProps}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="flex items-center w-full">
@@ -104,19 +190,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 size="sm"
                 className="flex-1"
                 onClick={handleApplyCampaign}
-                disabled={isApplying || hasApplied}
+                disabled={isApplying || isApplied}
               >
-                {isApplying
-                  ? 'Đang ứng tuyển...'
-                  : hasApplied
-                    ? 'Đã ứng tuyển'
-                    : 'Ứng tuyển'}
+                {isApplying ? 'Đang ứng tuyển...' : isApplied ? 'Đã ứng tuyển' : 'Ứng tuyển'}
               </Button>
             </div>
           );
         }
         return (
-          <div className='w-full grid grid-cols-2 gap-2'>
+          <div className="w-full grid grid-cols-2 gap-2">
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center w-full">
@@ -145,6 +227,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               variant="default"
               size="sm"
               className="col-span-2 w-full"
+              onClick={handleEndRecuit}
             >
               <Icons.play className="h-4 w-4 mr-1" />
               Kết thúc tuyển
@@ -153,7 +236,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         );
       case 'PENDING':
         return userRole === 'BRAND' ? (
-          <div className='w-full grid grid-cols-2 gap-2'>
+          <div className="w-full grid grid-cols-2 gap-2">
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center w-full">
@@ -182,6 +265,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               variant="default"
               size="sm"
               className="col-span-2 w-full"
+              onClick={handleStartCampaign}
             >
               <Icons.play className="h-4 w-4 mr-1" />
               Bắt đầu
@@ -202,7 +286,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         );
       case 'PARTICIPATING':
         return (
-          <div className='w-full grid grid-cols-2 gap-2'>
+          <div className="w-full grid grid-cols-2 gap-2">
             <Dialog {...commonProps}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -215,11 +299,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            <Button
-              variant="default"
-              size="sm"
-              className="flex-1"
-            >
+            <Button variant="default" size="sm" className="flex-1" onClick={handleEndCampaign}>
               <Icons.play className="h-4 w-4 mr-1" />
               Kết thúc
             </Button>
@@ -242,7 +322,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       default:
         return null;
     }
-  }
+  };
 
   return (
     <Card
@@ -292,9 +372,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           </div>
         </div>
 
-        <div className="flex justify-center">
-          {renderDialogButton()}
-        </div>
+        <div className="flex justify-center">{renderDialogButton()}</div>
       </CardContent>
     </Card>
   );

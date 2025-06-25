@@ -29,6 +29,12 @@ export const campaignApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Auth'],
     }),
+    getAllCampaignsOfBrandNoPage: builder.query<CampaignResponse, void>({
+      query: () => ({
+        url: '/campaigns/brandNoPage',
+        method: 'GET',
+      }),
+    }),
     getCampaignByCategory: builder.query<CampaignResponse, CommonPageableRequest>({
       query: ({ categoryId, pageNumber, pageSize }) => ({
         url: `campaigns/filterByCategory/${categoryId}`,
@@ -43,6 +49,20 @@ export const campaignApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Campaign'],
     }),
+    getCampaignTop3: builder.query<CampaignResponse, void>({
+      query: () => ({
+        url: `campaigns/top`,
+        method: 'GET',
+      }),
+    }),
+    changeStatus: builder.mutation<void, { campaignId: string; newStatus: string }>({
+      query: ({ campaignId, newStatus }) => ({
+        url: `/campaigns/${campaignId}/status`,
+        method: 'PUT',
+        body: { status: newStatus },
+      }),
+      invalidatesTags: ['Campaign'],
+    }),
   }),
 });
 export const {
@@ -51,4 +71,7 @@ export const {
   useGetAllCampaignsOfBrandQuery,
   useGetCampaignByCategoryQuery,
   useApplyCampaignMutation,
+  useGetCampaignTop3Query,
+  useGetAllCampaignsOfBrandNoPageQuery,
+  useChangeStatusMutation,
 } = campaignApi;

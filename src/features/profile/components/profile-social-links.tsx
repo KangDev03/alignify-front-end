@@ -44,7 +44,7 @@ export function ProfileSocialLinks({ socialMediaLinks }: ProfileSocialLinksProps
                     </Button>
                   </>
                 ) : (
-                  <span className="text-sm italic text-muted-foreground"></span>
+                  <span className="text-sm italic text-muted-foreground">Chưa có</span>
                 )}
               </div>
             </div>
