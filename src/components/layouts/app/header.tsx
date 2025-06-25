@@ -25,7 +25,11 @@ export function AppHeader({ onLogout }: HeaderProps) {
   const location = useLocation();
   const userRole = useSelector((state: RootState) => state.auth.role);
 
-  const currentPage = (): CurrentPage => {
+  const currentPage = (): CurrentPage | undefined => {
+
+    if (location.pathname.includes('/user-profile')) return undefined;
+    if (location.pathname.includes('/settings')) return undefined;
+
     if (userRole === 'INFLUENCER') {
       if (location.pathname.includes('/my-campaign')) return 'my-campaign';
       if (location.pathname.includes('/applications')) return 'applications';
@@ -36,6 +40,14 @@ export function AppHeader({ onLogout }: HeaderProps) {
       return 'home';
     }
   };
+
+  const handleScrollToTop = () => {
+    if (location.pathname === '/home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/home');
+    }
+  }
 
   const handlePageChange = (page: CurrentPage) => {
     if (userRole === 'INFLUENCER') {
@@ -52,17 +64,17 @@ export function AppHeader({ onLogout }: HeaderProps) {
   const navigationItems =
     userRole === 'INFLUENCER'
       ? [
-          { id: 'home', label: 'Trang chủ', icon: Icons.home },
-          { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
-          { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
-          // { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
-        ]
+        { id: 'home', label: 'Trang chủ', icon: Icons.home },
+        { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
+        { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
+        // { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
+      ]
       : [
-          { id: 'home', label: 'Trang chủ', icon: Icons.home },
-          { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
-          { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
-          // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
-        ];
+        { id: 'home', label: 'Trang chủ', icon: Icons.home },
+        { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
+        { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
+        // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
+      ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -71,7 +83,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
           <div className="flex items-center space-x-4">
             <div
               className="flex items-center space-x-1 cursor-pointer"
-              onClick={() => navigate('/home')}
+              onClick={handleScrollToTop}
             >
               <img src="/Alignify_logo.png" alt="Alignify logo" className="h-16 object-contain" />
               <span className="font-extrabold text-3xl text-primary">Alignify</span>
