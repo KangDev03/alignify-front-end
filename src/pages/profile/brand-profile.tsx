@@ -16,7 +16,6 @@ export function BrandProfilePage() {
   const location = useLocation();
   let userId = location.pathname.split('/').pop() || undefined;
   userId = userId === 'user-profile' ? undefined : userId;
-  console.log(userId);
 
   const { data: profileRaw, isLoading } = useGetBrandProfileUserQuery(userId);
   const { data: campaignsRaw } = useGetAllCampaignsOfBrandNoPageQuery();
@@ -55,7 +54,11 @@ export function BrandProfilePage() {
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="space-y-6">
-        <BrandHeaderCard profile={profile} campaignCompleted={completedCampaigns.length} />
+        <BrandHeaderCard
+          me={userId === undefined}
+          profile={profile}
+          campaignCompleted={completedCampaigns.length}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Thông tin công ty */}

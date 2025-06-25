@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import { Check, Star, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -23,6 +24,7 @@ export function ApplicantCard({
   status: 'waiting' | 'accepted' | 'rejected';
 }) {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [confirmApplicant, { isLoading }] = useConfirmApplicationMutation();
   const { applicants: allAplicants, selectCapaignId } = useAppSelector(
     (state: RootState) => state.applicant,
@@ -79,7 +81,11 @@ export function ApplicantCard({
       <div className="flex items-center gap-2">
         {status === 'waiting' && (
           <>
-            <Button size="sm" variant="outline">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigate(`/influencer/${applicant.influencerId}`)}
+            >
               <Icons.user className="h-4 w-4 mr-1" />
               Hồ sơ
             </Button>

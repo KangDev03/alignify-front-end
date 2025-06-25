@@ -44,7 +44,7 @@ export default function InfluencerProfilePage() {
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="space-y-6">
-        <ProfileHeader profile={profile} />
+        <ProfileHeader me={userId === undefined} profile={profile} />
 
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -63,15 +63,15 @@ export default function InfluencerProfilePage() {
                   socialMediaLinks={
                     Array.isArray(profile.socialMediaLinks)
                       ? Object.fromEntries(
-                        profile.socialMediaLinks.map((item: any) =>
-                          typeof item === 'object' &&
+                          profile.socialMediaLinks.map((item: any) =>
+                            typeof item === 'object' &&
                             item !== null &&
                             'key' in item &&
                             'value' in item
-                            ? [item.key, item.value]
-                            : [String(item[0]), String(item[1])],
-                        ),
-                      )
+                              ? [item.key, item.value]
+                              : [String(item[0]), String(item[1])],
+                          ),
+                        )
                       : profile.socialMediaLinks
                   }
                 />
