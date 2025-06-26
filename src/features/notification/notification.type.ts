@@ -3,6 +3,8 @@ import type { ApiReponseSuccess } from '../common/common.type';
 export interface NotificationSending {
   userId: string;
   content: string;
+  name?: string;
+  avatarUrl?: string;
 }
 
 export interface RecievedNotification {

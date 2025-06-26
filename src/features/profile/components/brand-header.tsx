@@ -1,25 +1,100 @@
+import { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { BarChart3, Calendar } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
+import { Icons } from '@/components/icons/icons';
+import { changeUserAvtar } from '@/features/auth/auth.slice';
 import type { BrandData } from '@/features/profile/profile.type';
+import { useAppDispatch } from '@/hooks/redux';
+import { useSendNotification } from '@/hooks/useSendNotification';
+import type { RootState } from '@/redux/store';
+
+import { useChangeAvatarMutation } from '../profile.service';
 
 interface BrandHeaderProps {
   profile: BrandData;
   campaignCompleted: number;
+  me: boolean;
 }
 
-export function BrandHeaderCard({ profile, campaignCompleted }: BrandHeaderProps) {
+export function BrandHeaderCard({ profile, campaignCompleted, me }: BrandHeaderProps) {
+  const dispatch = useAppDispatch();
+  const [changeAvatar] = useChangeAvatarMutation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
+  const [isPopoverOpen, setPopoverOpen] = useState(false);
+
+  const sendNotification = useSendNotification();
+
+  const handleOnClickAvatar = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  const handleChangeAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPopoverOpen(false);
+    const file = event.target.files?.[0] || null;
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      return;
+    }
+    const image = new FormData();
+    image.append('image', file);
+    try {
+      const response = await changeAvatar({ image }).unwrap();
+      dispatch(changeUserAvtar({ url: response.data }));
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      sendNotification({
+        userId: id!,
+        content: `Bạn đã cập nhật ảnh đại diện thành công`,
+        name: name!,
+        avatarUrl: avatarUrl!,
+      });
+      // toast.success('Cập nhật ảnh đại diện thành công');
+    } catch (error) {
+      toast.success('Cập nhật ảnh đại diện thất bại');
+      console.error('Error uploading avatar:', error);
+    }
+  };
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
       <CardContent>
         <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
-          <Avatar className="h-24 w-24">
-            <AvatarImage src={profile.avatarUrl || '/placeholder.svg'} alt={profile.name} />
-            <AvatarFallback className="text-2xl">{profile.name.charAt(0)}</AvatarFallback>
-          </Avatar>
+          <Popover open={isPopoverOpen} onOpenChange={setPopoverOpen}>
+            <PopoverTrigger>
+              <Avatar className="h-24 w-24">
+                <AvatarImage
+                  src={(me ? avatarUrl! : profile.avatarUrl) ?? '/placeholder.svg'}
+                  alt={profile.name}
+                />
+                <AvatarFallback className="text-2xl">
+                  {profile.name.charAt(0) ?? 'U'}
+                </AvatarFallback>
+              </Avatar>
+            </PopoverTrigger>
+            <PopoverContent
+              className="text-left font-semibold py-3 flex gap-2 items-center cursor-pointer"
+              onClick={handleOnClickAvatar}
+            >
+              <Icons.camera strokeWidth={1.5} /> Choose profile picture
+            </PopoverContent>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleChangeAvatar}
+            />
+          </Popover>
           <div className="flex-1 space-y-2">
             <h1 className="text-2xl font-bold m-0">{profile.name}</h1>
             <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1">

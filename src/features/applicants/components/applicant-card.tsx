@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import { Check, Star, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -7,8 +8,8 @@ import { Button } from '@/components/ui/button';
 
 import { Icons } from '@/components/icons/icons';
 import type { Campaign } from '@/features/common/common.type';
-import { useSendNotification } from '@/features/notification/useSendNotification';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useSendNotification } from '@/hooks/useSendNotification';
 import type { RootState } from '@/redux/store';
 
 import { useConfirmApplicationMutation } from '../applicant.service';
@@ -22,11 +23,14 @@ export function ApplicantCard({
   applicant: ApplicantByBrand;
   status: 'waiting' | 'accepted' | 'rejected';
 }) {
+  console.log(applicant);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [confirmApplicant, { isLoading }] = useConfirmApplicationMutation();
   const { applicants: allAplicants, selectCapaignId } = useAppSelector(
     (state: RootState) => state.applicant,
   );
+  const { name, id, avatarUrl } = useAppSelector((state: RootState) => state.auth);
   const sendNotification = useSendNotification();
 
   const campaign: Campaign | undefined = allAplicants?.find(
@@ -42,8 +46,18 @@ export function ApplicantCard({
       sendNotification({
         userId: applicant.influencerId,
         content: accepted
-          ? `${campaign?.brandName} đã chấp nhận đơn của bạn\n${campaign?.campaignName}`
-          : `${campaign?.brandName} đã từ chối đơn của bạn\n${campaign?.campaignName}`,
+          ? `Đã chấp nhận đơn của bạn\n${campaign?.campaignName}`
+          : `Đã từ chối đơn của bạn\n${campaign?.campaignName}`,
+        name: name!,
+        avatarUrl: avatarUrl!,
+      });
+      sendNotification({
+        userId: id!,
+        content: accepted
+          ? `Bạn đã chấp nhận đơn của ${applicant.influencerName}`
+          : `Bạn đã từ chối đơn của ${applicant.influencerName}`,
+        name: name!,
+        avatarUrl: avatarUrl!,
       });
       dispatch(setConfirmApplicant({ applicationId: applicant.applicationId, accepted }));
       toast.success(`Xác nhận ứng viên ${applicant.influencerName} thành công!`);
@@ -79,7 +93,11 @@ export function ApplicantCard({
       <div className="flex items-center gap-2">
         {status === 'waiting' && (
           <>
-            <Button size="sm" variant="outline">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigate(`/influencer/${applicant.influencerId}`)}
+            >
               <Icons.user className="h-4 w-4 mr-1" />
               Hồ sơ
             </Button>

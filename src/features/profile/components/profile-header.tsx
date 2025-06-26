@@ -9,8 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 import { Icons } from '@/components/icons/icons';
 import { changeUserAvtar } from '@/features/auth/auth.slice';
-import { useSendNotification } from '@/features/notification/useSendNotification';
 import { useAppDispatch } from '@/hooks/redux';
+import { useSendNotification } from '@/hooks/useSendNotification';
 import type { RootState } from '@/redux/store';
 import { parseDateString } from '@/utils/format';
 
@@ -19,9 +19,10 @@ import type { InfluencerData } from '../profile.type';
 
 interface ProfileHeaderProps {
   profile: InfluencerData;
+  me: boolean;
 }
 
-export function ProfileHeader({ profile }: ProfileHeaderProps) {
+export function ProfileHeader({ profile, me }: ProfileHeaderProps) {
   const dispatch = useAppDispatch();
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,7 +54,9 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       }
       sendNotification({
         userId: id!,
-        content: `${name} đã cập nhật ảnh đại diện thành công`,
+        content: `Bạn đã cập nhật ảnh đại diện thành công`,
+        name: name!,
+        avatarUrl: avatarUrl!,
       });
       // toast.success('Cập nhật ảnh đại diện thành công');
     } catch (error) {
@@ -70,7 +73,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
             <PopoverTrigger>
               <Avatar className="h-24 w-24">
                 <AvatarImage
-                  src={avatarUrl! ?? profile.avatarUrl ?? '/placeholder.svg'}
+                  src={(me ? avatarUrl! : profile.avatarUrl) ?? '/placeholder.svg'}
                   alt={profile.name}
                 />
                 <AvatarFallback className="text-2xl">
