@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useNavigate } from 'react-router';
-import { skipToken } from '@reduxjs/toolkit/query/react';
 import { AlertCircleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -15,31 +14,54 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
 import { useGetInfluencerProfilesQuery, useSearchInfluencersQuery } from '../home.service';
-import { setRefetch } from '../home.slice';
+import {
+  addInfluencerProfile,
+  resetInfluencerProfile,
+  setInfluencerProfile,
+  setRefetch,
+} from '../home.slice';
 
 interface InfluencersProps {
   searchTerm: string | null;
+  selectedCategoryId: string;
 }
 
-export default function Influencers({ searchTerm }: InfluencersProps) {
+export default function Influencers({ selectedCategoryId, searchTerm }: InfluencersProps) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { role } = useAppSelector((state: RootState) => state.common);
   const { influencer } = useAppSelector((state: RootState) => state.homeRefetch);
+  const { influencerProfile } = useAppSelector((state: RootState) => state.home);
+  const isAll = selectedCategoryId === 'all';
   const influencerRole = role?.find((role) => role.roleName === 'INFLUENCER');
 
-  const isSearching = !!(searchTerm && searchTerm.trim() && searchTerm.length > 0);
   const [pageNumber, setPageNumber] = useState(0);
   const pageSize = 10;
 
   const {
-    data: profiles,
-    isLoading,
-    refetch,
+    data: allData,
+    isLoading: isLoadingAll,
+    refetch: refetchAll,
   } = useGetInfluencerProfilesQuery(
-    influencerRole ? { roleId: influencerRole.roleId, pageNumber, pageSize } : skipToken,
-    { refetchOnMountOrArgChange: true, skip: isSearching || !influencerRole },
+    { roleId: influencerRole!.roleId, pageNumber, pageSize },
+    {
+      skip: !isAll,
+      refetchOnMountOrArgChange: true,
+    },
   );
+
+  useEffect(() => {
+    if (
+      !searchTerm ||
+      !searchTerm.trim() ||
+      searchTerm.trim().length === 0 ||
+      searchTerm.trim() === ''
+    ) {
+      setPageNumber(0);
+    }
+  }, [searchTerm]);
+
+  const isSearching = searchTerm && searchTerm.trim() && searchTerm.length > 0 ? true : false;
 
   const { data: searchResult, isLoading: isLoadingSearch } = useSearchInfluencersQuery(
     isSearching
@@ -47,18 +69,91 @@ export default function Influencers({ searchTerm }: InfluencersProps) {
       : { term: '', pageNumber, pageSize },
     { skip: !isSearching },
   );
+  let isLoading: boolean | null = null;
 
-  useEffect(() => {
-    if (isSearching && searchResult) {
-      // Log toàn bộ kết quả trả về từ API để kiểm tra cấu trúc và dữ liệu
-      console.log('Influencer searchResult:', searchResult);
-      console.log('influencersToShow:', searchResult?.data?.influencers);
-    }
-  }, [isSearching, searchResult]);
+  if (isSearching) {
+    isLoading = isLoadingSearch;
+  } else if (isAll) {
+    isLoading = isLoadingAll;
+  } else {
+    // isLoading = isLoadingCategory;
+  }
+  if (
+    (isLoadingAll ||
+      // isLoadingCategory ||
+      isLoadingSearch) &&
+    influencerProfile &&
+    influencerProfile.length === 0
+  ) {
+    isLoading = false;
+  }
 
   const hasMore = isSearching
-    ? (searchResult?.data?.influencers?.length ?? 0) === pageSize
-    : (profiles?.data?.length ?? 0) === pageSize;
+    ? (searchResult?.data?.length ?? 0) === 10
+    : isAll
+      ? (allData?.data?.length ?? 0) === 10
+      : false;
+  // (categoryData?.data?.length ?? 0) === 10
+
+  useEffect(() => {
+    if (pageNumber === 0 && !isLoading) {
+      if (isSearching && searchResult) {
+        dispatch(setInfluencerProfile(searchResult));
+      } else if (isAll && allData) {
+        dispatch(setInfluencerProfile(allData));
+        // } else if (!isAll && categoryData) {
+        //   dispatch(setInfluencerProfile(categoryData));
+      } else {
+        dispatch(resetInfluencerProfile());
+      }
+    }
+  }, [allData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading]);
+
+  useEffect(() => {
+    if (influencer) {
+      if (isAll) refetchAll();
+      // else refetchCategory();
+      setPageNumber(0);
+      dispatch(setRefetch({ key: 'influencer', value: false }));
+      // dispatch(resetCampaignPosting());
+    }
+  }, [influencer, isAll, refetchAll, dispatch]);
+
+  useEffect(() => {
+    if (pageNumber > 0) {
+      if (isAll && allData && allData.data && allData.data && allData.data.length > 0) {
+        dispatch(
+          addInfluencerProfile(
+            allData.data.filter(
+              (cam) => !influencerProfile.some((existing) => existing.id === cam.id),
+            ),
+          ),
+        );
+        // } else if (
+        //   !isAll &&
+        //   categoryData &&
+        //   categoryData.data &&
+        //   categoryData.data.campaigns &&
+        //   categoryData.data.campaigns.length > 0
+        // ) {
+        //   dispatch(
+        //     addCampaignPosting(
+        //       categoryData.data.campaigns.filter(
+        //         (cam) => !campaignPosting.some((existing) => existing.campaignId === cam.campaignId),
+        //       ),
+        //     ),
+        //   );
+      } else if (isSearching && searchResult && searchResult.data && searchResult.data.length > 0) {
+        dispatch(
+          addInfluencerProfile(
+            searchResult.data.filter(
+              (cam) => !influencerProfile.some((existing) => existing.id === cam.id),
+            ),
+          ),
+        );
+      }
+    }
+  }, [allData, isAll, pageNumber, dispatch, influencerProfile, isSearching, searchResult]);
 
   const fetchMoreData = () => {
     if (!hasMore) return;
@@ -85,92 +180,94 @@ export default function Influencers({ searchTerm }: InfluencersProps) {
     </div>
   );
 
-  const influencersToShow = isSearching
-    ? searchResult?.data?.influencers ?? []
-    : profiles?.data;
-  const loading = isSearching ? isLoadingSearch : isLoading;
+  if (isLoading) return loadingSkeleton;
 
-  useEffect(() => {
-    if (influencer && !isSearching) {
-      refetch();
-      dispatch(setRefetch({ key: 'influencer', value: false }));
-    }
-  }, [influencer, dispatch, refetch, isSearching]);
-
-  useEffect(() => {
-    if (searchTerm === undefined) return;
-    setPageNumber(0);
-  }, [searchTerm]);
-
-  if (loading && pageNumber === 0) {
-    return loadingSkeleton;
-  }
-
-  if (!role || !influencerRole) {
-    return loadingSkeleton;
+  if (
+    !isLoading &&
+    isSearching &&
+    (!searchResult || !searchResult.data || searchResult?.data.length == 0)
+  ) {
+    return (
+      <Alert variant="default">
+        <AlertCircleIcon />
+        <AlertTitle>Không tìm thấy tài khoản Influencer nào</AlertTitle>
+      </Alert>
+    );
   }
 
   return (
     <InfiniteScroll
-      dataLength={influencersToShow?.length ?? 0}
+      dataLength={influencerProfile ? influencerProfile.length : 0}
       next={fetchMoreData}
       hasMore={hasMore}
       loader={hasMore && loadingSkeleton}
     >
       <div className="space-y-6">
-        {influencersToShow && influencersToShow.length > 0 ? (
-          influencersToShow.map((influencer: any) => (
-            <Card
-              key={influencer.id}
-              className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
-            >
-              <CardContent>
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage
-                      src={influencer.avatarUrl || '/placeholder.svg'}
-                      alt={influencer.name}
-                      className="object-cover"
-                    />
-                    <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{influencer.name}</h3>
-                    {influencer?.category && (
-                      <p className="text-sm text-muted-foreground capitalize">
-                        {influencer?.category.map((category: any) => category.categoryName).join(', ')}
-                      </p>
-                    )}
-                    <div className="flex items-center space-x-4 mt-2 text-sm">
-                      <div className="flex items-center space-x-1">
-                        <Icons.users className="h-4 w-4" />
-                        <span>{influencer.follower} followers</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Icons.star className="h-4 w-4" />
-                        <span>{influencer.rating}</span>
+        {influencerProfile.length > 0
+          ? influencerProfile.map((influencer) => (
+              <Card
+                key={influencer.id}
+                className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
+              >
+                <CardContent>
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage
+                        src={influencer.avatarUrl || '/placeholder.svg'}
+                        alt={influencer.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="font-semibold">{influencer.name}</h3>
+                      {influencer?.category && (
+                        <p className="text-sm text-muted-foreground capitalize">
+                          {influencer?.category
+                            .map((category: any) => category.categoryName)
+                            .join(', ')}
+                        </p>
+                      )}
+                      <div className="flex items-center space-x-4 mt-2 text-sm">
+                        <div className="flex items-center space-x-1">
+                          <Icons.users className="h-4 w-4" />
+                          <span>{influencer.follower} followers</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Icons.star className="h-4 w-4" />
+                          <span>{influencer.rating}</span>
+                        </div>
                       </div>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigate(`/influencer/${influencer.id}`);
+                      }}
+                    >
+                      Xem hồ sơ
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      navigate(`/influencer/${influencer.id}`);
-                    }}
-                  >
-                    Xem hồ sơ
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
+                </CardContent>
+              </Card>
+            ))
+          : influencerProfile.length === 0 &&
+            isLoading == null && (
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>Không có tài khoản Influencer nào</AlertTitle>
+                <AlertDescription>
+                  Bạn có thể quay lại đây sau khi các tài khoản Influencer xuất hiện.
+                </AlertDescription>
+              </Alert>
+            )}
+        {!hasMore && influencerProfile.length > 0 && (
           <Alert variant="default">
             <AlertCircleIcon />
-            <AlertTitle>Không có tài khoản Influencer nào</AlertTitle>
+            <AlertTitle>Không còn tài khoản Influencer nào</AlertTitle>
             <AlertDescription>
-              Bạn có thể quay lại đây sau khi các tài khoản Influencer xuất hiện.
+              Bạn có thể quay lại đây sau khi các tài khoản Influencer mới xuất hiện.
             </AlertDescription>
           </Alert>
         )}

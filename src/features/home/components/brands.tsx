@@ -14,55 +14,144 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
 import { useGetBrandProfilesQuery, useSearchBrandsQuery } from '../home.service';
-import { setRefetch } from '../home.slice';
+import { addBrandProfile, resetBrandProfile, setBrandProfile, setRefetch } from '../home.slice';
 
 interface BrandsProps {
   searchTerm: string | null;
+  selectedCategoryId: string;
 }
 
-export default function Brands({ searchTerm }: BrandsProps) {
+export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { role } = useAppSelector((state: RootState) => state.common);
   const { brand } = useAppSelector((state: RootState) => state.homeRefetch);
   const brandRole = role?.find((role) => role.roleName === 'BRAND');
 
-  // Xác định có đang search hay không
-  const isSearching = !!(searchTerm && searchTerm.trim() && searchTerm.length > 0);
+  const { brandProfile } = useAppSelector((state: RootState) => state.home);
 
-  // Infinite scroll và skeleton loading tương tự campaigns
+  const isAll = selectedCategoryId === 'all';
   const [pageNumber, setPageNumber] = useState(0);
   const pageSize = 10;
 
-  // Gọi API search hoặc get all với phân trang
   const {
-    data: profiles,
-    isLoading,
-    refetch,
+    data: allData,
+    isLoading: isLoadingAll,
+    refetch: refetchAll,
   } = useGetBrandProfilesQuery(
     { roleId: brandRole!.roleId, pageNumber, pageSize },
-    { refetchOnMountOrArgChange: true, skip: isSearching }
+    { refetchOnMountOrArgChange: true, skip: !isAll },
   );
+
+  useEffect(() => {
+    if (
+      !searchTerm ||
+      !searchTerm.trim() ||
+      searchTerm.trim().length === 0 ||
+      searchTerm.trim() === ''
+    ) {
+      setPageNumber(0);
+    }
+  }, [searchTerm]);
+
+  const isSearching = searchTerm && searchTerm.trim() && searchTerm.length > 0 ? true : false;
 
   const { data: searchResult, isLoading: isLoadingSearch } = useSearchBrandsQuery(
     isSearching
       ? { term: searchTerm!.trim(), pageNumber, pageSize }
       : { term: '', pageNumber, pageSize },
-    { skip: !isSearching }
+    { skip: !isSearching },
   );
 
-  // Xác định hasMore
-  const hasMore = isSearching
-    ? (searchResult?.data?.brands?.length ?? 0) === pageSize
-    : (profiles?.data?.length ?? 0) === pageSize;
+  let isLoading: boolean | null = null;
 
-  // Fetch more data
+  if (isSearching) {
+    isLoading = isLoadingSearch;
+  } else if (isAll) {
+    isLoading = isLoadingAll;
+  } else {
+    // isLoading = isLoadingCategory;
+  }
+  if (
+    (isLoadingAll ||
+      // isLoadingCategory ||
+      isLoadingSearch) &&
+    brandProfile &&
+    brandProfile.length === 0
+  ) {
+    isLoading = false;
+  }
+
+  const hasMore = isSearching
+    ? (searchResult?.data?.length ?? 0) === 10
+    : isAll
+      ? (allData?.data?.length ?? 0) === 10
+      : false;
+  // (categoryData?.data?.length ?? 0) === 10
+
+  useEffect(() => {
+    if (pageNumber === 0 && !isLoading) {
+      if (isSearching && searchResult) {
+        dispatch(setBrandProfile(searchResult));
+      } else if (isAll && allData) {
+        dispatch(setBrandProfile(allData));
+        // } else if (!isAll && categoryData) {
+        //   dispatch(setInfluencerProfile(categoryData));
+      } else {
+        dispatch(resetBrandProfile());
+      }
+    }
+  }, [allData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading]);
+
+  useEffect(() => {
+    if (brand) {
+      if (isAll) refetchAll();
+      // else refetchCategory();
+      setPageNumber(0);
+      dispatch(setRefetch({ key: 'brand', value: false }));
+      // dispatch(resetCampaignPosting());
+    }
+  }, [brand, isAll, refetchAll, dispatch]);
+
+  useEffect(() => {
+    if (pageNumber > 0) {
+      if (isAll && allData && allData.data && allData.data && allData.data.length > 0) {
+        dispatch(
+          addBrandProfile(
+            allData.data.filter((cam) => !brandProfile.some((existing) => existing.id === cam.id)),
+          ),
+        );
+        // } else if (
+        //   !isAll &&
+        //   categoryData &&
+        //   categoryData.data &&
+        //   categoryData.data.campaigns &&
+        //   categoryData.data.campaigns.length > 0
+        // ) {
+        //   dispatch(
+        //     addCampaignPosting(
+        //       categoryData.data.campaigns.filter(
+        //         (cam) => !campaignPosting.some((existing) => existing.campaignId === cam.campaignId),
+        //       ),
+        //     ),
+        //   );
+      } else if (isSearching && searchResult && searchResult.data && searchResult.data.length > 0) {
+        dispatch(
+          addBrandProfile(
+            searchResult.data.filter(
+              (cam) => !brandProfile.some((existing) => existing.id === cam.id),
+            ),
+          ),
+        );
+      }
+    }
+  }, [allData, isAll, pageNumber, dispatch, brandProfile, isSearching, searchResult]);
+
   const fetchMoreData = () => {
     if (!hasMore) return;
     setPageNumber((prev) => prev + 1);
   };
 
-  // Skeleton loading
   const loadingSkeleton = (
     <div className="space-y-6">
       <Card className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
@@ -83,96 +172,84 @@ export default function Brands({ searchTerm }: BrandsProps) {
     </div>
   );
 
-  // Kết quả hiển thị (ưu tiên search, phân trang)
-  const brandsToShow = isSearching
-    ? searchResult?.data?.brands ?? []
-    : profiles?.data;
-  const loading = isSearching ? isLoadingSearch : isLoading;
+  if (isLoading) return loadingSkeleton;
 
-  useEffect(() => {
-    if (brand && !isSearching) {
-      refetch();
-      dispatch(setRefetch({ key: 'brand', value: false }));
-    }
-  }, [brand, dispatch, refetch, isSearching]);
-
-  // Reset pageNumber về 0 mỗi khi searchTerm thay đổi
-  useEffect(() => {
-    // Nếu searchTerm là undefined/null/empty thì không làm gì
-    if (searchTerm === undefined) return;
-    setPageNumber(0);
-  }, [searchTerm]);
-
-  if (loading && pageNumber === 0) {
-    return loadingSkeleton;
-  }
-
-  // Nếu chưa có role hoặc brandRole thì chỉ render skeleton, không gọi query
-  if (!role || !brandRole) {
-    return loadingSkeleton;
+  if (
+    !isLoading &&
+    isSearching &&
+    (!searchResult || !searchResult.data || searchResult?.data.length == 0)
+  ) {
+    return (
+      <Alert variant="default">
+        <AlertCircleIcon />
+        <AlertTitle>Không tìm thấy tài khoản Brand nào</AlertTitle>
+      </Alert>
+    );
   }
 
   return (
     <InfiniteScroll
-      dataLength={brandsToShow?.length ?? 0}
+      dataLength={brandProfile ? brandProfile?.length : 0}
       next={fetchMoreData}
       hasMore={hasMore}
       loader={hasMore && loadingSkeleton}
     >
       <div className="space-y-4">
-        {brandsToShow && brandsToShow.length > 0 ? (
-          brandsToShow.map((brand: any, idx: number) => (
-            <Card
-              key={brand.id ?? idx}
-              className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
-            >
-              <CardContent>
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage
-                      src={brand.avatarUrl || '/placeholder.svg'}
-                      alt={brand.name}
-                      className="object-cover"
-                    />
-                    <AvatarFallback>{brand.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold">{brand.name}</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{brand.bio}</p>
-                    <div className="flex items-center space-x-4 mt-2 text-sm">
-                      <div className="flex items-center space-x-1">
-                        <Icons.building2 className="h-4 w-4" />
-                        <span>{brand.totalCampaign} chiến dịch</span>
+        {brandProfile && brandProfile.length > 0
+          ? brandProfile.map((brand) => (
+              <Card
+                key={brand.id}
+                className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
+              >
+                <CardContent>
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage
+                        src={brand.avatarUrl || '/placeholder.svg'}
+                        alt={brand.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback>{brand.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-semibold">{brand.name}</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{brand.bio}</p>
+                      <div className="flex items-center space-x-4 mt-2 text-sm">
+                        <div className="flex items-center space-x-1">
+                          <Icons.building2 className="h-4 w-4" />
+                          <span>{brand.totalCampaign} chiến dịch</span>
+                        </div>
                       </div>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/brand/${brand.id}`)}
+                    >
+                      Xem hồ sơ
+                    </Button>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => navigate(`/brand/${brand.id}`)}>
-                    Xem hồ sơ
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          console.log('No brand profiles found')
-          // <Alert variant="default">
-          //   <AlertCircleIcon />
-          //   <AlertTitle>Không có tài khoản Brand nào</AlertTitle>
-          //   <AlertDescription>
-          //     Bạn có thể quay lại đây sau khi các tài khoản Brand xuất hiện.
-          //   </AlertDescription>
-          // </Alert>
-        )}
-        {!hasMore && (
+                </CardContent>
+              </Card>
+            ))
+          : brandProfile.length === 0 &&
+            isLoading == null && (
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>Không có tài khoản Brand nào</AlertTitle>
+                <AlertDescription>
+                  Bạn có thể quay lại đây sau khi các tài khoản Brand xuất hiện.
+                </AlertDescription>
+              </Alert>
+            )}
+        {!hasMore && brandProfile.length > 0 && (
           <Alert variant="default">
             <AlertCircleIcon />
-            <AlertTitle className="text-muted-foreground">
-              Không có brand mới nào
-            </AlertTitle>
+            <AlertTitle>Không còn tài khoản Brand nào</AlertTitle>
             <AlertDescription>
-              Bạn có thể quay lại đây sau khi các brand mới xuất hiện.
+              Bạn có thể quay lại đây sau khi các tài khoản Brand mới xuất hiện.
             </AlertDescription>
           </Alert>
         )}
