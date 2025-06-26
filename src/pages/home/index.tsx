@@ -158,22 +158,24 @@ export function HomePage() {
 
               <TabsContent value="campaign" className="mt-6">
                 <Campaigns
-                  key={selectedCategory.categoryId}
                   selectedCategoryId={selectedCategory.categoryId}
                   searchTerm={searchTerm}
                 />
               </TabsContent>
 
               <TabsContent value="brand" className="mt-6">
-                <Brands searchTerm={searchTerm} />
+                <Brands searchTerm={searchTerm} selectedCategoryId={selectedCategory.categoryId} />
               </TabsContent>
 
               <TabsContent value="influencer" className="mt-6">
-                <Influencers searchTerm={searchTerm} />
+                <Influencers
+                  searchTerm={searchTerm}
+                  selectedCategoryId={selectedCategory.categoryId}
+                />
               </TabsContent>
 
               <TabsContent value="forum" className="mt-6">
-                <Forum searchTerm={searchTerm} />
+                <Forum searchTerm={searchTerm} selectedCategoryId={selectedCategory.categoryId} />
               </TabsContent>
             </Tabs>
           </div>
@@ -234,7 +236,6 @@ export function HomePage() {
                   ))}
               </CardContent>
             </Card>
-
           </div>
         </div>
       </div>

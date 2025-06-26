@@ -102,11 +102,6 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
     if (pageNumber === 0 && !isLoading) {
       if (isSearching && searchResult) {
         dispatch(setCampaignPosting(searchResult));
-        // if (searchResult && searchResult.data && searchResult.data.campaigns) {
-        //   dispatch(setCampaignPosting(searchResult));
-        // } else {
-        //   dispatch(resetCampaignPosting());
-        // }
       } else if (isAll && allData) {
         dispatch(setCampaignPosting(allData));
       } else if (!isAll && categoryData) {
@@ -223,6 +218,22 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
 
   if (isLoading) return loadingSkeletion;
 
+  if (
+    !isLoading &&
+    isSearching &&
+    (!searchResult ||
+      !searchResult.data ||
+      !searchResult.data.campaigns ||
+      searchResult?.data.campaigns.length == 0)
+  ) {
+    return (
+      <Alert variant="default">
+        <AlertCircleIcon />
+        <AlertTitle>Không tìm thấy chiến dịch nào</AlertTitle>
+      </Alert>
+    );
+  }
+
   return (
     <InfiniteScroll
       dataLength={campaignPosting ? campaignPosting.length : 0}
@@ -245,12 +256,10 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
                 </AlertDescription>
               </Alert>
             )}
-        {!hasMore && (
+        {!hasMore && campaignPosting.length > 0 && (
           <Alert variant="default">
             <AlertCircleIcon />
-            <AlertTitle className="text-muted-foreground">
-              Không có bài đăng chiến dịch mới nào
-            </AlertTitle>
+            <AlertTitle>Không có bài đăng chiến dịch mới nào</AlertTitle>
             <AlertDescription>
               Bạn có thể quay lại đây sau khi các chiến dịch mới xuất hiện.
             </AlertDescription>
