@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { cn } from '@/lib/utils';
-import { formatLastTimeSentMessage, parseTimestampToDate } from '@/utils/format';
+import { formatLastTimeSentMessage, parseIsoToDateTime } from '@/utils/format';
 
 import type { RecievedNotification } from '../notification.type';
 
@@ -44,7 +44,7 @@ export default function NotificationCard({ notification }: { notification: Recie
           </Tooltip>
         )}
         <div className="text-xs text-muted-foreground mt-1">
-          {formatLastTimeSentMessage(parseTimestampToDate(notification.createdAt))} trước
+          {formatLastTimeSentMessage(parseIsoToDateTime(notification.createdAt))} trước
         </div>
       </div>
     </div>

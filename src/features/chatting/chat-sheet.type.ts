@@ -7,7 +7,7 @@ export interface IChatRoom {
   name: string;
   lastMessage: string;
   readBy: string[];
-  sendAt: number[];
+  sendAt: string;
 }
 
 export interface ChatRoomRequest {
@@ -24,7 +24,7 @@ export interface Message {
   userId: string;
   chatRoomId: string;
   message: string;
-  sendAt?: number[];
+  sendAt?: string;
   tempId?: string | null;
   readBy: string[];
 }

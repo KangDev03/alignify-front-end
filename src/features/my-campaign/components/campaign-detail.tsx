@@ -12,7 +12,7 @@ import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/di
 import { Separator } from '@/components/ui/separator';
 
 import type { Campaign } from '@/features/common/common.type.ts';
-import { parseDateString } from '@/utils/format.ts';
+import { formatDate } from '@/utils/format.ts';
 
 import { StatusBadge } from './status-badge.tsx';
 
@@ -31,7 +31,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
           <div>
             <DialogTitle className="text-lg">{campaign.campaignName}</DialogTitle>
             <DialogDescription>
-              {campaign.brandName} • {parseDateString(campaign.createdAt)}
+              {campaign.brandName} • {formatDate(campaign.createdAt)}
             </DialogDescription>
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <h4 className="text-sm font-medium mb-1">Thời gian</h4>
             <div className="flex items-center w-fit">
               <Calendar className="w-4 h-4 mr-2 text-primary" />
-              <p>{`${parseDateString(campaign.startAt)} - ${parseDateString(campaign.dueAt)}`}</p>
+              <p>{`${formatDate(campaign.startAt)} - ${formatDate(campaign.dueAt)}`}</p>
             </div>
           </div>
         </div>

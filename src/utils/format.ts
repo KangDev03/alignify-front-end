@@ -1,62 +1,36 @@
 import { DateTime } from 'luxon';
 
-export const parseTimestampToDate = (timestamp: number[]): DateTime => {
-  const [year, month, day, hour, minute, second, nanos = 0] = timestamp;
-  return DateTime.fromObject({
-    year,
-    month,
-    day,
-    hour,
-    minute,
-    second,
-    millisecond: Math.floor((nanos || 0) / 1_000_000),
-  }).setZone('Asia/Ho_Chi_Minh');
+export const parseIsoToDateTime = (isoString: string): DateTime => {
+  return DateTime.fromISO(isoString, { setZone: true }).setZone('Asia/Ho_Chi_Minh');
 };
 
-export const parseDateString = (date: number[]): string => {
-  const [year, month, day] = date;
-  const format = new Date(year, month - 1, day);
-
-  return format.toLocaleDateString('vi-VN');
-};
-
-export const formatDateToTimestamp = (date: DateTime | Date): number[] => {
+export const formatDate = (date: string | DateTime | Date): string => {
   const dt =
     date instanceof DateTime
       ? date.setZone('Asia/Ho_Chi_Minh')
-      : DateTime.fromJSDate(date instanceof Date ? date : new Date(date)).setZone(
-          'Asia/Ho_Chi_Minh',
-        );
-  return [dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.millisecond * 1_000_000];
-};
-
-export const formatDate = (date: DateTime | string | Date): string => {
-  const dt =
-    date instanceof DateTime
-      ? date.setZone('Asia/Ho_Chi_Minh')
-      : DateTime.fromJSDate(date instanceof Date ? date : new Date(date)).setZone(
-          'Asia/Ho_Chi_Minh',
-        );
+      : typeof date === 'string'
+        ? parseIsoToDateTime(date)
+        : DateTime.fromJSDate(date).setZone('Asia/Ho_Chi_Minh');
   return dt.toFormat('dd/MM/yyyy');
 };
 
-export const formatTime = (date: DateTime | string | Date): string => {
+export const formatTime = (date: string | DateTime | Date): string => {
   const dt =
     date instanceof DateTime
       ? date.setZone('Asia/Ho_Chi_Minh')
-      : DateTime.fromJSDate(date instanceof Date ? date : new Date(date)).setZone(
-          'Asia/Ho_Chi_Minh',
-        );
+      : typeof date === 'string'
+        ? parseIsoToDateTime(date)
+        : DateTime.fromJSDate(date).setZone('Asia/Ho_Chi_Minh');
   return dt.toFormat('HH:mm');
 };
 
-export const formatLastTimeSentMessage = (date: DateTime | string | Date): string => {
+export const formatLastTimeSentMessage = (date: string | DateTime | Date): string => {
   const dt =
     date instanceof DateTime
       ? date.setZone('Asia/Ho_Chi_Minh')
-      : DateTime.fromJSDate(date instanceof Date ? date : new Date(date)).setZone(
-          'Asia/Ho_Chi_Minh',
-        );
+      : typeof date === 'string'
+        ? parseIsoToDateTime(date)
+        : DateTime.fromJSDate(date).setZone('Asia/Ho_Chi_Minh');
   const now = DateTime.now().setZone('Asia/Ho_Chi_Minh');
   const diffSeconds = Math.floor(now.diff(dt, 'seconds').seconds);
   const diffMinutes = Math.floor(now.diff(dt, 'minutes').minutes);

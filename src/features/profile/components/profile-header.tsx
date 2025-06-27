@@ -12,7 +12,7 @@ import { changeUserAvtar } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/redux';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import type { RootState } from '@/redux/store';
-import { parseDateString } from '@/utils/format';
+import { formatDate } from '@/utils/format';
 
 import { useChangeAvatarMutation } from '../profile.service';
 import type { InfluencerData } from '../profile.type';
@@ -106,8 +106,7 @@ export function ProfileHeader({ profile, me }: ProfileHeaderProps) {
                       <>
                         <Icons.calendar className="h-4 w-4" />
                         <span>
-                          Ngày sinh:{' '}
-                          {profile.doB ? parseDateString(profile.doB) : '(chưa cung cấp)'}
+                          Ngày sinh: {profile.doB ? formatDate(profile.doB) : '(chưa cung cấp)'}
                         </span>
                       </>
                     )}

@@ -46,6 +46,7 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
       refetchOnMountOrArgChange: true,
     },
   );
+  console.log(allData?.data);
 
   const {
     data: categoryData,

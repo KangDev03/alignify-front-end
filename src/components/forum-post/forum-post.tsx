@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 import { Icons } from '@/components/icons/icons';
 import type { ContentPosting } from '@/features/home/home.type';
-import { formatDate, parseTimestampToDate } from '@/utils/format';
+import { formatDate, parseIsoToDateTime } from '@/utils/format';
 
 interface ForumPostProps {
   contentPosting: ContentPosting;
@@ -32,7 +32,7 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
             <h4 className="font-medium">{contentPosting.userName}</h4>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-muted-foreground">
-                {formatDate(parseTimestampToDate(contentPosting.createdDate))}
+                {formatDate(parseIsoToDateTime(contentPosting.createdDate))}
               </span>
               <span className="text-muted-foreground">•</span>
               {contentPosting.categories.map((category) => (

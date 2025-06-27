@@ -54,12 +54,12 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
     defaultValues: {
       campaignName: '',
       content: '',
-      budget: 0,
-      influencerCountExpected: 0,
+      budget: undefined,
+      influencerCountExpected: undefined,
       startAt: new Date(),
       dueAt: new Date(),
-      influencerRequirements: [{ index: 0, requirement: '' }],
-      campaignRequirements: [{ content: '', quantity: 0 }],
+      influencerRequirements: [{ index: undefined, requirement: '' }],
+      campaignRequirements: [{ content: '', quantity: undefined }],
       categoryIds: [],
       image: undefined,
     },
@@ -331,8 +331,19 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                   <FormControl>
                     <Input
                       type="date"
-                      value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                      onChange={(e) => field.onChange(new Date(e.target.value))}
+                      value={
+                        field.value && !isNaN(field.value.getTime())
+                          ? field.value.toISOString().split('T')[0]
+                          : ''
+                      }
+                      onChange={(e) => {
+                        const date = new Date(e.target.value);
+                        if (isNaN(date.getTime())) {
+                          field.onChange(undefined);
+                        } else {
+                          field.onChange(date);
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -348,8 +359,19 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                   <FormControl>
                     <Input
                       type="date"
-                      value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                      onChange={(e) => field.onChange(new Date(e.target.value))}
+                      value={
+                        field.value && !isNaN(field.value.getTime())
+                          ? field.value.toISOString().split('T')[0]
+                          : ''
+                      }
+                      onChange={(e) => {
+                        const date = new Date(e.target.value);
+                        if (isNaN(date.getTime())) {
+                          field.onChange(undefined);
+                        } else {
+                          field.onChange(date);
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -416,12 +438,12 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                     control={form.control}
                     name={`campaignRequirements.${idx}.quantity`}
                     render={({ field }) => (
-                      <FormItem className="w-15">
+                      <FormItem className="w-24">
                         <FormControl>
                           <Input
                             {...field}
                             type="number"
-                            placeholder="Giá trị"
+                            placeholder="Số lượng"
                             onChange={(e) => field.onChange(Number(e.target.value))}
                           />
                         </FormControl>

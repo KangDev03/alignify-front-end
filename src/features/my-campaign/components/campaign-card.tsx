@@ -17,7 +17,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
 import { useSendNotification } from '@/hooks/useSendNotification.ts';
 import type { RootState } from '@/redux/store.ts';
-import { parseDateString } from '@/utils/format.ts';
+import { formatDate } from '@/utils/format.ts';
 
 import CampaignDetail from './campaign-detail.tsx';
 import { StatusBadge } from './status-badge.tsx';
@@ -398,7 +398,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               {StatusBadge(campaign.status)}
             </div>
             <p className="text-sm text-muted-foreground">
-              {campaign.brandName} • {parseDateString(campaign.createdAt)}
+              {campaign.brandName} • {formatDate(campaign.createdAt)}
             </p>
           </div>
         </div>
@@ -415,7 +415,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
           <div className="flex items-center w-fit">
             <Icons.calendar className="w-4 h-4 mr-2 text-primary" />
-            <span>{`${parseDateString(campaign.startAt)} - ${parseDateString(campaign.dueAt)}`}</span>
+            <span>{`${formatDate(campaign.startAt)} - ${formatDate(campaign.dueAt)}`}</span>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { DateTime } from 'luxon';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,6 @@ import { Icons } from '@/components/icons/icons';
 import { useAppSelector } from '@/hooks/redux';
 import { getStompClient } from '@/lib/stom-client';
 import type { RootState } from '@/redux/store';
-import { formatDateToTimestamp } from '@/utils/format';
 
 import MessageCard from './message-card';
 import { chatApi, useGetMessagesInRoomQuery } from '../chat-sheet.service';
@@ -35,7 +35,7 @@ interface MessageSending {
   userId: string;
   chatRoomId: string;
   message: string;
-  sendAt: Date;
+  sendAt: string;
   tempId?: string | null;
   readBy: string[];
 }
@@ -145,14 +145,15 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
       getStompClient(token).then((client) => {
         if (client.connected) {
           const tempId = uuidv4();
-          const current = new Date();
+          const dt = DateTime.now().setZone('Asia/Ho_Chi_Minh');
+          const isoString = dt.toISO();
           const input: MessageSending = {
             chatRoomId,
             userId: userId ?? '',
             message,
             readBy: [userId!],
             tempId: tempId,
-            sendAt: new Date(),
+            sendAt: isoString!,
           };
           const currentMessage: ChatMessageState = {
             message: {
@@ -160,7 +161,7 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
               userId: userId!,
               message,
               readBy: [userId!],
-              sendAt: formatDateToTimestamp(current),
+              sendAt: isoString!,
               tempId,
             },
             userDTO: {
