@@ -7,11 +7,13 @@ import { Card, CardContent } from '@/components/ui/card';
 
 import { Icons } from '@/components/icons/icons';
 import type { ContentPosting } from '@/features/home/home.type';
-import { useAppSelector } from '@/hooks/redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { getStompClient } from '@/lib/stom-client';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
 import { formatDate, parseIsoToDateTime } from '@/utils/format';
+
+import { toggleLikeContentPosting } from '../home.slice';
 
 interface ForumPostProps {
   contentPosting: ContentPosting;
@@ -31,9 +33,11 @@ export interface LikeSending {
 }
 
 export function ForumPost({ contentPosting }: ForumPostProps) {
+  const dispatch = useAppDispatch();
   const [likeCount, setLikeCount] = useState(contentPosting.likeCount ?? 0);
   const [isLiked, setLiked] = useState(false);
   const { token, id: userId } = useAppSelector((state: RootState) => state.auth);
+  const [isReadMore, setReadMore] = useState(false);
   useEffect(() => {
     if (!token) return;
     let likeSubscription: any;
@@ -99,7 +103,7 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
             userId: userId!
           }
           setLiked((prev) => !prev);
-          setLikeCount((prev) => prev + (isLiked ? -1 : 1));
+          dispatch(toggleLikeContentPosting({ contentId: contentPosting.contentId, isLiked }));
           client.send(`/app/like/${contentPosting.contentId}`, {}, JSON.stringify(likeSending));
         }
       })
@@ -139,10 +143,10 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
         <div className="space-y-3">
           <h3 className="text-lg font-semibold leading-tight">{contentPosting.contentName}</h3>
           <div className="text-sm text-muted-foreground leading-relaxed">
-            <p className="line-clamp-3">{contentPosting.content}</p>
-            {/* <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1">
-              Đọc thêm
-            </Button> */}
+            <p className={cn(!isReadMore && "line-clamp-3")}>{contentPosting.content}</p>
+            <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1" onClick={() => setReadMore(!isReadMore)} >
+              {isReadMore ? "Thu gọn" : "Đọc thêm"}
+            </Button>
           </div>
         </div>
 

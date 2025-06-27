@@ -106,6 +106,15 @@ const homeSlice = createSlice({
         }
       }
     },
+    toggleLikeContentPosting: (
+      state,
+      action: PayloadAction<{ contentId: string; isLiked: boolean }>,
+    ) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== 1) {
+        state.contentPosting[contentIndex].likeCount = state.contentPosting[contentIndex].likeCount + (action.payload.isLiked ? -1 : 1);
+      }
+    },
     resetCampaignPosting: (state) => {
       state.campaignPosting = [];
     },
@@ -131,10 +140,11 @@ export const {
   setInfluencerProfile,
   setBrandProfile,
   addCampaignPosting,
-  applyForApplciation,
   addContentPosting,
   addBrandProfile,
   addInfluencerProfile,
+  applyForApplciation,
+  toggleLikeContentPosting,
   resetCampaignPosting,
   resetContentPosting,
   resetBrandProfile,
