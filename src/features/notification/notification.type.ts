@@ -13,7 +13,7 @@ export interface RecievedNotification {
   avatarUrl: string;
   name: string;
   content: string;
-  createdAt: number[];
+  createdAt: string;
   isRead: boolean;
 }
 

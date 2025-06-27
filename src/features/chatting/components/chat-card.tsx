@@ -3,7 +3,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
-import { formatLastTimeSentMessage, parseTimestampToDate } from '@/utils/format';
+import { formatLastTimeSentMessage, parseIsoToDateTime } from '@/utils/format';
 
 import type { IChatRoom } from '../chat-sheet.type';
 
@@ -44,7 +44,7 @@ export default function ChatCard({
           <span className="text-xs truncate text-muted-foreground">{name}</span>
           <span className="w-1 h-1 bg-muted-foreground rounded-full inline-block" />
           <span className="text-xs truncate text-muted-foreground">
-            {formatLastTimeSentMessage(parseTimestampToDate(sendAt))} trước
+            {formatLastTimeSentMessage(parseIsoToDateTime(sendAt))} trước
           </span>
         </div>
         <p className="text-sm text-muted-foreground truncate mt-1 w-full line-clamp-1 text-left">

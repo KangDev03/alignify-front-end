@@ -5,15 +5,13 @@ import type {
   ApplicationByBrandResponse,
   ConfirmApplicantRequest,
 } from './applicant.type';
-import type { CommonPageableRequest } from '../common/common.type';
 
 export const applicantApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getApplicantsByBrand: builder.query<ApplicationByBrandResponse, CommonPageableRequest>({
-      query: (data) => ({
+    getApplicantsByBrand: builder.query<ApplicationByBrandResponse, void>({
+      query: () => ({
         url: '/campaigns/applications/brand',
         method: 'GET',
-        params: data,
       }),
       providesTags: ['Application'],
     }),

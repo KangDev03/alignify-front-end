@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 import type { UserDTO } from '@/features/common/common.type';
-import { formatTime, parseTimestampToDate } from '@/utils/format';
+import { formatTime, parseIsoToDateTime } from '@/utils/format';
 
 import type { Message } from '../chat-sheet.type';
 
@@ -29,7 +29,7 @@ const MessageCard = forwardRef<HTMLDivElement, MessageCardProps>(
             {isSending ? (
               <small>Đang gửi</small>
             ) : (
-              msg.sendAt && <small>{formatTime(parseTimestampToDate(msg.sendAt))}</small>
+              msg.sendAt && <small>{formatTime(parseIsoToDateTime(msg.sendAt))}</small>
             )}
           </div>
         </div>
@@ -88,7 +88,7 @@ const MessageCard = forwardRef<HTMLDivElement, MessageCardProps>(
             {msg.message}
           </div>
           <div className="flex items-center justify-end gap-1.5 text-muted-foreground">
-            {msg.sendAt && <small>{formatTime(parseTimestampToDate(msg.sendAt))}</small>}
+            {msg.sendAt && <small>{formatTime(parseIsoToDateTime(msg.sendAt))}</small>}
           </div>
         </div>
       </div>

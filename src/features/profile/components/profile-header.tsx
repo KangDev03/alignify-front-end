@@ -12,7 +12,7 @@ import { changeUserAvtar } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/redux';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import type { RootState } from '@/redux/store';
-import { parseDateString } from '@/utils/format';
+import { formatDate } from '@/utils/format';
 
 import { useChangeAvatarMutation } from '../profile.service';
 import type { InfluencerData } from '../profile.type';
@@ -85,7 +85,8 @@ export function ProfileHeader({ profile, me }: ProfileHeaderProps) {
               className="text-left font-semibold py-3 flex gap-2 items-center cursor-pointer"
               onClick={handleOnClickAvatar}
             >
-              <Icons.camera strokeWidth={1.5} /> Choose profile picture
+              <Icons.camera strokeWidth={1.5} />
+              Chọn ảnh đại diện
             </PopoverContent>
             <input
               type="file"
@@ -99,15 +100,17 @@ export function ProfileHeader({ profile, me }: ProfileHeaderProps) {
           <div className="flex-1 space-y-2">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold">{profile.name}</h1>
+                <h1 className="text-2xl font-bold m-0 flex items-center gap-1">
+                  {profile.name}
+                  <Icons.circleAlert size={12} className="text-destructive cursor-pointer" />
+                </h1>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                   <div className="flex items-center space-x-1">
                     {profile.doB && (
                       <>
                         <Icons.calendar className="h-4 w-4" />
                         <span>
-                          Ngày sinh:{' '}
-                          {profile.doB ? parseDateString(profile.doB) : '(chưa cung cấp)'}
+                          Ngày sinh: {profile.doB ? formatDate(profile.doB) : '(chưa cung cấp)'}
                         </span>
                       </>
                     )}

@@ -15,7 +15,7 @@ export interface InfluencerData {
   roleId: string;
   avatarUrl?: string | null;
   backgroundUrl?: string | null;
-  doB?: number[] | null;
+  doB?: string | null;
   gender: string;
   bio?: string | null;
   socialMediaLinks?: [{ key: string }, string] | [];
@@ -46,7 +46,7 @@ export interface BrandData {
   categories: Category[];
   contacts: [{ key: string }, string];
   socialMediaLinks: [{ key: string }, string];
-  establishDate: number[];
+  establishDate: string;
   totalCampaign: number | 0;
 }
 interface Category {
