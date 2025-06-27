@@ -16,7 +16,7 @@ export function getStompClient(token: string): Promise<Stomp.Client> {
   connectPromise = new Promise((resolve, reject) => {
     const socket = new SockJS(`${host}/ws`);
     const client = Stomp.over(socket);
-    client.debug = () => {};
+    client.debug = () => { };
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {
@@ -32,4 +32,9 @@ export function getStompClient(token: string): Promise<Stomp.Client> {
     );
   });
   return connectPromise;
+}
+
+export async function sendComment(contentId: string, content: string, token: string): Promise<void> {
+  const client = await getStompClient(token);
+  client.send(`/app/comment`, { Authorization: `Bearer ${token}` }, JSON.stringify({ contentId, content }));
 }
