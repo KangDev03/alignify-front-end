@@ -1,5 +1,5 @@
 import type { Campaign } from '@/features/common/common.type';
-import { formatDate, parseTimestampToDate } from '@/utils/format';
+import { formatDate, parseIsoToDateTime } from '@/utils/format';
 
 export function CampaignOverview({ campaign }: { campaign: Campaign }) {
   return (
@@ -23,9 +23,9 @@ export function CampaignOverview({ campaign }: { campaign: Campaign }) {
         <div>
           <span className="text-muted-foreground">Thời gian:</span>
           <p className="font-medium flex gap-2">
-            <span>{formatDate(parseTimestampToDate(campaign.startAt))}</span>
+            <span>{formatDate(parseIsoToDateTime(campaign.startAt))}</span>
             <span>-</span>
-            <span>{formatDate(parseTimestampToDate(campaign.dueAt))}</span>
+            <span>{formatDate(parseIsoToDateTime(campaign.dueAt))}</span>
           </p>
         </div>
       </div>

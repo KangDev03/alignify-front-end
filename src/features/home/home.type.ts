@@ -44,7 +44,7 @@ export interface ContentPosting {
   content: string;
   imageUrl: string;
   categories: Category[] | [];
-  createdDate: number[];
+  createdDate: string;
   isPublic: boolean;
   commentCount: number;
   likeCount: number;

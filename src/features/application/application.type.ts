@@ -12,7 +12,7 @@ export interface ApplicationByInfluencer {
   brandId: string;
   limited: number;
   status: string;
-  createdAt: number[];
+  createdAt: string;
 }
 export interface ApplicationResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]> {
   data: ApplicationsByCampaginResponse[];

@@ -108,9 +108,9 @@ export interface Campaign {
   imageUrl: string | null;
   budget: number;
   status: string;
-  createdAt: number[];
-  dueAt: number[];
-  startAt: number[];
+  createdAt: string;
+  dueAt: string;
+  startAt: string;
   categories: Category[] | [];
   campaignRequirements: { [key: string]: number };
   influencerRequirements: string[];

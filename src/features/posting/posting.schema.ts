@@ -70,9 +70,14 @@ export const campaignFormSchema = z
         content: z.string().min(1, {
           message: 'Nội dung yêu cầu không được bỏ trống',
         }),
-        quantity: z.number().min(1, {
-          message: 'Số lượng phải lớn hơn 0',
-        }),
+        quantity: z
+          .number()
+          .min(1, {
+            message: 'Số lượng phải lớn hơn 0',
+          })
+          .max(5, {
+            message: 'Số lượng lớn nhất là 5',
+          }),
       }),
     ),
     categoryIds: z
