@@ -8,6 +8,7 @@ import {
   Calendar,
   Camera,
   CheckCircle,
+  CircleAlert,
   CircleCheckBig,
   CircleX,
   Clock4,
@@ -92,4 +93,5 @@ export const Icons = {
   image: Image,
   share2: Share2,
   play: Play,
+  circleAlert: CircleAlert,
 };

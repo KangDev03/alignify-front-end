@@ -27,7 +27,7 @@ export default function NotificationTrigger() {
           <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs"></span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 h-[400px] overflow-auto no-scrollbar w-[350px]">
+      <PopoverContent className="p-0 h-[400px] overflow-auto no-scrollbar w-[350px] rounded-xl">
         {received && received.length > 0 ? (
           received.map((notify) => (
             <NotificationCard key={notify.notificationId} notification={notify} />

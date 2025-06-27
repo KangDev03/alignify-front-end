@@ -17,10 +17,9 @@ import type { RootState } from '@/redux/store';
 
 export function Applicants() {
   const dispatch = useAppDispatch();
-  const { data: rawData, isLoading } = useGetApplicantsByBrandQuery(
-    {},
-    { refetchOnMountOrArgChange: true },
-  );
+  const { data: rawData, isLoading } = useGetApplicantsByBrandQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const applicationPlusCampaign = rawData?.data;
   const { applicants, selectCapaignId } = useAppSelector((state: RootState) => state.applicant);
 

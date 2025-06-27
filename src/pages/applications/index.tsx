@@ -21,10 +21,9 @@ const tabs: { value: TabKey; label: string }[] = [
 export function ApplicationsPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('pending');
 
-  const { data: rawData } = useGetApplicationsByInfluencerQuery(
-    {},
-    { refetchOnMountOrArgChange: true },
-  );
+  const { data: rawData } = useGetApplicationsByInfluencerQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   // const applications = useMemo(() => {
   //   if (!rawData?.data || !Array.isArray(rawData.data)) return [];

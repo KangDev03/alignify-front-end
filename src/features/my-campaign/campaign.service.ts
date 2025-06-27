@@ -13,19 +13,17 @@ export const campaignApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Auth'],
     }),
-    getAllCampaignsOfInfluencer: builder.query<CampaignResponse, CommonPageableRequest>({
-      query: (data) => ({
+    getAllCampaignsOfInfluencer: builder.query<CampaignResponse, void>({
+      query: () => ({
         url: '/campaigns/influencer',
         method: 'GET',
-        params: data,
       }),
       providesTags: ['Auth'],
     }),
-    getAllCampaignsOfBrand: builder.query<CampaignResponse, CommonPageableRequest>({
-      query: (data) => ({
+    getAllCampaignsOfBrand: builder.query<CampaignResponse, void>({
+      query: () => ({
         url: '/campaigns/brand',
         method: 'GET',
-        params: data,
       }),
       providesTags: ['Auth'],
     }),
