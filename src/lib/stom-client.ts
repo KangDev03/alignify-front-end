@@ -33,8 +33,3 @@ export function getStompClient(token: string): Promise<Stomp.Client> {
   });
   return connectPromise;
 }
-
-export async function sendComment(contentId: string, content: string, token: string): Promise<void> {
-  const client = await getStompClient(token);
-  client.send(`/app/comment`, { Authorization: `Bearer ${token}` }, JSON.stringify({ contentId, content }));
-}
