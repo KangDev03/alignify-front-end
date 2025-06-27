@@ -1,16 +1,27 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import type { ContentPosting, ContentPostingResponse } from './home.type';
+import type {
+  BrandProfile,
+  BrandProfileResponse,
+  ContentPosting,
+  ContentPostingResponse,
+  InfluencerProfile,
+  InfluencerProfileResponse,
+} from './home.type';
 import type { Campaign } from '../common/common.type';
 import type { CampaignResponse } from '../my-campaign/campaign.type';
 
 interface HomeState {
   contentPosting: ContentPosting[] | [];
   campaignPosting: Campaign[] | [];
+  influencerProfile: InfluencerProfile[] | [];
+  brandProfile: BrandProfile[] | [];
 }
 const initialState: HomeState = {
   contentPosting: [],
   campaignPosting: [],
+  influencerProfile: [],
+  brandProfile: [],
 };
 
 const homeSlice = createSlice({
@@ -18,7 +29,13 @@ const homeSlice = createSlice({
   initialState,
   reducers: {
     setContentPosting: (state, action: PayloadAction<ContentPostingResponse>) => {
-      state.contentPosting = action.payload.data;
+      if (Array.isArray(action.payload?.data)) {
+        state.contentPosting = action.payload.data;
+      } else if (action.payload?.data) {
+        state.contentPosting = action.payload.data;
+      } else {
+        state.campaignPosting = [];
+      }
     },
     setCampaignPosting: (state, action: PayloadAction<CampaignResponse>) => {
       if (Array.isArray(action.payload?.data)) {
@@ -29,9 +46,42 @@ const homeSlice = createSlice({
         state.campaignPosting = [];
       }
     },
+    setInfluencerProfile: (state, action: PayloadAction<InfluencerProfileResponse>) => {
+      if (Array.isArray(action.payload.data)) {
+        state.influencerProfile = action.payload.data;
+      } else if (action.payload?.data) {
+        state.influencerProfile = action.payload.data;
+      } else {
+        state.influencerProfile = [];
+      }
+    },
+    setBrandProfile: (state, action: PayloadAction<BrandProfileResponse>) => {
+      if (Array.isArray(action.payload.data)) {
+        state.brandProfile = action.payload.data;
+      } else if (action.payload?.data) {
+        state.brandProfile = action.payload.data;
+      } else {
+        state.brandProfile = [];
+      }
+    },
     addCampaignPosting: (state, action: PayloadAction<Campaign[]>) => {
       if (action.payload && action.payload.length > 0) {
         state.campaignPosting = [...state.campaignPosting, ...action.payload];
+      }
+    },
+    addContentPosting: (state, action: PayloadAction<ContentPosting[]>) => {
+      if (action.payload && action.payload.length > 0) {
+        state.contentPosting = [...state.contentPosting, ...action.payload];
+      }
+    },
+    addInfluencerProfile: (state, action: PayloadAction<InfluencerProfile[]>) => {
+      if (action.payload && action.payload.length > 0) {
+        state.influencerProfile = [...state.influencerProfile, ...action.payload];
+      }
+    },
+    addBrandProfile: (state, action: PayloadAction<BrandProfile[]>) => {
+      if (action.payload && action.payload.length > 0) {
+        state.brandProfile = [...state.brandProfile, ...action.payload];
       }
     },
     applyForApplciation: (
@@ -62,6 +112,12 @@ const homeSlice = createSlice({
     resetContentPosting: (state) => {
       state.contentPosting = [];
     },
+    resetInfluencerProfile: (state) => {
+      state.influencerProfile = [];
+    },
+    resetBrandProfile: (state) => {
+      state.brandProfile = [];
+    },
     resetHomeState: (state) => {
       state.contentPosting = [];
       state.campaignPosting = [];
@@ -72,11 +128,18 @@ const homeSlice = createSlice({
 export const {
   setContentPosting,
   setCampaignPosting,
+  setInfluencerProfile,
+  setBrandProfile,
   addCampaignPosting,
-  resetHomeState,
+  applyForApplciation,
+  addContentPosting,
+  addBrandProfile,
+  addInfluencerProfile,
   resetCampaignPosting,
   resetContentPosting,
-  applyForApplciation,
+  resetBrandProfile,
+  resetHomeState,
+  resetInfluencerProfile,
 } = homeSlice.actions;
 export const homeReducer = homeSlice.reducer;
 
