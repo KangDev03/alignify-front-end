@@ -19,10 +19,7 @@ const tabs = [
 
 export default function MyCampaignPage() {
   const [activeTab, setActiveTab] = useState('pending');
-  const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery({
-    pageNumber: 0,
-    pageSize: 10,
-  });
+  const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery();
   const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
     ? campaignsResponse.data.campaigns
     : [];

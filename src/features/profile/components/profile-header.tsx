@@ -85,7 +85,8 @@ export function ProfileHeader({ profile, me }: ProfileHeaderProps) {
               className="text-left font-semibold py-3 flex gap-2 items-center cursor-pointer"
               onClick={handleOnClickAvatar}
             >
-              <Icons.camera strokeWidth={1.5} /> Choose profile picture
+              <Icons.camera strokeWidth={1.5} />
+              Chọn ảnh đại diện
             </PopoverContent>
             <input
               type="file"
@@ -99,7 +100,10 @@ export function ProfileHeader({ profile, me }: ProfileHeaderProps) {
           <div className="flex-1 space-y-2">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold">{profile.name}</h1>
+                <h1 className="text-2xl font-bold m-0 flex items-center gap-1">
+                  {profile.name}
+                  <Icons.circleAlert size={12} className="text-destructive cursor-pointer" />
+                </h1>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                   <div className="flex items-center space-x-1">
                     {profile.doB && (

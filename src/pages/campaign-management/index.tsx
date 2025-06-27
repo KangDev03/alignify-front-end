@@ -28,10 +28,7 @@ export function CampaignManagement() {
   const { campaigns } = useSelector((state: RootState) => state.campaign);
   const [activeTab, setActiveTab] = useState('draft');
 
-  const { data: campaignsResponse } = useGetAllCampaignsOfBrandQuery({
-    pageNumber: 0,
-    pageSize: 10,
-  });
+  const { data: campaignsResponse } = useGetAllCampaignsOfBrandQuery();
   useEffect(() => {
     dispatch(setCampagin(campaignsResponse!));
   }, [campaignsResponse, dispatch]);
