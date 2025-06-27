@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import type { ApplicationByInfluencer } from '@/features/application/application.type';
 import { StatusBadge } from '@/features/application/components/status-badge';
 import type { Campaign } from '@/features/common/common.type';
+import { formatDate } from '@/utils/format';
 
 interface ApplicationDetailProps {
   application: ApplicationByInfluencer;
@@ -30,9 +31,6 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
     console.log(`Apply lại chiến dịch từ đơn ứng tuyển ${applicationId}`);
     alert('Đã gửi lại đơn ứng tuyển thành công!');
   };
-  const [year, month, day] = application.createdAt;
-  const appliedDate = new Date(year, month - 1, day);
-  const responseDate = new Date(year, month - 1, day + 7);
   return (
     <>
       <DialogHeader>
@@ -49,7 +47,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
           <div>
             <DialogTitle className="text-lg pr-1">{campaignInfo.campaignName}</DialogTitle>
             <DialogDescription className="flex items-center">
-              {campaignInfo.brandName} • {appliedDate.toLocaleDateString('vi-VN')}
+              {campaignInfo.brandName} • {formatDate(application.createdAt)}
             </DialogDescription>
           </div>
         </div>
@@ -88,7 +86,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
               <Calendar className="h-4 w-4 text-blue-500 mr-2" />
               <div>
                 <p className="text-muted-foreground text-sm whitespace-nowrap">Ngày ứng tuyển:</p>
-                <p className="text-sm ">{appliedDate.toLocaleDateString('vi-VN')}</p>
+                <p className="text-sm ">{formatDate(application.createdAt)}</p>
               </div>
             </div>
           </div>
@@ -97,7 +95,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
               <Calendar className="h-4 w-4 text-blue-500 mr-2" />
               <span className="text-sm">
                 <p className="text-muted-foreground text-sm whitespace-nowrap">Phản hồi dự kiến:</p>
-                <p className="text-sm ">{responseDate.toLocaleDateString('vi-VN')}</p>
+                <p className="text-sm ">{formatDate(application.createdAt)}</p>
               </span>
             </div>
           </div>
