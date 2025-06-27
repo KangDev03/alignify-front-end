@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { Camera, Plus, Save, Star, X } from 'lucide-react';
-import { DateTime } from 'luxon';
 import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -31,8 +30,9 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
+import { Icons } from '@/components/icons/icons';
 import { changeUserAvtar } from '@/features/auth/auth.slice';
-import { useSendNotification } from '@/features/notification/useSendNotification';
+import { useGetCategoriesQuery } from '@/features/common/common.service';
 import {
   useChangeAvatarMutation,
   useGetBrandProfileUserQuery,
@@ -40,17 +40,14 @@ import {
 } from '@/features/profile/profile.service';
 import { profileFormSchema, type ProfileFormValues } from '@/features/setting/setting.schema';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
+import { parseTimestampToDate } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useEditProfileMutation } from '../setting.service';
 import type { BrandProfileRequest, InfluencerProfileRequest } from '../setting.type';
-
-interface Category {
-  categoryId: string;
-  categoryName: string;
-}
 
 export default function ProfileSection() {
   const { role: roleName } = useAppSelector((state: RootState) => state.auth);
@@ -58,36 +55,33 @@ export default function ProfileSection() {
   const [newSocialMedia, setNewSocialMedia] = useState({ platform: '', url: '' });
   const [newContact, setNewContact] = useState({ type: '', value: '' });
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | undefined>(undefined);
-  const [isPopoverOpen, setPopoverOpen] = useState(false);
+  // const [isPopoverOpen, setPopoverOpen] = useState(false);
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editProfile] = useEditProfileMutation();
 
   const brandProfile = useGetBrandProfileUserQuery(undefined);
   const influencerProfile = useGetInfluencerProfileUserQuery(undefined);
+  const { data: categories } = useGetCategoriesQuery();
 
   const profileData = roleName === 'BRAND' ? brandProfile.data : influencerProfile.data;
-
-  const genderDisplayMap: Record<'male' | 'female' | 'other', string> = {
-    male: 'Nam',
-    female: 'Nữ',
-    other: 'Khác',
-  };
-
   const MAX_CATEGORIES = 3;
 
-  const availableCategories: Category[] = [
-    { categoryId: '1', categoryName: 'Thời trang' },
-    { categoryId: '2', categoryName: 'Làm đẹp' },
-    { categoryId: '3', categoryName: 'Lifestyle' },
-    { categoryId: '4', categoryName: 'Công nghệ' },
-    { categoryId: '5', categoryName: 'Ẩm thực' },
-    { categoryId: '6', categoryName: 'Du lịch' },
-    { categoryId: '7', categoryName: 'Thể thao' },
-    { categoryId: '8', categoryName: 'Giải trí' },
-    { categoryId: '9', categoryName: 'Giáo dục' },
-    { categoryId: '10', categoryName: 'Sức khỏe' },
-  ];
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: {
+      avatarFile: undefined,
+      backgroundFile: undefined,
+      bio: profileData?.data.bio ?? '',
+      categoryIds: profileData?.data.categories?.map((category) => category.categoryId) ?? [],
+      socialMediaLinks: Array.isArray(profileData?.data.socialMediaLinks)
+        ? (profileData?.data.socialMediaLinks as { key: string; value: string }[]).map((item) => ({
+            platform: item.key,
+            url: item.value,
+          }))
+        : [],
+    },
+  });
 
   useEffect(() => {
     if (!profileData?.data) return;
@@ -105,16 +99,7 @@ export default function ProfileSection() {
           : undefined,
 
       doB:
-        'doB' in profile && profile.doB
-          ? DateTime.fromObject(
-              {
-                year: profile.doB[0],
-                month: profile.doB[1],
-                day: profile.doB[2],
-              },
-              { zone: 'Asia/Ho_Chi_Minh' },
-            ).toFormat('yyyy-MM-dd')
-          : undefined,
+        'doB' in profile && profile.doB ? parseTimestampToDate(profile.doB).toJSDate() : undefined,
 
       establishDate:
         'establishDate' in profile && profile.establishDate
@@ -145,25 +130,7 @@ export default function ProfileSection() {
     };
     setAvatarPreviewUrl(profile.avatarUrl ?? undefined);
     form.reset(formattedData);
-  }, [profileData]);
-
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues: {
-      avatarFile: undefined,
-      backgroundFile: undefined,
-      bio: profileData?.data.bio ?? '',
-      categoryIds: profileData?.data.categories?.map((category) => category.categoryId) ?? [],
-      socialMediaLinks: Array.isArray(profileData?.data.socialMediaLinks)
-        ? profileData.data.socialMediaLinks
-            .filter((_, idx) => idx % 2 === 0)
-            .map((item, idx) => ({
-              platform: (item as { key: string }).key,
-              url: profileData.data.socialMediaLinks?.[idx * 2 + 1] as string,
-            }))
-        : [],
-    },
-  });
+  }, [profileData, form]);
 
   const handleSelectCategory = (categoryId: string) => {
     const current = form.getValues('categoryIds') || [];
@@ -223,10 +190,10 @@ export default function ProfileSection() {
   };
   const dispatch = useAppDispatch();
   const sendNotification = useSendNotification();
-  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
+  const { id, name } = useSelector((state: RootState) => state.auth);
 
   const handleChangeAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPopoverOpen(false);
+    // setPopoverOpen(false);
     const file = event.target.files?.[0] || null;
     if (!file) return;
     if (!file.type.startsWith('image/')) {
@@ -277,8 +244,10 @@ export default function ProfileSection() {
       let profileData: InfluencerProfileRequest | BrandProfileRequest;
 
       if (roleName === 'BRAND') {
+        const { email: _email, follower: _follower, isPublic: _isPublic, ...rest } = values;
+
         profileData = {
-          ...values,
+          ...rest,
           establishDate: values.establishDate
             ? values.establishDate.split('-').map(Number)
             : undefined,
@@ -298,9 +267,11 @@ export default function ProfileSection() {
             }, {}) || {},
         };
       } else {
+        const { email: _email, follower: _follower, contacts: _contacts, ...rest } = values;
+
         profileData = {
-          ...values,
-          doB: values.doB ? values.doB.split('-').map(Number) : undefined,
+          ...rest,
+          doB: values.doB ? values.doB.toISOString() : undefined,
           socialMediaLinks:
             values.socialMediaLinks?.reduce((acc: { [key: string]: string }, link) => {
               if (link.platform && link.url) {
@@ -403,11 +374,20 @@ export default function ProfileSection() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="mb-4">
-                <FormLabel>{roleName === 'BRAND' ? 'Tên thương hiệu *' : 'Họ và tên *'}</FormLabel>
-                <Input
-                  value={profileData?.data?.name || ''}
-                  readOnly
-                  className="cursor-not-allowed bg-muted"
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {roleName === 'BRAND' ? 'Tên thương hiệu *' : 'Họ và tên *'}
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nhập tên..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
 
@@ -430,7 +410,22 @@ export default function ProfileSection() {
                       <FormItem>
                         <FormLabel>Ngày sinh</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <Input
+                            type="date"
+                            value={
+                              field.value && !isNaN(field.value.getTime())
+                                ? field.value.toISOString().split('T')[0]
+                                : ''
+                            }
+                            onChange={(e) => {
+                              const date = new Date(e.target.value);
+                              if (isNaN(date.getTime())) {
+                                field.onChange(undefined);
+                              } else {
+                                field.onChange(date);
+                              }
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -543,25 +538,26 @@ export default function ProfileSection() {
                       Chọn tối đa 3 lĩnh vực chuyên môn của bạn
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {availableCategories.map((category) => (
-                        <Badge
-                          key={category.categoryId}
-                          variant={
-                            form.watch('categoryIds')?.includes(category.categoryId)
-                              ? 'default'
-                              : 'outline'
-                          }
-                          className={cn(
-                            'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize',
-                          )}
-                          onClick={() => handleSelectCategory(category.categoryId)}
-                        >
-                          {category.categoryName}
-                          {form.watch('categoryIds')?.includes(category.categoryId) && (
-                            <X className="h-3 w-3" />
-                          )}
-                        </Badge>
-                      ))}
+                      {categories &&
+                        categories.data.map((category) => (
+                          <Badge
+                            key={category.categoryId}
+                            variant={
+                              form.watch('categoryIds')?.includes(category.categoryId)
+                                ? 'default'
+                                : 'outline'
+                            }
+                            className={cn(
+                              'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize',
+                            )}
+                            onClick={() => handleSelectCategory(category.categoryId)}
+                          >
+                            {category.categoryName}
+                            {form.watch('categoryIds')?.includes(category.categoryId) && (
+                              <X className="h-3 w-3" />
+                            )}
+                          </Badge>
+                        ))}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       Đã chọn: {form.watch('categoryIds')?.length || 0}/3
@@ -577,23 +573,42 @@ export default function ProfileSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    {form.watch('socialMediaLinks')?.map((social, index) => (
-                      <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
-                        <div className="flex-1">
-                          <div className="font-medium capitalize">{social.platform}</div>
-                          <div className="text-sm text-muted-foreground">{social.url}</div>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeSocialMedia(index)}
-                          className="text-red-600 hover:text-red-700"
+                    {form.watch('socialMediaLinks')?.map((social, index) => {
+                      const Icon = Icons[social.platform as keyof typeof Icons]; // optional: dùng icon nếu có
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between gap-2 p-3 border rounded-lg bg-muted/50"
                         >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
+                          <div className="flex items-center gap-3 flex-1">
+                            {Icon && <Icon className="h-5 w-5" />}
+                            <div>
+                              <div className="font-medium capitalize">{social.platform}</div>
+                              <div className="text-sm text-muted-foreground">{social.url}</div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 items-center">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(social.url, '_blank')}
+                            >
+                              <Icons.externalLink className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeSocialMedia(index)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <div className="space-y-2">
@@ -605,7 +620,7 @@ export default function ProfileSection() {
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Chọn platform" />
+                          <SelectValue placeholder="Chọn nền tảng" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="instagram">Instagram</SelectItem>
@@ -668,7 +683,7 @@ export default function ProfileSection() {
                       Chọn tối đa 3 lĩnh vực kinh doanh của công ty
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {availableCategories.map((category) => (
+                      {categories?.data.map((category) => (
                         <Badge
                           key={category.categoryId}
                           variant={
@@ -788,7 +803,7 @@ export default function ProfileSection() {
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Chọn platform" />
+                          <SelectValue placeholder="Chọn nền tảng" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="facebook">Facebook</SelectItem>
