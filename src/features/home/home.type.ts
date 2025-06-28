@@ -49,6 +49,7 @@ export interface ContentPosting {
   commentCount: number;
   likeCount: number;
   userAvatar?: string | null;
+  isLiked?: boolean | false;
 }
 
 export interface ContentPostingResponse extends ApiReponseSuccess<ContentPosting[]> {

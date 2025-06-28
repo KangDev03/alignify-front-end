@@ -108,11 +108,32 @@ const homeSlice = createSlice({
     },
     toggleLikeContentPosting: (
       state,
-      action: PayloadAction<{ contentId: string; isLiked: boolean }>,
+      action: PayloadAction<{ contentId: string }>,
     ) => {
       const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
-      if (contentIndex !== 1) {
-        state.contentPosting[contentIndex].likeCount = state.contentPosting[contentIndex].likeCount + (action.payload.isLiked ? -1 : 1);
+      if (contentIndex !== -1) {
+        const content = state.contentPosting[contentIndex];
+        const wasLiked = content.isLiked;
+        content.isLiked = !wasLiked;
+        content.likeCount = content.likeCount + (wasLiked ? -1 : 1);
+      }
+    },
+    setLikedState: (
+      state,
+      action: PayloadAction<{ contentId: string, isLiked: boolean }>,
+    ) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1) {
+        state.contentPosting[contentIndex].isLiked = action.payload.isLiked;
+      }
+    },
+    setLikeCountState: (
+      state,
+      action: PayloadAction<{ contentId: string, likeCount: number }>,
+    ) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1) {
+        state.contentPosting[contentIndex].likeCount = action.payload.likeCount;
       }
     },
     resetCampaignPosting: (state) => {
@@ -145,6 +166,8 @@ export const {
   addInfluencerProfile,
   applyForApplciation,
   toggleLikeContentPosting,
+  setLikeCountState,
+  setLikedState,
   resetCampaignPosting,
   resetContentPosting,
   resetBrandProfile,

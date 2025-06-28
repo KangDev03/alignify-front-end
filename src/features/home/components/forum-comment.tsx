@@ -4,11 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 
 import { Icons } from '@/components/icons/icons';
 import type { ContentPosting } from '@/features/home/home.type';
@@ -18,12 +13,9 @@ import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
 import { formatDate, parseIsoToDateTime } from '@/utils/format';
 
-import ForumCommentDialog from './forum-comment';
+import CommentCard from './comment-card';
 import { setLikeCountState, setLikedState, toggleLikeContentPosting } from '../home.slice';
 
-interface ForumPostProps {
-  contentPosting: ContentPosting;
-}
 
 interface ReceivedLike {
   likes: number;
@@ -37,8 +29,11 @@ export interface LikeSending {
   contentId: string,
   userId: string
 }
+interface ForumCommentProps {
+  contentPosting: ContentPosting;
+}
 
-export function ForumPost({ contentPosting }: ForumPostProps) {
+export default function ForumCommentDialog({ contentPosting }: ForumCommentProps) {
   const dispatch = useAppDispatch();
   const { token, id: userId } = useAppSelector((state: RootState) => state.auth);
   const [isReadMore, setReadMore] = useState(false);
@@ -115,7 +110,7 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
   return (
     <Card
       key={contentPosting.contentId}
-      className="border border-border bg-card hover:bg-muted/30 transition-all"
+      className="border border-border bg-card overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent scrollbar-hide-arrows "
     >
       <CardContent className="px-6">
         <div className="flex items-start space-x-3 mb-4">
@@ -161,7 +156,7 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
           />
         </div>
 
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
+        <div className="flex items-center justify-between mt-4 py-3 border-y border-border">
           <div className="flex items-center space-x-6">
             <button
               onClick={handleLike}
@@ -174,17 +169,12 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
               />
               <span className="text-sm">{contentPosting.likeCount}</span>
             </button>
-            <Dialog>
-              <DialogTrigger>
-                <button className="flex items-center space-x-2 text-muted-foreground hover:text-blue-500 transition-colors cursor-pointer">
-                  <Icons.messageCircle className="h-4 w-4" />
-                  <span className="text-sm">{contentPosting.commentCount ?? 0}</span>
-                </button>
-              </DialogTrigger>
-              <DialogContent showCloseButton={false} className="sm:max-w-[600px] h-[85%] p-0">
-                <ForumCommentDialog contentPosting={contentPosting} />
-              </DialogContent>
-            </Dialog>
+
+            <button className="flex items-center space-x-2 text-muted-foreground hover:text-blue-500 transition-colors cursor-pointer">
+              <Icons.messageCircle className="h-4 w-4" />
+              <span className="text-sm">{contentPosting.commentCount ?? 0}</span>
+            </button>
+
             {/* <div className="flex items-center space-x-2 text-muted-foreground">
               <Icons.eye className="h-4 w-4" />
               <span className="text-sm">{post.views} lượt xem</span>
@@ -193,6 +183,10 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
             <Icons.share2 className="h-4 w-4" />
           </Button>
+        </div>
+        <div className='my-4 flex flex-col gap-4'>
+          <CommentCard />
+          <CommentCard />
         </div>
       </CardContent>
     </Card>
