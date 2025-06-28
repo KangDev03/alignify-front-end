@@ -3,6 +3,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type {
   BrandProfile,
   BrandProfileResponse,
+  Comment,
   ContentPosting,
   ContentPostingResponse,
   InfluencerProfile,
@@ -136,6 +137,25 @@ const homeSlice = createSlice({
         state.contentPosting[contentIndex].likeCount = action.payload.likeCount;
       }
     },
+    setComments: (
+      state,
+      action: PayloadAction<{ contentId: string, comment: Comment[] }>) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1 && action.payload.comment) {
+        state.contentPosting[contentIndex].comment = action.payload.comment ?? [];
+      }
+    },
+    addComment: (
+      state,
+      action: PayloadAction<{ contentId: string, comment: Comment }>) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1 && action.payload.comment) {
+        state.contentPosting[contentIndex].comment = [
+          action.payload.comment,
+          ...(state.contentPosting[contentIndex].comment ?? []),
+        ];
+      }
+    },
     resetCampaignPosting: (state) => {
       state.campaignPosting = [];
     },
@@ -168,6 +188,8 @@ export const {
   toggleLikeContentPosting,
   setLikeCountState,
   setLikedState,
+  setComments,
+  addComment,
   resetCampaignPosting,
   resetContentPosting,
   resetBrandProfile,

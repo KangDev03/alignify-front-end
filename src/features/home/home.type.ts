@@ -36,6 +36,16 @@ export interface InfluencerProfileResponse extends ApiReponseSuccess<InfluencerP
   data: InfluencerProfile[];
 }
 
+export interface Comment {
+  commentId?: string;
+  userId: string;
+  contentId: string;
+  content: string;
+  createdDate: string;
+  avatarUrl?: string;
+  name?: string;
+}
+
 export interface ContentPosting {
   contentId: string;
   contentName: string;
@@ -50,6 +60,7 @@ export interface ContentPosting {
   likeCount: number;
   userAvatar?: string | null;
   isLiked?: boolean | false;
+  comment?: Comment[]
 }
 
 export interface ContentPostingResponse extends ApiReponseSuccess<ContentPosting[]> {

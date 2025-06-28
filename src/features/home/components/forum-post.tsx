@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
   DialogTrigger,
 } from "@/components/ui/dialog"
 
@@ -17,6 +18,7 @@ import { getStompClient } from '@/lib/stom-client';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
 import { formatDate, parseIsoToDateTime } from '@/utils/format';
+import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 
 import ForumCommentDialog from './forum-comment';
 import { setLikeCountState, setLikedState, toggleLikeContentPosting } from '../home.slice';
@@ -181,7 +183,11 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
                   <span className="text-sm">{contentPosting.commentCount ?? 0}</span>
                 </button>
               </DialogTrigger>
-              <DialogContent showCloseButton={false} className="sm:max-w-[600px] h-[85%] p-0">
+              <DialogContent showCloseButton={false} className="sm:max-w-[600px] h-[85%] p-0 rounded-xl">
+                <DialogHeader className='hidden'>
+                  <DialogTitle>Bài đăng của {contentPosting.userName}</DialogTitle>
+                  <DialogDescription></DialogDescription>
+                </DialogHeader>
                 <ForumCommentDialog contentPosting={contentPosting} />
               </DialogContent>
             </Dialog>

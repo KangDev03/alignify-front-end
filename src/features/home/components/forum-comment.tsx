@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
+import { DateTime } from 'luxon';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
 import { Icons } from '@/components/icons/icons';
-import type { ContentPosting } from '@/features/home/home.type';
+import type { CommonPageableRequest } from '@/features/common/common.type';
+import type { Comment, ContentPosting } from '@/features/home/home.type';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { getStompClient } from '@/lib/stom-client';
 import { cn } from '@/lib/utils';
@@ -14,7 +17,7 @@ import type { RootState } from '@/redux/store';
 import { formatDate, parseIsoToDateTime } from '@/utils/format';
 
 import CommentCard from './comment-card';
-import { setLikeCountState, setLikedState, toggleLikeContentPosting } from '../home.slice';
+import { addComment, setComments, setLikeCountState, setLikedState, toggleLikeContentPosting } from '../home.slice';
 
 
 interface ReceivedLike {
@@ -35,8 +38,44 @@ interface ForumCommentProps {
 
 export default function ForumCommentDialog({ contentPosting }: ForumCommentProps) {
   const dispatch = useAppDispatch();
-  const { token, id: userId } = useAppSelector((state: RootState) => state.auth);
+  const { token, id: userId, avatarUrl } = useAppSelector((state: RootState) => state.auth);
   const [isReadMore, setReadMore] = useState(false);
+  const [valueChange, setValueChange] = useState<string>('');
+
+  useEffect(() => {
+    if (token) {
+      getStompClient(token).then((client) => {
+        if (client.connected) {
+          const pageable: CommonPageableRequest = {
+            pageNumber: 0,
+            pageSize: 10
+          }
+          client.send(`/app/comment/select/${contentPosting.contentId}`, {}, JSON.stringify(pageable));
+        }
+      })
+    }
+  }, [contentPosting.contentId, token]);
+
+  useEffect(() => {
+    if (!token) return;
+    let commentSub: any;
+    getStompClient(token).then((client) => {
+      commentSub = client.subscribe(`/topic/comments/select/${contentPosting.contentId}`, (res: any) => {
+        try {
+          const received: Comment[] = JSON.parse(res.body);
+          console.log(received)
+          dispatch(setComments({ contentId: contentPosting.contentId, comment: received }));
+        } catch (error) {
+          console.error(error);
+        }
+      })
+    }).catch((error) => console.error('WebSocket connection error:', error));
+
+    return () => {
+      if (commentSub) commentSub.unsubscribe();
+    }
+  }, [contentPosting.contentId, token, dispatch])
+
   useEffect(() => {
     if (!token) return;
     let likeSubscription: any;
@@ -107,12 +146,53 @@ export default function ForumCommentDialog({ contentPosting }: ForumCommentProps
       })
     };
   }
+
+  useEffect(() => {
+    if (!token) return;
+    let commentsub: any;
+    getStompClient(token)
+      .then((client) => {
+        commentsub = client.subscribe(`/topic/comments/${contentPosting.contentId}`, (res: any) => {
+          try {
+            const received: Comment = JSON.parse(res.body);
+            if (received) {
+              dispatch(addComment({ contentId: contentPosting.contentId, comment: received }))
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        });
+      })
+      .catch((error) => console.error('WebSocket connection error:', error));
+
+    return () => {
+      if (commentsub) commentsub.unsubscribe();
+    };
+  }, [contentPosting.contentId, token, dispatch]);
+
+  const sendComment = () => {
+    if (valueChange && contentPosting.contentId && token) {
+      getStompClient(token!).then(client => {
+        if (client.connected) {
+          const commentSending: Comment = {
+            contentId: contentPosting.contentId,
+            userId: userId!,
+            content: valueChange,
+            createdDate: DateTime.now().setZone('Asia/Ho_Chi_Minh').toISO()!,
+          }
+          client.send(`/app/comment/${contentPosting.contentId}`, {}, JSON.stringify(commentSending))
+        }
+      })
+      setValueChange('');
+    }
+  }
+
   return (
     <Card
       key={contentPosting.contentId}
       className="border border-border bg-card overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent scrollbar-hide-arrows "
     >
-      <CardContent className="px-6">
+      <CardContent className="px-6 relative">
         <div className="flex items-start space-x-3 mb-4">
           <Avatar className="h-10 w-10">
             <AvatarImage
@@ -184,9 +264,40 @@ export default function ForumCommentDialog({ contentPosting }: ForumCommentProps
             <Icons.share2 className="h-4 w-4" />
           </Button>
         </div>
-        <div className='my-4 flex flex-col gap-4'>
-          <CommentCard />
-          <CommentCard />
+        <div className='mt-4 flex flex-col gap-4 mb-10'>
+          {contentPosting.comment && contentPosting.comment.length > 0 &&
+            contentPosting.comment.map(cmt => <CommentCard key={cmt.commentId} comment={cmt} />
+            )
+          }
+        </div>
+        <div className='fixed bottom-0 left-0 right-0 flex text-sm px-6 py-3 bg-card rounded-b-xl gap-2'>
+          <Avatar className="h-8 w-8 border border-border">
+            <AvatarImage
+              src={avatarUrl || '/placeholder.svg'}
+              alt={contentPosting.userName}
+              className="object-cover"
+            />
+            <AvatarFallback>{contentPosting.userName.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className='flex-1 relative'>
+            <Input
+              type='text'
+              placeholder='Nhập bình luận'
+              className='rounded-full text-sm'
+              onChange={(e) => setValueChange(e.target.value)}
+              value={valueChange} onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  sendComment();
+                }
+              }} />
+            <Button
+              variant='ghost'
+              className='absolute top-1/2 right-0 -translate-y-1/2 -translate-x-1/2 cursor-pointer rounded-full size-7'
+              disabled={!valueChange?.trim()}
+              onClick={sendComment}>
+              <Icons.send className='text-blue-500' size={14} />
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
