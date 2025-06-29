@@ -3,6 +3,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type {
   BrandProfile,
   BrandProfileResponse,
+  Comment,
   ContentPosting,
   ContentPostingResponse,
   InfluencerProfile,
@@ -106,6 +107,55 @@ const homeSlice = createSlice({
         }
       }
     },
+    toggleLikeContentPosting: (
+      state,
+      action: PayloadAction<{ contentId: string }>,
+    ) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1) {
+        const content = state.contentPosting[contentIndex];
+        const wasLiked = content.isLiked;
+        content.isLiked = !wasLiked;
+        content.likeCount = content.likeCount + (wasLiked ? -1 : 1);
+      }
+    },
+    setLikedState: (
+      state,
+      action: PayloadAction<{ contentId: string, isLiked: boolean }>,
+    ) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1) {
+        state.contentPosting[contentIndex].isLiked = action.payload.isLiked;
+      }
+    },
+    setLikeCountState: (
+      state,
+      action: PayloadAction<{ contentId: string, likeCount: number }>,
+    ) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1) {
+        state.contentPosting[contentIndex].likeCount = action.payload.likeCount;
+      }
+    },
+    setComments: (
+      state,
+      action: PayloadAction<{ contentId: string, comment: Comment[] }>) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1 && action.payload.comment) {
+        state.contentPosting[contentIndex].comment = action.payload.comment ?? [];
+      }
+    },
+    addComment: (
+      state,
+      action: PayloadAction<{ contentId: string, comment: Comment }>) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1 && action.payload.comment) {
+        state.contentPosting[contentIndex].comment = [
+          action.payload.comment,
+          ...(state.contentPosting[contentIndex].comment ?? []),
+        ];
+      }
+    },
     resetCampaignPosting: (state) => {
       state.campaignPosting = [];
     },
@@ -131,10 +181,15 @@ export const {
   setInfluencerProfile,
   setBrandProfile,
   addCampaignPosting,
-  applyForApplciation,
   addContentPosting,
   addBrandProfile,
   addInfluencerProfile,
+  applyForApplciation,
+  toggleLikeContentPosting,
+  setLikeCountState,
+  setLikedState,
+  setComments,
+  addComment,
   resetCampaignPosting,
   resetContentPosting,
   resetBrandProfile,

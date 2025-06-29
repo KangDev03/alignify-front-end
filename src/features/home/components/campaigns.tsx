@@ -46,7 +46,6 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
       refetchOnMountOrArgChange: true,
     },
   );
-  console.log(allData?.data);
 
   const {
     data: categoryData,
@@ -245,18 +244,18 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
       <div className="space-y-6">
         {campaignPosting.length > 0
           ? campaignPosting.map((campaign) => (
-              <CampaignCard key={campaign.campaignId} campaign={campaign} />
-            ))
+            <CampaignCard key={campaign.campaignId} campaign={campaign} />
+          ))
           : campaignPosting.length === 0 &&
-            isLoading == null && (
-              <Alert variant="default">
-                <AlertCircleIcon />
-                <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
-                <AlertDescription>
-                  Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
-                </AlertDescription>
-              </Alert>
-            )}
+          isLoading == null && (
+            <Alert variant="default">
+              <AlertCircleIcon />
+              <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
+              <AlertDescription>
+                Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
+              </AlertDescription>
+            </Alert>
+          )}
         {!hasMore && campaignPosting.length > 0 && (
           <Alert variant="default">
             <AlertCircleIcon />
