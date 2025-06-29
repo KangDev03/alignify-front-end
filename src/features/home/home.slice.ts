@@ -3,6 +3,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type {
   BrandProfile,
   BrandProfileResponse,
+  Comment,
   ContentPosting,
   ContentPostingResponse,
   InfluencerProfile,
@@ -193,7 +194,6 @@ export const {
   setInfluencerProfile,
   setBrandProfile,
   addCampaignPosting,
-  applyForApplciation,
   addContentPosting,
   addBrandProfile,
   addInfluencerProfile,

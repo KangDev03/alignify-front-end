@@ -23,7 +23,7 @@ export default function CommentCard({ comment }: CommentCardProps) {
         {(comment.name?.charAt(0)) || 'U'}
       </AvatarFallback>
     </Avatar>
-    <div className="flex flex-col text-sm gap-0">
+    <div className="flex flex-col text-sm gap-1">
       <div className="bg-border w-fit rounded-2xl px-3 py-[6px]">
         <p className="font-semibold ">{id === comment.userId ? "Bạn" : comment.name}</p>
         <p className="font-normal">{comment.content}</p>

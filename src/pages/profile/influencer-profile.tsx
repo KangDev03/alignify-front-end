@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { ForumPost } from '@/components/forum-post/forum-post';
+import { ForumPost } from '@/features/home/components/forum-post';
 import { Icons } from '@/components/icons/icons';
 import { useGetPostMeQuery } from '@/features/home/home.service';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
@@ -63,15 +63,15 @@ export default function InfluencerProfilePage() {
                   socialMediaLinks={
                     Array.isArray(profile.socialMediaLinks)
                       ? Object.fromEntries(
-                          profile.socialMediaLinks.map((item: any) =>
-                            typeof item === 'object' &&
+                        profile.socialMediaLinks.map((item: any) =>
+                          typeof item === 'object' &&
                             item !== null &&
                             'key' in item &&
                             'value' in item
-                              ? [item.key, item.value]
-                              : [String(item[0]), String(item[1])],
-                          ),
-                        )
+                            ? [item.key, item.value]
+                            : [String(item[0]), String(item[1])],
+                        ),
+                      )
                       : profile.socialMediaLinks
                   }
                 />

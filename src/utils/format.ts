@@ -66,3 +66,29 @@ export const formatNumber = (num: number) => {
   }
   return num.toString();
 };
+
+export const formatCommonLastTime = (date: string | DateTime | Date): string => {
+  const dt =
+    date instanceof DateTime
+      ? date.setZone('Asia/Ho_Chi_Minh')
+      : typeof date === 'string'
+        ? parseIsoToDateTime(date)
+        : DateTime.fromJSDate(date).setZone('Asia/Ho_Chi_Minh');
+  const now = DateTime.now().setZone('Asia/Ho_Chi_Minh');
+  const diffSeconds = Math.floor(now.diff(dt, 'seconds').seconds);
+  const diffMinutes = Math.floor(now.diff(dt, 'minutes').minutes);
+  const diffHours = Math.floor(now.diff(dt, 'hours').hours);
+  const diffDays = Math.floor(now.diff(dt, 'days').days);
+
+  if (diffSeconds < 60) {
+    return `${diffSeconds > 0 ? diffSeconds : 1} giây trước`;
+  } else if (diffMinutes < 60) {
+    return `${diffMinutes} phút trước`;
+  } else if (diffHours < 24) {
+    return `${diffHours} giờ trước`;
+  } else if (diffDays < 365 && dt.year === DateTime.now().year) {
+    return `${dt.toFormat("dd/MM")}`;
+  } else {
+    return `${dt.toFormat("dd/MM/yyyy")}`;
+  }
+};

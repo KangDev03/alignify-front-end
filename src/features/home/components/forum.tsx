@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { ForumPost } from '@/components/forum-post/forum-post';
+import { ForumPost } from '@/features/home/components/forum-post';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
@@ -34,7 +34,6 @@ export default function Forum({ selectedCategoryId, searchTerm }: ForumProps) {
   const { contentPosting }: { contentPosting: ContentPosting[] } = useAppSelector(
     (state) => state.home,
   );
-  console.log(contentPosting);
   const isAll = selectedCategoryId === 'all';
 
   const {
@@ -229,15 +228,15 @@ export default function Forum({ selectedCategoryId, searchTerm }: ForumProps) {
         {contentPosting.length > 0
           ? contentPosting.map((post) => <ForumPost key={post.contentId} contentPosting={post} />)
           : contentPosting.length === 0 &&
-            isLoading == null && (
-              <Alert variant="default">
-                <AlertCircleIcon />
-                <AlertTitle>Không có bài đăng nào trong Forum</AlertTitle>
-                <AlertDescription>
-                  Bạn có thể quay lại đây sau khi các bài đăng trong Forum xuất hiện.
-                </AlertDescription>
-              </Alert>
-            )}
+          isLoading == null && (
+            <Alert variant="default">
+              <AlertCircleIcon />
+              <AlertTitle>Không có bài đăng nào trong Forum</AlertTitle>
+              <AlertDescription>
+                Bạn có thể quay lại đây sau khi các bài đăng trong Forum xuất hiện.
+              </AlertDescription>
+            </Alert>
+          )}
         {!hasMore && contentPosting.length > 0 && (
           <Alert variant="default">
             <AlertCircleIcon />
