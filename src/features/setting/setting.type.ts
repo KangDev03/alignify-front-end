@@ -20,7 +20,7 @@ export interface BrandProfileRequest {
   bio?: string;
   contacts?: { [key: string]: string };
   socialMediaLinks?: { [key: string]: string };
-  establishDate?: number[];
+  establishDate?: string;
   avatarUrl?: string;
   categoryIds?: string[];
 }

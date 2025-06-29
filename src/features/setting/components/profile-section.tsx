@@ -30,7 +30,6 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
-import { Icons } from '@/components/icons/icons';
 import { changeUserAvtar } from '@/features/auth/auth.slice';
 import { useGetCategoriesQuery } from '@/features/common/common.service';
 import {
@@ -43,7 +42,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
-import { parseTimestampToDate } from '@/utils/format';
+import { parseIsoToDateTime } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useEditProfileMutation } from '../setting.service';
@@ -80,6 +79,13 @@ export default function ProfileSection() {
             url: item.value,
           }))
         : [],
+      contacts:
+        profileData?.data && 'contacts' in profileData.data && profileData.data.contacts
+          ? Object.entries(profileData.data.contacts).map(([type, rawValue]) => ({
+              type,
+              value: typeof rawValue === 'string' ? rawValue : (rawValue?.key ?? ''),
+            }))
+          : [],
     },
   });
 
@@ -98,38 +104,36 @@ export default function ProfileSection() {
           ? (profile.gender.toLowerCase() as 'male' | 'female' | 'other')
           : undefined,
 
-      doB:
-        'doB' in profile && profile.doB ? parseTimestampToDate(profile.doB).toJSDate() : undefined,
+      doB: 'doB' in profile && profile.doB ? parseIsoToDateTime(profile.doB).toJSDate() : undefined,
 
       establishDate:
         'establishDate' in profile && profile.establishDate
-          ? profile.establishDate.join('-')
+          ? parseIsoToDateTime(profile.establishDate).toJSDate()
           : undefined,
+
       categoryIds: profile.categories?.map((c) => c.categoryId) || [],
       avatarFile: undefined,
 
       follower: 'follower' in profile ? profile.follower : undefined,
-      socialMediaLinks:
-        (profile.socialMediaLinks ?? []).length > 0
-          ? (profile.socialMediaLinks ?? []).reduce((acc: any[], val: any, idx: number) => {
-              if (idx % 2 === 0) {
-                acc.push({ platform: val.key, url: (profile.socialMediaLinks ?? [])[idx + 1] });
-              }
-              return acc;
-            }, [])
-          : [],
+
+      socialMediaLinks: profile.socialMediaLinks
+        ? Object.entries(profile.socialMediaLinks).map(([platform, rawUrl]) => ({
+            platform,
+            url: typeof rawUrl === 'string' ? rawUrl : (rawUrl?.key ?? ''),
+          }))
+        : [],
+
       contacts:
-        'contacts' in profile && profile.contacts?.length > 0
-          ? profile.contacts.reduce((acc: any[], val: any, idx: number) => {
-              if (idx % 2 === 0) {
-                acc.push({ type: val.key, value: profile.contacts[idx + 1] });
-              }
-              return acc;
-            }, [])
+        'contacts' in profile && profile.contacts
+          ? Object.entries(profile.contacts).map(([type, rawValue]) => ({
+              type,
+              value: typeof rawValue === 'string' ? rawValue : (rawValue?.key ?? ''),
+            }))
           : [],
     };
     setAvatarPreviewUrl(profile.avatarUrl ?? undefined);
     form.reset(formattedData);
+    console.log(formattedData);
   }, [profileData, form]);
 
   const handleSelectCategory = (categoryId: string) => {
@@ -160,34 +164,79 @@ export default function ProfileSection() {
   };
 
   const addSocialMedia = () => {
-    if (newSocialMedia.platform && newSocialMedia.url) {
+    const { platform, url } = newSocialMedia;
+
+    if (platform && url) {
       const currentLinks = form.getValues('socialMediaLinks') || [];
-      const newLinks = [...currentLinks, newSocialMedia];
-      form.setValue('socialMediaLinks', newLinks);
+
+      const index = currentLinks.findIndex((link) => link.platform === platform);
+      let updatedLinks;
+
+      if (index === -1) {
+        updatedLinks = [...currentLinks, { platform, url }];
+      } else {
+        updatedLinks = [...currentLinks];
+        updatedLinks[index] = { platform, url };
+      }
+
+      form.setValue('socialMediaLinks', updatedLinks, { shouldDirty: true });
+      form.trigger('socialMediaLinks'); // đảm bảo form nhận thay đổi
+
       setNewSocialMedia({ platform: '', url: '' });
     }
   };
-
   const removeSocialMedia = (index: number) => {
-    const currentLinks = form.getValues('socialMediaLinks') || [];
-    const newLinks = currentLinks.filter((_, i) => i !== index);
-    form.setValue('socialMediaLinks', newLinks);
-  };
+    const confirmed = window.confirm('Bạn có chắc muốn xoá liên kết này?');
 
-  const addContact = () => {
-    if (newContact.type && newContact.value) {
-      const currentContacts = form.getValues('contacts') || [];
-      const newContacts = [...currentContacts, newContact];
-      form.setValue('contacts', newContacts);
-      setNewContact({ type: '', value: '' });
+    if (confirmed) {
+      const currentLinks = form.getValues('socialMediaLinks') || [];
+      const newLinks = currentLinks.filter((_, i) => i !== index);
+      form.setValue('socialMediaLinks', newLinks, { shouldDirty: true });
+      form.trigger('socialMediaLinks');
     }
   };
 
-  const removeContact = (index: number) => {
+  const addContact = () => {
+    const { type, value } = newContact;
+
+    if (!type || !value) {
+      toast.error('Vui lòng nhập đầy đủ thông tin liên hệ');
+      return;
+    }
+
     const currentContacts = form.getValues('contacts') || [];
-    const newContacts = currentContacts.filter((_, i) => i !== index);
-    form.setValue('contacts', newContacts);
+
+    const index = currentContacts.findIndex((contact) => contact.type === type);
+
+    let updatedContacts;
+
+    if (index === -1) {
+      updatedContacts = [...currentContacts, { type, value }];
+    } else {
+      updatedContacts = [...currentContacts];
+      updatedContacts[index] = { type, value };
+    }
+
+    form.setValue('contacts', updatedContacts, { shouldDirty: true });
+    form.trigger('contacts');
+
+    setNewContact({ type: '', value: '' });
+
+    // ✅ Thêm console log này để kiểm tra kết quả:
+    console.log('Updated Contacts:', form.getValues('contacts'));
   };
+
+  const removeContact = (index: number) => {
+    const confirmed = window.confirm('Bạn có chắc muốn xoá liên hệ này?');
+
+    if (confirmed) {
+      const currentContacts = form.getValues('contacts') || [];
+      const newContacts = currentContacts.filter((_, i) => i !== index);
+      form.setValue('contacts', newContacts, { shouldDirty: true });
+      form.trigger('contacts');
+    }
+  };
+
   const dispatch = useAppDispatch();
   const sendNotification = useSendNotification();
   const { id, name } = useSelector((state: RootState) => state.auth);
@@ -226,7 +275,6 @@ export default function ProfileSection() {
   //     form.setValue("backgroundFile", file)
   //   }
   // }
-
   const onSubmit = async (values: ProfileFormValues) => {
     try {
       setIsSubmitting(true);
@@ -248,9 +296,10 @@ export default function ProfileSection() {
 
         profileData = {
           ...rest,
-          establishDate: values.establishDate
-            ? values.establishDate.split('-').map(Number)
-            : undefined,
+          establishDate:
+            values.establishDate && !isNaN(new Date(values.establishDate).getTime())
+              ? new Date(values.establishDate).toISOString()
+              : undefined,
           socialMediaLinks:
             values.socialMediaLinks?.reduce((acc: { [key: string]: string }, link) => {
               if (link.platform && link.url) {
@@ -281,10 +330,10 @@ export default function ProfileSection() {
             }, {}) || {},
         };
       }
-
       await editProfile(profileData).unwrap();
 
       toast.success('Cập nhật hồ sơ thành công!');
+      await brandProfile.refetch();
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Cập nhật hồ sơ thất bại. Vui lòng thử lại!');
@@ -573,42 +622,23 @@ export default function ProfileSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    {form.watch('socialMediaLinks')?.map((social, index) => {
-                      const Icon = Icons[social.platform as keyof typeof Icons]; // optional: dùng icon nếu có
-                      return (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between gap-2 p-3 border rounded-lg bg-muted/50"
-                        >
-                          <div className="flex items-center gap-3 flex-1">
-                            {Icon && <Icon className="h-5 w-5" />}
-                            <div>
-                              <div className="font-medium capitalize">{social.platform}</div>
-                              <div className="text-sm text-muted-foreground">{social.url}</div>
-                            </div>
-                          </div>
-                          <div className="flex gap-2 items-center">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => window.open(social.url, '_blank')}
-                            >
-                              <Icons.externalLink className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeSocialMedia(index)}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
+                    {form.watch('socialMediaLinks')?.map((social, index) => (
+                      <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
+                        <div className="flex-1">
+                          <div className="font-medium capitalize">{social.platform}</div>
+                          <div className="text-sm text-muted-foreground">{social.url}</div>
                         </div>
-                      );
-                    })}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSocialMedia(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
                   </div>
 
                   <div className="space-y-2">
@@ -623,11 +653,9 @@ export default function ProfileSection() {
                           <SelectValue placeholder="Chọn nền tảng" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="instagram">Instagram</SelectItem>
-                          <SelectItem value="tiktok">TikTok</SelectItem>
-                          <SelectItem value="youtube">YouTube</SelectItem>
-                          <SelectItem value="facebook">Facebook</SelectItem>
+                          <SelectItem value="instagram">TikTok</SelectItem>
                           <SelectItem value="twitter">Twitter</SelectItem>
+                          <SelectItem value="youtube">YouTube</SelectItem>
                         </SelectContent>
                       </Select>
                       <Input
@@ -663,7 +691,22 @@ export default function ProfileSection() {
                       <FormItem>
                         <FormLabel>Ngày thành lập</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <Input
+                            type="date"
+                            value={
+                              field.value && !isNaN(field.value.getTime())
+                                ? field.value.toISOString().split('T')[0]
+                                : ''
+                            }
+                            onChange={(e) => {
+                              const date = new Date(e.target.value);
+                              if (isNaN(date.getTime())) {
+                                field.onChange(undefined);
+                              } else {
+                                field.onChange(date);
+                              }
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -748,10 +791,8 @@ export default function ProfileSection() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="phone">Số điện thoại</SelectItem>
-                          <SelectItem value="website">Website</SelectItem>
                           <SelectItem value="address">Địa chỉ</SelectItem>
-                          <SelectItem value="fax">Fax</SelectItem>
-                          <SelectItem value="hotline">Hotline</SelectItem>
+                          <SelectItem value="hotline">Email</SelectItem>
                         </SelectContent>
                       </Select>
                       <Input
@@ -806,10 +847,8 @@ export default function ProfileSection() {
                           <SelectValue placeholder="Chọn nền tảng" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="facebook">Facebook</SelectItem>
-                          <SelectItem value="instagram">Instagram</SelectItem>
+                          <SelectItem value="instagram">TikTok</SelectItem>
                           <SelectItem value="twitter">Twitter</SelectItem>
-                          <SelectItem value="linkedin">LinkedIn</SelectItem>
                           <SelectItem value="youtube">YouTube</SelectItem>
                         </SelectContent>
                       </Select>

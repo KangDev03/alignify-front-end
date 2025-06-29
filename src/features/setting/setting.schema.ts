@@ -24,7 +24,7 @@ export const profileFormSchema = z.object({
   bio: z.string().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   doB: z.date().optional(),
-  establishDate: z.string().optional(), // For BRAND
+  establishDate: z.date().optional(), // For BRAND
   follower: z.number().min(0, 'Số followers phải lớn hơn 0').optional(),
   isPublic: z.boolean(),
   categoryIds: z.array(z.string()).max(3, 'Chỉ được chọn tối đa 3 danh mục').optional(),
@@ -33,7 +33,7 @@ export const profileFormSchema = z.object({
   socialMediaLinks: z
     .array(
       z.object({
-        platform: z.string(),
+        platform: z.string().min(1, 'Phải chọn nền tảng'),
         url: z.string().url('URL không hợp lệ'),
       }),
     )
