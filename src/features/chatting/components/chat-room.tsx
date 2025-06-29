@@ -209,7 +209,7 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
           <Icons.x className="h-5 w-5" />
         </SheetClose>
       </div>
-      <div className="flex-1 px-6 py-3 space-y-4 overflow-y-auto h-fit border-b gap-2.5 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent">
+      <div className="flex-1 px-6 py-3 space-y-4 overflow-y-auto scrollbar-small">
         {messages.map((msg) => (
           <MessageCard
             key={msg.message.messageId || msg.message.tempId}

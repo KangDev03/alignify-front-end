@@ -9,7 +9,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
 import type { ApplicationByInfluencer } from '@/features/application/application.type';
@@ -32,13 +32,14 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
     alert('Đã gửi lại đơn ứng tuyển thành công!');
   };
   return (
-    <>
-      <DialogHeader>
+    <div className="px-6 overflow-auto scrollbar-small">
+      <div className='pb-4 pt-1'>
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage
               src={campaignInfo.brandAvartar || '/placeholder.svg'}
               alt={campaignInfo.brandName}
+              className='object-cover'
             />
             <AvatarFallback>
               {campaignInfo.imageUrl ? campaignInfo.imageUrl.charAt(0) : 'U'}
@@ -51,7 +52,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
             </DialogDescription>
           </div>
         </div>
-      </DialogHeader>
+      </div>
 
       <div className="space-y-3">
         <div>
@@ -101,20 +102,20 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
           </div>
         </div>
 
-        <Accordion type="multiple" className="w-full mb-4">
+        <Accordion type="multiple" className="w-full">
           {campaignInfo.campaignRequirements &&
             Object.keys(campaignInfo.campaignRequirements).length > 0 && (
               <AccordionItem value="deliverables">
-                <AccordionTrigger>
+                <AccordionTrigger className='p-0 cursor-pointer'>
                   <span className="text-sm font-medium">Nội dung yêu cầu</span>
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className='p-0'>
                   <div className="flex flex-col gap-1">
                     {Object.entries(campaignInfo.campaignRequirements).map(
                       ([requirement, quantity], index) => (
                         <div key={index} className="flex items-center">
                           <span className="mr-2 text-muted-foreground">•</span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm text-muted-foreground first-letter:uppercase">
                             {requirement}: {quantity}
                           </span>
                         </div>
@@ -126,19 +127,19 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
             )}
         </Accordion>
 
-        <Accordion type="multiple" className="w-full mb-4">
+        <Accordion type="multiple" className="w-full">
           {Array.isArray(campaignInfo.influencerRequirements) &&
             campaignInfo.influencerRequirements.length > 0 && (
               <AccordionItem value="deliverables">
-                <AccordionTrigger>
+                <AccordionTrigger className='p-0 cursor-pointer'>
                   <span className="text-sm font-medium">Yêu cầu đối với influencer</span>
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className='p-0'>
                   <div className="flex flex-col gap-1">
                     {campaignInfo.influencerRequirements.map((item: string, index: number) => (
                       <div key={index} className="flex items-center">
                         <span className="mr-2 text-muted-foreground">•</span>
-                        <span className="text-sm text-muted-foreground">{item}</span>
+                        <span className="text-sm text-muted-foreground first-letter:uppercase">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -147,19 +148,19 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
             )}
         </Accordion>
         <div className="flex justify-end gap-2 pt-4">
-          {application.status === 'Chờ duyệt' && (
+          {application.status.toUpperCase() === "PENDING" && (
             <Button variant="destructive">
               <XCircle className="h-4 w-4" />
               Hủy ứng tuyển
             </Button>
           )}
-          {application.status === 'Đã chấp nhận' && (
+          {application.status.toUpperCase() === 'ACCEPTED' && (
             <Button variant="default" onClick={() => handleGoToCampaign(application.applicationId)}>
               <Clock className="h-4 w-4" />
               Đến trang chiến dịch
             </Button>
           )}
-          {application.status === 'Bị từ chối' && (
+          {application.status === 'REJECTED' && (
             <Button variant="default" onClick={() => handleReapply(application.applicationId)}>
               <RefreshCw className="h-4 w-4" />
               Apply lại
@@ -167,6 +168,6 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

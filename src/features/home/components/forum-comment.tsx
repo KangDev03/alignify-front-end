@@ -41,7 +41,6 @@ interface ForumCommentProps {
 export default function ForumCommentDialog({ contentPosting, resetTrigger }: ForumCommentProps) {
   const dispatch = useAppDispatch();
   const { token, id: userId, avatarUrl } = useAppSelector((state: RootState) => state.auth);
-  const [isReadMore, setReadMore] = useState(false);
   const [valueChange, setValueChange] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(0);
   const [hasMore, setHasMore] = useState(true);
@@ -242,10 +241,10 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
         <div className="space-y-3">
           <h3 className="text-lg font-semibold leading-tight">{contentPosting.contentName}</h3>
           <div className="text-sm text-muted-foreground leading-relaxed">
-            <p className={cn(!isReadMore && "line-clamp-3")}>{contentPosting.content}</p>
-            <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1" onClick={() => setReadMore(!isReadMore)} >
+            <p className={cn("")}>{contentPosting.content}</p>
+            {/* <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1" onClick={() => setReadMore(!isReadMore)} >
               {isReadMore ? "Thu gọn" : "Đọc thêm"}
-            </Button>
+            </Button> */}
           </div>
         </div>
 
