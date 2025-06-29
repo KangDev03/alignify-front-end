@@ -16,7 +16,7 @@ export function getStompClient(token: string): Promise<Stomp.Client> {
   connectPromise = new Promise((resolve, reject) => {
     const socket = new SockJS(`${host}/ws`);
     const client = Stomp.over(socket);
-    client.debug = () => {};
+    client.debug = () => { };
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {
