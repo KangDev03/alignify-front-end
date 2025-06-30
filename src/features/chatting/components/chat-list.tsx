@@ -22,7 +22,7 @@ export default function ChatList() {
   }
 
   return (
-    <div className="flex flex-col gap-0 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent">
+    <div className="flex flex-col gap-0 overflow-auto scrollbar-small">
       {rooms.map((room) => {
         return (
           <Sheet key={room.chatRoomId}>

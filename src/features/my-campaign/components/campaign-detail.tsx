@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
 import type { Campaign } from '@/features/common/common.type.ts';
@@ -18,8 +18,8 @@ import { StatusBadge } from './status-badge.tsx';
 
 export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
   return (
-    <div className="h-full">
-      <DialogHeader className="pr-6">
+    <div className="px-6 overflow-y-scroll scrollbar-small">
+      <div className="">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage
@@ -35,9 +35,9 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             </DialogDescription>
           </div>
         </div>
-      </DialogHeader>
+      </div>
 
-      <div className="pt-2 pr-6 h-[70%] space-y-3 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent">
+      <div className="pt-2 space-y-3">
         <div className="w-full h-64 relative mt-4 rounded-lg overflow-hidden">
           <img
             src={campaign.imageUrl || '/placeholder.svg'}
@@ -84,25 +84,25 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
 
         <Separator />
 
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 items-center">
           <p className="text-sm font-medium">Trạng thái:</p>
           {StatusBadge(campaign.status)}
         </div>
 
-        <Accordion type="multiple" className="w-full mb-4">
+        <Accordion type="multiple" className="w-full">
           {campaign.campaignRequirements &&
             Object.keys(campaign.campaignRequirements).length > 0 && (
               <AccordionItem value="deliverables">
-                <AccordionTrigger>
+                <AccordionTrigger className='p-0 cursor-pointer'>
                   <span className="text-sm font-medium">Nội dung yêu cầu</span>
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className='p-0'>
                   <div className="flex flex-col gap-1">
                     {Object.entries(campaign.campaignRequirements).map(
                       ([requirement, quantity], index) => (
                         <div key={index} className="flex items-center">
                           <span className="mr-2 text-muted-foreground">•</span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm text-muted-foreground first-letter:uppercase">
                             {requirement}: {quantity}
                           </span>
                         </div>
@@ -114,19 +114,19 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             )}
         </Accordion>
 
-        <Accordion type="multiple" className="w-full mb-4">
+        <Accordion type="multiple" className="w-full">
           {Array.isArray(campaign.influencerRequirements) &&
             campaign.influencerRequirements.length > 0 && (
               <AccordionItem value="deliverables">
-                <AccordionTrigger>
+                <AccordionTrigger className='p-0 cursor-pointer'>
                   <span className="text-sm font-medium">Yêu cầu đối với influencer</span>
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className='p-0'>
                   <div className="flex flex-col gap-1">
                     {campaign.influencerRequirements.map((item: string, index: number) => (
                       <div key={index} className="flex items-center">
                         <span className="mr-2 text-muted-foreground">•</span>
-                        <span className="text-sm text-muted-foreground">{item}</span>
+                        <span className="text-sm text-muted-foreground first-letter:uppercase">{item}</span>
                       </div>
                     ))}
                   </div>

@@ -8,13 +8,14 @@ import type { RecievedNotification } from '../notification.type';
 
 export default function NotificationCard({ notification }: { notification: RecievedNotification }) {
   const [title, description] = notification.content.split('\n');
+  const bgStyle = notification.isRead
+    ? 'hover:bg-muted-foreground/30'
+    : 'hover:bg-muted-foreground/35';
   return (
     <div
       className={cn(
-        'flex items-center gap-3 px-4 py-3 transition-colors cursor-pointer group border border-border h-[100px]',
-        notification.isRead
-          ? 'bg-muted-foreground/20 hover:bg-muted-foreground/30'
-          : 'hover:bg-muted-foreground/35',
+        'flex items-center gap-3 px-4 py-3 transition-colors cursor-pointer group border-none h-[100px] rounded-xl',
+        bgStyle,
       )}
     >
       <div className="relative">

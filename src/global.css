@@ -1,5 +1,82 @@
 @import 'tailwindcss';
 
+::-webkit-scrollbar{
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb{
+  background-color: #9F9F9F;
+  border-radius: 10px;
+  border: 2px solid #2C2C2C;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background-color: #d1d1d1;
+}
+
+::-webkit-scrollbar-track{
+  overflow: hidden;
+  background: #2C2C2C;
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-button{
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+.scrollbar-small::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  overflow: hidden;
+}
+.scrollbar-small::-webkit-scrollbar-thumb {
+  background-color: #9F9F9F;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+.scrollbar-small::-webkit-scrollbar-thumb:hover {
+  background-color: #9F9F9F;
+}
+.scrollbar-small::-webkit-scrollbar-track {
+  overflow: hidden;
+  background: #2C2C2C;
+  border-radius: 12px;
+}
+.scrollbar-small::-webkit-scrollbar-button {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #9F9F9F;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #9F9F9F;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  overflow: hidden;
+  background: #2C2C2C;
+  border-radius: 12px;  
+}
+.scrollbar-thin::-webkit-scrollbar-button {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
 @custom-variant dark (&:is(.dark *));
 @config "./../tailwind.config.ts";
 

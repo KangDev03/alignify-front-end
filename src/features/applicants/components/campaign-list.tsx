@@ -18,15 +18,14 @@ export function CampaignList({
   return (
     <div className="w-1/3 border rounded-lg py-4 bg-card pr-0">
       <h2 className="text-xl font-semibold mb-2 px-4">Danh sách chiến dịch</h2>
-      <div className="space-y-3 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent h-[94%] px-4 py-2">
+      <div className="space-y-3 overflow-auto scrollbar-thin h-[94%] px-4 py-2">
         {applicationPlusCampaign.map((appPlusCam) => {
           const campaign = appPlusCam.campaignResponse;
           return (
             <Card
               key={campaign.campaignId}
-              className={`cursor-pointer transition-all hover:shadow-md py-6 ${
-                selectCapaignId === campaign.campaignId ? 'ring-2 ring-primary' : ''
-              }`}
+              className={`cursor-pointer transition-all hover:shadow-md py-6 ${selectCapaignId === campaign.campaignId ? 'ring-2 ring-primary' : ''
+                }`}
               onClick={() => dispatch(setSelectedCampaign(campaign.campaignId))}
             >
               <CardContent className="px-4">
