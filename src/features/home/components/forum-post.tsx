@@ -44,6 +44,8 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
   const dispatch = useAppDispatch();
   const { token, id: userId } = useAppSelector((state: RootState) => state.auth);
   const [isReadMore, setReadMore] = useState(false);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+
   useEffect(() => {
     if (!token) return;
     let likeSubscription: any;
@@ -176,19 +178,23 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
               />
               <span className="text-sm">{contentPosting.likeCount}</span>
             </button>
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger>
                 <button className="flex items-center space-x-2 text-muted-foreground hover:text-blue-500 transition-colors cursor-pointer">
                   <Icons.messageCircle className="h-4 w-4" />
                   <span className="text-sm">{contentPosting.commentCount ?? 0}</span>
                 </button>
               </DialogTrigger>
-              <DialogContent showCloseButton={false} className="sm:max-w-[600px] h-[85%] p-0 rounded-xl">
-                <DialogHeader className='hidden'>
-                  <DialogTitle>Bài đăng của {contentPosting.userName}</DialogTitle>
-                  <DialogDescription></DialogDescription>
+              <DialogContent showCloseButton={false} className="sm:max-w-[600px] h-[85%] p-0 rounded-xl bg-card gap-0">
+                <DialogHeader className='border-b-2 border-border p-0 m-0 py-3'>
+                  <DialogTitle className='font-semibold text-xl text-center'>Bài đăng của {contentPosting.userName}</DialogTitle>
+                  <DialogDescription className='hidden'></DialogDescription>
                 </DialogHeader>
-                <ForumCommentDialog contentPosting={contentPosting} />
+                <ForumCommentDialog
+                  key={contentPosting.contentId}
+                  contentPosting={contentPosting}
+                  resetTrigger={isDialogOpen}
+                />
               </DialogContent>
             </Dialog>
             {/* <div className="flex items-center space-x-2 text-muted-foreground">

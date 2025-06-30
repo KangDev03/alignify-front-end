@@ -1,4 +1,3 @@
-import scrollbar from 'tailwind-scrollbar';
 import tailwindcssAnimate from 'tailwindcss-animate';
 
 /** @type {import('tailwindcss').Config} */
@@ -59,7 +58,7 @@ export default {
           DEFAULT: "hsl(var(--pending))",
           foreground: "hsl(var(--pending))",
         },
-        accepted:{
+        accepted: {
           DEFAULT: "hsl(var(--accepted))",
           foreground: "hsl(var(--accepted))"
         }
@@ -85,5 +84,5 @@ export default {
       },
     },
   },
-  plugins: [tailwindcssAnimate, scrollbar],
+  plugins: [tailwindcssAnimate],
 };

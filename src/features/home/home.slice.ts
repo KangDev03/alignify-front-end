@@ -144,6 +144,19 @@ const homeSlice = createSlice({
       if (contentIndex !== -1 && action.payload.comment) {
         state.contentPosting[contentIndex].comment = action.payload.comment ?? [];
       }
+    }, addComments: (
+      state,
+      action: PayloadAction<{ contentId: string, comment: Comment[] }>
+    ) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1 && action.payload.comment) {
+        state.contentPosting[contentIndex].comment = [
+          ...(state.contentPosting[contentIndex].comment ?? []),
+          ...action.payload.comment.filter(
+            (cmt) => !(state.contentPosting[contentIndex].comment ?? []).some(existing => existing.commentId === cmt.commentId)
+          ),
+        ];
+      }
     },
     addComment: (
       state,
@@ -189,6 +202,7 @@ export const {
   setLikeCountState,
   setLikedState,
   setComments,
+  addComments,
   addComment,
   resetCampaignPosting,
   resetContentPosting,
