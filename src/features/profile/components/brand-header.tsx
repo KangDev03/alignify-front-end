@@ -14,6 +14,7 @@ import type { BrandData } from '@/features/profile/profile.type';
 import { useAppDispatch } from '@/hooks/redux';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import type { RootState } from '@/redux/store';
+import { formatDate } from '@/utils/format';
 
 import { useChangeAvatarMutation } from '../profile.service';
 
@@ -104,7 +105,8 @@ export function BrandHeaderCard({ profile, campaignCompleted, me }: BrandHeaderP
             <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1">
               <Calendar className="h-4 w-4" />
               <span>
-                Thành lập {profile.establishDate ? profile.establishDate : '(chưa cung cấp)'}
+                Thành lập
+                {profile.establishDate ? formatDate(profile.establishDate) : '(chưa cung cấp)'}
               </span>
             </div>
             <div className="flex flex-wrap gap-2">
