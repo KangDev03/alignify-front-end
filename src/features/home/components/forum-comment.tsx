@@ -18,7 +18,7 @@ import type { RootState } from '@/redux/store';
 import { formatDate, parseIsoToDateTime } from '@/utils/format';
 
 import CommentCard from './comment-card';
-import { addComment, addComments, setComments, setLikeCountState, setLikedState, toggleLikeContentPosting } from '../home.slice';
+import { addComment, addComments, setCommentCount, setComments, setLikeCountState, setLikedState, toggleLikeContentPosting } from '../home.slice';
 
 
 interface ReceivedLike {
@@ -173,6 +173,7 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
             const received: Comment = JSON.parse(res.body);
             if (received) {
               dispatch(addComment({ contentId: contentPosting.contentId, comment: received }))
+              dispatch(setCommentCount({ contentId: contentPosting.contentId, count: received.count! }));
             }
           } catch (error) {
             console.error(error);
