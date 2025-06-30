@@ -196,82 +196,93 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
   }
 
   return (
-    <InfiniteScroll
-      dataLength={influencerProfile ? influencerProfile.length : 0}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={hasMore && loadingSkeleton}
-    >
-      <div className="space-y-6">
-        {influencerProfile.length > 0
-          ? influencerProfile.map((influencer) => (
-              <Card
-                key={influencer.id}
-                className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
-              >
-                <CardContent>
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage
-                        src={influencer.avatarUrl || '/placeholder.svg'}
-                        alt={influencer.name}
-                        className="object-cover"
-                      />
-                      <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{influencer.name}</h3>
-                      {influencer?.category && (
-                        <p className="text-sm text-muted-foreground capitalize">
-                          {influencer?.category
-                            .map((category: any) => category.categoryName)
-                            .join(', ')}
-                        </p>
-                      )}
-                      <div className="flex items-center space-x-4 mt-2 text-sm">
-                        <div className="flex items-center space-x-1">
-                          <Icons.users className="h-4 w-4" />
-                          <span>{influencer.follower} followers</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Icons.star className="h-4 w-4" />
-                          <span>{influencer.rating}</span>
+    <>
+      <InfiniteScroll
+        dataLength={influencerProfile ? influencerProfile.length : 0}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={hasMore && loadingSkeleton}
+      >
+        <div className="space-y-6">
+          {influencerProfile.length > 0
+            ? influencerProfile.map((influencer) => (
+                <Card
+                  key={influencer.id}
+                  className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
+                >
+                  <CardContent>
+                    <div className="flex items-center space-x-4">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage
+                          src={influencer.avatarUrl || '/placeholder.svg'}
+                          alt={influencer.name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <h3 className="font-semibold">{influencer.name}</h3>
+                        {influencer?.category && (
+                          <p className="text-sm text-muted-foreground capitalize">
+                            {influencer?.category
+                              .map((category: any) => category.categoryName)
+                              .join(', ')}
+                          </p>
+                        )}
+                        <div className="flex items-center space-x-4 mt-2 text-sm">
+                          <div className="flex items-center space-x-1">
+                            <Icons.users className="h-4 w-4" />
+                            <span>{influencer.follower} followers</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Icons.star className="h-4 w-4" />
+                            <span>{influencer.rating}</span>
+                          </div>
                         </div>
                       </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          navigate(`/influencer/${influencer.id}`);
+                        }}
+                      >
+                        Xem hồ sơ
+                      </Button>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        navigate(`/influencer/${influencer.id}`);
-                      }}
-                    >
-                      Xem hồ sơ
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          : influencerProfile.length === 0 &&
-            isLoading == null && (
-              <Alert variant="default">
-                <AlertCircleIcon />
-                <AlertTitle>Không có tài khoản Influencer nào</AlertTitle>
-                <AlertDescription>
-                  Bạn có thể quay lại đây sau khi các tài khoản Influencer xuất hiện.
-                </AlertDescription>
-              </Alert>
-            )}
-        {!hasMore && influencerProfile.length > 0 && (
-          <Alert variant="default">
-            <AlertCircleIcon />
-            <AlertTitle>Không còn tài khoản Influencer nào</AlertTitle>
-            <AlertDescription>
-              Bạn có thể quay lại đây sau khi các tài khoản Influencer mới xuất hiện.
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
-    </InfiniteScroll>
+                  </CardContent>
+                </Card>
+              ))
+            : influencerProfile.length === 0 &&
+              isLoading == null && (
+                <Alert variant="default">
+                  <AlertCircleIcon />
+                  <AlertTitle>Không có tài khoản Influencer nào</AlertTitle>
+                  <AlertDescription>
+                    Bạn có thể quay lại đây sau khi các tài khoản Influencer xuất hiện.
+                  </AlertDescription>
+                </Alert>
+              )}
+          {!hasMore && influencerProfile.length > 0 && (
+            <Alert variant="default">
+              <AlertCircleIcon />
+              <AlertTitle>Không còn tài khoản Influencer nào</AlertTitle>
+              <AlertDescription>
+                Bạn có thể quay lại đây sau khi các tài khoản Influencer mới xuất hiện.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+      </InfiniteScroll>
+      {influencerProfile.length === 0 && !isLoading && (
+        <Alert variant="default">
+          <AlertCircleIcon />
+          <AlertTitle>Không có tài khoản Influencer nào</AlertTitle>
+          <AlertDescription>
+            Bạn có thể quay lại đây sau khi các tài khoản Influencer xuất hiện.
+          </AlertDescription>
+        </Alert>
+      )}
+    </>
   );
 }
