@@ -67,6 +67,7 @@ export default function ProfileSection() {
   const MAX_CATEGORIES = 3;
 
   const form = useForm<ProfileFormValues>({
+    mode: 'onSubmit',
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       avatarFile: undefined,
