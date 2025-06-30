@@ -106,6 +106,18 @@ export default function ProfileSection() {
     name: 'socialMediaLinks',
   });
 
+  const contactTypeOptions = [
+    { value: 'phone', label: 'Số điện thoại' },
+    { value: 'address', label: 'Địa chỉ' },
+    { value: 'email', label: 'Email' },
+  ];
+
+  const socialPlatformOptions = [
+    { value: 'tiktok', label: 'TikTok' },
+    { value: 'twitter', label: 'Twitter' },
+    { value: 'youtube', label: 'YouTube' },
+  ];
+
   useEffect(() => {
     if (!profileData?.data) return;
 
@@ -582,57 +594,83 @@ export default function ProfileSection() {
                   <CardTitle>Liên kết mạng xã hội</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {socialFields.map((item, idx) => (
-                    <div key={item.id} className="flex gap-2">
-                      <FormField
-                        control={form.control}
-                        name={`socialMediaLinks.${idx}.platform`}
-                        render={({ field }) => (
-                          <FormItem className="w-1/3">
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value || undefined}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Nền tảng" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="tiktok">TikTok</SelectItem>
-                                  <SelectItem value="twitter">Twitter</SelectItem>
-                                  <SelectItem value="youtube">YouTube</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`socialMediaLinks.${idx}.url`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Input {...field} placeholder="URL" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button type="button" variant="destructive" onClick={() => removeSocial(idx)}>
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    onClick={() => appendSocial({ platform: '', url: '' })}
-                    size="sm"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Thêm liên kết
-                  </Button>
+                  {socialFields.map((item, idx) => {
+                    const usedPlatforms =
+                      form
+                        .watch('socialMediaLinks')
+                        ?.map((s, i) => (i === idx ? null : s.platform))
+                        .filter(Boolean) || [];
+                    if (
+                      !form.watch(`socialMediaLinks.${idx}.platform`) &&
+                      usedPlatforms.length >= socialPlatformOptions.length
+                    )
+                      return null;
+                    return (
+                      <div key={item.id} className="flex gap-2">
+                        <FormField
+                          control={form.control}
+                          name={`socialMediaLinks.${idx}.platform`}
+                          render={({ field }) => (
+                            <FormItem className="w-1/3">
+                              <FormControl>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  value={field.value || undefined}
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Nền tảng" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {socialPlatformOptions
+                                      .filter(
+                                        (opt) =>
+                                          !usedPlatforms.includes(opt.value) ||
+                                          field.value === opt.value,
+                                      )
+                                      .map((opt) => (
+                                        <SelectItem key={opt.value} value={opt.value}>
+                                          {opt.label}
+                                        </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`socialMediaLinks.${idx}.url`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Input {...field} placeholder="URL" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={() => removeSocial(idx)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
+                  {socialPlatformOptions.length > (form.watch('socialMediaLinks')?.length || 0) && (
+                    <Button
+                      type="button"
+                      onClick={() => appendSocial({ platform: '', url: '' })}
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm liên kết
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </>
@@ -721,119 +759,168 @@ export default function ProfileSection() {
                   <CardTitle>Thông tin liên hệ</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {contactFields.map((item, idx) => (
-                    <div key={item.id} className="flex gap-2">
-                      <FormField
-                        control={form.control}
-                        name={`contacts.${idx}.type`}
-                        render={({ field }) => (
-                          <FormItem className="w-1/3">
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value || undefined}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Loại liên hệ" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="phone">Số điện thoại</SelectItem>
-                                  <SelectItem value="address">Địa chỉ</SelectItem>
-                                  <SelectItem value="email">Email</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`contacts.${idx}.value`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Input {...field} placeholder="Giá trị liên hệ" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        onClick={() => removeContact(idx)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    onClick={() => appendContact({ type: '', value: '' })}
-                    size="sm"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Thêm liên hệ
-                  </Button>
+                  {contactFields.map((item, idx) => {
+                    const usedTypes =
+                      form
+                        .watch('contacts')
+                        ?.map((c, i) => (i === idx ? null : c.type))
+                        .filter(Boolean) || [];
+                    if (
+                      !form.watch(`contacts.${idx}.type`) &&
+                      usedTypes.length >= contactTypeOptions.length
+                    )
+                      return null;
+                    return (
+                      <div key={item.id} className="flex gap-2">
+                        <FormField
+                          control={form.control}
+                          name={`contacts.${idx}.type`}
+                          render={({ field }) => (
+                            <FormItem className="w-1/3">
+                              <FormControl>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  value={field.value || undefined}
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Loại liên hệ" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {contactTypeOptions
+                                      .filter(
+                                        (opt) =>
+                                          !usedTypes.includes(opt.value) ||
+                                          field.value === opt.value,
+                                      )
+                                      .map((opt) => (
+                                        <SelectItem key={opt.value} value={opt.value}>
+                                          {opt.label}
+                                        </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`contacts.${idx}.value`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Input {...field} placeholder="Giá trị liên hệ" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={() => removeContact(idx)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
+                  {contactTypeOptions.length > (form.watch('contacts')?.length || 0) && (
+                    <Button
+                      type="button"
+                      onClick={() => appendContact({ type: '', value: '' })}
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm liên hệ
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle>Liên kết mạng xã hội</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {socialFields.map((item, idx) => (
-                    <div key={item.id} className="flex gap-2">
-                      <FormField
-                        control={form.control}
-                        name={`socialMediaLinks.${idx}.platform`}
-                        render={({ field }) => (
-                          <FormItem className="w-1/3">
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value || undefined}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Nền tảng" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="tiktok">TikTok</SelectItem>
-                                  <SelectItem value="twitter">Twitter</SelectItem>
-                                  <SelectItem value="youtube">YouTube</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`socialMediaLinks.${idx}.url`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Input {...field} placeholder="URL" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button type="button" variant="destructive" onClick={() => removeSocial(idx)}>
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    onClick={() => appendSocial({ platform: '', url: '' })}
-                    size="sm"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Thêm liên kết
-                  </Button>
+                  {socialFields.map((item, idx) => {
+                    const usedPlatforms =
+                      form
+                        .watch('socialMediaLinks')
+                        ?.map((s, i) => (i === idx ? null : s.platform))
+                        .filter(Boolean) || [];
+                    if (
+                      !form.watch(`socialMediaLinks.${idx}.platform`) &&
+                      usedPlatforms.length >= socialPlatformOptions.length
+                    )
+                      return null;
+                    return (
+                      <div key={item.id} className="flex gap-2">
+                        <FormField
+                          control={form.control}
+                          name={`socialMediaLinks.${idx}.platform`}
+                          render={({ field }) => (
+                            <FormItem className="w-1/3">
+                              <FormControl>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  value={field.value || undefined}
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Nền tảng" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {socialPlatformOptions
+                                      .filter(
+                                        (opt) =>
+                                          !usedPlatforms.includes(opt.value) ||
+                                          field.value === opt.value,
+                                      )
+                                      .map((opt) => (
+                                        <SelectItem key={opt.value} value={opt.value}>
+                                          {opt.label}
+                                        </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`socialMediaLinks.${idx}.url`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Input {...field} placeholder="URL" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={() => removeSocial(idx)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
+                  {socialPlatformOptions.length > (form.watch('socialMediaLinks')?.length || 0) && (
+                    <Button
+                      type="button"
+                      onClick={() => appendSocial({ platform: '', url: '' })}
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm liên kết
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </>
