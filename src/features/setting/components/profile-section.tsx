@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { Camera, Plus, Save, Star, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -30,7 +30,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
-import { changeUserAvtar } from '@/features/auth/auth.slice';
+import { changeName, changeUserAvtar } from '@/features/auth/auth.slice';
 import { useGetCategoriesQuery } from '@/features/common/common.service';
 import {
   useChangeAvatarMutation,
@@ -50,18 +50,16 @@ import type { BrandProfileRequest, InfluencerProfileRequest } from '../setting.t
 
 export default function ProfileSection() {
   const { role: roleName } = useAppSelector((state: RootState) => state.auth);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newSocialMedia, setNewSocialMedia] = useState({ platform: '', url: '' });
-  const [newContact, setNewContact] = useState({ type: '', value: '' });
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | undefined>(undefined);
-  // const [isPopoverOpen, setPopoverOpen] = useState(false);
   const [changeAvatar] = useChangeAvatarMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [editProfile] = useEditProfileMutation();
+  const [editProfile, { isLoading }] = useEditProfileMutation();
 
   const brandProfile = useGetBrandProfileUserQuery(undefined);
   const influencerProfile = useGetInfluencerProfileUserQuery(undefined);
   const { data: categories } = useGetCategoriesQuery();
+
+  console.log(brandProfile.data?.data);
 
   const profileData = roleName === 'BRAND' ? brandProfile.data : influencerProfile.data;
   const MAX_CATEGORIES = 3;
@@ -73,6 +71,7 @@ export default function ProfileSection() {
       avatarFile: undefined,
       backgroundFile: undefined,
       bio: profileData?.data.bio ?? '',
+      email: profileData?.data.email,
       categoryIds: profileData?.data.categories?.map((category) => category.categoryId) ?? [],
       socialMediaLinks: Array.isArray(profileData?.data.socialMediaLinks)
         ? (profileData?.data.socialMediaLinks as { key: string; value: string }[]).map((item) => ({
@@ -88,6 +87,23 @@ export default function ProfileSection() {
             }))
           : [],
     },
+  });
+
+  const {
+    fields: contactFields,
+    append: appendContact,
+    remove: removeContact,
+  } = useFieldArray({
+    control: form.control,
+    name: 'contacts',
+  });
+  const {
+    fields: socialFields,
+    append: appendSocial,
+    remove: removeSocial,
+  } = useFieldArray({
+    control: form.control,
+    name: 'socialMediaLinks',
   });
 
   useEffect(() => {
@@ -134,7 +150,6 @@ export default function ProfileSection() {
     };
     setAvatarPreviewUrl(profile.avatarUrl ?? undefined);
     form.reset(formattedData);
-    console.log(formattedData);
   }, [profileData, form]);
 
   const handleSelectCategory = (categoryId: string) => {
@@ -162,80 +177,6 @@ export default function ProfileSection() {
       return (count / 1000).toFixed(1) + 'K';
     }
     return count.toString();
-  };
-
-  const addSocialMedia = () => {
-    const { platform, url } = newSocialMedia;
-
-    if (platform && url) {
-      const currentLinks = form.getValues('socialMediaLinks') || [];
-
-      const index = currentLinks.findIndex((link) => link.platform === platform);
-      let updatedLinks;
-
-      if (index === -1) {
-        updatedLinks = [...currentLinks, { platform, url }];
-      } else {
-        updatedLinks = [...currentLinks];
-        updatedLinks[index] = { platform, url };
-      }
-
-      form.setValue('socialMediaLinks', updatedLinks, { shouldDirty: true });
-      form.trigger('socialMediaLinks'); // đảm bảo form nhận thay đổi
-
-      setNewSocialMedia({ platform: '', url: '' });
-    }
-  };
-  const removeSocialMedia = (index: number) => {
-    const confirmed = window.confirm('Bạn có chắc muốn xoá liên kết này?');
-
-    if (confirmed) {
-      const currentLinks = form.getValues('socialMediaLinks') || [];
-      const newLinks = currentLinks.filter((_, i) => i !== index);
-      form.setValue('socialMediaLinks', newLinks, { shouldDirty: true });
-      form.trigger('socialMediaLinks');
-    }
-  };
-
-  const addContact = () => {
-    const { type, value } = newContact;
-
-    if (!type || !value) {
-      toast.error('Vui lòng nhập đầy đủ thông tin liên hệ');
-      return;
-    }
-
-    const currentContacts = form.getValues('contacts') || [];
-
-    const index = currentContacts.findIndex((contact) => contact.type === type);
-
-    let updatedContacts;
-
-    if (index === -1) {
-      updatedContacts = [...currentContacts, { type, value }];
-    } else {
-      updatedContacts = [...currentContacts];
-      updatedContacts[index] = { type, value };
-    }
-
-    form.setValue('contacts', updatedContacts, { shouldDirty: true });
-    form.trigger('contacts');
-
-    setNewContact({ type: '', value: '' });
-
-    // ✅ Thêm console log này để kiểm tra kết quả:
-    console.log('Updated Contacts:', form.getValues('contacts'));
-  };
-
-  const removeContact = (index: number) => {
-    const confirmed = window.confirm('Bạn có chắc muốn xoá liên hệ này?');
-
-    if (confirmed) {
-      const currentContacts = form.getValues('contacts') || [];
-      const newContacts = currentContacts.filter((_, i) => i !== index);
-      form.setValue('contacts', newContacts, { shouldDirty: true });
-      form.trigger('contacts');
-    }
   };
 
   const dispatch = useAppDispatch();
@@ -276,9 +217,12 @@ export default function ProfileSection() {
   //     form.setValue("backgroundFile", file)
   //   }
   // }
+
+  const { formState } = form;
+
   const onSubmit = async (values: ProfileFormValues) => {
     try {
-      setIsSubmitting(true);
+      // setIsSubmitting(true);
 
       const formData = new FormData();
 
@@ -288,6 +232,10 @@ export default function ProfileSection() {
 
       if (values.backgroundFile) {
         formData.append('background', values.backgroundFile);
+      }
+
+      if (values.name !== null) {
+        dispatch(changeName({ name: values.name }));
       }
 
       let profileData: InfluencerProfileRequest | BrandProfileRequest;
@@ -339,7 +287,7 @@ export default function ProfileSection() {
       console.error('Error updating profile:', error);
       toast.error('Cập nhật hồ sơ thất bại. Vui lòng thử lại!');
     } finally {
-      setIsSubmitting(false);
+      // setIsSubmitting(false);
     }
   };
 
@@ -412,7 +360,7 @@ export default function ProfileSection() {
                     <Camera className="h-4 w-4 mr-2" />
                     Thay đổi ảnh đại diện
                   </Button>
-                  <p className="text-sm text-muted-foreground">JPG, GIF hoặc PNG. Tối đa 1MB.</p>
+                  {/* <p className="text-sm text-muted-foreground">JPG, GIF hoặc PNG. Tối đa 1MB.</p> */}
                 </div>
               </div>
             </CardContent>
@@ -442,12 +390,23 @@ export default function ProfileSection() {
               </div>
 
               <div className="mb-4">
-                <FormLabel>Email *</FormLabel>
-                <Input
-                  type="email"
-                  value={profileData?.data?.email || ''}
-                  readOnly
-                  className="cursor-not-allowed bg-muted"
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          readOnly
+                          className="cursor-not-allowed bg-muted"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
 
@@ -488,18 +447,18 @@ export default function ProfileSection() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Giới tính *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || undefined}>
-                          <FormControl>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} value={field.value || undefined}>
                             <SelectTrigger>
                               <SelectValue placeholder="Chọn giới tính" />
                             </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="male">Nam</SelectItem>
-                            <SelectItem value="female">Nữ</SelectItem>
-                            <SelectItem value="other">Khác</SelectItem>
-                          </SelectContent>
-                        </Select>
+                            <SelectContent>
+                              <SelectItem value="male">Nam</SelectItem>
+                              <SelectItem value="female">Nữ</SelectItem>
+                              <SelectItem value="other">Khác</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -533,7 +492,11 @@ export default function ProfileSection() {
                       </p>
                     </div>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <Switch
+                        className="cursor-pointer"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -559,7 +522,7 @@ export default function ProfileSection() {
                         <Star className="h-6 w-6 mr-1 fill-current" />
                         <div>
                           {profileData?.data && 'rating' in profileData.data
-                            ? `${profileData.data.rating} ★`
+                            ? `${profileData.data.rating}`
                             : 'Chưa có đánh giá'}
                         </div>{' '}
                       </div>
@@ -584,9 +547,9 @@ export default function ProfileSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex flex-col gap-2">
-                    <p className="text-sm text-muted-foreground">
+                    {/* <p className="text-sm text-muted-foreground">
                       Chọn tối đa 3 lĩnh vực chuyên môn của bạn
-                    </p>
+                    </p> */}
                     <div className="flex flex-wrap gap-2">
                       {categories &&
                         categories.data.map((category) => (
@@ -616,62 +579,62 @@ export default function ProfileSection() {
                   <FormMessage />
                 </CardContent>
               </Card>
-
               <Card>
                 <CardHeader>
                   <CardTitle>Liên kết mạng xã hội</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    {form.watch('socialMediaLinks')?.map((social, index) => (
-                      <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
-                        <div className="flex-1">
-                          <div className="font-medium capitalize">{social.platform}</div>
-                          <div className="text-sm text-muted-foreground">{social.url}</div>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeSocialMedia(index)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Select
-                        value={newSocialMedia.platform}
-                        onValueChange={(value) =>
-                          setNewSocialMedia({ ...newSocialMedia, platform: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn nền tảng" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="instagram">TikTok</SelectItem>
-                          <SelectItem value="twitter">Twitter</SelectItem>
-                          <SelectItem value="youtube">YouTube</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        placeholder="URL"
-                        value={newSocialMedia.url}
-                        onChange={(e) =>
-                          setNewSocialMedia({ ...newSocialMedia, url: e.target.value })
-                        }
+                  {socialFields.map((item, idx) => (
+                    <div key={item.id} className="flex gap-2">
+                      <FormField
+                        control={form.control}
+                        name={`socialMediaLinks.${idx}.platform`}
+                        render={({ field }) => (
+                          <FormItem className="w-1/3">
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value || undefined}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Nền tảng" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="tiktok">TikTok</SelectItem>
+                                  <SelectItem value="twitter">Twitter</SelectItem>
+                                  <SelectItem value="youtube">YouTube</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
+                      <FormField
+                        control={form.control}
+                        name={`socialMediaLinks.${idx}.url`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input {...field} placeholder="URL" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="button" variant="destructive" onClick={() => removeSocial(idx)}>
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button type="button" onClick={addSocialMedia} size="sm" className="w-full">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Thêm liên kết
-                    </Button>
-                  </div>
+                  ))}
+                  <Button
+                    type="button"
+                    onClick={() => appendSocial({ platform: '', url: '' })}
+                    size="sm"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Thêm liên kết
+                  </Button>
                 </CardContent>
               </Card>
             </>
@@ -682,7 +645,7 @@ export default function ProfileSection() {
               {/* Company Information */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Thông tin công ty</CardTitle>
+                  <CardTitle>Thông tin nhãn hàng</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -723,9 +686,9 @@ export default function ProfileSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex flex-col gap-2">
-                    <p className="text-sm text-muted-foreground">
+                    {/* <p className="text-sm text-muted-foreground">
                       Chọn tối đa 3 lĩnh vực kinh doanh của công ty
-                    </p>
+                    </p> */}
                     <div className="flex flex-wrap gap-2">
                       {categories?.data.map((category) => (
                         <Badge
@@ -755,126 +718,133 @@ export default function ProfileSection() {
                 </CardContent>
               </Card>
 
-              {/* Contact Information */}
               <Card>
                 <CardHeader>
                   <CardTitle>Thông tin liên hệ</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    {form.watch('contacts')?.map((contact, index) => (
-                      <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
-                        <div className="flex-1">
-                          <div className="font-medium capitalize">{contact.type}</div>
-                          <div className="text-sm text-muted-foreground">{contact.value}</div>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeContact(index)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Select
-                        value={newContact.type}
-                        onValueChange={(value) => setNewContact({ ...newContact, type: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Loại liên hệ" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="phone">Số điện thoại</SelectItem>
-                          <SelectItem value="address">Địa chỉ</SelectItem>
-                          <SelectItem value="hotline">Email</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        placeholder="Thông tin liên hệ"
-                        value={newContact.value}
-                        onChange={(e) => setNewContact({ ...newContact, value: e.target.value })}
+                  {contactFields.map((item, idx) => (
+                    <div key={item.id} className="flex gap-2">
+                      <FormField
+                        control={form.control}
+                        name={`contacts.${idx}.type`}
+                        render={({ field }) => (
+                          <FormItem className="w-1/3">
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value || undefined}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Loại liên hệ" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="phone">Số điện thoại</SelectItem>
+                                  <SelectItem value="address">Địa chỉ</SelectItem>
+                                  <SelectItem value="email">Email</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
+                      <FormField
+                        control={form.control}
+                        name={`contacts.${idx}.value`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input {...field} placeholder="Giá trị liên hệ" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={() => removeContact(idx)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button type="button" onClick={addContact} size="sm" className="w-full">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Thêm thông tin liên hệ
-                    </Button>
-                  </div>
+                  ))}
+                  <Button
+                    type="button"
+                    onClick={() => appendContact({ type: '', value: '' })}
+                    size="sm"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Thêm liên hệ
+                  </Button>
                 </CardContent>
               </Card>
-
-              {/* Social Media Links */}
               <Card>
                 <CardHeader>
                   <CardTitle>Liên kết mạng xã hội</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    {form.watch('socialMediaLinks')?.map((social, index) => (
-                      <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
-                        <div className="flex-1">
-                          <div className="font-medium capitalize">{social.platform}</div>
-                          <div className="text-sm text-muted-foreground">{social.url}</div>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeSocialMedia(index)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Select
-                        value={newSocialMedia.platform}
-                        onValueChange={(value) =>
-                          setNewSocialMedia({ ...newSocialMedia, platform: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn nền tảng" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="instagram">TikTok</SelectItem>
-                          <SelectItem value="twitter">Twitter</SelectItem>
-                          <SelectItem value="youtube">YouTube</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        placeholder="URL"
-                        value={newSocialMedia.url}
-                        onChange={(e) =>
-                          setNewSocialMedia({ ...newSocialMedia, url: e.target.value })
-                        }
+                  {socialFields.map((item, idx) => (
+                    <div key={item.id} className="flex gap-2">
+                      <FormField
+                        control={form.control}
+                        name={`socialMediaLinks.${idx}.platform`}
+                        render={({ field }) => (
+                          <FormItem className="w-1/3">
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value || undefined}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Nền tảng" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="tiktok">TikTok</SelectItem>
+                                  <SelectItem value="twitter">Twitter</SelectItem>
+                                  <SelectItem value="youtube">YouTube</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
+                      <FormField
+                        control={form.control}
+                        name={`socialMediaLinks.${idx}.url`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input {...field} placeholder="URL" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="button" variant="destructive" onClick={() => removeSocial(idx)}>
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button type="button" onClick={addSocialMedia} size="sm" className="w-full">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Thêm liên kết
-                    </Button>
-                  </div>
+                  ))}
+                  <Button
+                    type="button"
+                    onClick={() => appendSocial({ platform: '', url: '' })}
+                    size="sm"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Thêm liên kết
+                  </Button>
                 </CardContent>
               </Card>
             </>
           )}
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={!form.formState.isDirty || isLoading}>
               <Save className="h-4 w-4 mr-2" />
-              {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
+              {isLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
             </Button>
           </div>
         </form>

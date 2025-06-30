@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { ForumPost } from '@/features/home/components/forum-post';
 import { Icons } from '@/components/icons/icons';
+import { ForumPost } from '@/features/home/components/forum-post';
 import { useGetPostMeQuery } from '@/features/home/home.service';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
 import { ProfileInfo } from '@/features/profile/components/profile-info';
@@ -24,7 +24,10 @@ export default function InfluencerProfilePage() {
     pageSize: 10,
   });
 
-  const { data: profileRaw } = useGetInfluencerProfileUserQuery(userId ? userId : undefined);
+  const { data: profileRaw } = useGetInfluencerProfileUserQuery(userId ? userId : undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnReconnect: true,
+  });
   // const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery({
   //   pageNumber: 0,
   //   pageSize: 10,
@@ -63,15 +66,15 @@ export default function InfluencerProfilePage() {
                   socialMediaLinks={
                     Array.isArray(profile.socialMediaLinks)
                       ? Object.fromEntries(
-                        profile.socialMediaLinks.map((item: any) =>
-                          typeof item === 'object' &&
+                          profile.socialMediaLinks.map((item: any) =>
+                            typeof item === 'object' &&
                             item !== null &&
                             'key' in item &&
                             'value' in item
-                            ? [item.key, item.value]
-                            : [String(item[0]), String(item[1])],
-                        ),
-                      )
+                              ? [item.key, item.value]
+                              : [String(item[0]), String(item[1])],
+                          ),
+                        )
                       : profile.socialMediaLinks
                   }
                 />

@@ -19,7 +19,7 @@ export const changepasswordSchema = z
 export type ChangepasswordFormValues = z.infer<typeof changepasswordSchema>;
 
 export const profileFormSchema = z.object({
-  name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
+  name: z.string().min(2, 'Tên phải có ít nhất 5 ký tự'),
   email: z.string().email('Email không hợp lệ'),
   bio: z.string().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
