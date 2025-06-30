@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { DateTime } from 'luxon';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,7 +18,7 @@ import type { RootState } from '@/redux/store';
 import { formatDate, parseIsoToDateTime } from '@/utils/format';
 
 import CommentCard from './comment-card';
-import { addComment, setComments, setLikeCountState, setLikedState, toggleLikeContentPosting } from '../home.slice';
+import { addComment, addComments, setComments, setLikeCountState, setLikedState, toggleLikeContentPosting } from '../home.slice';
 
 
 interface ReceivedLike {
@@ -34,27 +35,36 @@ export interface LikeSending {
 }
 interface ForumCommentProps {
   contentPosting: ContentPosting;
+  resetTrigger: boolean;
 }
 
-export default function ForumCommentDialog({ contentPosting }: ForumCommentProps) {
+export default function ForumCommentDialog({ contentPosting, resetTrigger }: ForumCommentProps) {
   const dispatch = useAppDispatch();
   const { token, id: userId, avatarUrl } = useAppSelector((state: RootState) => state.auth);
-  const [isReadMore, setReadMore] = useState(false);
   const [valueChange, setValueChange] = useState<string>('');
+  const [pageNumber, setPageNumber] = useState<number>(0);
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    if (resetTrigger) {
+      dispatch(setComments({ contentId: contentPosting.contentId, comment: [] }));
+      setPageNumber(0);
+    }
+  }, [resetTrigger, contentPosting.contentId, dispatch]);
 
   useEffect(() => {
     if (token) {
       getStompClient(token).then((client) => {
         if (client.connected) {
           const pageable: CommonPageableRequest = {
-            pageNumber: 0,
+            pageNumber: pageNumber,
             pageSize: 10
           }
           client.send(`/app/comment/select/${contentPosting.contentId}`, {}, JSON.stringify(pageable));
         }
       })
     }
-  }, [contentPosting.contentId, token]);
+  }, [contentPosting.contentId, token, pageNumber, resetTrigger]);
 
   useEffect(() => {
     if (!token) return;
@@ -63,8 +73,14 @@ export default function ForumCommentDialog({ contentPosting }: ForumCommentProps
       commentSub = client.subscribe(`/topic/comments/select/${contentPosting.contentId}`, (res: any) => {
         try {
           const received: Comment[] = JSON.parse(res.body);
-          console.log(received)
-          dispatch(setComments({ contentId: contentPosting.contentId, comment: received }));
+          if (pageNumber === 0) {
+            dispatch(setComments({ contentId: contentPosting.contentId, comment: received }));
+            setHasMore(received.length === 10);
+          } else {
+            dispatch(addComments({ contentId: contentPosting.contentId, comment: received }));
+            setHasMore(received.length === 10);
+
+          }
         } catch (error) {
           console.error(error);
         }
@@ -74,7 +90,7 @@ export default function ForumCommentDialog({ contentPosting }: ForumCommentProps
     return () => {
       if (commentSub) commentSub.unsubscribe();
     }
-  }, [contentPosting.contentId, token, dispatch])
+  }, [contentPosting.contentId, token, dispatch, contentPosting.comment, pageNumber])
 
   useEffect(() => {
     if (!token) return;
@@ -187,10 +203,14 @@ export default function ForumCommentDialog({ contentPosting }: ForumCommentProps
     }
   }
 
+  const fetchMoreData = () => {
+    if (!hasMore) return;
+    setPageNumber((prevPage) => prevPage + 1);
+  };
   return (
     <Card
       key={contentPosting.contentId}
-      className="border border-border bg-card overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-transparent scrollbar-hide-arrows "
+      className="border-none rounded-none bg-card shadow-none overflow-auto scrollbar-small p-0 mb-16 pt-5"
     >
       <CardContent className="px-6 relative">
         <div className="flex items-start space-x-3 mb-4">
@@ -221,10 +241,10 @@ export default function ForumCommentDialog({ contentPosting }: ForumCommentProps
         <div className="space-y-3">
           <h3 className="text-lg font-semibold leading-tight">{contentPosting.contentName}</h3>
           <div className="text-sm text-muted-foreground leading-relaxed">
-            <p className={cn(!isReadMore && "line-clamp-3")}>{contentPosting.content}</p>
-            <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1" onClick={() => setReadMore(!isReadMore)} >
+            <p className={cn("")}>{contentPosting.content}</p>
+            {/* <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1" onClick={() => setReadMore(!isReadMore)} >
               {isReadMore ? "Thu gọn" : "Đọc thêm"}
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -264,12 +284,18 @@ export default function ForumCommentDialog({ contentPosting }: ForumCommentProps
             <Icons.share2 className="h-4 w-4" />
           </Button>
         </div>
-        <div className='mt-4 flex flex-col gap-4 mb-10'>
-          {contentPosting.comment && contentPosting.comment.length > 0 &&
+        <InfiniteScroll
+          dataLength={(contentPosting && contentPosting.comment) ? contentPosting.comment.length : 0}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={hasMore && <p>Loading more...</p>}
+          className='mt-4 flex flex-col gap-4'
+        >
+          {contentPosting.comment && contentPosting.comment.length > 0 ?
             contentPosting.comment.map(cmt => <CommentCard key={cmt.commentId} comment={cmt} />
-            )
+            ) : <p className='text-center text-sm text-muted-foreground'>Hãy là người bình luận đầu tiên</p>
           }
-        </div>
+        </InfiniteScroll>
         <div className='fixed bottom-0 left-0 right-0 flex text-sm px-6 py-3 bg-card rounded-b-xl gap-2'>
           <Avatar className="h-8 w-8 border border-border">
             <AvatarImage
