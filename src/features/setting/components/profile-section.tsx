@@ -218,8 +218,6 @@ export default function ProfileSection() {
   //   }
   // }
 
-  const { formState } = form;
-
   const onSubmit = async (values: ProfileFormValues) => {
     try {
       // setIsSubmitting(true);
