@@ -9,12 +9,12 @@ interface ProfileSocialLinksProps {
 
 export function ProfileSocialLinks({ socialMediaLinks }: ProfileSocialLinksProps) {
   const socialIcons = {
-    instagram: Icons.instagram,
-    facebook: Icons.facebook,
+    tiktok: Icons.tiktok,
     youtube: Icons.youtube,
+    twitter: Icons.twitter,
   };
 
-  const platforms = ['instagram', 'facebook', 'youtube'] as const;
+  const platforms = ['tiktok', 'twitter', 'youtube'] as const;
 
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">

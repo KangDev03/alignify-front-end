@@ -40,8 +40,11 @@ export const authSlice = createSlice({
     changeUserAvtar: (state, action: PayloadAction<{ url: string }>) => {
       state.avatarUrl = action.payload.url;
     },
+    changeName: (state, action: PayloadAction<{ name: string }>) => {
+      state.name = action.payload.name;
+    },
   },
 });
 
-export const { setCredentials, logout, changeUserAvtar } = authSlice.actions;
+export const { setCredentials, logout, changeUserAvtar, changeName } = authSlice.actions;
 export default authSlice.reducer;

@@ -29,6 +29,7 @@ import {
   Megaphone,
   MessageCircle,
   Minus,
+  Music2,
   PenTool,
   Play,
   Plus,
@@ -41,6 +42,7 @@ import {
   Store,
   Trash,
   TrendingUp,
+  Twitter,
   User,
   Users,
   X,
@@ -94,4 +96,6 @@ export const Icons = {
   share2: Share2,
   play: Play,
   circleAlert: CircleAlert,
+  twitter: Twitter,
+  tiktok: Music2,
 };

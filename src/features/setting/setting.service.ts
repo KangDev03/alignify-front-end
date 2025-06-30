@@ -1,6 +1,11 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type { ChangePasswordRequest, ChangePasswordResponse } from './setting.type';
+import type {
+  BrandProfileRequest,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+  InfluencerProfileRequest,
+} from './setting.type';
 
 export const settingApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -16,7 +21,15 @@ export const settingApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Auth'],
     }),
+    editProfile: builder.mutation<any, InfluencerProfileRequest | BrandProfileRequest>({
+      query: (profile) => ({
+        url: '/profiles',
+        method: 'PUT',
+        body: profile,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
   }),
 });
 
-export const { useChangePasswordMutation } = settingApi;
+export const { useChangePasswordMutation, useEditProfileMutation } = settingApi;
