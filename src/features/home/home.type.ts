@@ -44,6 +44,7 @@ export interface Comment {
   createdDate: string;
   avatarUrl?: string;
   name?: string;
+  count?: number
 }
 
 export interface ContentPosting {

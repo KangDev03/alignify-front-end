@@ -17,8 +17,14 @@ export function BrandProfilePage() {
   let userId = location.pathname.split('/').pop() || undefined;
   userId = userId === 'user-profile' ? undefined : userId;
 
-  const { data: profileRaw, isLoading } = useGetBrandProfileUserQuery(userId);
-  const { data: campaignsRaw } = useGetAllCampaignsOfBrandNoPageQuery();
+  const { data: profileRaw, isLoading } = useGetBrandProfileUserQuery(userId, {
+    refetchOnMountOrArgChange: true,
+    refetchOnReconnect: true,
+  });
+  const { data: campaignsRaw } = useGetAllCampaignsOfBrandNoPageQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnReconnect: true,
+  });
   const campaigns = Array.isArray(campaignsRaw?.data) ? campaignsRaw.data : [];
 
   const runningCampaigns = campaigns.filter((c) => c.status === 'RECRUITING');
