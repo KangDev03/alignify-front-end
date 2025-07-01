@@ -188,72 +188,83 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
   }
 
   return (
-    <InfiniteScroll
-      dataLength={brandProfile ? brandProfile?.length : 0}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={hasMore && loadingSkeleton}
-    >
-      <div className="space-y-4">
-        {brandProfile && brandProfile.length > 0
-          ? brandProfile.map((brand) => (
-              <Card
-                key={brand.id}
-                className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
-              >
-                <CardContent>
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage
-                        src={brand.avatarUrl || '/placeholder.svg'}
-                        alt={brand.name}
-                        className="object-cover"
-                      />
-                      <AvatarFallback>{brand.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-semibold">{brand.name}</h3>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{brand.bio}</p>
-                      <div className="flex items-center space-x-4 mt-2 text-sm">
-                        <div className="flex items-center space-x-1">
-                          <Icons.building2 className="h-4 w-4" />
-                          <span>{brand.totalCampaign} chiến dịch</span>
+    <>
+      <InfiniteScroll
+        dataLength={brandProfile ? brandProfile?.length : 0}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={hasMore && loadingSkeleton}
+      >
+        <div className="space-y-4">
+          {brandProfile && brandProfile.length > 0
+            ? brandProfile.map((brand) => (
+                <Card
+                  key={brand.id}
+                  className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
+                >
+                  <CardContent>
+                    <div className="flex items-center space-x-4">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage
+                          src={brand.avatarUrl || '/placeholder.svg'}
+                          alt={brand.name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback>{brand.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <h3 className="font-semibold">{brand.name}</h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{brand.bio}</p>
+                        <div className="flex items-center space-x-4 mt-2 text-sm">
+                          <div className="flex items-center space-x-1">
+                            <Icons.building2 className="h-4 w-4" />
+                            <span>{brand.totalCampaign} chiến dịch</span>
+                          </div>
                         </div>
                       </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/brand/${brand.id}`)}
+                      >
+                        Xem hồ sơ
+                      </Button>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/brand/${brand.id}`)}
-                    >
-                      Xem hồ sơ
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          : brandProfile.length === 0 &&
-            isLoading == null && (
-              <Alert variant="default">
-                <AlertCircleIcon />
-                <AlertTitle>Không có tài khoản Brand nào</AlertTitle>
-                <AlertDescription>
-                  Bạn có thể quay lại đây sau khi các tài khoản Brand xuất hiện.
-                </AlertDescription>
-              </Alert>
-            )}
-        {!hasMore && brandProfile.length > 0 && (
-          <Alert variant="default">
-            <AlertCircleIcon />
-            <AlertTitle>Không còn tài khoản Brand nào</AlertTitle>
-            <AlertDescription>
-              Bạn có thể quay lại đây sau khi các tài khoản Brand mới xuất hiện.
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
-    </InfiniteScroll>
+                  </CardContent>
+                </Card>
+              ))
+            : brandProfile.length === 0 &&
+              isLoading == null && (
+                <Alert variant="default">
+                  <AlertCircleIcon />
+                  <AlertTitle>Không có tài khoản Brand nào</AlertTitle>
+                  <AlertDescription>
+                    Bạn có thể quay lại đây sau khi các tài khoản Brand xuất hiện.
+                  </AlertDescription>
+                </Alert>
+              )}
+          {!hasMore && brandProfile.length > 0 && (
+            <Alert variant="default">
+              <AlertCircleIcon />
+              <AlertTitle>Không còn tài khoản Brand nào</AlertTitle>
+              <AlertDescription>
+                Bạn có thể quay lại đây sau khi các tài khoản Brand mới xuất hiện.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+      </InfiniteScroll>
+      {brandProfile.length === 0 && !isLoading && (
+        <Alert variant="default">
+          <AlertCircleIcon />
+          <AlertTitle>Không có tài khoản Brand nào</AlertTitle>
+          <AlertDescription>
+            Bạn có thể quay lại đây sau khi các tài khoản Brand xuất hiện.
+          </AlertDescription>
+        </Alert>
+      )}
+    </>
   );
 }
