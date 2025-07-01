@@ -179,6 +179,14 @@ const homeSlice = createSlice({
         state.contentPosting[contentIndex].commentCount = action.payload.count;
       }
     },
+    setCommentCount: (
+      state,
+      action: PayloadAction<{ contentId: string, count: number }>) => {
+      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+      if (contentIndex !== -1 && action.payload.count) {
+        state.contentPosting[contentIndex].commentCount = action.payload.count;
+      }
+    },
     resetCampaignPosting: (state) => {
       state.campaignPosting = [];
     },
