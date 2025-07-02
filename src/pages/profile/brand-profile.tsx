@@ -76,22 +76,7 @@ export function BrandProfilePage() {
               address={contactMap.address}
             />
 
-            <ProfileSocialLinks
-              socialMediaLinks={
-                Array.isArray(profile.socialMediaLinks)
-                  ? Object.fromEntries(
-                      profile.socialMediaLinks.map((item: any) =>
-                        typeof item === 'object' &&
-                        item !== null &&
-                        'key' in item &&
-                        'value' in item
-                          ? [item.key, item.value]
-                          : [String(item[0]), String(item[1])],
-                      ),
-                    )
-                  : profile.socialMediaLinks
-              }
-            />
+            <ProfileSocialLinks socialMediaLinks={profile.socialMediaLinks ?? []} />
           </div>
 
           {/* Thống kê và trạng thái */}

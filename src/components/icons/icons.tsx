@@ -7,6 +7,7 @@ import {
   Building2,
   Calendar,
   Camera,
+  Check,
   CheckCircle,
   CircleAlert,
   CircleCheckBig,
@@ -33,6 +34,7 @@ import {
   PenTool,
   Play,
   Plus,
+  RefreshCcw,
   Save,
   Search,
   SendHorizontal,
@@ -98,4 +100,6 @@ export const Icons = {
   circleAlert: CircleAlert,
   twitter: Twitter,
   tiktok: Music2,
+  refreshCcw: RefreshCcw,
+  check: Check,
 };

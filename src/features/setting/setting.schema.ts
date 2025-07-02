@@ -35,14 +35,15 @@ export const profileFormSchema = z.object({
       z.object({
         platform: z.string().min(1, 'Phải chọn nền tảng'),
         url: z.string().url('URL không hợp lệ'),
+        follower: z.number().min(1, 'Bạn phải có ít nhất 1 người theo dõi'),
       }),
     )
     .optional(),
   contacts: z // For BRAND
     .array(
       z.object({
-        type: z.string(),
-        value: z.string(),
+        contact_type: z.string(),
+        contact_infor: z.string(),
       }),
     )
     .optional(),

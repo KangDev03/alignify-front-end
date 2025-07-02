@@ -5,6 +5,9 @@ import type {
   ChangePasswordRequest,
   ChangePasswordResponse,
   InfluencerProfileRequest,
+  UserStatsFromMetaResponse,
+  UserStatsFromTiktokResponse,
+  UserStatsFromYoutubeResponse,
 } from './setting.type';
 
 export const settingApi = baseApi.injectEndpoints({
@@ -29,7 +32,44 @@ export const settingApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    getFollowerCountFromTiktok: builder.query<UserStatsFromTiktokResponse, { uniqueId: string }>({
+      query: (data) => ({
+        url: `/rapidapi/tiktok/user/${data.uniqueId}/statsV2`,
+        method: 'GET',
+      }),
+    }),
+    getSubcriberCountFromYoutube: builder.query<
+      UserStatsFromYoutubeResponse,
+      { channelName: string }
+    >({
+      query: (data) => ({
+        url: `/rapidapi/youtube/${data.channelName}/subscriber_count`,
+        method: 'GET',
+      }),
+    }),
+    getFollowerCountFromFacebook: builder.query<UserStatsFromMetaResponse, { pageName: string }>({
+      query: (data) => ({
+        url: `/rapidapi/facebook/page/${data.pageName}`,
+        method: 'GET',
+      }),
+    }),
+    getFollowerCountFromInstagram: builder.query<
+      UserStatsFromMetaResponse,
+      { code_or_id_or_url: string }
+    >({
+      query: (data) => ({
+        url: `/rapidapi/instagram/user/${data.code_or_id_or_url}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useChangePasswordMutation, useEditProfileMutation } = settingApi;
+export const {
+  useChangePasswordMutation,
+  useEditProfileMutation,
+  useGetFollowerCountFromTiktokQuery,
+  useGetSubcriberCountFromYoutubeQuery,
+  useGetFollowerCountFromFacebookQuery,
+  useGetFollowerCountFromInstagramQuery,
+} = settingApi;

@@ -59,10 +59,10 @@ export const formatLastTimeSentMessage = (date: string | DateTime | Date): strin
 
 export const formatNumber = (num: number) => {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M';
+    return (Math.ceil((num / 1000000) * 10) / 10).toFixed(1) + 'M';
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
+    return (Math.ceil((num / 1000) * 10) / 10).toFixed(1) + 'K';
   }
   return num.toString();
 };
@@ -87,8 +87,8 @@ export const formatCommonLastTime = (date: string | DateTime | Date): string => 
   } else if (diffHours < 24) {
     return `${diffHours} giờ trước`;
   } else if (diffDays < 365 && dt.year === DateTime.now().year) {
-    return `${dt.toFormat("dd/MM")}`;
+    return `${dt.toFormat('dd/MM')}`;
   } else {
-    return `${dt.toFormat("dd/MM/yyyy")}`;
+    return `${dt.toFormat('dd/MM/yyyy')}`;
   }
 };

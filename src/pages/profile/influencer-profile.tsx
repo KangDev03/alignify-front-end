@@ -62,27 +62,12 @@ export default function InfluencerProfilePage() {
               <div className="lg:col-span-2 space-y-6">
                 <ProfileInfo profile={profile} />
 
-                <ProfileSocialLinks
-                  socialMediaLinks={
-                    Array.isArray(profile.socialMediaLinks)
-                      ? Object.fromEntries(
-                          profile.socialMediaLinks.map((item: any) =>
-                            typeof item === 'object' &&
-                            item !== null &&
-                            'key' in item &&
-                            'value' in item
-                              ? [item.key, item.value]
-                              : [String(item[0]), String(item[1])],
-                          ),
-                        )
-                      : profile.socialMediaLinks
-                  }
-                />
+                <ProfileSocialLinks socialMediaLinks={profile.socialMediaLinks ?? []} />
               </div>
 
               {/* Thống kê */}
               <div className="space-y-6">
-                <ProfileStats profile={profile} />
+                <ProfileStats socialMedias={profile.socialMediaLinks ?? []} />
                 {/* <ProfilePerformance
                   engagementRate={profile.engagementRate}
                   rating={profile.rating}

@@ -30,6 +30,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
+import { Icons } from '@/components/icons/icons';
 import { changeName, changeUserAvtar } from '@/features/auth/auth.slice';
 import { useGetCategoriesQuery } from '@/features/common/common.service';
 import {
@@ -45,8 +46,14 @@ import type { RootState } from '@/redux/store';
 import { parseIsoToDateTime } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { FollowerInput } from './follower';
 import { useEditProfileMutation } from '../setting.service';
-import type { BrandProfileRequest, InfluencerProfileRequest } from '../setting.type';
+import type {
+  BrandProfileRequest,
+  Contact,
+  InfluencerProfileRequest,
+  SocialMedia,
+} from '../setting.type';
 
 export default function ProfileSection() {
   const { role: roleName } = useAppSelector((state: RootState) => state.auth);
@@ -59,10 +66,10 @@ export default function ProfileSection() {
   const influencerProfile = useGetInfluencerProfileUserQuery(undefined);
   const { data: categories } = useGetCategoriesQuery();
 
-  console.log(brandProfile.data?.data);
-
   const profileData = roleName === 'BRAND' ? brandProfile.data : influencerProfile.data;
   const MAX_CATEGORIES = 3;
+
+  const [approveSocialLinks, setApproveSocialLinks] = useState<SocialMedia[]>([]);
 
   const form = useForm<ProfileFormValues>({
     mode: 'onSubmit',
@@ -74,17 +81,20 @@ export default function ProfileSection() {
       email: profileData?.data.email,
       categoryIds: profileData?.data.categories?.map((category) => category.categoryId) ?? [],
       socialMediaLinks: Array.isArray(profileData?.data.socialMediaLinks)
-        ? (profileData?.data.socialMediaLinks as { key: string; value: string }[]).map((item) => ({
-            platform: item.key,
-            url: item.value,
+        ? (profileData?.data.socialMediaLinks as SocialMedia[]).map((item) => ({
+            platform: item.platform,
+            url: item.url,
+            follower: item.follower,
           }))
         : [],
       contacts:
         profileData?.data && 'contacts' in profileData.data && profileData.data.contacts
-          ? Object.entries(profileData.data.contacts).map(([type, rawValue]) => ({
-              type,
-              value: typeof rawValue === 'string' ? rawValue : (rawValue?.key ?? ''),
-            }))
+          ? Array.isArray(profileData?.data.contacts)
+            ? (profileData?.data.contacts as Contact[]).map((item) => ({
+                contact_type: item.contact_type,
+                contact_infor: item.contact_infor,
+              }))
+            : []
           : [],
     },
   });
@@ -113,9 +123,10 @@ export default function ProfileSection() {
   ];
 
   const socialPlatformOptions = [
-    { value: 'tiktok', label: 'TikTok' },
-    { value: 'twitter', label: 'Twitter' },
-    { value: 'youtube', label: 'YouTube' },
+    { value: 'TIKTOK', label: 'TikTok' },
+    { value: 'YOUTUBE', label: 'YouTube' },
+    { value: 'FACEBOOK', label: 'Facebook' },
+    { value: 'INSTAGRAM', label: 'Instagram' },
   ];
 
   useEffect(() => {
@@ -143,26 +154,42 @@ export default function ProfileSection() {
       categoryIds: profile.categories?.map((c) => c.categoryId) || [],
       avatarFile: undefined,
 
-      follower: 'follower' in profile ? profile.follower : undefined,
-
-      socialMediaLinks: profile.socialMediaLinks
-        ? Object.entries(profile.socialMediaLinks).map(([platform, rawUrl]) => ({
-            platform,
-            url: typeof rawUrl === 'string' ? rawUrl : (rawUrl?.key ?? ''),
+      socialMediaLinks: Array.isArray(profile.socialMediaLinks)
+        ? (profile.socialMediaLinks as SocialMedia[]).map((item) => ({
+            platform: item.platform,
+            url: item.url,
+            follower: item.follower,
           }))
         : [],
 
       contacts:
         'contacts' in profile && profile.contacts
-          ? Object.entries(profile.contacts).map(([type, rawValue]) => ({
-              type,
-              value: typeof rawValue === 'string' ? rawValue : (rawValue?.key ?? ''),
-            }))
+          ? Array.isArray(profile.contacts)
+            ? (profile.contacts as Contact[]).map((item) => ({
+                contact_type: item.contact_type,
+                contact_infor: item.contact_infor,
+              }))
+            : []
           : [],
     };
     setAvatarPreviewUrl(profile.avatarUrl ?? undefined);
     form.reset(formattedData);
   }, [profileData, form]);
+
+  useEffect(() => {
+    (profileData?.data.socialMediaLinks && Array.isArray(profileData.data.socialMediaLinks)
+      ? profileData.data.socialMediaLinks.map((item) => ({
+          platform: item.platform,
+          url: item.url,
+          follower: item.follower,
+        }))
+      : []
+    ).forEach((item) => {
+      setApproveSocialLinks((prev) => {
+        return [...prev, item];
+      });
+    });
+  }, [form, profileData?.data.socialMediaLinks]);
 
   const handleSelectCategory = (categoryId: string) => {
     const current = form.getValues('categoryIds') || [];
@@ -179,16 +206,6 @@ export default function ProfileSection() {
         form.setValue('categoryIds', [...current, categoryId]);
       }
     }
-  };
-
-  const formatFollowerCount = (count: number) => {
-    if (count >= 1000000) {
-      return (count / 1000000).toFixed(1) + 'M';
-    }
-    if (count >= 1000) {
-      return (count / 1000).toFixed(1) + 'K';
-    }
-    return count.toString();
   };
 
   const dispatch = useAppDispatch();
@@ -260,19 +277,16 @@ export default function ProfileSection() {
               ? new Date(values.establishDate).toISOString()
               : undefined,
           socialMediaLinks:
-            values.socialMediaLinks?.reduce((acc: { [key: string]: string }, link) => {
-              if (link.platform && link.url) {
-                acc[link.platform] = link.url;
-              }
-              return acc;
-            }, {}) || {},
+            values.socialMediaLinks
+              ?.filter((social) => social.platform && social.follower && social.url)
+              .map((social) => ({
+                platform: social.platform.toUpperCase(),
+                url: social.url,
+                follower: social.follower,
+              })) || [],
           contacts:
-            values.contacts?.reduce((acc: { [key: string]: string }, contact) => {
-              if (contact.type && contact.value) {
-                acc[contact.type] = contact.value;
-              }
-              return acc;
-            }, {}) || {},
+            values.contacts?.filter((contact) => contact.contact_infor && contact.contact_type) ||
+            [],
         };
       } else {
         const { email: _email, follower: _follower, contacts: _contacts, ...rest } = values;
@@ -281,12 +295,13 @@ export default function ProfileSection() {
           ...rest,
           doB: values.doB ? values.doB.toISOString() : undefined,
           socialMediaLinks:
-            values.socialMediaLinks?.reduce((acc: { [key: string]: string }, link) => {
-              if (link.platform && link.url) {
-                acc[link.platform] = link.url;
-              }
-              return acc;
-            }, {}) || {},
+            values.socialMediaLinks
+              ?.filter((social) => social.platform && social.follower && social.url)
+              .map((social) => ({
+                platform: social.platform.toUpperCase(),
+                url: social.url,
+                follower: social.follower,
+              })) || [],
         };
       }
       await editProfile(profileData).unwrap();
@@ -299,6 +314,30 @@ export default function ProfileSection() {
     } finally {
       // setIsSubmitting(false);
     }
+  };
+
+  const checkUrlWithPlatform = (platform: string, url: string) => {
+    return (
+      (url.match(new RegExp(`^https://www\\.${platform.toLowerCase()}\\.com/@([^/?]+)`)) != null ||
+        url.match(new RegExp(`^https://www\\.${platform.toLowerCase()}\\.com/([^/?]+)`)) != null) &&
+      socialPlatformOptions.findIndex(
+        (item) => item.value.toLowerCase() === platform.toLowerCase(),
+      ) !== -1
+    );
+  };
+
+  const handleApproveSocialLinks = (platform: string, url: string, follower: number) => {
+    if (!platform || !url) return;
+    setApproveSocialLinks((prev) => {
+      if (prev.some((item) => item.platform === platform)) return prev;
+      return [...prev, { platform, url, follower }];
+    });
+  };
+
+  const handleRemoveSocialLinks = (platform: string) => {
+    setApproveSocialLinks((prev) => {
+      return prev.filter((item) => !(item.platform === platform));
+    });
   };
 
   return (
@@ -523,9 +562,7 @@ export default function ProfileSection() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">
-                        {formatFollowerCount(form.watch('follower') || 0)}
-                      </div>
+                      <div className="text-2xl font-bold text-blue-600">0</div>
                     </div>
                     <div className="text-center p-4 border rounded-lg">
                       <div className="flex items-center justify-center text-2xl font-bold text-yellow-600">
@@ -611,7 +648,7 @@ export default function ProfileSection() {
                           control={form.control}
                           name={`socialMediaLinks.${idx}.platform`}
                           render={({ field }) => (
-                            <FormItem className="w-1/3">
+                            <FormItem className="w-1/5">
                               <FormControl>
                                 <Select
                                   onValueChange={field.onChange}
@@ -651,10 +688,59 @@ export default function ProfileSection() {
                             </FormItem>
                           )}
                         />
+                        {form.watch(`socialMediaLinks.${idx}.url`) &&
+                          checkUrlWithPlatform(
+                            form.watch(`socialMediaLinks.${idx}.platform`),
+                            form.watch(`socialMediaLinks.${idx}.url`),
+                          ) && (
+                            <FormField
+                              control={form.control}
+                              name={`socialMediaLinks.${idx}.follower`}
+                              render={({ field }) => (
+                                <FormItem className="">
+                                  <FormControl>
+                                    {form.watch(`socialMediaLinks.${idx}.url`) &&
+                                    approveSocialLinks.some(
+                                      (link) =>
+                                        link.platform ===
+                                          form.watch(`socialMediaLinks.${idx}.platform`) &&
+                                        link.url === form.watch(`socialMediaLinks.${idx}.url`),
+                                    ) ? (
+                                      <FollowerInput
+                                        showRefetchComponent={field.value === 0}
+                                        follower={field.value}
+                                        url={form.watch(`socialMediaLinks.${idx}.url`)}
+                                        className="w-24"
+                                        type="text"
+                                        {...field}
+                                      />
+                                    ) : (
+                                      <Button
+                                        variant="outline"
+                                        onClick={() =>
+                                          handleApproveSocialLinks(
+                                            form.watch(`socialMediaLinks.${idx}.platform`),
+                                            form.watch(`socialMediaLinks.${idx}.url`),
+                                            form.watch(`socialMediaLinks.${idx}.follower`),
+                                          )
+                                        }
+                                      >
+                                        <Icons.check />
+                                      </Button>
+                                    )}
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          )}
                         <Button
                           type="button"
                           variant="destructive"
-                          onClick={() => removeSocial(idx)}
+                          onClick={() => {
+                            removeSocial(idx);
+                            handleRemoveSocialLinks(form.watch(`socialMediaLinks.${idx}.platform`));
+                          }}
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -664,7 +750,7 @@ export default function ProfileSection() {
                   {socialPlatformOptions.length > (form.watch('socialMediaLinks')?.length || 0) && (
                     <Button
                       type="button"
-                      onClick={() => appendSocial({ platform: '', url: '' })}
+                      onClick={() => appendSocial({ platform: '', url: '', follower: 0 })}
                       size="sm"
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -763,10 +849,10 @@ export default function ProfileSection() {
                     const usedTypes =
                       form
                         .watch('contacts')
-                        ?.map((c, i) => (i === idx ? null : c.type))
+                        ?.map((c, i) => (i === idx ? null : c.contact_type))
                         .filter(Boolean) || [];
                     if (
-                      !form.watch(`contacts.${idx}.type`) &&
+                      !form.watch(`contacts.${idx}.contact_type`) &&
                       usedTypes.length >= contactTypeOptions.length
                     )
                       return null;
@@ -774,9 +860,9 @@ export default function ProfileSection() {
                       <div key={item.id} className="flex gap-2">
                         <FormField
                           control={form.control}
-                          name={`contacts.${idx}.type`}
+                          name={`contacts.${idx}.contact_type`}
                           render={({ field }) => (
-                            <FormItem className="w-1/3">
+                            <FormItem className="w-1/5">
                               <FormControl>
                                 <Select
                                   onValueChange={field.onChange}
@@ -806,7 +892,7 @@ export default function ProfileSection() {
                         />
                         <FormField
                           control={form.control}
-                          name={`contacts.${idx}.value`}
+                          name={`contacts.${idx}.contact_infor`}
                           render={({ field }) => (
                             <FormItem className="flex-1">
                               <FormControl>
@@ -829,7 +915,7 @@ export default function ProfileSection() {
                   {contactTypeOptions.length > (form.watch('contacts')?.length || 0) && (
                     <Button
                       type="button"
-                      onClick={() => appendContact({ type: '', value: '' })}
+                      onClick={() => appendContact({ contact_type: '', contact_infor: '' })}
                       size="sm"
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -861,7 +947,7 @@ export default function ProfileSection() {
                           control={form.control}
                           name={`socialMediaLinks.${idx}.platform`}
                           render={({ field }) => (
-                            <FormItem className="w-1/3">
+                            <FormItem className="w-1/5">
                               <FormControl>
                                 <Select
                                   onValueChange={field.onChange}
@@ -901,10 +987,59 @@ export default function ProfileSection() {
                             </FormItem>
                           )}
                         />
+                        {form.watch(`socialMediaLinks.${idx}.url`) &&
+                          checkUrlWithPlatform(
+                            form.watch(`socialMediaLinks.${idx}.platform`),
+                            form.watch(`socialMediaLinks.${idx}.url`),
+                          ) && (
+                            <FormField
+                              control={form.control}
+                              name={`socialMediaLinks.${idx}.follower`}
+                              render={({ field }) => (
+                                <FormItem className="">
+                                  <FormControl>
+                                    {form.watch(`socialMediaLinks.${idx}.url`) &&
+                                    approveSocialLinks.some(
+                                      (link) =>
+                                        link.platform ===
+                                          form.watch(`socialMediaLinks.${idx}.platform`) &&
+                                        link.url === form.watch(`socialMediaLinks.${idx}.url`),
+                                    ) ? (
+                                      <FollowerInput
+                                        showRefetchComponent={field.value === 0}
+                                        follower={field.value}
+                                        url={form.watch(`socialMediaLinks.${idx}.url`)}
+                                        className="w-24"
+                                        type="text"
+                                        {...field}
+                                      />
+                                    ) : (
+                                      <Button
+                                        variant="outline"
+                                        onClick={() =>
+                                          handleApproveSocialLinks(
+                                            form.watch(`socialMediaLinks.${idx}.platform`),
+                                            form.watch(`socialMediaLinks.${idx}.url`),
+                                            form.watch(`socialMediaLinks.${idx}.follower`),
+                                          )
+                                        }
+                                      >
+                                        <Icons.check />
+                                      </Button>
+                                    )}
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          )}
                         <Button
                           type="button"
                           variant="destructive"
-                          onClick={() => removeSocial(idx)}
+                          onClick={() => {
+                            removeSocial(idx);
+                            handleRemoveSocialLinks(form.watch(`socialMediaLinks.${idx}.platform`));
+                          }}
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -914,7 +1049,7 @@ export default function ProfileSection() {
                   {socialPlatformOptions.length > (form.watch('socialMediaLinks')?.length || 0) && (
                     <Button
                       type="button"
-                      onClick={() => appendSocial({ platform: '', url: '' })}
+                      onClick={() => appendSocial({ platform: '', url: '', follower: 0 })}
                       size="sm"
                     >
                       <Plus className="h-4 w-4 mr-2" />
