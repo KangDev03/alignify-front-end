@@ -131,3 +131,5 @@ export interface UserDTO {
   name: string;
   avatarUrl: string | null;
 }
+
+export const SupportedPlatforms: string[] = ['tiktok', 'youtube', 'facebook', 'instagram'];

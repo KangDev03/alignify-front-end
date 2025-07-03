@@ -1,4 +1,5 @@
 import type { ApiReponseSuccess } from '../common/common.type';
+import type { Contact, SocialMedia } from '../setting/setting.type';
 
 export interface ChangeAvatarRequest {
   image: FormData;
@@ -18,7 +19,7 @@ export interface InfluencerData {
   doB?: string | null;
   gender: string;
   bio?: string | null;
-  socialMediaLinks?: [{ key: string }, string] | [];
+  socialMediaLinks?: SocialMedia[];
   rating?: number | 0;
   categories?: Category[] | null;
   follower?: number | 0;
@@ -44,8 +45,8 @@ export interface BrandData {
   backgroundUrl: string;
   bio: string;
   categories: Category[];
-  contacts: [{ key: string }, string];
-  socialMediaLinks: [{ key: string }, string];
+  contacts: Contact[];
+  socialMediaLinks: SocialMedia[];
   establishDate: string;
   totalCampaign: number | 0;
 }

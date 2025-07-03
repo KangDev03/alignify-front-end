@@ -2,29 +2,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Icons } from '@/components/icons/icons';
+import { SupportedPlatforms } from '@/features/common/common.type';
+import type { SocialMedia } from '@/features/setting/setting.type';
 
 interface ProfileSocialLinksProps {
-  socialMediaLinks: Record<string, string>;
+  socialMediaLinks: SocialMedia[];
 }
 
 export function ProfileSocialLinks({ socialMediaLinks }: ProfileSocialLinksProps) {
-  const socialIcons = {
-    tiktok: Icons.tiktok,
-    youtube: Icons.youtube,
-    twitter: Icons.twitter,
-  };
-
-  const platforms = ['tiktok', 'twitter', 'youtube'] as const;
-
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
       <CardHeader>
         <CardTitle>Liên kết mạng xã hội</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {platforms.map((platform) => {
-          const Icon = socialIcons[platform];
-          const link = socialMediaLinks[platform];
+        {SupportedPlatforms.map((platform) => {
+          const Icon = Icons[platform as keyof typeof Icons];
+          const linkObj = socialMediaLinks.find((sm) => sm.platform?.toLowerCase() === platform);
+          const link = linkObj?.url;
 
           return (
             <div
