@@ -25,6 +25,7 @@ import {
   Image,
   Instagram,
   LogOut,
+  Mail,
   MapPin,
   Megaphone,
   MessageCircle,
@@ -94,4 +95,5 @@ export const Icons = {
   share2: Share2,
   play: Play,
   circleAlert: CircleAlert,
+  mail: Mail,
 };

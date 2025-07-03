@@ -10,6 +10,7 @@ import LoginPage from '@/pages/auth/sign-in';
 import VerifyOtpPage from '@/pages/auth/verify-otp';
 import { CampaignManagement } from '@/pages/campaign-management';
 import { HomePage } from '@/pages/home';
+import Invitation from '@/pages/invitation';
 import { BrandProfilePage } from '@/pages/profile/brand-profile';
 import InfluencerProfilePage from '@/pages/profile/influencer-profile';
 import { Settings } from '@/pages/setting';
@@ -42,6 +43,7 @@ function Router() {
           <Route path="/applicants" element={<Applicants />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/campaign-management" element={<CampaignManagement />} />
+          <Route path="/invitation" element={<Invitation />} />
           {roleName === 'INFLUENCER' && (
             <Route path="/user-profile" element={<InfluencerProfilePage />} />
           )}

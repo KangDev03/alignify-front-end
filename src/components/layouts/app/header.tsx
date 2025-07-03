@@ -13,7 +13,7 @@ import NotificationTrigger from '@/features/notification/components/notification
 import type { RootState } from '@/redux/store';
 
 type InfluencerPage = 'home' | 'my-campaign' | 'applications';
-type BrandPage = 'home' | 'campaign-management' | 'applicants';
+type BrandPage = 'home' | 'campaign-management' | 'applicants' | 'invitations';
 type CurrentPage = InfluencerPage | BrandPage;
 
 interface HeaderProps {
@@ -37,6 +37,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
     } else {
       if (location.pathname.includes('/campaign-management')) return 'campaign-management';
       if (location.pathname.includes('/applicants')) return 'applicants';
+      if (location.pathname.includes('/invitation')) return 'invitations';
       return 'home';
     }
   };
@@ -58,6 +59,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
       if (page === 'home') navigate('/home');
       else if (page === 'campaign-management') navigate('/campaign-management');
       else if (page === 'applicants') navigate('/applicants');
+      else if (page === 'invitations') navigate('/invitation');
     }
   };
 
@@ -73,6 +75,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
         { id: 'home', label: 'Trang chủ', icon: Icons.home },
         { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
         { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
+        { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
         // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
       ];
 
