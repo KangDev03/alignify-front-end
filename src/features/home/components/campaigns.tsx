@@ -111,7 +111,6 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
       }
     }
   }, [allData, categoryData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading]);
-
   useEffect(() => {
     if (campaign) {
       if (isAll) refetchAll();

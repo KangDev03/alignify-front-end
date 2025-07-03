@@ -116,7 +116,18 @@ export const contentPostingApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Auth'],
     }),
+    getPostByCategory: builder.query<ContentPostingResponse, CommonPageableRequest>({
+      query: ({ categoryId, pageNumber, pageSize }) => ({
+        url: `/contentPosting/filterByCategory/${categoryId}`,
+        method: 'GET',
+        params: { pageNumber, pageSize },
+      }),
+    }),
   }),
 });
-export const { useGetAllContentPostingQuery, useGetPostMeQuery, useGetPostsByUserIdQuery } =
-  contentPostingApi;
+export const {
+  useGetAllContentPostingQuery,
+  useGetPostMeQuery,
+  useGetPostsByUserIdQuery,
+  useGetPostByCategoryQuery,
+} = contentPostingApi;
