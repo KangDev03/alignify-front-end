@@ -107,11 +107,10 @@ const homeSlice = createSlice({
         }
       }
     },
-    toggleLikeContentPosting: (
-      state,
-      action: PayloadAction<{ contentId: string }>,
-    ) => {
-      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+    toggleLikeContentPosting: (state, action: PayloadAction<{ contentId: string }>) => {
+      const contentIndex = state.contentPosting.findIndex(
+        (content) => content.contentId === action.payload.contentId,
+      );
       if (contentIndex !== -1) {
         const content = state.contentPosting[contentIndex];
         const wasLiked = content.isLiked;
@@ -119,54 +118,65 @@ const homeSlice = createSlice({
         content.likeCount = content.likeCount + (wasLiked ? -1 : 1);
       }
     },
-    setLikedState: (
-      state,
-      action: PayloadAction<{ contentId: string, isLiked: boolean }>,
-    ) => {
-      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+    setLikedState: (state, action: PayloadAction<{ contentId: string; isLiked: boolean }>) => {
+      const contentIndex = state.contentPosting.findIndex(
+        (content) => content.contentId === action.payload.contentId,
+      );
       if (contentIndex !== -1) {
         state.contentPosting[contentIndex].isLiked = action.payload.isLiked;
       }
     },
-    setLikeCountState: (
-      state,
-      action: PayloadAction<{ contentId: string, likeCount: number }>,
-    ) => {
-      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+    setLikeCountState: (state, action: PayloadAction<{ contentId: string; likeCount: number }>) => {
+      const contentIndex = state.contentPosting.findIndex(
+        (content) => content.contentId === action.payload.contentId,
+      );
       if (contentIndex !== -1) {
         state.contentPosting[contentIndex].likeCount = action.payload.likeCount;
       }
     },
-    setComments: (
-      state,
-      action: PayloadAction<{ contentId: string, comment: Comment[] }>) => {
-      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+    setComments: (state, action: PayloadAction<{ contentId: string; comment: Comment[] }>) => {
+      const contentIndex = state.contentPosting.findIndex(
+        (content) => content.contentId === action.payload.contentId,
+      );
       if (contentIndex !== -1 && action.payload.comment) {
         state.contentPosting[contentIndex].comment = action.payload.comment ?? [];
       }
-    }, addComments: (
-      state,
-      action: PayloadAction<{ contentId: string, comment: Comment[] }>
-    ) => {
-      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+    },
+    addComments: (state, action: PayloadAction<{ contentId: string; comment: Comment[] }>) => {
+      const contentIndex = state.contentPosting.findIndex(
+        (content) => content.contentId === action.payload.contentId,
+      );
       if (contentIndex !== -1 && action.payload.comment) {
         state.contentPosting[contentIndex].comment = [
           ...(state.contentPosting[contentIndex].comment ?? []),
           ...action.payload.comment.filter(
-            (cmt) => !(state.contentPosting[contentIndex].comment ?? []).some(existing => existing.commentId === cmt.commentId)
+            (cmt) =>
+              !(state.contentPosting[contentIndex].comment ?? []).some(
+                (existing) => existing.commentId === cmt.commentId,
+              ),
           ),
         ];
       }
     },
-    addComment: (
-      state,
-      action: PayloadAction<{ contentId: string, comment: Comment }>) => {
-      const contentIndex = state.contentPosting.findIndex((content) => content.contentId === action.payload.contentId);
+    addComment: (state, action: PayloadAction<{ contentId: string; comment: Comment }>) => {
+      const contentIndex = state.contentPosting.findIndex(
+        (content) => content.contentId === action.payload.contentId,
+      );
       if (contentIndex !== -1 && action.payload.comment) {
         state.contentPosting[contentIndex].comment = [
           action.payload.comment,
           ...(state.contentPosting[contentIndex].comment ?? []),
         ];
+        state.contentPosting[contentIndex].commentCount =
+          state.contentPosting[contentIndex].commentCount + 1;
+      }
+    },
+    setCommentCount: (state, action: PayloadAction<{ contentId: string; count: number }>) => {
+      const contentIndex = state.contentPosting.findIndex(
+        (content) => content.contentId === action.payload.contentId,
+      );
+      if (contentIndex !== -1 && action.payload.count) {
+        state.contentPosting[contentIndex].commentCount = action.payload.count;
       }
     },
     resetCampaignPosting: (state) => {
@@ -204,6 +214,7 @@ export const {
   setComments,
   addComments,
   addComment,
+  setCommentCount,
   resetCampaignPosting,
   resetContentPosting,
   resetBrandProfile,

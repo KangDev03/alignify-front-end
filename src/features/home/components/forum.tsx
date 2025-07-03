@@ -218,35 +218,46 @@ export default function Forum({ selectedCategoryId, searchTerm }: ForumProps) {
   }
 
   return (
-    <InfiniteScroll
-      dataLength={contentPosting ? contentPosting.length : 0}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={hasMore && loadingSkeletion}
-    >
-      <div className="space-y-6">
-        {contentPosting.length > 0
-          ? contentPosting.map((post) => <ForumPost key={post.contentId} contentPosting={post} />)
-          : contentPosting.length === 0 &&
-          isLoading == null && (
+    <>
+      <InfiniteScroll
+        dataLength={contentPosting ? contentPosting.length : 0}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={hasMore && loadingSkeletion}
+      >
+        <div className="space-y-6">
+          {contentPosting.length > 0
+            ? contentPosting.map((post) => <ForumPost key={post.contentId} contentPosting={post} />)
+            : contentPosting.length === 0 &&
+              isLoading == null && (
+                <Alert variant="default">
+                  <AlertCircleIcon />
+                  <AlertTitle>Không có bài đăng nào trong Forum</AlertTitle>
+                  <AlertDescription>
+                    Bạn có thể quay lại đây sau khi các bài đăng trong Forum xuất hiện.
+                  </AlertDescription>
+                </Alert>
+              )}
+          {!hasMore && contentPosting.length > 0 && (
             <Alert variant="default">
               <AlertCircleIcon />
-              <AlertTitle>Không có bài đăng nào trong Forum</AlertTitle>
+              <AlertTitle>Không còn bài đăng nào trong Forum</AlertTitle>
               <AlertDescription>
-                Bạn có thể quay lại đây sau khi các bài đăng trong Forum xuất hiện.
+                Bạn có thể quay lại đây sau khi các bài đăng mới xuất hiện.
               </AlertDescription>
             </Alert>
           )}
-        {!hasMore && contentPosting.length > 0 && (
-          <Alert variant="default">
-            <AlertCircleIcon />
-            <AlertTitle>Không còn bài đăng nào trong Forum</AlertTitle>
-            <AlertDescription>
-              Bạn có thể quay lại đây sau khi các bài đăng mới xuất hiện.
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
-    </InfiniteScroll>
+        </div>
+      </InfiniteScroll>
+      {contentPosting.length === 0 && !isLoading && (
+        <Alert variant="default">
+          <AlertCircleIcon />
+          <AlertTitle>Không có bài đăng nào trong Forum</AlertTitle>
+          <AlertDescription>
+            Bạn có thể quay lại đây sau khi các bài đăng trong Forum xuất hiện.
+          </AlertDescription>
+        </Alert>
+      )}
+    </>
   );
 }

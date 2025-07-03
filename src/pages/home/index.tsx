@@ -191,7 +191,7 @@ export function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {Array.isArray(top3Campaign?.data) &&
+                {top3Campaign?.data && Array.isArray(top3Campaign?.data) ? (
                   top3Campaign.data.map((campaign) => (
                     <div
                       key={campaign.campaignId}
@@ -200,7 +200,10 @@ export function HomePage() {
                       <h4 className="font-medium text-sm">{campaign.campaignName}</h4>
                       <p className="text-xs text-muted-foreground mt-1">{campaign.brandName}</p>
                     </div>
-                  ))}
+                  ))
+                ) : (
+                  <p className="text-xs text-muted-foreground">Đang cập nhật</p>
+                )}
               </CardContent>
             </Card>
 
@@ -213,7 +216,7 @@ export function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {Array.isArray(top2Influencer?.data) &&
+                {top2Influencer?.data && Array.isArray(top2Influencer?.data) ? (
                   top2Influencer?.data.map((influencer, index) => (
                     <div key={influencer.userId} className="flex items-center space-x-3">
                       <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">
@@ -233,7 +236,10 @@ export function HomePage() {
                         </p>
                       </div>
                     </div>
-                  ))}
+                  ))
+                ) : (
+                  <p className="text-xs text-muted-foreground">Đang cập nhật</p>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -235,37 +235,48 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
   }
 
   return (
-    <InfiniteScroll
-      dataLength={campaignPosting ? campaignPosting.length : 0}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={hasMore && loadingSkeletion}
-    >
-      <div className="space-y-6">
-        {campaignPosting.length > 0
-          ? campaignPosting.map((campaign) => (
-            <CampaignCard key={campaign.campaignId} campaign={campaign} />
-          ))
-          : campaignPosting.length === 0 &&
-          isLoading == null && (
+    <>
+      <InfiniteScroll
+        dataLength={campaignPosting ? campaignPosting.length : 0}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={hasMore && loadingSkeletion}
+      >
+        <div className="space-y-6">
+          {campaignPosting.length > 0
+            ? campaignPosting.map((campaign) => (
+                <CampaignCard key={campaign.campaignId} campaign={campaign} />
+              ))
+            : campaignPosting.length === 0 &&
+              isLoading == null && (
+                <Alert variant="default">
+                  <AlertCircleIcon />
+                  <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
+                  <AlertDescription>
+                    Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
+                  </AlertDescription>
+                </Alert>
+              )}
+          {!hasMore && campaignPosting.length > 0 && (
             <Alert variant="default">
               <AlertCircleIcon />
-              <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
+              <AlertTitle>Không có bài đăng chiến dịch mới nào</AlertTitle>
               <AlertDescription>
-                Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
+                Bạn có thể quay lại đây sau khi các chiến dịch mới xuất hiện.
               </AlertDescription>
             </Alert>
           )}
-        {!hasMore && campaignPosting.length > 0 && (
-          <Alert variant="default">
-            <AlertCircleIcon />
-            <AlertTitle>Không có bài đăng chiến dịch mới nào</AlertTitle>
-            <AlertDescription>
-              Bạn có thể quay lại đây sau khi các chiến dịch mới xuất hiện.
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
-    </InfiniteScroll>
+        </div>
+      </InfiniteScroll>
+      {campaignPosting.length === 0 && !isLoading && (
+        <Alert variant="default">
+          <AlertCircleIcon />
+          <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
+          <AlertDescription>
+            Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
+          </AlertDescription>
+        </Alert>
+      )}
+    </>
   );
 }
