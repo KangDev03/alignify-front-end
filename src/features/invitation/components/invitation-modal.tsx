@@ -29,7 +29,6 @@ import { Icons } from "@/components/icons/icons"
 import { useAppSelector } from "@/hooks/redux"
 import type { RootState } from "@/redux/store"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Separator } from "@/components/ui/separator"
 
 interface Campaign {
   id: string
