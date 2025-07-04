@@ -112,14 +112,14 @@ export function ApplicantCard({
           </>
         )}
         {status === 'accepted' && (
-          <Badge variant="secondary" className="bg-green-100 text-green-800">
-            <Check className="h-3 w-3 mr-1" />
+          <Badge variant="accepted">
+            <Check size={12} />
             Đã chấp nhận
           </Badge>
         )}
         {status === 'rejected' && (
-          <Badge variant="secondary" className="bg-red-100 text-red-800">
-            <X className="h-3 w-3 mr-1" />
+          <Badge variant="rejected">
+            <X size={12} />
             Đã từ chối
           </Badge>
         )}
