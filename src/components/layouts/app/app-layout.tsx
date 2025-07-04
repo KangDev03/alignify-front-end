@@ -50,7 +50,7 @@ function AppLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       <AppHeader onLogout={handleLogout} />
-      <main className="container mx-auto px-20 py-8 relative">
+      <main className="container mx-auto px-6 py-8 relative">
         <Outlet />
         <PopUpTrigger />
       </main>
