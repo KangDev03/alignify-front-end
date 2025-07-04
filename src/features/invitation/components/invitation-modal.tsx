@@ -29,6 +29,7 @@ import { Icons } from "@/components/icons/icons"
 import { useAppSelector } from "@/hooks/redux"
 import type { RootState } from "@/redux/store"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Separator } from "@/components/ui/separator"
 
 interface Campaign {
   id: string
@@ -199,6 +200,110 @@ export default function InvitationModal({ campaigns, trigger }: InvitationModalP
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Column - Influencer Selection */}
+              <div className="flex flex-col gap-auto">
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-3">Chi tiết lời mời</h3>
+
+                  {/* Campaign Selection */}
+                  <FormField
+                    control={form.control}
+                    name="campaignId"
+                    render={({ field }) => (
+                      <FormItem className="mb-4">
+                        <FormLabel>Chọn chiến dịch *</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Chọn chiến dịch để mời" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {campaigns.map((campaign) => (
+                              <SelectItem key={campaign.id} value={campaign.id}>
+                                <div className="flex flex-col">
+                                  <span className="font-medium">{campaign.title}</span>
+                                  {/* <span className="text-sm text-gray-500">
+                                    {campaign.budget} • {campaign.category} • Deadline: {campaign.deadline}
+                                  </span> */}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Budget and Deadline */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <FormField
+                      control={form.control}
+                      name="budget"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ngân sách đề xuất (VND) *</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="5,000,000"
+                              {...field}
+                              onChange={(e) => field.onChange(Number(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="deadline"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Deadline phản hồi *</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Message */}
+                  <FormField
+                    control={form.control}
+                    name="message"
+                    render={({ field }) => (
+                      <FormItem className="mb-4">
+                        <FormLabel>Tin nhắn mời *</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Xin chào! Chúng tôi rất mong muốn hợp tác với bạn trong chiến dịch này..."
+                            rows={4}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+                    Hủy
+                  </Button>
+                  <Button type="submit" >
+                    <Icons.send className="h-4 w-4 mr-2" />
+                    {isSubmitting ? "Đang gửi..." : `Gửi lời mời (${selectedInfluencers.length})`}
+                  </Button>
+                </div>
+
+              </div>
+
+              {/* Right Column - Campaign & Invitation Details */}
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Chọn Influencer</h3>
@@ -324,110 +429,6 @@ export default function InvitationModal({ campaigns, trigger }: InvitationModalP
                   </div>
 
                 </div>
-              </div>
-
-              {/* Right Column - Campaign & Invitation Details */}
-              <div className="flex flex-col gap-auto">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-3">Chi tiết lời mời</h3>
-
-                  {/* Campaign Selection */}
-                  <FormField
-                    control={form.control}
-                    name="campaignId"
-                    render={({ field }) => (
-                      <FormItem className="mb-4">
-                        <FormLabel>Chọn chiến dịch *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Chọn chiến dịch để mời" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {campaigns.map((campaign) => (
-                              <SelectItem key={campaign.id} value={campaign.id}>
-                                <div className="flex flex-col">
-                                  <span className="font-medium">{campaign.title}</span>
-                                  {/* <span className="text-sm text-gray-500">
-                                    {campaign.budget} • {campaign.category} • Deadline: {campaign.deadline}
-                                  </span> */}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Budget and Deadline */}
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <FormField
-                      control={form.control}
-                      name="budget"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Ngân sách đề xuất (VND) *</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="5,000,000"
-                              {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="deadline"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Deadline phản hồi *</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  {/* Message */}
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem className="mb-4">
-                        <FormLabel>Tin nhắn mời *</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Xin chào! Chúng tôi rất mong muốn hợp tác với bạn trong chiến dịch này..."
-                            rows={4}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-                    Hủy
-                  </Button>
-                  <Button type="submit" >
-                    <Icons.send className="h-4 w-4 mr-2" />
-                    {isSubmitting ? "Đang gửi..." : `Gửi lời mời (${selectedInfluencers.length})`}
-                  </Button>
-                </div>
-
               </div>
             </div>
 
