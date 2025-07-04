@@ -146,7 +146,6 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
     if (!hasMore) return;
     setPageNumber((prev) => prev + 1);
   };
-
   const loadingSkeleton = (
     <div className="space-y-6">
       <Card className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">
