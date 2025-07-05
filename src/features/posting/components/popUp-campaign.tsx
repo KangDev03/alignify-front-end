@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { type FieldPath, useFieldArray, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
@@ -36,6 +36,7 @@ import { Icons } from '@/components/icons/icons';
 import {
   type Campaign,
   type Category,
+  type PostType,
   SupportedPostTypeByPlatform,
 } from '@/features/common/common.type';
 import { setRefetch } from '@/features/home/home.slice';
@@ -66,6 +67,10 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
 
   const [isExtended, setExtended] = useState<ExtendedState[]>([]);
 
+  const onUpdating = campaignData !== undefined && campaignData !== null;
+
+  const imageUrl = campaignData && campaignData.imageUrl;
+
   const form = useForm<CampaignFormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(campaignFormSchema),
@@ -84,9 +89,16 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
             platform: req.platform,
             post_type: req.post_type,
             quantity: req.quantity,
-            postDetails: req.details.map((detail) => ({
-              [req.post_type]: { like: detail.like, comment: detail.comment, share: detail.share },
-            })),
+            postDetails: req.details.map((item) => {
+              const postType = item.post_type?.toLowerCase() as PostType;
+              return {
+                [postType]: {
+                  like: item.like,
+                  comment: item.comment,
+                  share: item.share,
+                },
+              };
+            }),
           }))
         : [
             {
@@ -126,23 +138,26 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
 
   useEffect(() => {
     contentFields.forEach((_, idx) => {
-      const quantity = form.watch(`campaignRequirements.${idx}.quantity`) || 0;
-      const postType = form.watch(`campaignRequirements.${idx}.post_type`);
+      const quantity = Number(form.watch(`campaignRequirements.${idx}.quantity`) || 0);
       const currentPostDetails = form.watch(`campaignRequirements.${idx}.postDetails`) || [];
-
-      if (postType && quantity > 0) {
-        const newPostDetails = Array.from({ length: quantity }, (_, index) => {
-          const existingDetail = currentPostDetails[index];
-          return existingDetail && existingDetail[postType as keyof typeof existingDetail]
-            ? existingDetail
-            : { [postType]: { like: 0, comment: 0 } };
-        });
-        form.setValue(`campaignRequirements.${idx}.postDetails`, newPostDetails);
-      } else {
-        form.setValue(`campaignRequirements.${idx}.postDetails`, []);
+      if (currentPostDetails.length < quantity) {
+        const postType =
+          form.watch(`campaignRequirements.${idx}.post_type`)?.toLowerCase() || 'video';
+        const newDetails = Array.from({ length: quantity - currentPostDetails.length }, () => ({
+          [postType]: { like: 0, comment: 0, share: 0 },
+        }));
+        form.setValue(`campaignRequirements.${idx}.postDetails`, [
+          ...currentPostDetails,
+          ...newDetails,
+        ]);
+      } else if (currentPostDetails.length > quantity) {
+        form.setValue(
+          `campaignRequirements.${idx}.postDetails`,
+          currentPostDetails.slice(0, quantity),
+        );
       }
     });
-  }, [form.watch('campaignRequirements'), contentFields, form]);
+  }, [contentFields, form.watch('campaignRequirements')]);
 
   const socialPlatformOptions = [
     { value: 'TIKTOK', label: 'TikTok' },
@@ -295,7 +310,7 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
                         <Icons.fileImage />
                         <span>Chọn ảnh</span>
                       </Button>
-                      {field.value && (
+                      {(field.value || imageUrl) && (
                         <div className="flex gap-4">
                           <Dialog>
                             <DialogTrigger>
@@ -307,7 +322,11 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
                             <DialogContent showCloseButton={false} className="p-3">
                               <div className="flex flex-col space-y-3">
                                 <img
-                                  src={URL.createObjectURL(field.value as File)}
+                                  src={
+                                    field.value
+                                      ? URL.createObjectURL(field.value as File)
+                                      : imageUrl!
+                                  }
                                   alt="Poster preview"
                                   className="object-contain max-w-full h-[600px]"
                                 />
@@ -640,6 +659,32 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
                                       <Select
                                         onValueChange={field.onChange}
                                         value={field.value || undefined}
+                                        // onChange={() => {
+                                        //   const postType = field.value?.toLowerCase() || 'video';
+                                        //   const currentPostDetails =
+                                        //     form.watch(`campaignRequirements.${idx}.postDetails`) ||
+                                        //     [];
+                                        //   const updatedDetails = currentPostDetails.map(
+                                        //     (detail) => {
+                                        //       const oldValue = Object.values(detail)[0] as {
+                                        //         like: number;
+                                        //         comment: number;
+                                        //         share?: number;
+                                        //       };
+                                        //       return {
+                                        //         [postType]: {
+                                        //           like: oldValue.like,
+                                        //           comment: oldValue.comment,
+                                        //           share: oldValue.share ?? 0,
+                                        //         },
+                                        //       };
+                                        //     },
+                                        //   );
+                                        //   form.setValue(
+                                        //     `campaignRequirements.${idx}.postDetails`,
+                                        //     updatedDetails,
+                                        //   );
+                                        // }}
                                       >
                                         <SelectTrigger className="w-full capitalize bg-white">
                                           <SelectValue placeholder="Loại nội dung" />
@@ -743,20 +788,6 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
                                   if (!selectedPostType || !postDetails.length) {
                                     return null;
                                   }
-                                  const currentPostDetails =
-                                    form.watch(`campaignRequirements.${idx}.postDetails`) || [];
-                                  while (currentPostDetails.length < index + 1) {
-                                    appendPostDetail(
-                                      { like: 0, comment: 0, share: 0 },
-                                      { shouldFocus: false },
-                                    );
-                                  }
-                                  while (
-                                    currentPostDetails.length >
-                                    Number(form.watch(`campaignRequirements.${idx}.quantity`) || 0)
-                                  ) {
-                                    removePostDetail(currentPostDetails.length - 1);
-                                  }
                                   return (
                                     <div key={index} className="flex flex-col gap-4">
                                       <FormLabel>
@@ -824,11 +855,11 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
                 className="text-destructive hover:text-destructive"
                 type="reset"
               >
-                Hủy
+                {onUpdating ? 'Xóa' : 'Hủy'}
               </Button>
             </DialogClose>
             <Button variant={'default'} type="submit" disabled={isPosting}>
-              {isPosting ? 'Đang đăng...' : 'Đăng chiến dịch'}
+              {onUpdating ? 'Cập nhật' : isPosting ? 'Đang đăng...' : 'Đăng chiến dịch'}
             </Button>
           </div>
         </form>
