@@ -22,6 +22,7 @@ import {
   useApplyCampaignMutation,
   useChangeStatusMutation,
 } from '@/features/my-campaign/campaign.service.ts';
+import CampaignPopUp from '@/features/posting/components/popUp-campaign.tsx';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
 import { useSendNotification } from '@/hooks/useSendNotification.ts';
 import type { RootState } from '@/redux/store.ts';
@@ -34,6 +35,7 @@ import { changeCampaignStatus } from '../campaign.slice.ts';
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const dispatch = useAppDispatch();
   const { role, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
+  const { category } = useAppSelector((state: RootState) => state.common);
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
@@ -212,6 +214,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 </DialogHeader>
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
+              <CampaignPopUp categories={category!} campaignData={campaign} />
             </Dialog>
 
             <Button variant="default" size="sm" className="flex-1" onClick={handleStartRecruit}>
