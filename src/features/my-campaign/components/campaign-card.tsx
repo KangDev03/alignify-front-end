@@ -3,6 +3,7 @@ import { useLocation } from 'react-router';
 import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -499,9 +500,20 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           </div>
         </div>
 
-        <div className="flex items-start w-fit mb-4 h-12">
+        <div className="flex items-start w-fit mb-3 h-12">
           <p className="line-clamp-2">{`${campaign.content}`}</p>
         </div>
+
+        {campaign.categories.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            <h4 className="text-sm font-medium">Danh mục:</h4>
+            {campaign.categories.map((cat: any, i: number) => (
+              <Badge key={cat.categoryId ?? i} variant="outline">
+                {cat.categoryName ?? cat}
+              </Badge>
+            ))}
+          </div>
+        )}
 
         <div className="flex justify-between mb-4 text-sm text-muted-foreground">
           <div className="flex items-center w-fit mr-4">
