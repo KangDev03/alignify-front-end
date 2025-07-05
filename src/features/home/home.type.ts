@@ -44,7 +44,7 @@ export interface Comment {
   createdDate: string;
   avatarUrl?: string;
   name?: string;
-  count?: number
+  count?: number;
 }
 
 export interface ContentPosting {
@@ -61,7 +61,7 @@ export interface ContentPosting {
   likeCount: number;
   userAvatar?: string | null;
   isLiked?: boolean | false;
-  comment?: Comment[]
+  comment?: Comment[];
 }
 
 export interface ContentPostingResponse extends ApiReponseSuccess<ContentPosting[]> {

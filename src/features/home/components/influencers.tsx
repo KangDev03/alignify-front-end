@@ -12,8 +12,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Icons } from '@/components/icons/icons';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
+import { formatNumber } from '@/utils/format';
 
-import { useGetInfluencerProfilesQuery, useSearchInfluencersQuery } from '../home.service';
+import {
+  useGetInfluencerByCategoryQuery,
+  useGetInfluencerProfilesQuery,
+  useSearchInfluencersQuery,
+} from '../home.service';
 import {
   addInfluencerProfile,
   resetInfluencerProfile,
@@ -62,6 +67,14 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
   }, [searchTerm]);
 
   const isSearching = searchTerm && searchTerm.trim() && searchTerm.length > 0 ? true : false;
+  const {
+    data: categoryData,
+    isLoading: isLoadingCategory,
+    refetch: refetchCategory,
+  } = useGetInfluencerByCategoryQuery(
+    { categoryId: selectedCategoryId, pageNumber, pageSize },
+    { skip: isAll || isSearching },
+  );
 
   const { data: searchResult, isLoading: isLoadingSearch } = useSearchInfluencersQuery(
     isSearching
@@ -76,8 +89,9 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
   } else if (isAll) {
     isLoading = isLoadingAll;
   } else {
-    // isLoading = isLoadingCategory;
+    isLoading = isLoadingCategory;
   }
+
   if (
     (isLoadingAll ||
       // isLoadingCategory ||
@@ -89,11 +103,10 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
   }
 
   const hasMore = isSearching
-    ? (searchResult?.data?.length ?? 0) === 10
+    ? (searchResult?.data?.length ?? 0) === pageSize
     : isAll
-      ? (allData?.data?.length ?? 0) === 10
-      : false;
-  // (categoryData?.data?.length ?? 0) === 10
+      ? (allData?.data?.length ?? 0) === pageSize
+      : (categoryData?.data?.length ?? 0) === pageSize;
 
   useEffect(() => {
     if (pageNumber === 0 && !isLoading) {
@@ -101,59 +114,52 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
         dispatch(setInfluencerProfile(searchResult));
       } else if (isAll && allData) {
         dispatch(setInfluencerProfile(allData));
-        // } else if (!isAll && categoryData) {
-        //   dispatch(setInfluencerProfile(categoryData));
+      } else if (!isAll && categoryData) {
+        dispatch(setInfluencerProfile(categoryData));
       } else {
         dispatch(resetInfluencerProfile());
       }
     }
-  }, [allData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading]);
+  }, [allData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading, categoryData]);
 
   useEffect(() => {
     if (influencer) {
       if (isAll) refetchAll();
-      // else refetchCategory();
+      else refetchCategory();
       setPageNumber(0);
       dispatch(setRefetch({ key: 'influencer', value: false }));
-      // dispatch(resetCampaignPosting());
     }
-  }, [influencer, isAll, refetchAll, dispatch]);
+  }, [influencer, isAll, refetchAll, refetchCategory, dispatch]);
 
   useEffect(() => {
     if (pageNumber > 0) {
-      if (isAll && allData && allData.data && allData.data && allData.data.length > 0) {
-        dispatch(
-          addInfluencerProfile(
-            allData.data.filter(
-              (cam) => !influencerProfile.some((existing) => existing.id === cam.id),
-            ),
+      const newInfluencers =
+        isSearching && searchResult?.data?.length
+          ? searchResult.data
+          : isAll && allData?.data?.length
+            ? allData.data
+            : !isAll && categoryData?.data?.length
+              ? categoryData.data
+              : [];
+
+      dispatch(
+        addInfluencerProfile(
+          newInfluencers.filter(
+            (influencer) => !influencerProfile.some((existing) => existing.id === influencer.id),
           ),
-        );
-        // } else if (
-        //   !isAll &&
-        //   categoryData &&
-        //   categoryData.data &&
-        //   categoryData.data.campaigns &&
-        //   categoryData.data.campaigns.length > 0
-        // ) {
-        //   dispatch(
-        //     addCampaignPosting(
-        //       categoryData.data.campaigns.filter(
-        //         (cam) => !campaignPosting.some((existing) => existing.campaignId === cam.campaignId),
-        //       ),
-        //     ),
-        //   );
-      } else if (isSearching && searchResult && searchResult.data && searchResult.data.length > 0) {
-        dispatch(
-          addInfluencerProfile(
-            searchResult.data.filter(
-              (cam) => !influencerProfile.some((existing) => existing.id === cam.id),
-            ),
-          ),
-        );
-      }
+        ),
+      );
     }
-  }, [allData, isAll, pageNumber, dispatch, influencerProfile, isSearching, searchResult]);
+  }, [
+    allData,
+    isAll,
+    pageNumber,
+    dispatch,
+    influencerProfile,
+    isSearching,
+    searchResult,
+    categoryData?.data,
+  ]);
 
   const fetchMoreData = () => {
     if (!hasMore) return;
@@ -232,7 +238,7 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
                         <div className="flex items-center space-x-4 mt-2 text-sm">
                           <div className="flex items-center space-x-1">
                             <Icons.users className="h-4 w-4" />
-                            <span>{influencer.follower} followers</span>
+                            <span>{formatNumber(influencer.follower ?? 0)} followers</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Icons.star className="h-4 w-4" />
