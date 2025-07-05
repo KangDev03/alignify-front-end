@@ -18,6 +18,7 @@ import { Settings } from '@/pages/setting';
 import { useAppSelector } from './hooks/redux';
 import RegisterPage from './pages/auth/sign-up';
 import MyCampaignPage from './pages/my-campaign';
+import StatisticsPage from './pages/statistics';
 import type { RootState } from './redux/store';
 
 function Router() {
@@ -42,6 +43,7 @@ function Router() {
           <Route path="/applications" element={<ApplicationsPage />} />
           <Route path="/applicants" element={<Applicants />} />
           <Route path="/my-campaign" element={<MyCampaignPage />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/campaign-management" element={<CampaignManagement />} />
           <Route path="/invitation" element={<Invitation />} />
           {roleName === 'INFLUENCER' && (

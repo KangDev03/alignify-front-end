@@ -50,16 +50,18 @@ export function AppHeader({ onLogout }: HeaderProps) {
     }
   }
 
-  const handlePageChange = (page: CurrentPage) => {
+  const handlePageChange = (page: string) => {
     if (userRole === 'INFLUENCER') {
       if (page === 'home') navigate('/home');
       else if (page === 'my-campaign') navigate('/my-campaign');
       else if (page === 'applications') navigate('/applications');
+      else if (page === 'statistics') navigate('/statistics');
     } else {
       if (page === 'home') navigate('/home');
       else if (page === 'campaign-management') navigate('/campaign-management');
       else if (page === 'applicants') navigate('/applicants');
       else if (page === 'invitations') navigate('/invitation');
+      else if (page === 'statistics') navigate('/statistics');
     }
   };
 
@@ -69,14 +71,14 @@ export function AppHeader({ onLogout }: HeaderProps) {
         { id: 'home', label: 'Trang chủ', icon: Icons.home },
         { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
         { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
-        // { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
+        { id: 'statistics', label: 'Thống kê', icon: Icons.barChart3 },
       ]
       : [
         { id: 'home', label: 'Trang chủ', icon: Icons.home },
         { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
         { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
         { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
-        // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
+        { id: 'statistics', label: 'Báo cáo', icon: Icons.barChart3 },
       ];
 
   return (
@@ -101,7 +103,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
                   key={item.id}
                   variant={currentPage() === item.id ? 'default' : 'ghost'}
                   size="sm"
-                  onClick={() => handlePageChange(item.id as CurrentPage)}
+                  onClick={() => handlePageChange(item.id)}
                   className="flex justify-center items-center space-x-2 h-9"
                 >
                   <Icon />
