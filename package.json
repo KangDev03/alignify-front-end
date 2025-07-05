@@ -51,6 +51,7 @@
     "react-router-dom": "^7.6.2",
     "react-stomp": "^5.1.0",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.0.2",
     "redux-persist": "^6.0.0",
     "sockjs": "^0.3.24",
     "sockjs-client": "^1.6.1",
