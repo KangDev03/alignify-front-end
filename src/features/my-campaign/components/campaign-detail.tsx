@@ -21,7 +21,7 @@ import { formatDate, formatNumber } from '@/utils/format.ts';
 
 import { StatusBadge } from './status-badge.tsx';
 
-interface SelectRequirement {
+export interface SelectRequirement {
   platform: string;
   post_type: string;
   index: number;
