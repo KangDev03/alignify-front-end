@@ -1,6 +1,6 @@
 "use client"
 
-import { DollarSign, Target, UserCheck, Users } from "lucide-react"
+import { useState } from "react"
 import {
   Area,
   AreaChart,
@@ -19,9 +19,14 @@ import {
 } from "recharts"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import { Icons } from "@/components/icons/icons"
+
 export function Analytics() {
+  const [selectedYear, setSelectedYear] = useState("2024")
+
   // Mock data cho biểu đồ doanh thu theo tháng
   const revenueData = [
     { month: "T1", revenue: 2400000, users: 240 },
@@ -85,12 +90,10 @@ export function Analytics() {
       minimumFractionDigits: 0,
     }).format(value)
   }
-
   const totalRevenue = revenueData.reduce((sum, item) => sum + item.revenue, 0)
   const totalUsers = subscriptionData.reduce((sum, item) => sum + item.value, 0)
-  const currentMonthRevenue = revenueData[revenueData.length - 1]?.revenue || 0
-  const previousMonthRevenue = revenueData[revenueData.length - 2]?.revenue || 0
-  const revenueGrowth = (((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue) * 100).toFixed(1)
+  const totalCampaigns = 1247 // Mock data
+  const totalPosts = 8934 // Mock data
 
   return (
     <div className="space-y-6">
@@ -100,56 +103,56 @@ export function Analytics() {
           <h2 className="text-2xl font-bold">Thống kê & Phân tích</h2>
           <p className="text-muted-foreground">Tổng quan về hiệu suất và tăng trưởng của hệ thống</p>
         </div>
+        <div className="flex items-center space-x-2">
+          <Select value={selectedYear} onValueChange={setSelectedYear}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Chọn năm" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2024">2024</SelectItem>
+              <SelectItem value="2023">2023</SelectItem>
+              <SelectItem value="2022">2022</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tổng doanh thu năm</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Tổng doanh thu</CardTitle>
+            <Icons.DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">+{revenueGrowth}%</span> so với tháng trước
-            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tổng người dùng</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Icons.users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalUsers.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">+12%</span> so với tháng trước
-            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Người dùng hoạt động</CardTitle>
-            <UserCheck className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Tổng chiến dịch</CardTitle>
+            <Icons.megaphone className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,892</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">+7%</span> so với tháng trước
-            </p>
+            <div className="text-2xl font-bold">{totalCampaigns.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tỷ lệ chuyển đổi</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Tổng bài viết</CardTitle>
+            <Icons.fileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3.2%</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">+0.5%</span> so với tháng trước
-            </p>
+            <div className="text-2xl font-bold">{totalPosts.toLocaleString()}</div>
           </CardContent>
         </Card>
       </div>
@@ -167,7 +170,9 @@ export function Analytics() {
           <Card>
             <CardHeader>
               <CardTitle>Doanh thu theo tháng</CardTitle>
-              <CardDescription>Biểu đồ doanh thu trong 12 tháng qua</CardDescription>
+              <CardDescription>
+                Biểu đồ doanh thu trong 12 tháng năm{" "}{selectedYear}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
@@ -190,7 +195,7 @@ export function Analytics() {
           <Card>
             <CardHeader>
               <CardTitle>Tăng trưởng người dùng</CardTitle>
-              <CardDescription>Số lượng người dùng mới theo tháng</CardDescription>
+              <CardDescription>Số lượng người dùng mới theo tháng năm {selectedYear}</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
@@ -212,7 +217,7 @@ export function Analytics() {
             <Card>
               <CardHeader>
                 <CardTitle>Phân bố gói đăng ký</CardTitle>
-                <CardDescription>Tỷ lệ người dùng theo từng gói</CardDescription>
+                <CardDescription>Tỷ lệ người dùng theo từng gói năm {selectedYear}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -267,7 +272,7 @@ export function Analytics() {
           <Card>
             <CardHeader>
               <CardTitle>Hoạt động website</CardTitle>
-              <CardDescription>Lượt truy cập và tương tác theo tháng</CardDescription>
+              <CardDescription>Lượt truy cập và tương tác theo tháng năm {selectedYear}</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>

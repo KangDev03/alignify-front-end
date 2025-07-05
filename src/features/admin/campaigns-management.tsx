@@ -1,13 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar, DollarSign, Eye, Flag, MoreHorizontal, Search, Trash2, Users } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,9 +17,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
+import { Icons } from "@/components/icons/icons"
+
 export function CampaignsManagement() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCampaign, setSelectedCampaign] = useState<any>(null)
 
   const campaigns = [
     {
@@ -83,17 +82,18 @@ export function CampaignsManagement() {
   ]
 
   const getStatusBadge = (status: string) => {
+    const base = "pointer-events-none hover:bg-transparent hover:text-inherit"
     switch (status) {
       case "active":
-        return <Badge className="bg-green-100 text-green-800">Đang chạy</Badge>
+        return <Badge className={`bg-green-100 text-green-800 ${base}`}>Đang chạy</Badge>
       case "completed":
-        return <Badge className="bg-blue-100 text-blue-800">Hoàn thành</Badge>
+        return <Badge className={`bg-blue-100 text-blue-800 ${base}`}>Hoàn thành</Badge>
       case "pending":
-        return <Badge className="bg-yellow-100 text-yellow-800">Chờ duyệt</Badge>
+        return <Badge className={`bg-yellow-100 text-yellow-800 ${base}`}>Chờ duyệt</Badge>
       case "reported":
-        return <Badge className="bg-red-100 text-red-800">Bị báo cáo</Badge>
+        return <Badge className={`bg-red-100 text-red-800 ${base}`}>Bị báo cáo</Badge>
       default:
-        return <Badge variant="secondary">{status}</Badge>
+        return <Badge variant="secondary" className={`${base}`}>{status}</Badge>
     }
   }
 
@@ -109,10 +109,6 @@ export function CampaignsManagement() {
     // Logic xóa chiến dịch
   }
 
-  const handleViewCampaign = (campaign: any) => {
-    setSelectedCampaign(campaign)
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -126,7 +122,7 @@ export function CampaignsManagement() {
       {/* Search */}
       <div className="flex items-center space-x-2">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Icons.search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Tìm kiếm chiến dịch..."
             value={searchQuery}
@@ -193,26 +189,26 @@ export function CampaignsManagement() {
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                      <DropdownMenuTrigger>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
+                          <Icons.moreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleViewCampaign(campaign)}>
-                          <Eye className="mr-2 h-4 w-4" />
+                        <DropdownMenuItem>
+                          <Icons.eye className="mr-2 h-4 w-4" />
                           Xem chi tiết
                         </DropdownMenuItem>
                         {campaign.status === "reported" && (
                           <DropdownMenuItem>
-                            <Flag className="mr-2 h-4 w-4" />
+                            <Icons.flag className="mr-2 h-4 w-4" />
                             Xem báo cáo
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleDeleteCampaign(campaign.id)} className="text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4" />
+                          <Icons.trash2 className="mr-2 h-4 w-4" />
                           Xóa chiến dịch
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -224,90 +220,6 @@ export function CampaignsManagement() {
           </Table>
         </CardContent>
       </Card>
-
-      {/* Campaign Detail Dialog */}
-      <Dialog open={!!selectedCampaign} onOpenChange={() => setSelectedCampaign(null)}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Chi tiết chiến dịch</DialogTitle>
-            <DialogDescription>Thông tin đầy đủ về chiến dịch</DialogDescription>
-          </DialogHeader>
-          {selectedCampaign && (
-            <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={selectedCampaign.brandAvatar || "/placeholder.svg"} alt={selectedCampaign.brand} />
-                  <AvatarFallback>{selectedCampaign.brand.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold">{selectedCampaign.title}</h3>
-                  <p className="text-muted-foreground">{selectedCampaign.brand}</p>
-                  <div className="flex items-center space-x-2 mt-2">
-                    {getStatusBadge(selectedCampaign.status)}
-                    <Badge variant="outline">{selectedCampaign.category}</Badge>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <DollarSign className="h-4 w-4 text-green-500" />
-                      <div>
-                        <p className="text-sm font-medium">Ngân sách</p>
-                        <p className="text-lg font-bold">{selectedCampaign.budget}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-blue-500" />
-                      <div>
-                        <p className="text-sm font-medium">Thời gian</p>
-                        <p className="text-sm">
-                          {new Date(selectedCampaign.startDate).toLocaleDateString("vi-VN")} -{" "}
-                          {new Date(selectedCampaign.endDate).toLocaleDateString("vi-VN")}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4 text-purple-500" />
-                      <div>
-                        <p className="text-sm font-medium">Ứng viên</p>
-                        <p className="text-lg font-bold">
-                          {selectedCampaign.selected}/{selectedCampaign.applicants}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div>
-                <h4 className="font-medium mb-2">Mô tả chiến dịch</h4>
-                <p className="text-sm text-muted-foreground">{selectedCampaign.description}</p>
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setSelectedCampaign(null)}>
-                  Đóng
-                </Button>
-                <Button variant="destructive" onClick={() => handleDeleteCampaign(selectedCampaign.id)}>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Xóa chiến dịch
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

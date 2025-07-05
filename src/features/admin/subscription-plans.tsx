@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Crown, Edit, MoreHorizontal, Plus, Star, Trash2, X, Zap } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -28,9 +27,11 @@ import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 
+import { Icons } from "@/components/icons/icons"
+
 export function SubscriptionPlans() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [editingPlan, setEditingPlan] = useState<any>(null)
+  const [_editingPlan, setEditingPlan] = useState<any>(null)
 
   const [newPlan, setNewPlan] = useState({
     name: "",
@@ -65,7 +66,7 @@ export function SubscriptionPlans() {
       customBranding: false,
       isActive: true,
       subscribers: 1200,
-      icon: Star,
+      icon: Icons.star,
       color: "bg-gray-100 text-gray-800",
     },
     {
@@ -88,7 +89,7 @@ export function SubscriptionPlans() {
       customBranding: true,
       isActive: true,
       subscribers: 800,
-      icon: Crown,
+      icon: Icons.crown,
       color: "bg-blue-100 text-blue-800",
     },
     {
@@ -113,7 +114,7 @@ export function SubscriptionPlans() {
       customBranding: true,
       isActive: true,
       subscribers: 300,
-      icon: Zap,
+      icon: Icons.zap,
       color: "bg-purple-100 text-purple-800",
     },
   ]
@@ -170,7 +171,7 @@ export function SubscriptionPlans() {
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="mr-2 h-4 w-4" />
+              <Icons.plus className="mr-2 h-4 w-4" />
               Tạo gói mới
             </Button>
           </DialogTrigger>
@@ -181,7 +182,7 @@ export function SubscriptionPlans() {
             </DialogHeader>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="name">Tên gói *</Label>
                   <Input
                     id="name"
@@ -190,7 +191,7 @@ export function SubscriptionPlans() {
                     placeholder="VD: Premium"
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="price">Giá (VNĐ) *</Label>
                   <Input
                     id="price"
@@ -201,7 +202,7 @@ export function SubscriptionPlans() {
                   />
                 </div>
               </div>
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="description">Mô tả</Label>
                 <Textarea
                   id="description"
@@ -211,7 +212,7 @@ export function SubscriptionPlans() {
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="maxCampaigns">Số chiến dịch tối đa</Label>
                   <Input
                     id="maxCampaigns"
@@ -221,7 +222,7 @@ export function SubscriptionPlans() {
                     placeholder="15 (hoặc -1 cho không giới hạn)"
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="maxInfluencers">Số influencers tối đa</Label>
                   <Input
                     id="maxInfluencers"
@@ -232,7 +233,7 @@ export function SubscriptionPlans() {
                   />
                 </div>
               </div>
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="features">Tính năng (mỗi dòng một tính năng)</Label>
                 <Textarea
                   id="features"
@@ -243,7 +244,7 @@ export function SubscriptionPlans() {
                 />
               </div>
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <Label htmlFor="analyticsAccess">Truy cập phân tích nâng cao</Label>
                   <Switch
                     id="analyticsAccess"
@@ -293,26 +294,32 @@ export function SubscriptionPlans() {
                     <Icon className="h-5 w-5" />
                     <CardTitle>{plan.name}</CardTitle>
                   </div>
-                  <Badge className={plan.color}>{plan.isActive ? "Hoạt động" : "Tạm dừng"}</Badge>
+                  <Badge className={`${plan.color} pointer-events-none hover:bg-transparent hover:text-inherit`}>
+                    {plan.isActive ? "Hoạt động" : "Tạm dừng"}
+                  </Badge>
                 </div>
                 <CardDescription>{plan.description}</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="text-3xl font-bold">{formatPrice(plan.price)}</div>
-                  <div className="text-sm text-muted-foreground">/{plan.duration === "monthly" ? "tháng" : "năm"}</div>
-                </div>
+              <CardContent className="space-y-4 flex flex-col h-full">
+                <div className="space-y-4 flex-1">
 
-                <div>
-                  <h4 className="font-medium mb-2">Tính năng:</h4>
-                  <ul className="space-y-1 text-sm">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center space-x-2">
-                        <Check className="h-3 w-3 text-green-500" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div>
+                    <div className="text-3xl font-bold">{formatPrice(plan.price)}</div>
+                    <div className="text-sm text-muted-foreground">/{plan.duration === "monthly" ? "tháng" : "năm"}</div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-2">Tính năng:</h4>
+                    <ul className="space-y-1 text-sm">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-center space-x-2">
+                          <Icons.check className="h-3 w-3 text-green-500" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
                 </div>
 
                 <div className="pt-4 border-t">
@@ -320,41 +327,6 @@ export function SubscriptionPlans() {
                     <span>Người đăng ký:</span>
                     <span className="font-medium">{plan.subscribers.toLocaleString()}</span>
                   </div>
-                </div>
-
-                <div className="flex justify-end">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => handleEditPlan(plan)}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Chỉnh sửa
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleTogglePlanStatus(plan.id)}>
-                        {plan.isActive ? (
-                          <>
-                            <X className="mr-2 h-4 w-4" />
-                            Tạm dừng
-                          </>
-                        ) : (
-                          <>
-                            <Check className="mr-2 h-4 w-4" />
-                            Kích hoạt
-                          </>
-                        )}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleDeletePlan(plan.id)} className="text-red-600">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Xóa gói
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 </div>
               </CardContent>
             </Card>
@@ -395,7 +367,9 @@ export function SubscriptionPlans() {
                   <TableCell>{formatPrice(plan.price)}</TableCell>
                   <TableCell>{plan.subscribers.toLocaleString()}</TableCell>
                   <TableCell>
-                    <Badge className={plan.color}>{plan.isActive ? "Hoạt động" : "Tạm dừng"}</Badge>
+                    <Badge className={`${plan.color} pointer-events-none hover:bg-transparent hover:text-inherit`}>
+                      {plan.isActive ? "Hoạt động" : "Tạm dừng"}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
@@ -405,33 +379,33 @@ export function SubscriptionPlans() {
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                      <DropdownMenuTrigger>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
+                          <Icons.moreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => handleEditPlan(plan)}>
-                          <Edit className="mr-2 h-4 w-4" />
+                          <Icons.edit className="mr-2 h-4 w-4" />
                           Chỉnh sửa
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleTogglePlanStatus(plan.id)}>
                           {plan.isActive ? (
                             <>
-                              <X className="mr-2 h-4 w-4" />
+                              <Icons.x className="mr-2 h-4 w-4" />
                               Tạm dừng
                             </>
                           ) : (
                             <>
-                              <Check className="mr-2 h-4 w-4" />
+                              <Icons.check className="mr-2 h-4 w-4" />
                               Kích hoạt
                             </>
                           )}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleDeletePlan(plan.id)} className="text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4" />
+                          <Icons.trash2 className="mr-2 h-4 w-4" />
                           Xóa gói
                         </DropdownMenuItem>
                       </DropdownMenuContent>

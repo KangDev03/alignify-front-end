@@ -1,24 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import {
-  AlertTriangle,
-  Check,
-  Eye,
-  Flag,
-  Megaphone,
-  MessageSquare,
-  MoreHorizontal,
-  Search,
-  User,
-  X,
-} from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,9 +18,10 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import { Icons } from "@/components/icons/icons"
+
 export function ReportsManagement() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedReport, setSelectedReport] = useState<any>(null)
 
   const reports = [
     {
@@ -100,29 +88,17 @@ export function ReportsManagement() {
     },
   ]
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return <Badge className="bg-yellow-100 text-yellow-800">Chờ xử lý</Badge>
-      case "resolved":
-        return <Badge className="bg-green-100 text-green-800">Đã xử lý</Badge>
-      case "dismissed":
-        return <Badge className="bg-gray-100 text-gray-800">Đã bỏ qua</Badge>
-      default:
-        return <Badge variant="secondary">{status}</Badge>
-    }
-  }
-
   const getSeverityBadge = (severity: string) => {
+    const base = "pointer-events-none hover:bg-transparent hover:text-inherit"
     switch (severity) {
       case "critical":
-        return <Badge className="bg-red-100 text-red-800">Nghiêm trọng</Badge>
+        return <Badge className={`bg-red-100 text-red-800 ${base}`}>Nghiêm trọng</Badge>
       case "high":
-        return <Badge className="bg-orange-100 text-orange-800">Cao</Badge>
+        return <Badge className={`bg-orange-100 text-orange-800 ${base}`}>Cao</Badge>
       case "medium":
-        return <Badge className="bg-yellow-100 text-yellow-800">Trung bình</Badge>
+        return <Badge className={`bg-yellow-100 text-yellow-800 ${base}`}>Trung bình</Badge>
       case "low":
-        return <Badge className="bg-blue-100 text-blue-800">Thấp</Badge>
+        return <Badge className={`bg-blue-100 text-blue-800 ${base}`}>Thấp</Badge>
       default:
         return <Badge variant="secondary">{severity}</Badge>
     }
@@ -131,13 +107,13 @@ export function ReportsManagement() {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "user":
-        return <User className="h-4 w-4" />
+        return <Icons.user className="h-4 w-4" />
       case "post":
-        return <MessageSquare className="h-4 w-4" />
+        return <Icons.messageSquare className="h-4 w-4" />
       case "campaign":
-        return <Megaphone className="h-4 w-4" />
+        return <Icons.megaphone className="h-4 w-4" />
       default:
-        return <Flag className="h-4 w-4" />
+        return <Icons.flag className="h-4 w-4" />
     }
   }
 
@@ -162,9 +138,6 @@ export function ReportsManagement() {
     // Logic bỏ qua báo cáo
   }
 
-  const handleViewReport = (report: any) => {
-    setSelectedReport(report)
-  }
 
   const renderReportsTable = (reportsList: any[]) => (
     <Table>
@@ -216,26 +189,26 @@ export function ReportsManagement() {
             <TableCell>{new Date(report.createdAt).toLocaleDateString("vi-VN")}</TableCell>
             <TableCell className="text-right">
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger>
                   <Button variant="ghost" className="h-8 w-8 p-0">
-                    <MoreHorizontal className="h-4 w-4" />
+                    <Icons.moreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => handleViewReport(report)}>
-                    <Eye className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem>
+                    <Icons.eye className="mr-2 h-4 w-4" />
                     Xem chi tiết
                   </DropdownMenuItem>
                   {report.status === "pending" && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => handleResolveReport(report.id)}>
-                        <Check className="mr-2 h-4 w-4" />
+                        <Icons.check className="mr-2 h-4 w-4" />
                         Xử lý báo cáo
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleDismissReport(report.id)}>
-                        <X className="mr-2 h-4 w-4" />
+                        <Icons.x className="mr-2 h-4 w-4" />
                         Bỏ qua
                       </DropdownMenuItem>
                     </>
@@ -264,7 +237,7 @@ export function ReportsManagement() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tổng báo cáo</CardTitle>
-            <Flag className="h-4 w-4 text-muted-foreground" />
+            <Icons.flag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{reports.length}</div>
@@ -273,7 +246,7 @@ export function ReportsManagement() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Chờ xử lý</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-yellow-500" />
+            <Icons.alertTriangle className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{pendingReports.length}</div>
@@ -282,7 +255,7 @@ export function ReportsManagement() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Đã xử lý</CardTitle>
-            <Check className="h-4 w-4 text-green-500" />
+            <Icons.check className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{resolvedReports.length}</div>
@@ -291,7 +264,7 @@ export function ReportsManagement() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Đã bỏ qua</CardTitle>
-            <X className="h-4 w-4 text-gray-500" />
+            <Icons.x className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{dismissedReports.length}</div>
@@ -302,7 +275,7 @@ export function ReportsManagement() {
       {/* Search */}
       <div className="flex items-center space-x-2">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Icons.search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Tìm kiếm báo cáo..."
             value={searchQuery}
@@ -350,114 +323,6 @@ export function ReportsManagement() {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Report Detail Dialog */}
-      <Dialog open={!!selectedReport} onOpenChange={() => setSelectedReport(null)}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Chi tiết báo cáo vi phạm</DialogTitle>
-            <DialogDescription>Thông tin đầy đủ về báo cáo</DialogDescription>
-          </DialogHeader>
-          {selectedReport && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-medium mb-3">Đối tượng bị báo cáo</h4>
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage
-                        src={selectedReport.targetAvatar || "/placeholder.svg"}
-                        alt={selectedReport.targetName}
-                      />
-                      <AvatarFallback>{selectedReport.targetName.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">{selectedReport.targetName}</p>
-                      <p className="text-sm text-muted-foreground">ID: {selectedReport.targetId}</p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        {getTypeIcon(selectedReport.type)}
-                        <span className="text-sm capitalize">{selectedReport.type}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-3">Người báo cáo</h4>
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage
-                        src={selectedReport.reporterAvatar || "/placeholder.svg"}
-                        alt={selectedReport.reporterName}
-                      />
-                      <AvatarFallback>{selectedReport.reporterName.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">{selectedReport.reporterName}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Báo cáo vào {new Date(selectedReport.createdAt).toLocaleDateString("vi-VN")}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <h4 className="font-medium mb-2">Trạng thái</h4>
-                  {getStatusBadge(selectedReport.status)}
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Mức độ nghiêm trọng</h4>
-                  {getSeverityBadge(selectedReport.severity)}
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Danh mục</h4>
-                  <Badge variant="outline">{selectedReport.category}</Badge>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-medium mb-2">Lý do báo cáo</h4>
-                <p className="text-sm font-medium">{selectedReport.reason}</p>
-              </div>
-
-              <div>
-                <h4 className="font-medium mb-2">Mô tả chi tiết</h4>
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <p className="text-sm">{selectedReport.description}</p>
-                </div>
-              </div>
-
-              {selectedReport.resolution && (
-                <div>
-                  <h4 className="font-medium mb-2">Kết quả xử lý</h4>
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                    <p className="text-sm text-green-800">{selectedReport.resolution}</p>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setSelectedReport(null)}>
-                  Đóng
-                </Button>
-                {selectedReport.status === "pending" && (
-                  <>
-                    <Button variant="secondary" onClick={() => handleDismissReport(selectedReport.id)}>
-                      <X className="mr-2 h-4 w-4" />
-                      Bỏ qua
-                    </Button>
-                    <Button onClick={() => handleResolveReport(selectedReport.id)}>
-                      <Check className="mr-2 h-4 w-4" />
-                      Xử lý báo cáo
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
