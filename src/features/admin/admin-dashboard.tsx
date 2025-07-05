@@ -115,12 +115,6 @@ export function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground">
-                  <span className={stat.changeType === "positive" ? "text-green-600" : "text-red-600"}>
-                    {stat.change}
-                  </span>{" "}
-                  so với tháng trước
-                </p>
               </CardContent>
             </Card>
           )
