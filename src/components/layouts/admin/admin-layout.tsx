@@ -1,33 +1,21 @@
 "use client"
 
 import type * as React from "react"
+import { useNavigate } from "react-router"
 import {
   BarChart3,
   CreditCard,
   Flag,
   Home,
-  LogOut,
   Megaphone,
   MessageSquare,
-  Settings,
-  Shield,
   Users,
 } from "lucide-react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -41,7 +29,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
+import { UserDropdown } from "@/components/layouts/app/user-dropdown"
 import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { logout } from "@/features/auth/auth.slice"
+import { useAppDispatch } from "@/hooks/redux"
+import { baseApi } from "@/redux/baseApi"
 
 type AdminPage = "dashboard" | "users" | "campaigns" | "forum-posts" | "reports" | "analytics" | "subscription-plans"
 
@@ -105,9 +97,14 @@ const navigationItems = [
 ]
 
 export function AdminLayout({ children, currentPage, onPageChange }: AdminLayoutProps) {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const handleLogout = () => {
-    window.location.href = "/login"
-  }
+    dispatch(baseApi.util.resetApiState());
+    dispatch(logout());
+    navigate('/auth/login');
+  };
 
   return (
     <SidebarProvider>
@@ -115,18 +112,13 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              >
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Shield className="size-4" />
-                </div>
+              <div className="flex items-center gap-2">
+                <img src="/Alignify_logo.png" alt="Alignify logo" className="h-12 object-contain" />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Admin Panel</span>
                   <span className="truncate text-xs">Alignify</span>
                 </div>
-              </SidebarMenuButton>
+              </div>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -143,6 +135,7 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
                         asChild
                         isActive={currentPage === item.url}
                         onClick={() => onPageChange(item.url as AdminPage)}
+                        className="cursor-pointer transition-all duration-200"
                       >
                         <button className="w-full">
                           <item.icon />
@@ -156,59 +149,6 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
             </SidebarGroup>
           ))}
         </SidebarContent>
-
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton
-                    size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Admin" />
-                      <AvatarFallback className="rounded-lg">AD</AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">Admin User</span>
-                      <span className="truncate text-xs">admin@alignify.com</span>
-                    </div>
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                  side="bottom"
-                  align="end"
-                  sideOffset={4}
-                >
-                  <DropdownMenuLabel className="p-0 font-normal">
-                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                      <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Admin" />
-                        <AvatarFallback className="rounded-lg">AD</AvatarFallback>
-                      </Avatar>
-                      <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-semibold">Admin User</span>
-                        <span className="truncate text-xs">admin@alignify.com</span>
-                      </div>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Settings />
-                    Cài đặt tài khoản
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut />
-                    Đăng xuất
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
         <SidebarRail />
       </Sidebar>
 
@@ -223,6 +163,7 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
             </h1>
           </div>
           <ThemeToggle />
+          <UserDropdown onLogout={handleLogout} />
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
