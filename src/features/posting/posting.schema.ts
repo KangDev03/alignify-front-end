@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { type ISupportedPlatforms, SupportedPlatforms, SupportedPostTypeByPlatform } from '../common/common.type';
+
 export const contentFormSchema = z.object({
   contentName: z.string().min(10, {
     message: 'Tiêu đề phải có ít nhất 10 ký tự',
@@ -61,24 +63,78 @@ export const campaignFormSchema = z
     }),
     influencerRequirements: z.array(
       z.object({
-        index: z.number(),
-        requirement: z.string().min(1, { message: 'Nội dung yêu cầu không được bỏ trống' }),
+        platform: z
+          .string()
+          .refine(
+            (plat: string) =>
+              SupportedPlatforms.includes(plat.toLowerCase() as ISupportedPlatforms),
+            {
+              message: 'Nền tảng hiện tại không được hỗ trợ',
+            },
+          ),
+        followers: z.number().min(1, { message: 'Số lượng theo dõi phải ít nhất là 1' }),
       }),
     ),
     campaignRequirements: z.array(
       z.object({
-        content: z.string().min(1, {
-          message: 'Nội dung yêu cầu không được bỏ trống',
-        }),
-        quantity: z
-          .number()
-          .min(1, {
-            message: 'Số lượng phải lớn hơn 0',
-          })
-          .max(5, {
-            message: 'Số lượng lớn nhất là 5',
+        platform: z
+          .string()
+          .refine(
+            (plat: string) =>
+              SupportedPlatforms.includes(plat.toLowerCase() as ISupportedPlatforms),
+            {
+              message: 'Nền tảng hiện tại không được hỗ trợ',
+            },
+          ),
+        post_type: z.string(),
+        quantity: z.number().min(1, { message: 'Số lượng nội dung ít nhất là 1' }),
+        postDetails: z.array(
+          z.object({
+            video: z
+              .object({
+                like: z.number().min(0, 'Số lượng ít nhất là 0'),
+                comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+              })
+              .optional(),
+            post: z
+              .object({
+                like: z.number().min(0, 'Số lượng ít nhất là 0'),
+                comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+              })
+              .optional(),
+            story: z
+              .object({
+                like: z.number().min(0, 'Số lượng ít nhất là 0'),
+                comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+              })
+              .optional(),
+            reel: z
+              .object({
+                like: z.number().min(0, 'Số lượng ít nhất là 0'),
+                comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+              })
+              .optional(),
           }),
-      }),
+        ),
+      }).refine(
+        (data) => {
+          const platform = data.platform?.toLowerCase() as ISupportedPlatforms;
+          const postType = data.post_type;
+          if (!platform || !postType) return false;
+          const validPostTypes = SupportedPostTypeByPlatform[platform]?.map(
+            (type) => Object.keys(type)[0],
+          );
+          return validPostTypes?.includes(postType) || false;
+        },
+        {
+          message: 'Loại nội dung không hợp lệ cho nền tảng đã chọn',
+          path: ['post_type'],
+        },
+      ),
     ),
     categoryIds: z
       .array(z.string())

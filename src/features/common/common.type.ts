@@ -112,8 +112,21 @@ export interface Campaign {
   dueAt: string;
   startAt: string;
   categories: Category[] | [];
-  campaignRequirements: { [key: string]: number };
-  influencerRequirements: string[];
+  campaignRequirements: {
+    platform: 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM';
+    post_type: string;
+    quantity: number;
+    details: {
+      post_type: string;
+      like: number;
+      comment: number;
+      share: number;
+    }[];
+  }[];
+  influencerRequirements: {
+    platform: 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM';
+    followers: number;
+  }[];
   influencerCountExpected: number;
   influencerCountCurrent: number | 0;
   applicationTotal: number | 0;
@@ -132,4 +145,52 @@ export interface UserDTO {
   avatarUrl: string | null;
 }
 
-export const SupportedPlatforms: string[] = ['tiktok', 'youtube', 'facebook', 'instagram'];
+export const SupportedPlatforms: ISupportedPlatforms[] = [
+  'tiktok',
+  'youtube',
+  'facebook',
+  'instagram',
+];
+
+export type ISupportedPlatforms = 'tiktok' | 'youtube' | 'facebook' | 'instagram';
+
+export type PostType = 'video' | 'post' | 'reel' | 'story';
+
+type PostDetail = 'like' | 'comment' | 'share';
+
+type RequiredPost = {
+  [post in PostType]?: PostDetail[];
+};
+
+type PostTypeByPlatform = {
+  [platform in ISupportedPlatforms]: RequiredPost[];
+};
+
+export const SupportedPostTypeByPlatform: PostTypeByPlatform = {
+  tiktok: [
+    {
+      video: ['comment', 'like'],
+    },
+  ],
+  facebook: [
+    {
+      post: ['like', 'comment'],
+    },
+  ],
+  instagram: [
+    {
+      post: ['like', 'comment'],
+    },
+    {
+      reel: ['like', 'comment'],
+    },
+    {
+      story: ['like'],
+    },
+  ],
+  youtube: [
+    {
+      video: ['like', 'comment'],
+    },
+  ],
+};

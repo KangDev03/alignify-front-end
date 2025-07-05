@@ -6,7 +6,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 import { Icons } from '@/components/icons/icons.tsx';
 import type { Campaign, RoleName } from '@/features/common/common.type.ts';
@@ -34,7 +41,6 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const sendNotification = useSendNotification();
   const isApplied = campaign.appliedInfluencerIds?.includes(id!);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
-
   const handleApplyCampaign = async () => {
     try {
       await applyCampaign(campaign.campaignId).unwrap();
@@ -183,7 +189,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       onOpenChange: (open: boolean) => setOpenDialog(open ? campaign.campaignId : null),
     };
 
-    switch (campaign.status) {
+    switch (campaign.status.toUpperCase()) {
       case 'DRAFT':
         return (
           <div className="w-full grid grid-cols-2 gap-2">
@@ -194,10 +200,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                   Chỉnh sửa
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-                <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
-                  <DialogTitle className='font-semibold text-xl text-center '>Chiến dịch của {campaign.brandName}</DialogTitle>
-                  <DialogDescription className='hidden'></DialogDescription>
+              <DialogContent
+                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+                showCloseButton={false}
+              >
+                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+                  <DialogTitle className="font-semibold text-xl text-center ">
+                    Chiến dịch của {campaign.brandName}
+                  </DialogTitle>
+                  <DialogDescription className="hidden"></DialogDescription>
                 </DialogHeader>
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
@@ -219,10 +230,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                   Xem chi tiết
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-                <DialogHeader className='border-b-2 border-border p-0 m-0 py-3'>
-                  <DialogTitle className='font-semibold text-xl text-center'>Chiến dịch của {campaign.brandName}</DialogTitle>
-                  <DialogDescription className='hidden'></DialogDescription>
+              <DialogContent
+                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+                showCloseButton={false}
+              >
+                <DialogHeader className="border-b-2 border-border p-0 m-0 py-3">
+                  <DialogTitle className="font-semibold text-xl text-center">
+                    Chiến dịch của {campaign.brandName}
+                  </DialogTitle>
+                  <DialogDescription className="hidden"></DialogDescription>
                 </DialogHeader>
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
@@ -236,10 +252,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                     Xem chi tiết
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-                  <DialogHeader className='border-b-2 border-border p-0 m-0 py-3'>
-                    <DialogTitle className='font-semibold text-xl text-center'>Chiến dịch của {campaign.brandName}</DialogTitle>
-                    <DialogDescription className='hidden'></DialogDescription>
+                <DialogContent
+                  className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+                  showCloseButton={false}
+                >
+                  <DialogHeader className="border-b-2 border-border p-0 m-0 py-3">
+                    <DialogTitle className="font-semibold text-xl text-center">
+                      Chiến dịch của {campaign.brandName}
+                    </DialogTitle>
+                    <DialogDescription className="hidden"></DialogDescription>
                   </DialogHeader>
                   <CampaignDetail key={campaign.campaignId} campaign={campaign} />
                 </DialogContent>
@@ -266,10 +287,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                   Xem chi tiết
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-                <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
-                  <DialogTitle className='font-semibold text-xl text-center'>Chiến dịch của {campaign.brandName}</DialogTitle>
-                  <DialogDescription className='hidden'></DialogDescription>
+              <DialogContent
+                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+                showCloseButton={false}
+              >
+                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+                  <DialogTitle className="font-semibold text-xl text-center">
+                    Chiến dịch của {campaign.brandName}
+                  </DialogTitle>
+                  <DialogDescription className="hidden"></DialogDescription>
                 </DialogHeader>
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
@@ -282,10 +308,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                   Chỉnh sửa
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-                <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
-                  <DialogTitle className='font-semibold text-xl text-center'>Chiến dịch của {campaign.brandName}</DialogTitle>
-                  <DialogDescription className='hidden'></DialogDescription>
+              <DialogContent
+                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+                showCloseButton={false}
+              >
+                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+                  <DialogTitle className="font-semibold text-xl text-center">
+                    Chiến dịch của {campaign.brandName}
+                  </DialogTitle>
+                  <DialogDescription className="hidden"></DialogDescription>
                 </DialogHeader>
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
@@ -312,10 +343,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                   Xem chi tiết
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-                <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
-                  <DialogTitle className='font-semibold text-xl text-center'>Chiến dịch của {campaign.brandName}</DialogTitle>
-                  <DialogDescription className='hidden'></DialogDescription>
+              <DialogContent
+                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+                showCloseButton={false}
+              >
+                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+                  <DialogTitle className="font-semibold text-xl text-center">
+                    Chiến dịch của {campaign.brandName}
+                  </DialogTitle>
+                  <DialogDescription className="hidden"></DialogDescription>
                 </DialogHeader>
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
@@ -328,10 +364,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                   Chỉnh sửa
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-                <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
-                  <DialogTitle className='font-semibold text-xl text-center'>Chiến dịch của {campaign.brandName}</DialogTitle>
-                  <DialogDescription className='hidden'></DialogDescription>
+              <DialogContent
+                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+                showCloseButton={false}
+              >
+                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+                  <DialogTitle className="font-semibold text-xl text-center">
+                    Chiến dịch của {campaign.brandName}
+                  </DialogTitle>
+                  <DialogDescription className="hidden"></DialogDescription>
                 </DialogHeader>
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
@@ -355,10 +396,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 Xem chi tiết
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-              <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
-                <DialogTitle className='font-semibold text-xl text-center'>Chiến dịch của {campaign.brandName}</DialogTitle>
-                <DialogDescription className='hidden'></DialogDescription>
+            <DialogContent
+              className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+              showCloseButton={false}
+            >
+              <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+                <DialogTitle className="font-semibold text-xl text-center">
+                  Chiến dịch của {campaign.brandName}
+                </DialogTitle>
+                <DialogDescription className="hidden"></DialogDescription>
               </DialogHeader>
               <CampaignDetail key={campaign.campaignId} campaign={campaign} />
             </DialogContent>
@@ -374,10 +420,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                   Theo dõi chiến dịch
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-                <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
-                  <DialogTitle className='font-semibold text-xl text-center'>Chiến dịch của {campaign.brandName}</DialogTitle>
-                  <DialogDescription className='hidden'></DialogDescription>
+              <DialogContent
+                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+                showCloseButton={false}
+              >
+                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+                  <DialogTitle className="font-semibold text-xl text-center">
+                    Chiến dịch của {campaign.brandName}
+                  </DialogTitle>
+                  <DialogDescription className="hidden"></DialogDescription>
                 </DialogHeader>
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
@@ -398,10 +449,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 Xem báo cáo
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-              <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
-                <DialogTitle className='font-semibold text-xl text-center'>Chiến dịch của {campaign.brandName}</DialogTitle>
-                <DialogDescription className='hidden'></DialogDescription>
+            <DialogContent
+              className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+              showCloseButton={false}
+            >
+              <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+                <DialogTitle className="font-semibold text-xl text-center">
+                  Chiến dịch của {campaign.brandName}
+                </DialogTitle>
+                <DialogDescription className="hidden"></DialogDescription>
               </DialogHeader>
               <CampaignDetail key={campaign.campaignId} campaign={campaign} />
             </DialogContent>
