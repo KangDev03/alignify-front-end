@@ -12,8 +12,8 @@ import ChatSheet from '@/features/chatting/components/chat-sheet';
 import NotificationTrigger from '@/features/notification/components/notification-trigger';
 import type { RootState } from '@/redux/store';
 
-type InfluencerPage = 'home' | 'my-campaign' | 'applications' | 'statistics';
-type BrandPage = 'home' | 'campaign-management' | 'applicants' | 'invitations' | 'statistics';
+type InfluencerPage = 'home' | 'my-campaign' | 'applications' | 'statistics' | 'upgrade-plan';
+type BrandPage = 'home' | 'campaign-management' | 'applicants' | 'invitations' | 'statistics' | 'upgrade-plan';
 type CurrentPage = InfluencerPage | BrandPage;
 
 interface HeaderProps {
@@ -34,12 +34,14 @@ export function AppHeader({ onLogout }: HeaderProps) {
       if (location.pathname.includes('/my-campaign')) return 'my-campaign';
       if (location.pathname.includes('/applications')) return 'applications';
       if (location.pathname.includes('/statistics')) return 'statistics';
+      if (location.pathname.includes('/upgrade-plan')) return 'upgrade-plan';
       return 'home';
     } else {
       if (location.pathname.includes('/campaign-management')) return 'campaign-management';
       if (location.pathname.includes('/applicants')) return 'applicants';
       if (location.pathname.includes('/invitation')) return 'invitations';
       if (location.pathname.includes('/statistics')) return 'statistics';
+      if (location.pathname.includes('/upgrade-plan')) return 'upgrade-plan';
       return 'home';
     }
   };
@@ -58,12 +60,14 @@ export function AppHeader({ onLogout }: HeaderProps) {
       else if (page === 'my-campaign') navigate('/my-campaign');
       else if (page === 'applications') navigate('/applications');
       else if (page === 'statistics') navigate('/statistics');
+      else if (page === 'upgrade-plan') navigate('/upgrade-plan');
     } else {
       if (page === 'home') navigate('/home');
       else if (page === 'campaign-management') navigate('/campaign-management');
       else if (page === 'applicants') navigate('/applicants');
       else if (page === 'invitations') navigate('/invitation');
       else if (page === 'statistics') navigate('/statistics');
+      else if (page === 'upgrade-plan') navigate('/upgrade-plan');
     }
   };
 
@@ -116,6 +120,15 @@ export function AppHeader({ onLogout }: HeaderProps) {
           </nav>
 
           <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handlePageChange('upgrade-plan' as CurrentPage)}
+              className="flex items-center space-x-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 border-0 shadow-md"
+            >
+              <Icons.crown className="h-4 w-4" />
+              <span className="hidden md:inline">Nâng cấp</span>
+            </Button>
             <NotificationTrigger />
             <ChatSheet />
             <ThemeToggle />
