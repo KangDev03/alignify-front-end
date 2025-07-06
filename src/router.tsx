@@ -15,6 +15,7 @@ import Invitation from '@/pages/invitation';
 import { BrandProfilePage } from '@/pages/profile/brand-profile';
 import InfluencerProfilePage from '@/pages/profile/influencer-profile';
 import { Settings } from '@/pages/setting';
+import { Statistics } from '@/pages/statistics';
 
 import { useAppSelector } from './hooks/redux';
 import RegisterPage from './pages/auth/sign-up';
@@ -45,6 +46,7 @@ function Router() {
           <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/campaign-management" element={<CampaignManagement />} />
           <Route path="/invitation" element={<Invitation />} />
+          <Route path="/statistics" element={<Statistics userRole={roleName} />} />
           {roleName === 'INFLUENCER' && (
             <Route path="/user-profile" element={<InfluencerProfilePage />} />
           )}

@@ -68,6 +68,7 @@ export function SubscriptionPlans() {
     maxInfluencers: "",
     maxApplications: "",
     portfolioItems: "",
+    maxSearches: "",
     analyticsAccess: false,
     prioritySupport: false,
     customBranding: false,
@@ -267,6 +268,7 @@ export function SubscriptionPlans() {
       maxInfluencers: "",
       maxApplications: "",
       portfolioItems: "",
+      maxSearches: "",
       analyticsAccess: false,
       prioritySupport: false,
       customBranding: false,
@@ -286,14 +288,6 @@ export function SubscriptionPlans() {
   const handleTogglePlan = (planId: string, isActive: boolean) => {
     console.log("Toggling plan:", planId, isActive)
     // Logic bật/tắt gói
-  }
-
-  const getTotalSubscribers = () => {
-    return [...brandPlans, ...influencerPlans].reduce((sum, plan) => sum + plan.subscribers, 0)
-  }
-
-  const getTotalRevenue = () => {
-    return [...brandPlans, ...influencerPlans].reduce((sum, plan) => sum + plan.price * plan.subscribers, 0)
   }
 
   return (
@@ -377,7 +371,7 @@ export function SubscriptionPlans() {
                       type="number"
                       value={newPlan.maxCampaigns}
                       onChange={(e) => setNewPlan((prev) => ({ ...prev, maxCampaigns: e.target.value }))}
-                      placeholder="-1 cho không giới hạn"
+                      placeholder="0 cho không giới hạn"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
@@ -387,7 +381,7 @@ export function SubscriptionPlans() {
                       type="number"
                       value={newPlan.maxInfluencers}
                       onChange={(e) => setNewPlan((prev) => ({ ...prev, maxInfluencers: e.target.value }))}
-                      placeholder="-1 cho không giới hạn"
+                      placeholder="0 cho không giới hạn"
                     />
                   </div>
                 </div>
@@ -399,10 +393,22 @@ export function SubscriptionPlans() {
                     type="number"
                     value={newPlan.maxApplications}
                     onChange={(e) => setNewPlan((prev) => ({ ...prev, maxApplications: e.target.value }))}
-                    placeholder="-1 cho không giới hạn"
+                    placeholder="0 cho không giới hạn"
                   />
                 </div>
               )}
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="maxSearches">Số kết quả tìm kiếm</Label>
+                <Input
+                  id="maxSearches"
+                  type="number"
+                  value={newPlan.maxSearches}
+                  onChange={(e) =>
+                    setNewPlan((prev) => ({ ...prev, maxSearches: e.target.value }))
+                  }
+                  placeholder="0 cho không giới hạn"
+                />
+              </div>
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -639,50 +645,6 @@ export function SubscriptionPlans() {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* Statistics */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tổng người đăng ký</CardTitle>
-            <Icons.users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{getTotalSubscribers().toLocaleString()}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Brands</CardTitle>
-            <Icons.crown className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {brandPlans.reduce((sum, plan) => sum + plan.subscribers, 0).toLocaleString()}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Influencers</CardTitle>
-            <Icons.camera className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {influencerPlans.reduce((sum, plan) => sum + plan.subscribers, 0).toLocaleString()}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Doanh thu/tháng</CardTitle>
-            <Icons.DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatPrice(getTotalRevenue())}</div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   )
 }

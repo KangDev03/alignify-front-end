@@ -12,8 +12,8 @@ import ChatSheet from '@/features/chatting/components/chat-sheet';
 import NotificationTrigger from '@/features/notification/components/notification-trigger';
 import type { RootState } from '@/redux/store';
 
-type InfluencerPage = 'home' | 'my-campaign' | 'applications';
-type BrandPage = 'home' | 'campaign-management' | 'applicants' | 'invitations';
+type InfluencerPage = 'home' | 'my-campaign' | 'applications' | 'statistics';
+type BrandPage = 'home' | 'campaign-management' | 'applicants' | 'invitations' | 'statistics';
 type CurrentPage = InfluencerPage | BrandPage;
 
 interface HeaderProps {
@@ -33,11 +33,13 @@ export function AppHeader({ onLogout }: HeaderProps) {
     if (userRole === 'INFLUENCER') {
       if (location.pathname.includes('/my-campaign')) return 'my-campaign';
       if (location.pathname.includes('/applications')) return 'applications';
+      if (location.pathname.includes('/statistics')) return 'statistics';
       return 'home';
     } else {
       if (location.pathname.includes('/campaign-management')) return 'campaign-management';
       if (location.pathname.includes('/applicants')) return 'applicants';
       if (location.pathname.includes('/invitation')) return 'invitations';
+      if (location.pathname.includes('/statistics')) return 'statistics';
       return 'home';
     }
   };
@@ -55,11 +57,13 @@ export function AppHeader({ onLogout }: HeaderProps) {
       if (page === 'home') navigate('/home');
       else if (page === 'my-campaign') navigate('/my-campaign');
       else if (page === 'applications') navigate('/applications');
+      else if (page === 'statistics') navigate('/statistics');
     } else {
       if (page === 'home') navigate('/home');
       else if (page === 'campaign-management') navigate('/campaign-management');
       else if (page === 'applicants') navigate('/applicants');
       else if (page === 'invitations') navigate('/invitation');
+      else if (page === 'statistics') navigate('/statistics');
     }
   };
 
@@ -69,14 +73,14 @@ export function AppHeader({ onLogout }: HeaderProps) {
         { id: 'home', label: 'Trang chủ', icon: Icons.home },
         { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
         { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
-        // { id: 'analytics', label: 'Thống kê', icon: Icons.barChart3 },
+        { id: 'statistics', label: 'Thống kê', icon: Icons.barChart3 },
       ]
       : [
         { id: 'home', label: 'Trang chủ', icon: Icons.home },
         { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
         { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
         { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
-        // { id: 'analytics', label: 'Báo cáo', icon: Icons.barChart3 },
+        { id: 'statistics', label: 'Báo cáo', icon: Icons.barChart3 },
       ];
 
   return (
