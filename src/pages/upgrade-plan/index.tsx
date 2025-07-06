@@ -94,7 +94,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
       badgeColor: "bg-blue-500",
       popular: true,
       features: [
-        { name: "'Ứng tuyển 10 chiến dịch/tháng", included: true, limit: "10/tháng" },
+        { name: "Ứng tuyển 10 chiến dịch/tháng", included: true, limit: "10/tháng" },
         { name: "Tìm kiếm 20 chiến dịch", included: true },
       ],
       buttonText: "Nâng cấp ngay",
