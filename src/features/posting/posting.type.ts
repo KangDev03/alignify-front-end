@@ -21,6 +21,7 @@ export interface ForumPosting {
 
 export interface PostingRequest {
   formData: FormData;
+  id?: string;
 }
 
 export interface CampaignPostingResponse extends ApiReponseSuccess<Campaign> {

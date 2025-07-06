@@ -2,6 +2,7 @@ import type { CommonPageableRequest } from '@/features/common/common.type';
 import { baseApi } from '@/redux/baseApi';
 
 import type { CampaignResponse } from './campaign.type';
+import type { CampaignPostingResponse, PostingRequest } from '../posting/posting.type';
 
 export const campaignApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -61,6 +62,13 @@ export const campaignApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Campaign'],
     }),
+    updateCampaignData: builder.mutation<CampaignPostingResponse, PostingRequest>({
+      query: (data) => ({
+        url: `/campaigns/${data.id}`,
+        method: 'PUT',
+        body: data.formData,
+      })
+    })
   }),
 });
 export const {
@@ -72,4 +80,5 @@ export const {
   useGetCampaignTop3Query,
   useGetAllCampaignsOfBrandNoPageQuery,
   useChangeStatusMutation,
+  useUpdateCampaignDataMutation
 } = campaignApi;

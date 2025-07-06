@@ -40,6 +40,7 @@ import {
   SupportedPostTypeByPlatform,
 } from '@/features/common/common.type';
 import { setRefetch } from '@/features/home/home.slice';
+import { useUpdateCampaignDataMutation } from '@/features/my-campaign/campaign.service';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
@@ -61,6 +62,7 @@ interface ExtendedState {
 export default function CampaignPopUp({ categories, campaignData }: PopUpCampaignProps) {
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const [postCampaign, { isLoading: isPosting }] = usePostCampaignMutation();
+  const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignDataMutation();
   const dispatch = useDispatch();
   const sendNotification = useSendNotification();
   const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
@@ -178,6 +180,7 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
       } = values;
       const campaignRaw = {
         ...rest,
+        imageUrl: imageUrl ?? '',
         startAt: startAt.toISOString(),
         dueAt: dueAt.toISOString(),
         campaignRequirements: campaignRequirements.map((item) => ({
@@ -199,11 +202,16 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
           followers: item.followers,
         })),
       };
+
       console.log(campaignRaw);
       const formData = new FormData();
       if (file) formData.append('image', file);
       formData.append('campaign', JSON.stringify(campaignRaw));
-      await postCampaign({ formData }).unwrap();
+      if (onUpdating) {
+        await updateCampaign({ formData: formData }).unwrap();
+      } else {
+        await postCampaign({ formData }).unwrap();
+      }
       dialogCloseRef.current?.click();
       form.reset();
       dispatch(setRefetch({ key: 'campaign', value: true }));
@@ -859,7 +867,13 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
               </Button>
             </DialogClose>
             <Button variant={'default'} type="submit" disabled={isPosting}>
-              {onUpdating ? 'Cập nhật' : isPosting ? 'Đang đăng...' : 'Đăng chiến dịch'}
+              {onUpdating
+                ? isUpdating
+                  ? 'Cập nhật'
+                  : 'Đang cập nhật'
+                : isPosting
+                  ? 'Đang đăng...'
+                  : 'Đăng chiến dịch'}
             </Button>
           </div>
         </form>
