@@ -131,7 +131,7 @@ export default function ContentPopUp({ categories }: PopUpContentProps) {
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Poster của chiến dịch *</FormLabel>
+                <FormLabel>Ảnh bài đăng *</FormLabel>
                 <FormControl>
                   <div>
                     <input
