@@ -29,6 +29,7 @@ import {
   Home,
   Image,
   Instagram,
+  LayoutDashboard,
   LogOut,
   Mail,
   MapPin,
@@ -122,4 +123,5 @@ export const Icons = {
   messageSquare: MessageSquare,
   crown: Crown,
   zap: Zap,
+  layoutDashboard: LayoutDashboard,
 };
