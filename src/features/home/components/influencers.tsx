@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Icons } from '@/components/icons/icons';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
+import { formatNumber } from '@/utils/format';
 
 import {
   useGetInfluencerByCategoryQuery,
@@ -119,7 +120,7 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
         dispatch(resetInfluencerProfile());
       }
     }
-  }, [allData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading]);
+  }, [allData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading, categoryData]);
 
   useEffect(() => {
     if (influencer) {
@@ -149,7 +150,16 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
         ),
       );
     }
-  }, [allData, isAll, pageNumber, dispatch, influencerProfile, isSearching, searchResult]);
+  }, [
+    allData,
+    isAll,
+    pageNumber,
+    dispatch,
+    influencerProfile,
+    isSearching,
+    searchResult,
+    categoryData?.data,
+  ]);
 
   const fetchMoreData = () => {
     if (!hasMore) return;
@@ -228,7 +238,7 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
                         <div className="flex items-center space-x-4 mt-2 text-sm">
                           <div className="flex items-center space-x-1">
                             <Icons.users className="h-4 w-4" />
-                            <span>{influencer.follower} followers</span>
+                            <span>{formatNumber(influencer.follower ?? 0)} followers</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Icons.star className="h-4 w-4" />
