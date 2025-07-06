@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useState } from 'react';
 import {
   CheckCircle,
   DollarSign,
@@ -12,7 +12,7 @@ import {
   Target,
   TrendingUp,
   Users,
-} from "lucide-react"
+} from 'lucide-react';
 import {
   Area,
   AreaChart,
@@ -25,102 +25,110 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts"
+} from 'recharts';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-type UserRole = "INFLUENCER" | "BRAND" | "ADMIN" | null
+type UserRole = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
 
 interface StatisticsProps {
-  userRole: UserRole
+  userRole: UserRole;
 }
 
 // Mock data for Brand
 const brandInvitationData = [
-  { month: "T1", sent: 45, accepted: 32, rejected: 13 },
-  { month: "T2", sent: 52, accepted: 38, rejected: 14 },
-  { month: "T3", sent: 48, accepted: 35, rejected: 13 },
-  { month: "T4", sent: 61, accepted: 44, rejected: 17 },
-  { month: "T5", sent: 58, accepted: 41, rejected: 17 },
-  { month: "T6", sent: 67, accepted: 49, rejected: 18 },
-]
+  { month: 'T1', sent: 45, accepted: 32, rejected: 13 },
+  { month: 'T2', sent: 52, accepted: 38, rejected: 14 },
+  { month: 'T3', sent: 48, accepted: 35, rejected: 13 },
+  { month: 'T4', sent: 61, accepted: 44, rejected: 17 },
+  { month: 'T5', sent: 58, accepted: 41, rejected: 17 },
+  { month: 'T6', sent: 67, accepted: 49, rejected: 18 },
+];
 
 const brandApplicationData = [
-  { month: "T1", total: 128, approved: 89, pending: 25, rejected: 14 },
-  { month: "T2", total: 145, approved: 102, pending: 28, rejected: 15 },
-  { month: "T3", total: 134, approved: 95, pending: 24, rejected: 15 },
-  { month: "T4", total: 167, approved: 118, pending: 32, rejected: 17 },
-  { month: "T5", total: 156, approved: 110, pending: 29, rejected: 17 },
-  { month: "T6", total: 189, approved: 134, pending: 35, rejected: 20 },
-]
+  { month: 'T1', total: 128, approved: 89, pending: 25, rejected: 14 },
+  { month: 'T2', total: 145, approved: 102, pending: 28, rejected: 15 },
+  { month: 'T3', total: 134, approved: 95, pending: 24, rejected: 15 },
+  { month: 'T4', total: 167, approved: 118, pending: 32, rejected: 17 },
+  { month: 'T5', total: 156, approved: 110, pending: 29, rejected: 17 },
+  { month: 'T6', total: 189, approved: 134, pending: 35, rejected: 20 },
+];
 
 const brandCostData = [
-  { month: "T1", paid: 45000000, pending: 12000000 },
-  { month: "T2", paid: 52000000, pending: 15000000 },
-  { month: "T3", paid: 48000000, pending: 11000000 },
-  { month: "T4", paid: 61000000, pending: 18000000 },
-  { month: "T5", paid: 58000000, pending: 16000000 },
-  { month: "T6", paid: 67000000, pending: 21000000 },
-]
+  { month: 'T1', paid: 45000000, pending: 12000000 },
+  { month: 'T2', paid: 52000000, pending: 15000000 },
+  { month: 'T3', paid: 48000000, pending: 11000000 },
+  { month: 'T4', paid: 61000000, pending: 18000000 },
+  { month: 'T5', paid: 58000000, pending: 16000000 },
+  { month: 'T6', paid: 67000000, pending: 21000000 },
+];
 
 // Mock data for Influencer
 const influencerInvitationData = [
-  { month: "T1", received: 23, accepted: 18, rejected: 5 },
-  { month: "T2", received: 28, accepted: 21, rejected: 7 },
-  { month: "T3", received: 25, accepted: 19, rejected: 6 },
-  { month: "T4", received: 32, accepted: 24, rejected: 8 },
-  { month: "T5", received: 29, accepted: 22, rejected: 7 },
-  { month: "T6", received: 35, accepted: 27, rejected: 8 },
-]
+  { month: 'T1', received: 23, accepted: 18, rejected: 5 },
+  { month: 'T2', received: 28, accepted: 21, rejected: 7 },
+  { month: 'T3', received: 25, accepted: 19, rejected: 6 },
+  { month: 'T4', received: 32, accepted: 24, rejected: 8 },
+  { month: 'T5', received: 29, accepted: 22, rejected: 7 },
+  { month: 'T6', received: 35, accepted: 27, rejected: 8 },
+];
 
 const influencerApplicationData = [
-  { month: "T1", sent: 15, accepted: 8, rejected: 7 },
-  { month: "T2", sent: 18, accepted: 11, rejected: 7 },
-  { month: "T3", sent: 16, accepted: 9, rejected: 7 },
-  { month: "T4", sent: 21, accepted: 13, rejected: 8 },
-  { month: "T5", sent: 19, accepted: 12, rejected: 7 },
-  { month: "T6", sent: 24, accepted: 15, rejected: 9 },
-]
+  { month: 'T1', sent: 15, accepted: 8, rejected: 7 },
+  { month: 'T2', sent: 18, accepted: 11, rejected: 7 },
+  { month: 'T3', sent: 16, accepted: 9, rejected: 7 },
+  { month: 'T4', sent: 21, accepted: 13, rejected: 8 },
+  { month: 'T5', sent: 19, accepted: 12, rejected: 7 },
+  { month: 'T6', sent: 24, accepted: 15, rejected: 9 },
+];
 
 const influencerIncomeData = [
-  { month: "T1", income: 8500000, campaigns: 8 },
-  { month: "T2", income: 12300000, campaigns: 11 },
-  { month: "T3", income: 9800000, campaigns: 9 },
-  { month: "T4", income: 15600000, campaigns: 13 },
-  { month: "T5", income: 13200000, campaigns: 12 },
-  { month: "T6", income: 18900000, campaigns: 15 },
-]
+  { month: 'T1', income: 8500000, campaigns: 8 },
+  { month: 'T2', income: 12300000, campaigns: 11 },
+  { month: 'T3', income: 9800000, campaigns: 9 },
+  { month: 'T4', income: 15600000, campaigns: 13 },
+  { month: 'T5', income: 13200000, campaigns: 12 },
+  { month: 'T6', income: 18900000, campaigns: 15 },
+];
 
 const influencerForumData = [
-  { month: "T1", posts: 12, likes: 245, comments: 89, shares: 34, views: 1250 },
-  { month: "T2", posts: 15, likes: 312, comments: 108, shares: 45, views: 1580 },
-  { month: "T3", posts: 11, likes: 198, comments: 76, shares: 28, views: 980 },
-  { month: "T4", posts: 18, likes: 389, comments: 142, shares: 56, views: 1890 },
-  { month: "T5", posts: 16, likes: 356, comments: 125, shares: 48, views: 1670 },
-  { month: "T6", posts: 20, likes: 445, comments: 167, shares: 67, views: 2150 },
-]
+  { month: 'T1', posts: 12, likes: 245, comments: 89, shares: 34, views: 1250 },
+  { month: 'T2', posts: 15, likes: 312, comments: 108, shares: 45, views: 1580 },
+  { month: 'T3', posts: 11, likes: 198, comments: 76, shares: 28, views: 980 },
+  { month: 'T4', posts: 18, likes: 389, comments: 142, shares: 56, views: 1890 },
+  { month: 'T5', posts: 16, likes: 356, comments: 125, shares: 48, views: 1670 },
+  { month: 'T6', posts: 20, likes: 445, comments: 167, shares: 67, views: 2150 },
+];
 
 export function Statistics({ userRole }: StatisticsProps) {
-  const [selectedYear, setSelectedYear] = useState("2024")
-  const [selectedPeriod, setSelectedPeriod] = useState("6months")
+  const [selectedYear, setSelectedYear] = useState('2024');
+  const [selectedPeriod, setSelectedPeriod] = useState('6months');
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(value)
-  }
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(value);
+  };
 
-  if (userRole === "BRAND") {
+  if (userRole === 'BRAND') {
     return (
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Thống kê tổng quan</h1>
-            <p className="text-muted-foreground">Theo dõi hiệu suất chiến dịch và chi phí của bạn</p>
+            <p className="text-muted-foreground">
+              Theo dõi hiệu suất chiến dịch và chi phí của bạn
+            </p>
           </div>
           <div className="flex items-center space-x-2">
             <Select value={selectedYear} onValueChange={setSelectedYear}>
@@ -211,7 +219,7 @@ export function Statistics({ userRole }: StatisticsProps) {
                     <YAxis />
                     <Tooltip />
                     <Bar dataKey="sent" fill="#8884d8" name="Đã gửi" />
-                    <Bar dataKey="accepted" fill="#82ca9d" name="Đã chấp nhận" />
+                    <Bar dataKey="accepted" fill="#82ca9d" name="Được chấp nhận" />
                     <Bar dataKey="rejected" fill="#ffc658" name="Bị từ chối" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -232,7 +240,14 @@ export function Statistics({ userRole }: StatisticsProps) {
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
-                    <Area type="monotone" dataKey="total" stackId="1" stroke="#8884d8" fill="#8884d8" name="Tổng" />
+                    <Area
+                      type="monotone"
+                      dataKey="total"
+                      stackId="1"
+                      stroke="#8884d8"
+                      fill="#8884d8"
+                      name="Tổng"
+                    />
                     <Area
                       type="monotone"
                       dataKey="approved"
@@ -241,14 +256,14 @@ export function Statistics({ userRole }: StatisticsProps) {
                       fill="#82ca9d"
                       name="Đã duyệt"
                     />
-                    <Area
+                    {/* <Area
                       type="monotone"
                       dataKey="pending"
                       stackId="3"
                       stroke="#ffc658"
                       fill="#ffc658"
                       name="Chờ duyệt"
-                    />
+                    /> */}
                     <Area
                       type="monotone"
                       dataKey="rejected"
@@ -320,7 +335,7 @@ export function Statistics({ userRole }: StatisticsProps) {
           </TabsContent>
         </Tabs>
       </div>
-    )
+    );
   }
 
   // Influencer Statistics
@@ -443,9 +458,27 @@ export function Statistics({ userRole }: StatisticsProps) {
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
-                  <Line type="monotone" dataKey="sent" stroke="#8884d8" name="Đã gửi" strokeWidth={2} />
-                  <Line type="monotone" dataKey="accepted" stroke="#82ca9d" name="Được chấp nhận" strokeWidth={2} />
-                  <Line type="monotone" dataKey="rejected" stroke="#ffc658" name="Bị từ chối" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="sent"
+                    stroke="#8884d8"
+                    name="Đã gửi"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="accepted"
+                    stroke="#82ca9d"
+                    name="Được chấp nhận"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="rejected"
+                    stroke="#ffc658"
+                    name="Bị từ chối"
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -537,10 +570,34 @@ export function Statistics({ userRole }: StatisticsProps) {
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="likes" stroke="#e91e63" name="Likes" strokeWidth={2} />
-                    <Line type="monotone" dataKey="comments" stroke="#2196f3" name="Comments" strokeWidth={2} />
-                    <Line type="monotone" dataKey="shares" stroke="#ff9800" name="Shares" strokeWidth={2} />
-                    <Line type="monotone" dataKey="views" stroke="#4caf50" name="Views" strokeWidth={2} />
+                    <Line
+                      type="monotone"
+                      dataKey="likes"
+                      stroke="#e91e63"
+                      name="Likes"
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="comments"
+                      stroke="#2196f3"
+                      name="Comments"
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="shares"
+                      stroke="#ff9800"
+                      name="Shares"
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="views"
+                      stroke="#4caf50"
+                      name="Views"
+                      strokeWidth={2}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -588,5 +645,5 @@ export function Statistics({ userRole }: StatisticsProps) {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
