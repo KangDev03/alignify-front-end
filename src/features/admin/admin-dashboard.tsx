@@ -1,112 +1,112 @@
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { Icons } from "@/components/icons/icons"
+import { Icons } from '@/components/icons/icons';
 
 export function AdminDashboard() {
   const stats = [
     {
-      title: "Tổng người dùng",
-      value: "2,847",
-      change: "+12%",
-      changeType: "positive" as const,
+      title: 'Tài khoản đã tạo tháng này',
+      value: '2,847',
+      change: '+12%',
+      changeType: 'positive' as const,
       icon: Icons.users,
     },
     {
-      title: "Chiến dịch đang chạy",
-      value: "156",
-      change: "+8%",
-      changeType: "positive" as const,
+      title: 'Tổng chiến dịch tháng này',
+      value: '156',
+      change: '+8%',
+      changeType: 'positive' as const,
       icon: Icons.megaphone,
     },
     {
-      title: "Bài viết forum",
-      value: "1,234",
-      change: "+23%",
-      changeType: "positive" as const,
+      title: 'Tổng bài viết tháng này',
+      value: '1,234',
+      change: '+23%',
+      changeType: 'positive' as const,
       icon: Icons.messageSquare,
     },
     {
-      title: "Báo cáo chờ xử lý",
-      value: "23",
-      change: "-5%",
-      changeType: "negative" as const,
+      title: 'Báo cáo chờ xử lý',
+      value: '23',
+      change: '-5%',
+      changeType: 'negative' as const,
       icon: Icons.flag,
     },
     {
-      title: "Doanh thu tháng này",
-      value: "₫2.4M",
-      change: "+15%",
-      changeType: "positive" as const,
+      title: 'Doanh thu tháng này',
+      value: '₫2.4M',
+      change: '+15%',
+      changeType: 'positive' as const,
       icon: Icons.DollarSign,
     },
-    {
-      title: "Người dùng hoạt động",
-      value: "1,892",
-      change: "+7%",
-      changeType: "positive" as const,
-      icon: Icons.userCheck,
-    },
-  ]
+    // {
+    //   title: 'Người dùng hoạt động',
+    //   value: '1,892',
+    //   change: '+7%',
+    //   changeType: 'positive' as const,
+    //   icon: Icons.userCheck,
+    // },
+  ];
 
   const recentActivities = [
-    {
-      id: 1,
-      type: "user_registered",
-      message: "Người dùng mới đăng ký: Nguyễn Văn A",
-      time: "5 phút trước",
-      severity: "info" as const,
-    },
-    {
-      id: 2,
-      type: "campaign_created",
-      message: "Chiến dịch mới được tạo: Beauty Summer 2024",
-      time: "15 phút trước",
-      severity: "success" as const,
-    },
+    // {
+    //   id: 1,
+    //   type: 'user_registered',
+    //   message: 'Nguyễn Văn A đăng ký thành công',
+    //   time: '5 phút trước',
+    //   severity: 'info' as const,
+    // },
+    // {
+    //   id: 2,
+    //   type: 'campaign_created',
+    //   message: 'Chiến dịch Beauty Summer 2024 đăng thành công',
+    //   time: '15 phút trước',
+    //   severity: 'success' as const,
+    // },
     {
       id: 3,
-      type: "report_submitted",
-      message: "Báo cáo vi phạm mới về bài viết #1234",
-      time: "30 phút trước",
-      severity: "warning" as const,
+      type: 'report_submitted',
+      message: 'Báo cáo vi phạm mới về bài viết #1234',
+      time: '30 phút trước',
+      severity: 'warning' as const,
     },
-    {
-      id: 4,
-      type: "user_banned",
-      message: "Tài khoản @spammer123 đã bị cấm",
-      time: "1 giờ trước",
-      severity: "error" as const,
-    },
+    // {
+    //   id: 4,
+    //   type: 'user_banned',
+    //   message: 'Tài khoản @spammer123 đã bị cấm',
+    //   time: '1 giờ trước',
+    //   severity: 'error' as const,
+    // },
     {
       id: 5,
-      type: "payment_received",
-      message: "Thanh toán gói Premium từ Beauty Co.",
-      time: "2 giờ trước",
-      severity: "success" as const,
+      type: 'payment_received',
+      message: 'Thanh toán gói Premium từ Beauty Co.',
+      time: '2 giờ trước',
+      severity: 'success' as const,
     },
-  ]
+  ];
 
   const getSeverityColor = (severity: string) => {
-    const base = "pointer-events-none hover:bg-transparent hover:text-inherit"
+    const base = 'pointer-events-none hover:bg-transparent hover:text-inherit';
     switch (severity) {
-      case "success":
-        return `bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 ${base}`
-      case "warning":
-        return `bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 ${base}`
-      case "error":
-        return `bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 ${base}`
+      case 'success':
+        return `bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 ${base}`;
+      case 'warning':
+        return `bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 ${base}`;
+      case 'error':
+        return `bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 ${base}`;
       default:
-        return `bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 ${base}`
+        return `bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 ${base}`;
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat) => {
-          const Icon = stat.icon
+          const Icon = stat.icon;
           return (
             <Card key={stat.title}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -117,7 +117,7 @@ export function AdminDashboard() {
                 <div className="text-2xl font-bold">{stat.value}</div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
@@ -134,10 +134,14 @@ export function AdminDashboard() {
                 <div key={activity.id} className="flex items-start space-x-3">
                   <div className="flex-shrink-0">
                     <Badge className={getSeverityColor(activity.severity)}>
-                      {activity.severity === "warning" && <Icons.alertTriangle className="h-3 w-3 mr-1" />}
-                      {activity.severity === "success" && <Icons.userCheck className="h-3 w-3 mr-1" />}
-                      {activity.severity === "error" && <Icons.flag className="h-3 w-3 mr-1" />}
-                      {activity.severity === "info" && <Icons.users className="h-3 w-3 mr-1" />}
+                      {activity.severity === 'warning' && (
+                        <Icons.alertTriangle className="h-3 w-3 mr-1" />
+                      )}
+                      {activity.severity === 'success' && (
+                        <Icons.userCheck className="h-3 w-3 mr-1" />
+                      )}
+                      {/* {activity.severity === 'error' && <Icons.flag className="h-3 w-3 mr-1" />} */}
+                      {/* {activity.severity === 'info' && <Icons.users className="h-3 w-3 mr-1" />} */}
                     </Badge>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -158,16 +162,16 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <span className="text-sm">Người dùng đăng ký mới</span>
                 <span className="font-medium">+24</span>
-              </div>
+              </div> */}
               <div className="flex items-center justify-between">
-                <span className="text-sm">Chiến dịch được tạo</span>
+                <span className="text-sm">Chiến dịch mới</span>
                 <span className="font-medium">+8</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Bài viết forum mới</span>
+                <span className="text-sm">Bài viết mới</span>
                 <span className="font-medium">+45</span>
               </div>
               <div className="flex items-center justify-between">
@@ -178,14 +182,14 @@ export function AdminDashboard() {
                 <span className="text-sm">Doanh thu hôm nay</span>
                 <span className="font-medium text-green-600">₫156K</span>
               </div>
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <span className="text-sm">Người dùng online</span>
                 <span className="font-medium">342</span>
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

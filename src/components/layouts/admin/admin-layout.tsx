@@ -1,18 +1,10 @@
-"use client"
+'use client';
 
-import type * as React from "react"
-import { useNavigate } from "react-router"
-import {
-  BarChart3,
-  CreditCard,
-  Flag,
-  Home,
-  Megaphone,
-  MessageSquare,
-  Users,
-} from "lucide-react"
+import type * as React from 'react';
+import { useNavigate } from 'react-router';
+import { BarChart3, CreditCard, Flag, Home, Megaphone, MessageSquare, Users } from 'lucide-react';
 
-import { Separator } from "@/components/ui/separator"
+import { Separator } from '@/components/ui/separator';
 import {
   Sidebar,
   SidebarContent,
@@ -27,74 +19,81 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar';
 
-import { UserDropdown } from "@/components/layouts/app/user-dropdown"
+import { UserDropdown } from '@/components/layouts/app/user-dropdown';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
-import { logout } from "@/features/auth/auth.slice"
-import { useAppDispatch } from "@/hooks/redux"
-import { baseApi } from "@/redux/baseApi"
+import { logout } from '@/features/auth/auth.slice';
+import { useAppDispatch } from '@/hooks/redux';
+import { baseApi } from '@/redux/baseApi';
 
-type AdminPage = "dashboard" | "users" | "campaigns" | "forum-posts" | "reports" | "analytics" | "subscription-plans"
+type AdminPage =
+  | 'dashboard'
+  | 'users'
+  | 'campaigns'
+  | 'forum-posts'
+  | 'reports'
+  | 'analytics'
+  | 'subscription-plans';
 
 interface AdminLayoutProps {
-  children: React.ReactNode
-  currentPage: AdminPage
-  onPageChange: (page: AdminPage) => void
+  children: React.ReactNode;
+  currentPage: AdminPage;
+  onPageChange: (page: AdminPage) => void;
 }
 
 const navigationItems = [
   {
-    title: "Tổng quan",
+    title: 'Tổng quan',
     items: [
       {
-        title: "Dashboard",
-        url: "dashboard",
+        title: 'Tiêu điểm tháng này',
+        url: 'focus',
         icon: Home,
       },
       {
-        title: "Thống kê",
-        url: "analytics",
+        title: 'Thống kê',
+        url: 'analytics',
         icon: BarChart3,
       },
     ],
   },
   {
-    title: "Quản lý",
+    title: 'Quản lý',
     items: [
       {
-        title: "Người dùng",
-        url: "users",
+        title: 'Người dùng',
+        url: 'users',
         icon: Users,
       },
       {
-        title: "Chiến dịch",
-        url: "campaigns",
+        title: 'Chiến dịch',
+        url: 'campaigns',
         icon: Megaphone,
       },
       {
-        title: "Bài viết Forum",
-        url: "forum-posts",
+        title: 'Bài viết Forum',
+        url: 'forum-posts',
         icon: MessageSquare,
       },
       {
-        title: "Báo cáo vi phạm",
-        url: "reports",
+        title: 'Báo cáo vi phạm',
+        url: 'reports',
         icon: Flag,
       },
     ],
   },
   {
-    title: "Cài đặt",
+    title: 'Cài đặt',
     items: [
       {
-        title: "Gói đăng ký",
-        url: "subscription-plans",
+        title: 'Gói đăng ký',
+        url: 'subscription-plans',
         icon: CreditCard,
       },
     ],
   },
-]
+];
 
 export function AdminLayout({ children, currentPage, onPageChange }: AdminLayoutProps) {
   const navigate = useNavigate();
@@ -158,8 +157,9 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
           <Separator orientation="vertical" className="mr-2 h-4" />
           <div className="flex items-center gap-2 flex-1">
             <h1 className="text-lg font-semibold">
-              {navigationItems.flatMap((group) => group.items).find((item) => item.url === currentPage)?.title ||
-                "Dashboard"}
+              {navigationItems
+                .flatMap((group) => group.items)
+                .find((item) => item.url === currentPage)?.title || 'Dashboard'}
             </h1>
           </div>
           <ThemeToggle />
@@ -169,5 +169,5 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
         <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
