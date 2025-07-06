@@ -28,6 +28,7 @@ import type { homeTab } from '@/features/home/home.type';
 import { useGetCampaignTop3Query } from '@/features/my-campaign/campaign.service';
 import { useGetTopInfluencerQuery } from '@/features/profile/profile.service';
 import { useAppDispatch } from '@/hooks/redux';
+import { formatNumber } from '@/utils/format';
 
 const tabs = [
   { value: 'campaign', label: 'Chiến dịch' },
@@ -191,7 +192,7 @@ export function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {top3Campaign?.data && Array.isArray(top3Campaign?.data) ? (
+                {top3Campaign?.data && Array.isArray(top3Campaign?.data) && top3Campaign.data.length > 0 ? (
                   top3Campaign.data.map((campaign) => (
                     <div
                       key={campaign.campaignId}
@@ -232,7 +233,7 @@ export function HomePage() {
                       <div className="flex-1">
                         <p className="text-sm font-medium">{influencer.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {influencer.follower ?? 0} followers
+                          {formatNumber(influencer.follower ?? 0)} followers
                         </p>
                       </div>
                     </div>

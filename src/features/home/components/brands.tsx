@@ -13,7 +13,11 @@ import { Icons } from '@/components/icons/icons';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
-import { useGetBrandProfilesQuery, useSearchBrandsQuery } from '../home.service';
+import {
+  useGetBrandByCategoryQuery,
+  useGetBrandProfilesQuery,
+  useSearchBrandsQuery,
+} from '../home.service';
 import { addBrandProfile, resetBrandProfile, setBrandProfile, setRefetch } from '../home.slice';
 
 interface BrandsProps {
@@ -40,7 +44,7 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
     refetch: refetchAll,
   } = useGetBrandProfilesQuery(
     { roleId: brandRole!.roleId, pageNumber, pageSize },
-    { refetchOnMountOrArgChange: true, skip: !isAll },
+    { skip: !isAll },
   );
 
   useEffect(() => {
@@ -55,7 +59,14 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
   }, [searchTerm]);
 
   const isSearching = searchTerm && searchTerm.trim() && searchTerm.length > 0 ? true : false;
-
+  const {
+    data: categoryData,
+    isLoading: isLoadingCategory,
+    refetch: refetchCategory,
+  } = useGetBrandByCategoryQuery(
+    { categoryId: selectedCategoryId, pageNumber, pageSize },
+    { skip: isAll || isSearching },
+  );
   const { data: searchResult, isLoading: isLoadingSearch } = useSearchBrandsQuery(
     isSearching
       ? { term: searchTerm!.trim(), pageNumber, pageSize }
@@ -64,14 +75,15 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
   );
 
   let isLoading: boolean | null = null;
-
+  console.log(`Data: ${categoryData}`);
   if (isSearching) {
     isLoading = isLoadingSearch;
   } else if (isAll) {
     isLoading = isLoadingAll;
   } else {
-    // isLoading = isLoadingCategory;
+    isLoading = isLoadingCategory;
   }
+
   if (
     (isLoadingAll ||
       // isLoadingCategory ||
@@ -83,11 +95,10 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
   }
 
   const hasMore = isSearching
-    ? (searchResult?.data?.length ?? 0) === 10
+    ? (searchResult?.data?.length ?? 0) === pageSize
     : isAll
-      ? (allData?.data?.length ?? 0) === 10
-      : false;
-  // (categoryData?.data?.length ?? 0) === 10
+      ? (allData?.data?.length ?? 0) === pageSize
+      : (categoryData?.data?.length ?? 0) === pageSize;
 
   useEffect(() => {
     if (pageNumber === 0 && !isLoading) {
@@ -95,63 +106,46 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
         dispatch(setBrandProfile(searchResult));
       } else if (isAll && allData) {
         dispatch(setBrandProfile(allData));
-        // } else if (!isAll && categoryData) {
-        //   dispatch(setInfluencerProfile(categoryData));
+      } else if (!isAll && categoryData) {
+        dispatch(setBrandProfile(categoryData));
       } else {
         dispatch(resetBrandProfile());
       }
     }
-  }, [allData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading]);
+  }, [searchResult, allData, categoryData, isAll, isSearching, pageNumber, dispatch, isLoading]);
 
   useEffect(() => {
     if (brand) {
       if (isAll) refetchAll();
-      // else refetchCategory();
+      else refetchCategory();
       setPageNumber(0);
       dispatch(setRefetch({ key: 'brand', value: false }));
-      // dispatch(resetCampaignPosting());
     }
-  }, [brand, isAll, refetchAll, dispatch]);
+  }, [brand, isAll, refetchAll, refetchCategory, dispatch]);
 
   useEffect(() => {
     if (pageNumber > 0) {
-      if (isAll && allData && allData.data && allData.data && allData.data.length > 0) {
-        dispatch(
-          addBrandProfile(
-            allData.data.filter((cam) => !brandProfile.some((existing) => existing.id === cam.id)),
-          ),
-        );
-        // } else if (
-        //   !isAll &&
-        //   categoryData &&
-        //   categoryData.data &&
-        //   categoryData.data.campaigns &&
-        //   categoryData.data.campaigns.length > 0
-        // ) {
-        //   dispatch(
-        //     addCampaignPosting(
-        //       categoryData.data.campaigns.filter(
-        //         (cam) => !campaignPosting.some((existing) => existing.campaignId === cam.campaignId),
-        //       ),
-        //     ),
-        //   );
-      } else if (isSearching && searchResult && searchResult.data && searchResult.data.length > 0) {
-        dispatch(
-          addBrandProfile(
-            searchResult.data.filter(
-              (cam) => !brandProfile.some((existing) => existing.id === cam.id),
-            ),
-          ),
-        );
-      }
+      const newBrands =
+        isSearching && searchResult?.data?.length
+          ? searchResult.data
+          : isAll && allData?.data?.length
+            ? allData.data
+            : !isAll && categoryData?.data?.length
+              ? categoryData.data
+              : [];
+
+      dispatch(
+        addBrandProfile(
+          newBrands.filter((brand) => !brandProfile.some((existing) => existing.id === brand.id)),
+        ),
+      );
     }
-  }, [allData, isAll, pageNumber, dispatch, brandProfile, isSearching, searchResult]);
+  }, [pageNumber, isSearching, searchResult, isAll, allData, categoryData, brandProfile, dispatch]);
 
   const fetchMoreData = () => {
     if (!hasMore) return;
     setPageNumber((prev) => prev + 1);
   };
-
   const loadingSkeleton = (
     <div className="space-y-6">
       <Card className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all">

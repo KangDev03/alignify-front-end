@@ -79,6 +79,20 @@ export const getProfileApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Common'],
     }),
+    getBrandByCategory: builder.query<BrandProfileResponse, CommonPageableRequest>({
+      query: ({ categoryId, pageNumber, pageSize }) => ({
+        url: `profiles/filterBrand/${categoryId}`,
+        method: 'GET',
+        params: { pageNumber, pageSize },
+      }),
+    }),
+    getInfluencerByCategory: builder.query<InfluencerProfileResponse, CommonPageableRequest>({
+      query: ({ categoryId, pageNumber, pageSize }) => ({
+        url: `profiles/filterInfluencer/${categoryId}`,
+        method: 'GET',
+        params: { pageNumber, pageSize },
+      }),
+    }),
   }),
 });
 
@@ -90,6 +104,8 @@ export const {
   useSearchBrandsQuery,
   useSearchInfluencersQuery,
   useSearchForumContentQuery,
+  useGetBrandByCategoryQuery,
+  useGetInfluencerByCategoryQuery,
 } = getProfileApi;
 
 export const contentPostingApi = baseApi.injectEndpoints({
@@ -116,7 +132,18 @@ export const contentPostingApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Auth'],
     }),
+    getPostByCategory: builder.query<ContentPostingResponse, CommonPageableRequest>({
+      query: ({ categoryId, pageNumber, pageSize }) => ({
+        url: `/contentPosting/filterByCategory/${categoryId}`,
+        method: 'GET',
+        params: { pageNumber, pageSize },
+      }),
+    }),
   }),
 });
-export const { useGetAllContentPostingQuery, useGetPostMeQuery, useGetPostsByUserIdQuery } =
-  contentPostingApi;
+export const {
+  useGetAllContentPostingQuery,
+  useGetPostMeQuery,
+  useGetPostsByUserIdQuery,
+  useGetPostByCategoryQuery,
+} = contentPostingApi;

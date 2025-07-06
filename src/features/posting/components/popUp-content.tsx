@@ -98,7 +98,7 @@ export default function ContentPopUp({ categories }: PopUpContentProps) {
     }
   };
   return (
-    <DialogContent showCloseButton={false} className="p-0 py-6 w-[564px] text-base h-[72%]">
+    <DialogContent showCloseButton={false} className="p-0 py-6 sm:max-w-[650px] text-base h-[72%]">
       <DialogHeader className="flex flex-col gap-1.5 px-6">
         <DialogTitle className="flex items-center gap-1 text-primary font-bold border-b-2 pb-1 border-primary w-fit">
           <Icons.penTool className="size-6 rotate-180" />
