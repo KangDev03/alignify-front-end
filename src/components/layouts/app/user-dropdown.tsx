@@ -20,7 +20,7 @@ interface UserDropdownProps {
 
 export function UserDropdown({ onLogout }: UserDropdownProps) {
   const navigate = useNavigate()
-  const {name, avatarUrl, role} = useAppSelector((state: RootState) => state.auth)
+  const { name, avatarUrl, role } = useAppSelector((state: RootState) => state.auth)
 
   const handleToProfile = () => {
     navigate("/user-profile")
@@ -34,20 +34,20 @@ export function UserDropdown({ onLogout }: UserDropdownProps) {
   const displayAvatar = avatarUrl || "/placeholder.svg"
   const displayRole =
     role === "INFLUENCER"
-      ? "Content Creator"
+      ? "Influencer"
       : role === "BRAND"
-      ? "Brand"
-      : role === "ADMIN"
-      ? "Admin"
-      : "User"
+        ? "Brand"
+        : role === "ADMIN"
+          ? "Admin"
+          : "User"
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="cursor-pointer">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={displayAvatar} alt={displayName} />
-            <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
-          </Avatar>
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={displayAvatar} alt={displayName} />
+          <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 left-2" align="center" forceMount>
         <DropdownMenuLabel className="font-normal">
@@ -56,15 +56,19 @@ export function UserDropdown({ onLogout }: UserDropdownProps) {
             <p className="text-xs leading-none text-muted-foreground">{displayRole}</p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleToProfile}>
-          <Icons.user className="mr-2 h-4 w-4" />
-          <span>Hồ sơ</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleToSetting}>
-          <Icons.settings className="mr-2 h-4 w-4" />
-          <span>Cài đặt</span>
-        </DropdownMenuItem>
+        {role !== "ADMIN" && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleToProfile}>
+              <Icons.user className="mr-2 h-4 w-4" />
+              <span>Hồ sơ</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleToSetting}>
+              <Icons.settings className="mr-2 h-4 w-4" />
+              <span>Cài đặt</span>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-red-600" onClick={onLogout}>
           <Icons.logOut className="mr-2 h-4 w-4" />
