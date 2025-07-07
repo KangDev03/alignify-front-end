@@ -58,7 +58,7 @@ export function BrandProfilePage() {
   // };
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
+    <div className="min-h-screen transition-colors duration-300">
       <div className="space-y-6">
         <BrandHeaderCard
           me={userId === undefined}

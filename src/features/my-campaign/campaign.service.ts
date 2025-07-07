@@ -48,12 +48,6 @@ export const campaignApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Campaign'],
     }),
-    getCampaignTop3: builder.query<CampaignResponse, void>({
-      query: () => ({
-        url: `campaigns/top`,
-        method: 'GET',
-      }),
-    }),
     changeStatus: builder.mutation<void, { campaignId: string; newStatus: string }>({
       query: ({ campaignId, newStatus }) => ({
         url: `/campaigns/${campaignId}/status`,
@@ -67,8 +61,8 @@ export const campaignApi = baseApi.injectEndpoints({
         url: `/campaigns/${data.id}`,
         method: 'PUT',
         body: data.formData,
-      })
-    })
+      }),
+    }),
   }),
 });
 export const {
@@ -77,8 +71,7 @@ export const {
   useGetAllCampaignsOfBrandQuery,
   useGetCampaignByCategoryQuery,
   useApplyCampaignMutation,
-  useGetCampaignTop3Query,
   useGetAllCampaignsOfBrandNoPageQuery,
   useChangeStatusMutation,
-  useUpdateCampaignDataMutation
+  useUpdateCampaignDataMutation,
 } = campaignApi;

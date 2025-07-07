@@ -24,7 +24,6 @@ export function ApplicantCard({
   applicant: ApplicantByBrand;
   status: 'waiting' | 'accepted' | 'rejected';
 }) {
-  console.log(applicant);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [confirmApplicant, { isLoading }] = useConfirmApplicationMutation();

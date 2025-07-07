@@ -1,35 +1,44 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AlertCircleIcon, Search } from 'lucide-react';
 
 import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import type { Campaign } from '@/features/common/common.type';
 import { useGetAllCampaignsOfInfluencerQuery } from '@/features/my-campaign/campaign.service';
+import { setCampagin } from '@/features/my-campaign/campaign.slice';
 import CampaignCard from '@/features/my-campaign/components/campaign-card';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 
 const tabs = [
-  { value: 'pending', label: 'Chưa bắt đầu' },
-  { value: 'participating', label: 'Đang diễn ra' },
-  { value: 'completed', label: 'Đã kết thúc' },
+  { value: ['pending', 'recruiting'], label: 'Chưa bắt đầu' },
+  { value: ['participating'], label: 'Đang diễn ra' },
+  { value: ['completed'], label: 'Đã kết thúc' },
 ];
 
 export default function MyCampaignPage() {
+  const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState('pending');
   const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery();
-  const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
-    ? campaignsResponse.data.campaigns
-    : [];
+  const { campaigns } = useAppSelector((state: RootState) => state.campaign);
 
-  const filteredCampaigns = campaigns.filter((campaign) => campaign.status === activeTab);
+  useEffect(() => {
+    if (campaignsResponse) dispatch(setCampagin(campaignsResponse));
+  }, [campaignsResponse, dispatch]);
+
+  const filteredCampaigns = campaigns.filter((campaign) => {
+    const tab = tabs.find((t) => t.value.includes(activeTab));
+    return tab?.value.includes(campaign.status.toLowerCase());
+  });
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Chiến dịch của tôi</h1>
       <Tabs
-        defaultValue="PENDING"
+        defaultValue="pending"
         value={activeTab}
         onValueChange={setActiveTab}
         className="w-full gap-6"
@@ -37,9 +46,13 @@ export default function MyCampaignPage() {
         <div className="flex flex-row gap-6">
           <TabsList className="grid w-full h-fit grid-cols-3 p-1">
             {tabs.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value} className="h-full">
+              <TabsTrigger key={tab.value.join('-')} value={tab.value[0]} className="h-full">
                 {tab.label} (
-                {campaigns.filter((campaign) => campaign.status === tab.value).length ?? 0})
+                {
+                  campaigns.filter((campaign) => tab.value.includes(campaign.status.toLowerCase()))
+                    .length
+                }
+                )
               </TabsTrigger>
             ))}
           </TabsList>
@@ -59,12 +72,11 @@ export default function MyCampaignPage() {
               <Alert variant="default">
                 <AlertCircleIcon />
                 <AlertTitle>
-                  {activeTab.toUpperCase() === 'PENDING' &&
-                    'Bạn chưa có chiến dịch nào đang chờ bắt đầu'}
-                  {activeTab.toUpperCase() === 'PARTICIPATING' &&
-                    'Bạn chưa có chiến dịch nào đang diễn ra'}
-                  {activeTab.toUpperCase() === 'COMPLETED' &&
-                    'Bạn chưa có chiến dịch nào đã kết thúc'}
+                  {activeTab === 'pending' || activeTab === 'recruiting'
+                    ? 'Bạn chưa có chiến dịch nào đang chờ bắt đầu hoặc đang tuyển'
+                    : activeTab === 'participating'
+                      ? 'Bạn chưa có chiến dịch nào đang diễn ra'
+                      : 'Bạn chưa có chiến dịch nào đã kết thúc'}
                 </AlertTitle>
               </Alert>
             )}

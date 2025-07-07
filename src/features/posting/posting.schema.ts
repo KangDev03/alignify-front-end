@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-import { type ISupportedPlatforms, SupportedPlatforms, SupportedPostTypeByPlatform } from '../common/common.type';
+import {
+  type ISupportedPlatforms,
+  SupportedPlatforms,
+  SupportedPostTypeByPlatform,
+} from '../common/common.type';
 
 export const contentFormSchema = z.object({
   contentName: z.string().min(10, {
@@ -33,12 +37,15 @@ export const campaignFormSchema = z
     content: z.string().min(20, {
       message: 'Mô tả phải có ít nhất 20 ký tự',
     }),
-    image: z.instanceof(File, { message: 'Poster phải là file ảnh' }).refine(
-      (file) => {
-        return ['image/jpeg', 'image/png', 'image/gif'].includes(file.type);
-      },
-      { message: 'Poster phải là file ảnh (JPEG, PNG, hoặc GIF)' },
-    ),
+    image: z
+      .instanceof(File, { message: 'Poster phải là file ảnh' })
+      .refine(
+        (file) => {
+          return ['image/jpeg', 'image/png', 'image/gif'].includes(file.type);
+        },
+        { message: 'Poster phải là file ảnh (JPEG, PNG, hoặc GIF)' },
+      )
+      .optional(),
     budget: z
       .number()
       .min(1000000, {
@@ -76,65 +83,67 @@ export const campaignFormSchema = z
       }),
     ),
     campaignRequirements: z.array(
-      z.object({
-        platform: z
-          .string()
-          .refine(
-            (plat: string) =>
-              SupportedPlatforms.includes(plat.toLowerCase() as ISupportedPlatforms),
-            {
-              message: 'Nền tảng hiện tại không được hỗ trợ',
-            },
+      z
+        .object({
+          platform: z
+            .string()
+            .refine(
+              (plat: string) =>
+                SupportedPlatforms.includes(plat.toLowerCase() as ISupportedPlatforms),
+              {
+                message: 'Nền tảng hiện tại không được hỗ trợ',
+              },
+            ),
+          post_type: z.string(),
+          quantity: z.number().min(1, { message: 'Số lượng nội dung ít nhất là 1' }),
+          postDetails: z.array(
+            z.object({
+              video: z
+                .object({
+                  like: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                })
+                .optional(),
+              post: z
+                .object({
+                  like: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                })
+                .optional(),
+              story: z
+                .object({
+                  like: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                })
+                .optional(),
+              reel: z
+                .object({
+                  like: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                })
+                .optional(),
+            }),
           ),
-        post_type: z.string(),
-        quantity: z.number().min(1, { message: 'Số lượng nội dung ít nhất là 1' }),
-        postDetails: z.array(
-          z.object({
-            video: z
-              .object({
-                like: z.number().min(0, 'Số lượng ít nhất là 0'),
-                comment: z.number().min(0, 'Số lượng ít nhất là 0'),
-                share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
-              })
-              .optional(),
-            post: z
-              .object({
-                like: z.number().min(0, 'Số lượng ít nhất là 0'),
-                comment: z.number().min(0, 'Số lượng ít nhất là 0'),
-                share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
-              })
-              .optional(),
-            story: z
-              .object({
-                like: z.number().min(0, 'Số lượng ít nhất là 0'),
-                comment: z.number().min(0, 'Số lượng ít nhất là 0'),
-                share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
-              })
-              .optional(),
-            reel: z
-              .object({
-                like: z.number().min(0, 'Số lượng ít nhất là 0'),
-                comment: z.number().min(0, 'Số lượng ít nhất là 0'),
-                share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
-              })
-              .optional(),
-          }),
+        })
+        .refine(
+          (data) => {
+            const platform = data.platform?.toLowerCase() as ISupportedPlatforms;
+            const postType = data.post_type;
+            if (!platform || !postType) return false;
+            const validPostTypes = SupportedPostTypeByPlatform[platform]?.map(
+              (type) => Object.keys(type)[0],
+            );
+            return validPostTypes?.includes(postType) || false;
+          },
+          {
+            message: 'Loại nội dung không hợp lệ cho nền tảng đã chọn',
+            path: ['post_type'],
+          },
         ),
-      }).refine(
-        (data) => {
-          const platform = data.platform?.toLowerCase() as ISupportedPlatforms;
-          const postType = data.post_type;
-          if (!platform || !postType) return false;
-          const validPostTypes = SupportedPostTypeByPlatform[platform]?.map(
-            (type) => Object.keys(type)[0],
-          );
-          return validPostTypes?.includes(postType) || false;
-        },
-        {
-          message: 'Loại nội dung không hợp lệ cho nền tảng đã chọn',
-          path: ['post_type'],
-        },
-      ),
     ),
     categoryIds: z
       .array(z.string())

@@ -33,24 +33,25 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 
 import { Icons } from '@/components/icons/icons';
+import { useGetCategoriesQuery } from '@/features/common/common.service';
 import {
   type Campaign,
-  type Category,
   type PostType,
   SupportedPostTypeByPlatform,
 } from '@/features/common/common.type';
 import { setRefetch } from '@/features/home/home.slice';
 import { useUpdateCampaignDataMutation } from '@/features/my-campaign/campaign.service';
+import { updateCampaignSlice } from '@/features/my-campaign/campaign.slice';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
+import { parseIsoToDateTime } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { campaignFormSchema, type CampaignFormValues } from '../posting.schema';
 import { usePostCampaignMutation } from '../posting.service';
 
 interface PopUpCampaignProps {
-  categories: Category[];
   campaignData?: Campaign;
 }
 const MAX_CATEGORIES = 3;
@@ -59,15 +60,16 @@ interface ExtendedState {
   extended: boolean;
 }
 
-export default function CampaignPopUp({ categories, campaignData }: PopUpCampaignProps) {
-  const dialogCloseRef = useRef<HTMLButtonElement>(null);
-  const [postCampaign, { isLoading: isPosting }] = usePostCampaignMutation();
-  const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignDataMutation();
+export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
   const dispatch = useDispatch();
   const sendNotification = useSendNotification();
-  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
-
+  const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const [isExtended, setExtended] = useState<ExtendedState[]>([]);
+  const [postCampaign, { isLoading: isPosting }] = usePostCampaignMutation();
+  const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignDataMutation();
+  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
+  const { data: rawData } = useGetCategoriesQuery();
+  const categories = rawData?.data;
 
   const onUpdating = campaignData !== undefined && campaignData !== null;
 
@@ -81,8 +83,12 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
       content: campaignData?.content || '',
       budget: campaignData?.budget || undefined,
       influencerCountExpected: campaignData?.influencerCountExpected || undefined,
-      startAt: campaignData?.startAt ? new Date(campaignData.startAt) : new Date(),
-      dueAt: campaignData?.dueAt ? new Date(campaignData.dueAt) : new Date(),
+      startAt: campaignData?.startAt
+        ? (parseIsoToDateTime(campaignData.startAt).toJSDate() ?? new Date())
+        : new Date(),
+      dueAt: campaignData?.dueAt
+        ? (parseIsoToDateTime(campaignData.dueAt).toJSDate() ?? new Date())
+        : new Date(),
       influencerRequirements: campaignData?.influencerRequirements?.length
         ? campaignData.influencerRequirements
         : [{ platform: '', followers: undefined }],
@@ -184,7 +190,7 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
         startAt: startAt.toISOString(),
         dueAt: dueAt.toISOString(),
         campaignRequirements: campaignRequirements.map((item) => ({
-          platform: item.platform,
+          platform: item.platform.toUpperCase() as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
           post_type: item.post_type,
           quantity: item.quantity,
           details: item.postDetails.map((detail) => {
@@ -198,33 +204,72 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
           }),
         })),
         influencerRequirements: influencerRequirements.map((item) => ({
-          platform: item.platform,
+          platform: item.platform.toUpperCase() as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
           followers: item.followers,
         })),
       };
 
-      console.log(campaignRaw);
       const formData = new FormData();
       if (file) formData.append('image', file);
       formData.append('campaign', JSON.stringify(campaignRaw));
       if (onUpdating) {
-        await updateCampaign({ formData: formData }).unwrap();
+        const {
+          brandId,
+          brandAvartar,
+          brandName,
+          campaignId,
+          createdAt,
+          influencerCountCurrent = 0,
+          applicationTotal = 0,
+          appliedInfluencerIds = [],
+          status,
+          categories: _categories,
+        } = { ...campaignData };
+        const newCampaign: Campaign = {
+          ...campaignRaw,
+          campaignId,
+          influencerCountCurrent,
+          appliedInfluencerIds,
+          applicationTotal,
+          brandAvartar,
+          brandId,
+          brandName,
+          status,
+          createdAt,
+          categories: campaignRaw.categoryIds
+            ? campaignRaw.categoryIds.map((catId) => {
+                return categories!.find((cat) => cat.categoryId === catId)!;
+              })
+            : _categories,
+        };
+        dispatch(updateCampaignSlice(newCampaign));
+        sendNotification({
+          userId: id!,
+          content: `Cập nhật chiến dịch thành công`,
+          name: name!,
+          avatarUrl: avatarUrl!,
+        });
+        await updateCampaign({ formData: formData, id: campaignData.campaignId }).unwrap();
       } else {
         await postCampaign({ formData }).unwrap();
+        dispatch(setRefetch({ key: 'campaign', value: true }));
+        sendNotification({
+          userId: id!,
+          content: `Bạn đã đăng bài chiến dịch thành công`,
+          name: name!,
+          avatarUrl: avatarUrl!,
+        });
       }
       dialogCloseRef.current?.click();
       form.reset();
-      dispatch(setRefetch({ key: 'campaign', value: true }));
-      sendNotification({
-        userId: id!,
-        content: `Bạn đã đăng bài chiến dịch thành công`,
-        name: name!,
-        avatarUrl: avatarUrl!,
-      });
       // toast.success('Đăng bài thành công!');
     } catch (err) {
       console.log(err);
-      toast.error('Đăng bài thất bại. Vui lòng thử lại!');
+      if (onUpdating) {
+        toast.error('Cập nhật chiến dịch thất bại. Vui lòng thử lại!');
+      } else {
+        toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
+      }
     }
   };
 
@@ -869,8 +914,8 @@ export default function CampaignPopUp({ categories, campaignData }: PopUpCampaig
             <Button variant={'default'} type="submit" disabled={isPosting}>
               {onUpdating
                 ? isUpdating
-                  ? 'Cập nhật'
-                  : 'Đang cập nhật'
+                  ? 'Đang cập nhật...'
+                  : 'Cập nhật'
                 : isPosting
                   ? 'Đang đăng...'
                   : 'Đăng chiến dịch'}
