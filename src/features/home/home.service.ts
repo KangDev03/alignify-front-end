@@ -5,6 +5,7 @@ import type {
   ContentPostingResponse,
   InfluencerProfileResponse,
   ProfileRequest,
+  TopInfluencerResponse,
 } from './home.type';
 import type { CommonPageableRequest } from '../common/common.type';
 import type { CampaignResponse } from '../my-campaign/campaign.type';
@@ -93,6 +94,18 @@ export const getProfileApi = baseApi.injectEndpoints({
         params: { pageNumber, pageSize },
       }),
     }),
+    getTopInfluencer: builder.query<TopInfluencerResponse, void>({
+      query: () => ({
+        url: '/profiles/topInfluencer',
+        method: 'GET',
+      }),
+    }),
+    getCampaignTop3: builder.query<CampaignResponse, void>({
+      query: () => ({
+        url: `campaigns/top`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -106,6 +119,8 @@ export const {
   useSearchForumContentQuery,
   useGetBrandByCategoryQuery,
   useGetInfluencerByCategoryQuery,
+  useGetTopInfluencerQuery,
+  useGetCampaignTop3Query,
 } = getProfileApi;
 
 export const contentPostingApi = baseApi.injectEndpoints({
@@ -124,14 +139,6 @@ export const contentPostingApi = baseApi.injectEndpoints({
         params: data,
       }),
     }),
-    getPostMe: builder.query<ContentPostingResponse, CommonPageableRequest | undefined>({
-      query: (data) => ({
-        url: '/contentPosting/me',
-        method: 'GET',
-        params: data,
-      }),
-      providesTags: ['Auth'],
-    }),
     getPostByCategory: builder.query<ContentPostingResponse, CommonPageableRequest>({
       query: ({ categoryId, pageNumber, pageSize }) => ({
         url: `/contentPosting/filterByCategory/${categoryId}`,
@@ -141,9 +148,5 @@ export const contentPostingApi = baseApi.injectEndpoints({
     }),
   }),
 });
-export const {
-  useGetAllContentPostingQuery,
-  useGetPostMeQuery,
-  useGetPostsByUserIdQuery,
-  useGetPostByCategoryQuery,
-} = contentPostingApi;
+export const { useGetAllContentPostingQuery, useGetPostsByUserIdQuery, useGetPostByCategoryQuery } =
+  contentPostingApi;

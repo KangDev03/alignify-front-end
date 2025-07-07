@@ -5,12 +5,15 @@ import { AlertCircleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { Icons } from '@/components/icons/icons';
+import type { Category } from '@/features/common/common.type';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
 import { formatNumber } from '@/utils/format';
 
@@ -229,20 +232,34 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
                       <div className="flex-1">
                         <h3 className="font-semibold">{influencer.name}</h3>
                         {influencer?.category && (
-                          <p className="text-sm text-muted-foreground capitalize">
-                            {influencer?.category
-                              .map((category: any) => category.categoryName)
-                              .join(', ')}
-                          </p>
+                          <div className="flex gap-1 text-sm text-muted-foreground capitalize">
+                            {influencer?.category.map((cat: Category, i) => (
+                              <Badge key={cat.categoryId ?? i} variant="outline">
+                                {cat.categoryName ?? cat}
+                              </Badge>
+                            ))}
+                          </div>
                         )}
                         <div className="flex items-center space-x-4 mt-2 text-sm">
                           <div className="flex items-center space-x-1">
                             <Icons.users className="h-4 w-4" />
-                            <span>{formatNumber(influencer.follower ?? 0)} followers</span>
+                            <p className="flex gap-1">
+                              <span className="font-semibold">
+                                {formatNumber(influencer.follower ?? 0)}
+                              </span>
+                              người theo dõi
+                            </p>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <Icons.star className="h-4 w-4" />
-                            <span>{influencer.rating}</span>
+                          <div className="flex items-center space-x-1 font-semibold">
+                            <Icons.star
+                              className={cn(
+                                'h-4 w-4 ',
+                                influencer.rating && influencer.rating > 0
+                                  ? 'stroke-yellow-400 fill-yellow-400'
+                                  : '',
+                              )}
+                            />
+                            <span>{influencer.rating ?? 0}</span>
                           </div>
                         </div>
                       </div>

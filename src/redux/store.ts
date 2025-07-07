@@ -8,6 +8,7 @@ import commonReducer from '@/features/common/common.slice';
 import { homeReducer, refetchReducer } from '@/features/home/home.slice';
 import { campaignSlice } from '@/features/my-campaign/campaign.slice';
 import { notificationSlice } from '@/features/notification/notification.slice';
+import { profileSlice } from '@/features/profile/profile.slice';
 
 import { baseApi } from './baseApi';
 
@@ -29,6 +30,7 @@ export const store = configureStore({
     home: homeReducer,
     notification: notificationSlice.reducer,
     campaign: campaignSlice.reducer,
+    profile: profileSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

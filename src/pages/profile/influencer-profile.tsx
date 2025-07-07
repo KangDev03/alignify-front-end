@@ -1,28 +1,41 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
+import { AlertCircleIcon } from 'lucide-react';
 
+import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Icons } from '@/components/icons/icons';
 import { ForumPost } from '@/features/home/components/forum-post';
-import { useGetPostMeQuery } from '@/features/home/home.service';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
 import { ProfileInfo } from '@/features/profile/components/profile-info';
 import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { ProfileStats } from '@/features/profile/components/profile-stats';
-import { useGetInfluencerProfileUserQuery } from '@/features/profile/profile.service';
+import {
+  useGetInfluencerProfileUserQuery,
+  useGetPostMeQuery,
+} from '@/features/profile/profile.service';
+import { setContents } from '@/features/profile/profile.slice';
+import { useAppDispatch } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 
 export default function InfluencerProfilePage() {
   const location = useLocation();
+  const dispatch = useAppDispatch();
   let userId = location.pathname.split('/').pop() || undefined;
   userId = userId === 'user-profile' ? undefined : userId;
+
   const { data: contentPosting } = useGetPostMeQuery({
-    pageNumber: 0,
-    pageSize: 10,
+    page: { pageNumber: 0, pageSize: 10 },
+    userId: userId,
   });
+
+  const { contents } = useSelector((state: RootState) => state.profile);
 
   const { data: profileRaw } = useGetInfluencerProfileUserQuery(userId ? userId : undefined, {
     refetchOnMountOrArgChange: true,
@@ -32,7 +45,9 @@ export default function InfluencerProfilePage() {
   //   pageNumber: 0,
   //   pageSize: 10,
   // });
-
+  useEffect(() => {
+    if (contentPosting) dispatch(setContents(contentPosting));
+  }, [contentPosting, dispatch]);
   if (!profileRaw?.data) {
     return <div>Loading...</div>;
   }
@@ -45,7 +60,7 @@ export default function InfluencerProfilePage() {
   // );
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
+    <div className="min-h-screen transition-colors duration-300">
       <div className="space-y-6">
         <ProfileHeader me={userId === undefined} profile={profile} />
 
@@ -53,7 +68,7 @@ export default function InfluencerProfilePage() {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="profile">Thông tin cá nhân</TabsTrigger>
             <TabsTrigger value="posts">
-              Bài viết của tôi ({contentPosting?.data.length ?? 0})
+              {userId ? 'Bài viết' : 'Bài viết của tôi'} ({contents?.length ?? 0})
             </TabsTrigger>
           </TabsList>
 
@@ -78,13 +93,13 @@ export default function InfluencerProfilePage() {
           </TabsContent>
           <TabsContent value="posts" className="mt-6">
             <div className="space-y-4">
-              {contentPosting?.data && contentPosting?.data.length > 0 ? (
+              {contents.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {contentPosting.data.map((post) => (
+                  {contents.map((post) => (
                     <ForumPost key={post.contentId} contentPosting={post} />
                   ))}
                 </div>
-              ) : (
+              ) : userId === undefined ? (
                 <Card className="border-2 border-dashed border-muted bg-muted/20">
                   <CardContent className="p-12 text-center">
                     <div className="space-y-4">
@@ -104,6 +119,11 @@ export default function InfluencerProfilePage() {
                     </div>
                   </CardContent>
                 </Card>
+              ) : (
+                <Alert variant="default">
+                  <AlertCircleIcon />
+                  <AlertTitle>Không bài viết nào</AlertTitle>
+                </Alert>
               )}
             </div>
           </TabsContent>
