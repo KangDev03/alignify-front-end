@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router';
 
 import AppLayout from '@/components/layouts/app/app-layout';
+import AdminPage from '@/pages/admin';
 import { Applicants } from '@/pages/applicants';
 import { ApplicationsPage } from '@/pages/applications';
 import ForgotPasswordPage from '@/pages/auth/forgot-password';
@@ -14,6 +15,8 @@ import Invitation from '@/pages/invitation';
 import { BrandProfilePage } from '@/pages/profile/brand-profile';
 import InfluencerProfilePage from '@/pages/profile/influencer-profile';
 import { Settings } from '@/pages/setting';
+import { Statistics } from '@/pages/statistics';
+import { UpgradePlan } from '@/pages/upgrade-plan';
 
 import { useAppSelector } from './hooks/redux';
 import RegisterPage from './pages/auth/sign-up';
@@ -44,6 +47,8 @@ function Router() {
           <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/campaign-management" element={<CampaignManagement />} />
           <Route path="/invitation" element={<Invitation />} />
+          <Route path="/statistics" element={<Statistics userRole={roleName} />} />
+          <Route path="/upgrade-plan" element={<UpgradePlan userRole={roleName} />} />
           {roleName === 'INFLUENCER' && (
             <Route path="/user-profile" element={<InfluencerProfilePage />} />
           )}
@@ -51,6 +56,7 @@ function Router() {
           <Route path="/influencer/:userId" element={<InfluencerProfilePage />} />
           <Route path="/brand/:userId" element={<BrandProfilePage />} />
         </Route>
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </>
   );
