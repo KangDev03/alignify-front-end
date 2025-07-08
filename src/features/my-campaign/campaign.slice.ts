@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { CampaignResponse, CampaignState } from './campaign.type';
+import type { Campaign } from '../common/common.type';
 
 const initialState: CampaignState = {
   campaigns: [],
@@ -29,7 +30,15 @@ export const campaignSlice = createSlice({
         state.campaigns[campaignIndex].status = status;
       }
     },
+    updateCampaignSlice: (state, action: PayloadAction<Campaign>) => {
+      const idx = state.campaigns.findIndex(
+        (campaign) => campaign.campaignId === action.payload.campaignId,
+      );
+      if (idx !== -1 && idx >= 0) {
+        state.campaigns[idx] = action.payload;
+      }
+    },
   },
 });
-export const { setCampagin, changeCampaignStatus } = campaignSlice.actions;
+export const { setCampagin, changeCampaignStatus, updateCampaignSlice } = campaignSlice.actions;
 export default campaignSlice.reducer;

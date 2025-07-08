@@ -33,18 +33,26 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 
 import { Icons } from '@/components/icons/icons';
-import { type Category, SupportedPostTypeByPlatform } from '@/features/common/common.type';
+import { useGetCategoriesQuery } from '@/features/common/common.service';
+import {
+  type Campaign,
+  type PostType,
+  SupportedPostTypeByPlatform,
+} from '@/features/common/common.type';
 import { setRefetch } from '@/features/home/home.slice';
+import { useUpdateCampaignDataMutation } from '@/features/my-campaign/campaign.service';
+import { updateCampaignSlice } from '@/features/my-campaign/campaign.slice';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
+import { parseIsoToDateTime } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { campaignFormSchema, type CampaignFormValues } from '../posting.schema';
 import { usePostCampaignMutation } from '../posting.service';
 
 interface PopUpCampaignProps {
-  categories: Category[];
+  campaignData?: Campaign;
 }
 const MAX_CATEGORIES = 3;
 interface ExtendedState {
@@ -52,35 +60,68 @@ interface ExtendedState {
   extended: boolean;
 }
 
-export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
-  const dialogCloseRef = useRef<HTMLButtonElement>(null);
-  const [postCampaign, { isLoading: isPosting }] = usePostCampaignMutation();
+export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
   const dispatch = useDispatch();
   const sendNotification = useSendNotification();
-  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
-
+  const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const [isExtended, setExtended] = useState<ExtendedState[]>([]);
+  const [postCampaign, { isLoading: isPosting }] = usePostCampaignMutation();
+  const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignDataMutation();
+  const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
+  const { data: rawData } = useGetCategoriesQuery();
+  const categories = rawData?.data;
+
+  const onUpdating = campaignData !== undefined && campaignData !== null;
+
+  const imageUrl = campaignData && campaignData.imageUrl;
 
   const form = useForm<CampaignFormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(campaignFormSchema),
     defaultValues: {
-      campaignName: '',
-      content: '',
-      budget: undefined,
-      influencerCountExpected: undefined,
-      startAt: new Date(),
-      dueAt: new Date(),
-      influencerRequirements: [{ platform: '', followers: undefined }],
-      campaignRequirements: [
-        {
-          platform: '',
-          post_type: '',
-          quantity: 1,
-          postDetails: [],
-        },
-      ],
-      categoryIds: [],
+      campaignName: campaignData?.campaignName || '',
+      content: campaignData?.content || '',
+      budget: campaignData?.budget || undefined,
+      influencerCountExpected: campaignData?.influencerCountExpected || undefined,
+      startAt: campaignData?.startAt
+        ? (parseIsoToDateTime(campaignData.startAt).toJSDate() ?? new Date())
+        : new Date(),
+      dueAt: campaignData?.dueAt
+        ? (parseIsoToDateTime(campaignData.dueAt).toJSDate() ?? new Date())
+        : new Date(),
+      influencerRequirements: campaignData?.influencerRequirements?.length
+        ? campaignData.influencerRequirements
+        : [{ platform: '', followers: undefined }],
+      campaignRequirements: campaignData?.campaignRequirements?.length
+        ? campaignData.campaignRequirements.map((req) => ({
+            platform: req.platform,
+            post_type: req.post_type,
+            quantity: req.quantity,
+            postDetails: req.details.map((item) => {
+              const postType = item.post_type?.toLowerCase() as PostType;
+              return {
+                [postType]: {
+                  like: item.like,
+                  comment: item.comment,
+                  share: item.share,
+                },
+              };
+            }),
+          }))
+        : [
+            {
+              platform: '',
+              post_type: '',
+              quantity: undefined,
+              postDetails: [
+                { post: { like: 0, comment: 0, share: 0 } },
+                { video: { like: 0, comment: 0, share: 0 } },
+                { story: { like: 0, comment: 0, share: 0 } },
+                { reel: { like: 0, comment: 0, share: 0 } },
+              ],
+            },
+          ],
+      categoryIds: campaignData?.categories.map((cat) => cat.categoryId) || [],
       image: undefined,
     },
   });
@@ -105,23 +146,26 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
 
   useEffect(() => {
     contentFields.forEach((_, idx) => {
-      const quantity = form.watch(`campaignRequirements.${idx}.quantity`) || 0;
-      const postType = form.watch(`campaignRequirements.${idx}.post_type`);
+      const quantity = Number(form.watch(`campaignRequirements.${idx}.quantity`) || 0);
       const currentPostDetails = form.watch(`campaignRequirements.${idx}.postDetails`) || [];
-
-      if (postType && quantity > 0) {
-        const newPostDetails = Array.from({ length: quantity }, (_, index) => {
-          const existingDetail = currentPostDetails[index];
-          return existingDetail && existingDetail[postType as keyof typeof existingDetail]
-            ? existingDetail
-            : { [postType]: { like: 0, comment: 0 } };
-        });
-        form.setValue(`campaignRequirements.${idx}.postDetails`, newPostDetails);
-      } else {
-        form.setValue(`campaignRequirements.${idx}.postDetails`, []);
+      if (currentPostDetails.length < quantity) {
+        const postType =
+          form.watch(`campaignRequirements.${idx}.post_type`)?.toLowerCase() || 'video';
+        const newDetails = Array.from({ length: quantity - currentPostDetails.length }, () => ({
+          [postType]: { like: 0, comment: 0, share: 0 },
+        }));
+        form.setValue(`campaignRequirements.${idx}.postDetails`, [
+          ...currentPostDetails,
+          ...newDetails,
+        ]);
+      } else if (currentPostDetails.length > quantity) {
+        form.setValue(
+          `campaignRequirements.${idx}.postDetails`,
+          currentPostDetails.slice(0, quantity),
+        );
       }
     });
-  }, [form.watch('campaignRequirements'), contentFields, form]);
+  }, [contentFields, form.watch('campaignRequirements')]);
 
   const socialPlatformOptions = [
     { value: 'TIKTOK', label: 'TikTok' },
@@ -142,10 +186,11 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
       } = values;
       const campaignRaw = {
         ...rest,
+        imageUrl: imageUrl ?? '',
         startAt: startAt.toISOString(),
         dueAt: dueAt.toISOString(),
         campaignRequirements: campaignRequirements.map((item) => ({
-          platform: item.platform,
+          platform: item.platform.toUpperCase() as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
           post_type: item.post_type,
           quantity: item.quantity,
           details: item.postDetails.map((detail) => {
@@ -159,28 +204,72 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
           }),
         })),
         influencerRequirements: influencerRequirements.map((item) => ({
-          platform: item.platform,
+          platform: item.platform.toUpperCase() as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
           followers: item.followers,
         })),
       };
-      console.log(campaignRaw);
+
       const formData = new FormData();
       if (file) formData.append('image', file);
       formData.append('campaign', JSON.stringify(campaignRaw));
-      await postCampaign({ formData }).unwrap();
+      if (onUpdating) {
+        const {
+          brandId,
+          brandAvartar,
+          brandName,
+          campaignId,
+          createdAt,
+          influencerCountCurrent = 0,
+          applicationTotal = 0,
+          appliedInfluencerIds = [],
+          status,
+          categories: _categories,
+        } = { ...campaignData };
+        const newCampaign: Campaign = {
+          ...campaignRaw,
+          campaignId,
+          influencerCountCurrent,
+          appliedInfluencerIds,
+          applicationTotal,
+          brandAvartar,
+          brandId,
+          brandName,
+          status,
+          createdAt,
+          categories: campaignRaw.categoryIds
+            ? campaignRaw.categoryIds.map((catId) => {
+                return categories!.find((cat) => cat.categoryId === catId)!;
+              })
+            : _categories,
+        };
+        dispatch(updateCampaignSlice(newCampaign));
+        sendNotification({
+          userId: id!,
+          content: `Cập nhật chiến dịch thành công`,
+          name: name!,
+          avatarUrl: avatarUrl!,
+        });
+        await updateCampaign({ formData: formData, id: campaignData.campaignId }).unwrap();
+      } else {
+        await postCampaign({ formData }).unwrap();
+        dispatch(setRefetch({ key: 'campaign', value: true }));
+        sendNotification({
+          userId: id!,
+          content: `Bạn đã đăng bài chiến dịch thành công`,
+          name: name!,
+          avatarUrl: avatarUrl!,
+        });
+      }
       dialogCloseRef.current?.click();
       form.reset();
-      dispatch(setRefetch({ key: 'campaign', value: true }));
-      sendNotification({
-        userId: id!,
-        content: `Bạn đã đăng bài chiến dịch thành công`,
-        name: name!,
-        avatarUrl: avatarUrl!,
-      });
       // toast.success('Đăng bài thành công!');
     } catch (err) {
       console.log(err);
-      toast.error('Đăng bài thất bại. Vui lòng thử lại!');
+      if (onUpdating) {
+        toast.error('Cập nhật chiến dịch thất bại. Vui lòng thử lại!');
+      } else {
+        toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
+      }
     }
   };
 
@@ -274,7 +363,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                         <Icons.fileImage />
                         <span>Chọn ảnh</span>
                       </Button>
-                      {field.value && (
+                      {(field.value || imageUrl) && (
                         <div className="flex gap-4">
                           <Dialog>
                             <DialogTrigger>
@@ -286,7 +375,11 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                             <DialogContent showCloseButton={false} className="p-3">
                               <div className="flex flex-col space-y-3">
                                 <img
-                                  src={URL.createObjectURL(field.value as File)}
+                                  src={
+                                    field.value
+                                      ? URL.createObjectURL(field.value as File)
+                                      : imageUrl!
+                                  }
                                   alt="Poster preview"
                                   className="object-contain max-w-full h-[600px]"
                                 />
@@ -489,7 +582,7 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                           <Input
                             {...field}
                             type="number"
-                            value={undefined}
+                            value={field.value ?? undefined}
                             onChange={(e) => field.onChange(Number(e.target.value))}
                             placeholder="Số lượng người theo dõi"
                           />
@@ -520,248 +613,281 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
           <div className="flex flex-col gap-2">
             <FormItem>
               <FormLabel className="">Yêu cầu nền tảng *</FormLabel>
-              {contentFields.map((item, idx) => (
-                <div
-                  key={item.platform + idx}
-                  className={cn(
-                    'flex',
-                    isExtended.find((item) => item.idx === idx)?.extended
-                      ? ' items-start'
-                      : ' items-center',
-                  )}
-                >
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-transparent"
-                    onClick={() => {
-                      setExtended((prev) => {
-                        const index = prev.findIndex((item) => item.idx === idx);
-                        if (index === -1) {
-                          return [...prev, { idx, extended: true }];
-                        }
-                        const newExtended = [...prev];
-                        newExtended[index].extended = !newExtended[index].extended;
-                        return newExtended;
-                      });
-                    }}
-                  >
-                    {isExtended.find((item) => item.idx === idx)?.extended ? (
-                      <Icons.circleChevronUp className="size-5" />
-                    ) : (
-                      <Icons.circleChevronDown className="size-5" />
-                    )}
-                  </Button>
+              {contentFields.map((item, idx) => {
+                return (
                   <div
-                    key={item.id}
-                    className="flex-1 flex flex-col gap-2 p-2 border rounded-lg bg-gray-100"
+                    key={item.platform + idx}
+                    className={cn(
+                      'flex',
+                      isExtended.find((item) => item.idx === idx)?.extended
+                        ? ' items-start'
+                        : ' items-center',
+                    )}
                   >
-                    <div className="flex gap-0">
-                      <FormField
-                        control={form.control}
-                        name={`campaignRequirements.${idx}.platform`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Select
-                                onValueChange={(value) => {
-                                  field.onChange(value);
-                                  setExtended((prev) => {
-                                    const index = prev.findIndex((item) => item.idx === idx);
-                                    if (index === -1) {
-                                      return [...prev, { idx, extended: true }];
-                                    }
-                                    const newExtended = [...prev];
-                                    newExtended[index].extended = true;
-                                    return newExtended;
-                                  });
-                                }}
-                                value={field.value || undefined}
-                              >
-                                <SelectTrigger className="w-full bg-white">
-                                  <SelectValue placeholder="Nền tảng" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {socialPlatformOptions.map((opt) => (
-                                    <SelectItem key={opt.value} value={opt.value}>
-                                      {opt.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive hover:scale-110 bg-transparent hover:bg-transparent"
-                        onClick={() => removeContent(idx)}
-                      >
-                        <Icons.trash className="size-5" />
-                      </Button>
-                    </div>
-                    {isExtended.find((item) => item.idx === idx)?.extended &&
-                      form.watch(`campaignRequirements.${idx}.platform`) && (
-                        <div className="flex flex-col gap-2">
-                          <div className="flex gap-2 w-full items-start">
-                            <FormField
-                              control={form.control}
-                              name={`campaignRequirements.${idx}.post_type`}
-                              render={({ field }) => (
-                                <FormItem className="flex-1">
-                                  <FormLabel>Loại nội dung</FormLabel>
-                                  <FormControl>
-                                    <Select
-                                      onValueChange={field.onChange}
-                                      value={field.value || undefined}
-                                    >
-                                      <SelectTrigger className="w-full capitalize bg-white">
-                                        <SelectValue placeholder="Loại nội dung" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {SupportedPostTypeByPlatform[
-                                          (
-                                            form.watch(`campaignRequirements.${idx}.platform`) || ''
-                                          ).toLowerCase() as keyof typeof SupportedPostTypeByPlatform
-                                        ]?.map((item) => {
-                                          const type = Object.keys(item)[0];
-                                          return (
-                                            <SelectItem
-                                              key={type}
-                                              value={type}
-                                              className="capitalize"
-                                            >
-                                              {type}
-                                            </SelectItem>
-                                          );
-                                        })}
-                                      </SelectContent>
-                                    </Select>
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`campaignRequirements.${idx}.quantity`}
-                              render={({ field }) => (
-                                <FormItem className="flex-1">
-                                  <FormLabel>Số lượng</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      {...field}
-                                      className="bg-white"
-                                      type="number"
-                                      value={undefined}
-                                      onChange={(e) => field.onChange(Number(e.target.value))}
-                                      placeholder="Số lượng nội dung"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            {Array.from(
-                              {
-                                length: Number(
-                                  form.watch(`campaignRequirements.${idx}.quantity`) || 0,
-                                ),
-                              },
-                              (_, index) => {
-                                const selectedPostType = form.watch(
-                                  `campaignRequirements.${idx}.post_type`,
-                                );
-                                const platform = form.watch(`campaignRequirements.${idx}.platform`);
-                                const platformKey = (
-                                  platform || ''
-                                ).toLowerCase() as keyof typeof SupportedPostTypeByPlatform;
-                                const postTypesArray =
-                                  SupportedPostTypeByPlatform[platformKey] || [];
-                                const postTypeObj = postTypesArray.find(
-                                  (obj) => Object.keys(obj)[0] === selectedPostType,
-                                );
-                                const postDetails = postTypeObj
-                                  ? postTypeObj[selectedPostType as keyof typeof postTypeObj] || []
-                                  : [];
-
-                                if (
-                                  !form.watch(`campaignRequirements.${idx}.postDetails.${index}`)
-                                ) {
-                                  form.setValue(
-                                    `campaignRequirements.${idx}.postDetails.${index}`,
-                                    {
-                                      [selectedPostType]: { like: 0, comment: 0 },
-                                    },
-                                  );
-                                }
-
-                                if (
-                                  selectedPostType &&
-                                  !form.watch(`campaignRequirements.${idx}.postDetails.${index}`)
-                                ) {
-                                  form.setValue(
-                                    `campaignRequirements.${idx}.postDetails.${index}`,
-                                    {
-                                      [selectedPostType]: { like: 0, comment: 0 },
-                                    },
-                                  );
-                                }
-
-                                if (!selectedPostType || !postDetails.length) {
-                                  return null;
-                                }
-
-                                return (
-                                  <div key={index} className="flex flex-col gap-4">
-                                    <FormLabel>Yêu cầu tương tác nội dung ({index + 1})</FormLabel>
-                                    <div className="flex gap-2">
-                                      {postDetails.map((require: string) => (
-                                        <FormField
-                                          key={`${idx}_${index}_${require}`}
-                                          control={form.control}
-                                          name={
-                                            `campaignRequirements.${idx}.postDetails.${index}.${selectedPostType}.${require}` as FieldPath<CampaignFormValues>
-                                          }
-                                          render={({ field }) => (
-                                            <FormItem className="flex-1 flex flex-col">
-                                              <FormLabel className="capitalize">
-                                                {require}
-                                              </FormLabel>
-                                              <FormControl>
-                                                <Input
-                                                  {...field}
-                                                  type="number"
-                                                  min={0}
-                                                  placeholder="Số lượng"
-                                                  value={(field.value as number) ?? 0}
-                                                  onChange={(e) =>
-                                                    field.onChange(Number(e.target.value))
-                                                  }
-                                                />
-                                              </FormControl>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-                                      ))}
-                                    </div>
-                                  </div>
-                                );
-                              },
-                            )}
-                          </div>
-                        </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-transparent"
+                      onClick={() => {
+                        setExtended((prev) => {
+                          const index = prev.findIndex((item) => item.idx === idx);
+                          if (index === -1) {
+                            return [...prev, { idx, extended: true }];
+                          }
+                          const newExtended = [...prev];
+                          newExtended[index].extended = !newExtended[index].extended;
+                          return newExtended;
+                        });
+                      }}
+                    >
+                      {isExtended.find((item) => item.idx === idx)?.extended ? (
+                        <Icons.circleChevronUp className="size-5" />
+                      ) : (
+                        <Icons.circleChevronDown className="size-5" />
                       )}
+                    </Button>
+                    <div
+                      key={item.id}
+                      className="flex-1 flex flex-col gap-2 p-2 border rounded-lg bg-gray-100"
+                    >
+                      <div className="flex gap-0">
+                        <FormField
+                          control={form.control}
+                          name={`campaignRequirements.${idx}.platform`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Select
+                                  onValueChange={(value) => {
+                                    field.onChange(value);
+                                    setExtended((prev) => {
+                                      const index = prev.findIndex((item) => item.idx === idx);
+                                      if (index === -1) {
+                                        return [...prev, { idx, extended: true }];
+                                      }
+                                      const newExtended = [...prev];
+                                      newExtended[index].extended = true;
+                                      return newExtended;
+                                    });
+                                  }}
+                                  value={field.value || undefined}
+                                >
+                                  <SelectTrigger className="w-full bg-white">
+                                    <SelectValue placeholder="Nền tảng" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {socialPlatformOptions.map((opt) => (
+                                      <SelectItem key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive hover:scale-110 bg-transparent hover:bg-transparent"
+                          onClick={() => removeContent(idx)}
+                        >
+                          <Icons.trash className="size-5" />
+                        </Button>
+                      </div>
+                      {isExtended.find((item) => item.idx === idx)?.extended &&
+                        form.watch(`campaignRequirements.${idx}.platform`) && (
+                          <div className="flex flex-col gap-2">
+                            <div className="flex gap-2 w-full items-start">
+                              <FormField
+                                control={form.control}
+                                name={`campaignRequirements.${idx}.post_type`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>Loại nội dung</FormLabel>
+                                    <FormControl>
+                                      <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value || undefined}
+                                        // onChange={() => {
+                                        //   const postType = field.value?.toLowerCase() || 'video';
+                                        //   const currentPostDetails =
+                                        //     form.watch(`campaignRequirements.${idx}.postDetails`) ||
+                                        //     [];
+                                        //   const updatedDetails = currentPostDetails.map(
+                                        //     (detail) => {
+                                        //       const oldValue = Object.values(detail)[0] as {
+                                        //         like: number;
+                                        //         comment: number;
+                                        //         share?: number;
+                                        //       };
+                                        //       return {
+                                        //         [postType]: {
+                                        //           like: oldValue.like,
+                                        //           comment: oldValue.comment,
+                                        //           share: oldValue.share ?? 0,
+                                        //         },
+                                        //       };
+                                        //     },
+                                        //   );
+                                        //   form.setValue(
+                                        //     `campaignRequirements.${idx}.postDetails`,
+                                        //     updatedDetails,
+                                        //   );
+                                        // }}
+                                      >
+                                        <SelectTrigger className="w-full capitalize bg-white">
+                                          <SelectValue placeholder="Loại nội dung" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {SupportedPostTypeByPlatform[
+                                            (
+                                              form.watch(`campaignRequirements.${idx}.platform`) ||
+                                              ''
+                                            ).toLowerCase() as keyof typeof SupportedPostTypeByPlatform
+                                          ]?.map((item) => {
+                                            const type = Object.keys(item)[0];
+                                            return (
+                                              <SelectItem
+                                                key={type}
+                                                value={type}
+                                                className="capitalize"
+                                              >
+                                                {type}
+                                              </SelectItem>
+                                            );
+                                          })}
+                                        </SelectContent>
+                                      </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name={`campaignRequirements.${idx}.quantity`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>Số lượng</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        {...field}
+                                        className="bg-white"
+                                        type="number"
+                                        value={field.value ?? undefined}
+                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                        placeholder="Số lượng nội dung"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              {Array.from(
+                                {
+                                  length: Number(
+                                    form.watch(`campaignRequirements.${idx}.quantity`) || 0,
+                                  ),
+                                },
+                                (_, index) => {
+                                  const selectedPostType = form.watch(
+                                    `campaignRequirements.${idx}.post_type`,
+                                  );
+                                  const platform = form.watch(
+                                    `campaignRequirements.${idx}.platform`,
+                                  );
+                                  const platformKey = (
+                                    platform || ''
+                                  ).toLowerCase() as keyof typeof SupportedPostTypeByPlatform;
+                                  const postTypesArray =
+                                    SupportedPostTypeByPlatform[platformKey] || [];
+                                  const postTypeObj = postTypesArray.find(
+                                    (obj) => Object.keys(obj)[0] === selectedPostType,
+                                  );
+                                  const postDetails = postTypeObj
+                                    ? postTypeObj[selectedPostType as keyof typeof postTypeObj] ||
+                                      []
+                                    : [];
+
+                                  if (
+                                    !form.watch(`campaignRequirements.${idx}.postDetails.${index}`)
+                                  ) {
+                                    form.setValue(
+                                      `campaignRequirements.${idx}.postDetails.${index}`,
+                                      {
+                                        [selectedPostType]: { like: 0, comment: 0 },
+                                      },
+                                    );
+                                  }
+
+                                  if (
+                                    selectedPostType &&
+                                    !form.watch(`campaignRequirements.${idx}.postDetails.${index}`)
+                                  ) {
+                                    form.setValue(
+                                      `campaignRequirements.${idx}.postDetails.${index}`,
+                                      {
+                                        [selectedPostType]: { like: 0, comment: 0 },
+                                      },
+                                    );
+                                  }
+
+                                  if (!selectedPostType || !postDetails.length) {
+                                    return null;
+                                  }
+                                  return (
+                                    <div key={index} className="flex flex-col gap-4">
+                                      <FormLabel>
+                                        Yêu cầu tương tác nội dung ({index + 1})
+                                      </FormLabel>
+                                      <div className="flex gap-2">
+                                        {postDetails.map((require: string) => (
+                                          <FormField
+                                            key={`${idx}_${index}_${require}`}
+                                            control={form.control}
+                                            name={
+                                              `campaignRequirements.${idx}.postDetails.${index}.${selectedPostType}.${require}` as FieldPath<CampaignFormValues>
+                                            }
+                                            render={({ field }) => (
+                                              <FormItem className="flex-1 flex flex-col">
+                                                <FormLabel className="capitalize">
+                                                  {require}
+                                                </FormLabel>
+                                                <FormControl>
+                                                  <Input
+                                                    {...field}
+                                                    type="number"
+                                                    min={0}
+                                                    placeholder="Số lượng"
+                                                    value={(field.value as number) ?? 0}
+                                                    onChange={(e) =>
+                                                      field.onChange(Number(e.target.value))
+                                                    }
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                        ))}
+                                      </div>
+                                    </div>
+                                  );
+                                },
+                              )}
+                            </div>
+                          </div>
+                        )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
               <FormMessage />
             </FormItem>
             <Button
@@ -782,11 +908,17 @@ export default function CampaignPopUp({ categories }: PopUpCampaignProps) {
                 className="text-destructive hover:text-destructive"
                 type="reset"
               >
-                Hủy
+                {onUpdating ? 'Xóa' : 'Hủy'}
               </Button>
             </DialogClose>
             <Button variant={'default'} type="submit" disabled={isPosting}>
-              {isPosting ? 'Đang đăng...' : 'Đăng chiến dịch'}
+              {onUpdating
+                ? isUpdating
+                  ? 'Đang cập nhật...'
+                  : 'Cập nhật'
+                : isPosting
+                  ? 'Đang đăng...'
+                  : 'Đăng chiến dịch'}
             </Button>
           </div>
         </form>

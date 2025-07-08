@@ -26,7 +26,6 @@ export function ContactInfoCard({ email, phone, address }: ContactInfoCardProps)
       value: address,
     },
   ];
-
   return (
     <Card className="border-2 border-primary/20 bg-card shadow-lg">
       <CardHeader>

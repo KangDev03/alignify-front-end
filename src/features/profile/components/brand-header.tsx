@@ -105,7 +105,7 @@ export function BrandHeaderCard({ profile, campaignCompleted, me }: BrandHeaderP
             <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1">
               <Calendar className="h-4 w-4" />
               <span>
-                Thành lập
+                Thành lập:{' '}
                 {profile.establishDate ? formatDate(profile.establishDate) : '(chưa cung cấp)'}
               </span>
             </div>

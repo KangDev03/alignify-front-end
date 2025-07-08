@@ -5,6 +5,7 @@ import Stomp from 'stompjs';
 
 // import AppFooter from '@/components/layouts/app/footer';
 import { AppHeader } from '@/components/layouts/app/header';
+import { useTheme } from '@/components/theme/theme-provider';
 import { logout } from '@/features/auth/auth.slice';
 import { addReceivedNotification } from '@/features/notification/notification.slice';
 import type { RecievedNotification } from '@/features/notification/notification.type';
@@ -17,7 +18,7 @@ import type { RootState } from '@/redux/store';
 function AppLayout() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
+  const { theme } = useTheme();
   const handleLogout = () => {
     dispatch(baseApi.util.resetApiState());
     dispatch(logout());
@@ -47,8 +48,17 @@ function AppLayout() {
     };
   }, [token, userId, dispatch]);
 
+  const backgroundImage =
+    theme === 'dark' ||
+    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ? '/background-dark.png'
+      : '/background-light.png';
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <div
+      className="flex min-h-screen flex-col bg-cover bg-no-repeat bg-fixed"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
       <AppHeader onLogout={handleLogout} />
       <main className="container mx-auto px-6 py-8 relative">
         <Outlet />

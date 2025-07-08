@@ -35,8 +35,8 @@ export function BrandProfilePage() {
 
   const profile = profileRaw?.data;
   const contactMap = Array.isArray(profile.contacts)
-    ? Object.fromEntries(profile.contacts.map((c: any) => [c.key, c.value]))
-    : profile.contacts || {};
+    ? Object.fromEntries(profile.contacts.map((c: any) => [c.contact_type, c.contact_infor]))
+    : {};
 
   // const getVerificationBadge = () => {
   //   switch (brand.verificationStatus) {
@@ -58,7 +58,7 @@ export function BrandProfilePage() {
   // };
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
+    <div className="min-h-screen transition-colors duration-300">
       <div className="space-y-6">
         <BrandHeaderCard
           me={userId === undefined}

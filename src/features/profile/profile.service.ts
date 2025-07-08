@@ -5,8 +5,10 @@ import type {
   ChangeAvatarRequest,
   ChangeAvatarResponses,
   InfluencerProfileResponse,
-  TopInfluencerResponse,
 } from './profile.type';
+import type { CommonPageableRequest } from '../common/common.type';
+import type { ContentPostingResponse } from '../home/home.type';
+import type { ForumPostingResponse, PostingRequest } from '../posting/posting.type';
 
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -33,11 +35,24 @@ export const profileApi = baseApi.injectEndpoints({
 
       providesTags: ['Profile'],
     }),
-    getTopInfluencer: builder.query<TopInfluencerResponse, void>({
-      query: () => ({
-        url: '/profiles/topInfluencer',
-        method: 'GET',
+    updateContentPosting: builder.mutation<ForumPostingResponse, PostingRequest>({
+      query: (data) => ({
+        url: `/contentPosting/${data.id}`,
+        method: 'POST',
+        body: data.formData,
       }),
+      invalidatesTags: ['Post'],
+    }),
+    getPostMe: builder.query<
+      ContentPostingResponse,
+      { page: CommonPageableRequest; userId?: string }
+    >({
+      query: (data) => ({
+        url: `/contentPosting/${data.userId ?? 'me'}`,
+        method: 'GET',
+        params: { ...data.page },
+      }),
+      providesTags: ['Auth'],
     }),
   }),
 });
@@ -45,5 +60,6 @@ export const {
   useChangeAvatarMutation,
   useGetInfluencerProfileUserQuery,
   useGetBrandProfileUserQuery,
-  useGetTopInfluencerQuery,
+  useUpdateContentPostingMutation,
+  useGetPostMeQuery,
 } = profileApi;

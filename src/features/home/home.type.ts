@@ -67,3 +67,14 @@ export interface ContentPosting {
 export interface ContentPostingResponse extends ApiReponseSuccess<ContentPosting[]> {
   data: ContentPosting[];
 }
+
+export interface TopInfluencer {
+  userId: string;
+  name: string;
+  avatarUrl?: string | null;
+  follower?: number | 0;
+}
+
+export interface TopInfluencerResponse extends ApiReponseSuccess<TopInfluencer> {
+  data: TopInfluencer;
+}

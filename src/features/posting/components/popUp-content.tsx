@@ -24,8 +24,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 import { Icons } from '@/components/icons/icons';
-import type { Category } from '@/features/common/common.type';
+import { useGetCategoriesQuery } from '@/features/common/common.service';
 import { setRefetch } from '@/features/home/home.slice';
+import type { ContentPosting } from '@/features/home/home.type';
+import { useUpdateContentPostingMutation } from '@/features/profile/profile.service';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
@@ -36,24 +38,28 @@ import { contentFormSchema, type ContentFormValues } from '../posting.schema';
 import { usePostContentMutation } from '../posting.service';
 
 interface PopUpContentProps {
-  categories: Category[];
+  contentData?: ContentPosting;
 }
 const MAX_CATEGORIES = 3;
 
-export default function ContentPopUp({ categories }: PopUpContentProps) {
+export default function ContentPopUp({ contentData }: PopUpContentProps) {
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const [postContent, { isLoading: isPosting }] = usePostContentMutation();
+  const [updateContent, { isLoading: isUpdating }] = useUpdateContentPostingMutation();
   const dispatch = useDispatch();
   const sendNotification = useSendNotification();
   const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
-
+  const { data: rawData } = useGetCategoriesQuery();
+  const categories = rawData?.data;
+  const onUpdating = contentData !== undefined && contentData !== null;
+  const imageUrl = contentData && contentData.imageUrl;
   const form = useForm<ContentFormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(contentFormSchema),
     defaultValues: {
-      contentName: '',
-      content: '',
-      categoryIds: [],
+      contentName: contentData?.contentName ?? '',
+      content: contentData?.content ?? '',
+      categoryIds: contentData?.categories.map((cat) => cat.categoryId) ?? [],
       image: undefined,
     },
   });
@@ -64,7 +70,11 @@ export default function ContentPopUp({ categories }: PopUpContentProps) {
       const formData = new FormData();
       if (file) formData.append('image', file);
       formData.append('contentPosting', JSON.stringify(contentRaw));
-      await postContent({ formData }).unwrap();
+      if (onUpdating) {
+        await updateContent({ formData, id: contentData.contentId }).unwrap();
+      } else {
+        await postContent({ formData }).unwrap();
+      }
       dialogCloseRef.current?.click();
       form.reset();
       dispatch(setRefetch({ key: 'forum', value: true }));
@@ -131,7 +141,7 @@ export default function ContentPopUp({ categories }: PopUpContentProps) {
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Poster của chiến dịch *</FormLabel>
+                <FormLabel>Ảnh bài đăng *</FormLabel>
                 <FormControl>
                   <div>
                     <input
@@ -154,7 +164,7 @@ export default function ContentPopUp({ categories }: PopUpContentProps) {
                         <Icons.fileImage />
                         <span>Chọn ảnh</span>
                       </Button>
-                      {field.value && (
+                      {(field.value || imageUrl) && (
                         <div className="flex gap-4">
                           <Dialog>
                             <DialogTrigger>
@@ -166,7 +176,7 @@ export default function ContentPopUp({ categories }: PopUpContentProps) {
                             <DialogContent showCloseButton={false} className="p-3">
                               <div className="flex flex-col space-y-3">
                                 <img
-                                  src={URL.createObjectURL(field.value as File)}
+                                  src={URL.createObjectURL(field.value as File) ?? imageUrl}
                                   alt="Poster preview"
                                   className="object-contain max-w-full h-[600px]"
                                 />
@@ -251,7 +261,13 @@ export default function ContentPopUp({ categories }: PopUpContentProps) {
               </Button>
             </DialogClose>
             <Button variant={'default'} type="submit" disabled={isPosting}>
-              {isPosting ? 'Đang đăng...' : 'Đăng bài viết'}
+              {onUpdating
+                ? isUpdating
+                  ? 'Đang cập nhật'
+                  : 'Cập nhật'
+                : isPosting
+                  ? 'Đang đăng bài...'
+                  : 'Đăng bài viết'}
             </Button>
           </div>
         </form>
