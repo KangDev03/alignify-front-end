@@ -5,14 +5,19 @@ export interface ApiReponseSuccess<T> {
   message: string;
   data: T | null;
   timestamp: Date;
-  path?: string;
+  path: string;
 }
 
-export interface ApiReponseError {
+export interface ErrorData {
   status: number | string;
   error: string;
   timestamp: Date;
-  path?: string;
+  path: string;
+}
+
+export interface ApiResponseError {
+  status: number | string;
+  data: ErrorData;
 }
 
 export interface PageableResponse<T> {

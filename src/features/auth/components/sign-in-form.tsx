@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input';
 
 import { type SignInFormValues, signInSchema } from '@/features/auth/auth.schema';
 import { useAppDispatch } from '@/hooks/redux';
+import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
 
@@ -49,16 +50,13 @@ export default function SignInForm() {
 
       dispatch(setCredentials(response));
       navigate('/home');
-    } catch (err) {
-      console.error('Failed to login:', err);
-
-      if (typeof err === 'object' && err !== null && 'status' in err) {
-        const status = (err as { status?: any }).status;
-        if (status === 500) {
-          toast.error('Không thể kết nối đến server. Vui lòng thử lại sau!');
-        } else if (status === 401) {
-          toast.error('Email hoặc mật khẩu không chính xác!');
-        }
+      toast.success('Đăng nhập thành công!');
+    } catch (err: unknown) {
+      console.log(err);
+      if (isApiResponseError(err)) {
+        toast.error(err.data.error);
+      } else {
+        toast.error('Đăng nhập thất bại!');
       }
     }
   }
@@ -72,8 +70,15 @@ export default function SignInForm() {
         const response = await loginViaGoogle({ code }).unwrap();
         dispatch(setCredentials(response));
         navigate('/home');
-      } catch (error) {
-        console.error('Server error:', error);
+        toast.success('Đăng nhập thành công!');
+      } catch (err: unknown) {
+        if (isApiResponseError(err)) {
+          if (Number(err.data.status === 404)) toast.error('Email không tồn tại!');
+          else if (Number(err.data.status) === 401) toast.error('Mật khẩu không chính xác!');
+          else toast.error('Đăng nhập thất bại!');
+        } else {
+          toast.error('Đăng nhập thất bại!');
+        }
       }
     },
     onError: () => {
