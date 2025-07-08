@@ -46,8 +46,8 @@ export default function InfluencerProfilePage() {
   //   pageSize: 10,
   // });
   useEffect(() => {
-    if (contentPosting) dispatch(setContents(contentPosting));
-  }, [contentPosting, dispatch]);
+    if (contentPosting && !userId) dispatch(setContents(contentPosting));
+  }, [contentPosting, dispatch, userId]);
   if (!profileRaw?.data) {
     return <div>Loading...</div>;
   }
@@ -68,7 +68,8 @@ export default function InfluencerProfilePage() {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="profile">Thông tin cá nhân</TabsTrigger>
             <TabsTrigger value="posts">
-              {userId ? 'Bài viết' : 'Bài viết của tôi'} ({contents?.length ?? 0})
+              {userId ? 'Bài viết' : 'Bài viết của tôi'} (
+              {userId === undefined ? (contents.length ?? 0) : (contentPosting?.data.length ?? 0)})
             </TabsTrigger>
           </TabsList>
 
@@ -93,32 +94,40 @@ export default function InfluencerProfilePage() {
           </TabsContent>
           <TabsContent value="posts" className="mt-6">
             <div className="space-y-4">
-              {contents.length > 0 ? (
+              {userId === undefined ? (
+                contents.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {contents.map((post) => (
+                      <ForumPost key={post.contentId} contentPosting={post} />
+                    ))}
+                  </div>
+                ) : (
+                  <Card className="border-2 border-dashed border-muted bg-muted/20">
+                    <CardContent className="p-12 text-center">
+                      <div className="space-y-4">
+                        <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+                          <Icons.messageCircle className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg">Chưa có bài viết nào</h3>
+                          <p className="text-muted-foreground">
+                            Bạn chưa đăng bài viết nào trong forum.
+                          </p>
+                        </div>
+                        <Button>
+                          <Icons.messageCircle className="h-4 w-4 mr-2" />
+                          Viết bài đầu tiên
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              ) : contentPosting?.data.length && contentPosting?.data.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {contents.map((post) => (
+                  {contentPosting.data.map((post) => (
                     <ForumPost key={post.contentId} contentPosting={post} />
                   ))}
                 </div>
-              ) : userId === undefined ? (
-                <Card className="border-2 border-dashed border-muted bg-muted/20">
-                  <CardContent className="p-12 text-center">
-                    <div className="space-y-4">
-                      <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
-                        <Icons.messageCircle className="h-8 w-8 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-lg">Chưa có bài viết nào</h3>
-                        <p className="text-muted-foreground">
-                          Bạn chưa đăng bài viết nào trong forum.
-                        </p>
-                      </div>
-                      <Button>
-                        <Icons.messageCircle className="h-4 w-4 mr-2" />
-                        Viết bài đầu tiên
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
               ) : (
                 <Alert variant="default">
                   <AlertCircleIcon />

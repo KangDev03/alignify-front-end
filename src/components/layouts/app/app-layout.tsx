@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router';
+import { useCallback, useEffect } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import Stomp from 'stompjs';
 
@@ -7,24 +7,55 @@ import Stomp from 'stompjs';
 import { AppHeader } from '@/components/layouts/app/header';
 import { useTheme } from '@/components/theme/theme-provider';
 import { logout } from '@/features/auth/auth.slice';
+import type { UserBan } from '@/features/auth/auth.type';
 import { addReceivedNotification } from '@/features/notification/notification.slice';
 import type { RecievedNotification } from '@/features/notification/notification.type';
 import PopUpTrigger from '@/features/posting/components/popUp-trigger';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { getStompClient } from '@/lib/stom-client';
+import { cn } from '@/lib/utils';
 import { baseApi } from '@/redux/baseApi';
 import type { RootState } from '@/redux/store';
+import { formatDate, formatTime, parseIsoToDateTime } from '@/utils/format';
 
 function AppLayout() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
-  const handleLogout = () => {
+  const location = useLocation();
+
+  const handleLogout = useCallback(() => {
     dispatch(baseApi.util.resetApiState());
     dispatch(logout());
     navigate('/auth/login');
-  };
+  }, [dispatch, navigate]);
   const { id: userId, token } = useAppSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    if (!token || !userId) return;
+    let subscription: any;
+    getStompClient(token).then((client) => {
+      subscription = client.subscribe(`/topic/users/${userId}`, (res: Stomp.Message) => {
+        try {
+          const received: UserBan = JSON.parse(res.body);
+          if (received && received.userId && received.userId === userId) {
+            toast.error(
+              'Tài khoản của bạn đã bị khóa vào lúc: ' +
+                formatTime(parseIsoToDateTime(received.createdAt)) +
+                ' ' +
+                formatDate(parseIsoToDateTime(received.createdAt)),
+            );
+            handleLogout();
+          }
+        } catch (error) {
+          console.error('Error parsing STOMP message:', error);
+        }
+      });
+    });
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [token, userId, dispatch, handleLogout]);
 
   useEffect(() => {
     if (!token || !userId) return;
@@ -48,6 +79,16 @@ function AppLayout() {
     };
   }, [token, userId, dispatch]);
 
+  useEffect(() => {
+    if (token && userId) {
+      getStompClient(token!).then((client) => {
+        if (client.connected) {
+          client.send(`/app/checkBanned/${userId}`, { Authorization: `Bearer ${token}` });
+        }
+      });
+    }
+  }, [token, userId]);
+
   const backgroundImage =
     theme === 'dark' ||
     (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -60,7 +101,11 @@ function AppLayout() {
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <AppHeader onLogout={handleLogout} />
-      <main className="container mx-auto px-6 py-8 relative">
+      <main
+        className={cn(
+          !location.pathname.includes('/dashboard') && 'container mx-auto px-6 py-8 relative ',
+        )}
+      >
         <Outlet />
         <PopUpTrigger />
       </main>

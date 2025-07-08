@@ -17,6 +17,7 @@ import {
   CircleChevronUp,
   CircleX,
   Clock4,
+  CreditCard,
   Crown,
   DollarSign,
   Dot,
@@ -59,6 +60,7 @@ import {
   Twitter,
   User,
   UserCheck,
+  UserRoundX,
   Users,
   X,
   Youtube,
@@ -130,4 +132,6 @@ export const Icons = {
   crown: Crown,
   zap: Zap,
   layoutDashboard: LayoutDashboard,
+  creditCard: CreditCard,
+  userRoundX: UserRoundX,
 };
