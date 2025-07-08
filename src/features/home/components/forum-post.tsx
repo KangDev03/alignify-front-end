@@ -4,12 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
 
 import { Icons } from '@/components/icons/icons';
 import type { ContentPosting } from '@/features/home/home.type';
@@ -36,8 +31,8 @@ interface IsLiked {
 }
 
 export interface LikeSending {
-  contentId: string,
-  userId: string
+  contentId: string;
+  userId: string;
 }
 
 export function ForumPost({ contentPosting }: ForumPostProps) {
@@ -51,16 +46,24 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
     let likeSubscription: any;
     getStompClient(token)
       .then((client) => {
-        likeSubscription = client.subscribe(`/topic/contents/${contentPosting.contentId}`, (res: any) => {
-          try {
-            const receivedLike: ReceivedLike = JSON.parse(res.body);
-            if (receivedLike) {
-              dispatch(setLikeCountState({ contentId: contentPosting.contentId, likeCount: receivedLike.likes }))
+        likeSubscription = client.subscribe(
+          `/topic/contents/${contentPosting.contentId}`,
+          (res: any) => {
+            try {
+              const receivedLike: ReceivedLike = JSON.parse(res.body);
+              if (receivedLike) {
+                dispatch(
+                  setLikeCountState({
+                    contentId: contentPosting.contentId,
+                    likeCount: receivedLike.likes,
+                  }),
+                );
+              }
+            } catch (error) {
+              console.error(error);
             }
-          } catch (error) {
-            console.error(error);
-          }
-        });
+          },
+        );
       })
       .catch((error) => console.error('WebSocket connection error:', error));
 
@@ -74,16 +77,21 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
     let likeSubscription: any;
     getStompClient(token)
       .then((client) => {
-        likeSubscription = client.subscribe(`/topic/contents/isLiked/${contentPosting.contentId}`, (res: any) => {
-          try {
-            const received: IsLiked = JSON.parse(res.body);
-            if (received) {
-              dispatch(setLikedState({ contentId: contentPosting.contentId, isLiked: received.isLiked }))
+        likeSubscription = client.subscribe(
+          `/topic/contents/isLiked/${contentPosting.contentId}`,
+          (res: any) => {
+            try {
+              const received: IsLiked = JSON.parse(res.body);
+              if (received) {
+                dispatch(
+                  setLikedState({ contentId: contentPosting.contentId, isLiked: received.isLiked }),
+                );
+              }
+            } catch (error) {
+              console.error(error);
             }
-          } catch (error) {
-            console.error(error);
-          }
-        });
+          },
+        );
       })
       .catch((error) => console.error('WebSocket connection error:', error));
 
@@ -96,11 +104,13 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
     if (contentPosting.contentId && token) {
       getStompClient(token!).then((client) => {
         if (client.connected) {
-          client.send(`/app/isLiked/${contentPosting.contentId}`);
+          client.send(`/app/isLiked/${contentPosting.contentId}`, {
+            Authorization: `Bearer ${token}`,
+          });
         }
-      })
-    };
-  }, [contentPosting.contentId, token])
+      });
+    }
+  }, [contentPosting.contentId, token]);
 
   const handleLike = () => {
     if (contentPosting.contentId && token) {
@@ -108,14 +118,18 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
         if (client.connected) {
           const likeSending: LikeSending = {
             contentId: contentPosting.contentId,
-            userId: userId!
-          }
+            userId: userId!,
+          };
           dispatch(toggleLikeContentPosting({ contentId: contentPosting.contentId }));
-          client.send(`/app/like/${contentPosting.contentId}`, {}, JSON.stringify(likeSending));
+          client.send(
+            `/app/like/${contentPosting.contentId}`,
+            { Authorization: `Bearer ${token}` },
+            JSON.stringify(likeSending),
+          );
         }
-      })
-    };
-  }
+      });
+    }
+  };
   return (
     <Card
       key={contentPosting.contentId}
@@ -150,9 +164,13 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
         <div className="space-y-3">
           <h3 className="text-lg font-semibold leading-tight">{contentPosting.contentName}</h3>
           <div className="text-sm text-muted-foreground leading-relaxed">
-            <p className={cn(!isReadMore && "line-clamp-3")}>{contentPosting.content}</p>
-            <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1" onClick={() => setReadMore(!isReadMore)} >
-              {isReadMore ? "Thu gọn" : "Đọc thêm"}
+            <p className={cn(!isReadMore && 'line-clamp-3')}>{contentPosting.content}</p>
+            <Button
+              variant="link"
+              className="p-0 h-auto text-primary text-sm mt-1"
+              onClick={() => setReadMore(!isReadMore)}
+            >
+              {isReadMore ? 'Thu gọn' : 'Đọc thêm'}
             </Button>
           </div>
         </div>
@@ -169,11 +187,15 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
           <div className="flex items-center space-x-6">
             <button
               onClick={handleLike}
-              className={cn("flex items-center space-x-2 text-muted-foreground hover:text-red-500 transition-colors group cursor-pointer", contentPosting.isLiked && "text-red-500")}>
+              className={cn(
+                'flex items-center space-x-2 text-muted-foreground hover:text-red-500 transition-colors group cursor-pointer',
+                contentPosting.isLiked && 'text-red-500',
+              )}
+            >
               <Icons.heart
                 className={cn(
-                  "h-4 w-4 group-hover:fill-red-500 transition-colors",
-                  contentPosting.isLiked && "fill-red-500"
+                  'h-4 w-4 group-hover:fill-red-500 transition-colors',
+                  contentPosting.isLiked && 'fill-red-500',
                 )}
               />
               <span className="text-sm">{contentPosting.likeCount}</span>
@@ -185,10 +207,15 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
                   <span className="text-sm">{contentPosting.commentCount ?? 0}</span>
                 </button>
               </DialogTrigger>
-              <DialogContent showCloseButton={false} className="sm:max-w-[600px] h-[85%] p-0 rounded-xl bg-card gap-0">
-                <DialogHeader className='border-b-2 border-border p-0 m-0 py-3'>
-                  <DialogTitle className='font-semibold text-xl text-center'>Bài đăng của {contentPosting.userName}</DialogTitle>
-                  <DialogDescription className='hidden'></DialogDescription>
+              <DialogContent
+                showCloseButton={false}
+                className="sm:max-w-[600px] h-[85%] p-0 rounded-xl bg-card gap-0"
+              >
+                <DialogHeader className="border-b-2 border-border p-0 m-0 py-3">
+                  <DialogTitle className="font-semibold text-xl text-center">
+                    Bài đăng của {contentPosting.userName}
+                  </DialogTitle>
+                  <DialogDescription className="hidden"></DialogDescription>
                 </DialogHeader>
                 <ForumCommentDialog
                   key={contentPosting.contentId}

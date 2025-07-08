@@ -15,9 +15,7 @@ interface ILoginReponse {
   user: UserDTO;
 }
 
-export interface LoginResponse extends ApiReponseSuccess<ILoginReponse> {
-  data: ILoginReponse;
-}
+export type LoginResponse = ApiReponseSuccess<ILoginReponse>;
 
 export interface Role {
   roleId: string;
@@ -68,3 +66,9 @@ export type ResetPasswordResponse = {
   success: boolean;
   message: string;
 };
+
+export interface UserBan {
+  userId: string;
+  reasonId: string;
+  createdAt: string;
+}

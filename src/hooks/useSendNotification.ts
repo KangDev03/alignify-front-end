@@ -16,7 +16,11 @@ export function useSendNotification() {
       if (!notification.userId || !token) return;
       const stompClient = await getStompClient(token);
       if (stompClient) {
-        stompClient.send(`/app/notify/${notification.userId}`, {}, JSON.stringify(notification));
+        stompClient.send(
+          `/app/notify/${notification.userId}`,
+          { Authorization: `Bearer ${token}` },
+          JSON.stringify(notification),
+        );
         dispatch(setNotificationSending(notification));
       }
     },

@@ -114,7 +114,11 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
                   .find((msg) => msg.message.messageId === messageId)
                   ?.message.readBy.includes(userId!)
               ) {
-                client.send(`/app/read/${chatRoomId}`, {}, JSON.stringify({ messageId }));
+                client.send(
+                  `/app/read/${chatRoomId}`,
+                  { Authorization: `Bearer ${token}` },
+                  JSON.stringify({ messageId }),
+                );
               }
             }
           });
@@ -177,7 +181,11 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
             }
             return [...prev, currentMessage];
           });
-          client.send(`/app/chat/${chatRoomId}`, {}, JSON.stringify(input));
+          client.send(
+            `/app/chat/${chatRoomId}`,
+            { Authorization: `Bearer ${token}` },
+            JSON.stringify(input),
+          );
           setMessage('');
           dispatch(
             chatApi.util.invalidateTags(['ChatSheet', { type: 'ChatRoom', id: chatRoomId }]),

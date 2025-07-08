@@ -7,6 +7,7 @@ import Stomp from 'stompjs';
 import { AppHeader } from '@/components/layouts/app/header';
 import { useTheme } from '@/components/theme/theme-provider';
 import { logout } from '@/features/auth/auth.slice';
+import type { UserBan } from '@/features/auth/auth.type';
 import { addReceivedNotification } from '@/features/notification/notification.slice';
 import type { RecievedNotification } from '@/features/notification/notification.type';
 import PopUpTrigger from '@/features/posting/components/popUp-trigger';
@@ -15,13 +16,7 @@ import { getStompClient } from '@/lib/stom-client';
 import { cn } from '@/lib/utils';
 import { baseApi } from '@/redux/baseApi';
 import type { RootState } from '@/redux/store';
-import { parseIsoToDateTime } from '@/utils/format';
-
-interface UserBan {
-  userId: string;
-  reasonId: string;
-  createdAt: string;
-}
+import { formatDate, formatTime, parseIsoToDateTime } from '@/utils/format';
 
 function AppLayout() {
   const navigate = useNavigate();
@@ -40,12 +35,15 @@ function AppLayout() {
     if (!token || !userId) return;
     let subscription: any;
     getStompClient(token).then((client) => {
-      subscription = client.subscribe(`/topic/notifications/${userId}`, (res: Stomp.Message) => {
+      subscription = client.subscribe(`/topic/users/${userId}`, (res: Stomp.Message) => {
         try {
           const received: UserBan = JSON.parse(res.body);
           if (received && received.userId && received.userId === userId) {
             toast.error(
-              'Tài khoản của bạn đã bị khóa vào lúc: ' + parseIsoToDateTime(received.createdAt),
+              'Tài khoản của bạn đã bị khóa vào lúc: ' +
+                formatTime(parseIsoToDateTime(received.createdAt)) +
+                ' ' +
+                formatDate(parseIsoToDateTime(received.createdAt)),
             );
             handleLogout();
           }
@@ -63,7 +61,7 @@ function AppLayout() {
     if (!token || !userId) return;
     let subscription: any;
     getStompClient(token).then((client) => {
-      subscription = client.subscribe(`/topic/users/${userId}`, (res: Stomp.Message) => {
+      subscription = client.subscribe(`/topic/notifications/${userId}`, (res: Stomp.Message) => {
         try {
           const received: RecievedNotification = JSON.parse(res.body);
           if (received && received.userId === userId) {
@@ -80,6 +78,16 @@ function AppLayout() {
       if (subscription) subscription.unsubscribe();
     };
   }, [token, userId, dispatch]);
+
+  useEffect(() => {
+    if (token && userId) {
+      getStompClient(token!).then((client) => {
+        if (client.connected) {
+          client.send(`/app/checkBanned/${userId}`, { Authorization: `Bearer ${token}` });
+        }
+      });
+    }
+  }, [token, userId]);
 
   const backgroundImage =
     theme === 'dark' ||

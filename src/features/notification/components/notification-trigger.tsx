@@ -28,10 +28,10 @@ export default function NotificationTrigger() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-3 pr-1 m-0 border-none rounded-2xl bg-card w-[350px] h-[400px]">
-        <div className='overflow-auto scrollbar-thin h-[100%] pr-1'>
+        <div className="overflow-auto scrollbar-thin h-[100%] pr-1">
           {received && received.length > 0 ? (
-            received.map((notify) => (
-              <NotificationCard key={notify.notificationId} notification={notify} />
+            received.map((notify, idx) => (
+              <NotificationCard key={notify.notificationId ?? '' + idx} notification={notify} />
             ))
           ) : (
             <p className="text-sm px-4 py-3 text-center">Bạn chưa có thông báo mới nào</p>

@@ -18,8 +18,15 @@ import type { RootState } from '@/redux/store';
 import { formatDate, parseIsoToDateTime } from '@/utils/format';
 
 import CommentCard from './comment-card';
-import { addComment, addComments, setCommentCount, setComments, setLikeCountState, setLikedState, toggleLikeContentPosting } from '../home.slice';
-
+import {
+  addComment,
+  addComments,
+  setCommentCount,
+  setComments,
+  setLikeCountState,
+  setLikedState,
+  toggleLikeContentPosting,
+} from '../home.slice';
 
 interface ReceivedLike {
   likes: number;
@@ -30,8 +37,8 @@ interface IsLiked {
 }
 
 export interface LikeSending {
-  contentId: string,
-  userId: string
+  contentId: string;
+  userId: string;
 }
 interface ForumCommentProps {
   contentPosting: ContentPosting;
@@ -58,55 +65,71 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
         if (client.connected) {
           const pageable: CommonPageableRequest = {
             pageNumber: pageNumber,
-            pageSize: 10
-          }
-          client.send(`/app/comment/select/${contentPosting.contentId}`, {}, JSON.stringify(pageable));
+            pageSize: 10,
+          };
+          client.send(
+            `/app/comment/select/${contentPosting.contentId}`,
+            {},
+            JSON.stringify(pageable),
+          );
         }
-      })
+      });
     }
   }, [contentPosting.contentId, token, pageNumber, resetTrigger]);
 
   useEffect(() => {
     if (!token) return;
     let commentSub: any;
-    getStompClient(token).then((client) => {
-      commentSub = client.subscribe(`/topic/comments/select/${contentPosting.contentId}`, (res: any) => {
-        try {
-          const received: Comment[] = JSON.parse(res.body);
-          if (pageNumber === 0) {
-            dispatch(setComments({ contentId: contentPosting.contentId, comment: received }));
-            setHasMore(received.length === 10);
-          } else {
-            dispatch(addComments({ contentId: contentPosting.contentId, comment: received }));
-            setHasMore(received.length === 10);
-
-          }
-        } catch (error) {
-          console.error(error);
-        }
+    getStompClient(token)
+      .then((client) => {
+        commentSub = client.subscribe(
+          `/topic/comments/select/${contentPosting.contentId}`,
+          (res: any) => {
+            try {
+              const received: Comment[] = JSON.parse(res.body);
+              if (pageNumber === 0) {
+                dispatch(setComments({ contentId: contentPosting.contentId, comment: received }));
+                setHasMore(received.length === 10);
+              } else {
+                dispatch(addComments({ contentId: contentPosting.contentId, comment: received }));
+                setHasMore(received.length === 10);
+              }
+            } catch (error) {
+              console.error(error);
+            }
+          },
+        );
       })
-    }).catch((error) => console.error('WebSocket connection error:', error));
+      .catch((error) => console.error('WebSocket connection error:', error));
 
     return () => {
       if (commentSub) commentSub.unsubscribe();
-    }
-  }, [contentPosting.contentId, token, dispatch, contentPosting.comment, pageNumber])
+    };
+  }, [contentPosting.contentId, token, dispatch, contentPosting.comment, pageNumber]);
 
   useEffect(() => {
     if (!token) return;
     let likeSubscription: any;
     getStompClient(token)
       .then((client) => {
-        likeSubscription = client.subscribe(`/topic/contents/${contentPosting.contentId}`, (res: any) => {
-          try {
-            const receivedLike: ReceivedLike = JSON.parse(res.body);
-            if (receivedLike) {
-              dispatch(setLikeCountState({ contentId: contentPosting.contentId, likeCount: receivedLike.likes }))
+        likeSubscription = client.subscribe(
+          `/topic/contents/${contentPosting.contentId}`,
+          (res: any) => {
+            try {
+              const receivedLike: ReceivedLike = JSON.parse(res.body);
+              if (receivedLike) {
+                dispatch(
+                  setLikeCountState({
+                    contentId: contentPosting.contentId,
+                    likeCount: receivedLike.likes,
+                  }),
+                );
+              }
+            } catch (error) {
+              console.error(error);
             }
-          } catch (error) {
-            console.error(error);
-          }
-        });
+          },
+        );
       })
       .catch((error) => console.error('WebSocket connection error:', error));
 
@@ -120,16 +143,21 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
     let likeSubscription: any;
     getStompClient(token)
       .then((client) => {
-        likeSubscription = client.subscribe(`/topic/contents/isLiked/${contentPosting.contentId}`, (res: any) => {
-          try {
-            const received: IsLiked = JSON.parse(res.body);
-            if (received) {
-              dispatch(setLikedState({ contentId: contentPosting.contentId, isLiked: received.isLiked }))
+        likeSubscription = client.subscribe(
+          `/topic/contents/isLiked/${contentPosting.contentId}`,
+          (res: any) => {
+            try {
+              const received: IsLiked = JSON.parse(res.body);
+              if (received) {
+                dispatch(
+                  setLikedState({ contentId: contentPosting.contentId, isLiked: received.isLiked }),
+                );
+              }
+            } catch (error) {
+              console.error(error);
             }
-          } catch (error) {
-            console.error(error);
-          }
-        });
+          },
+        );
       })
       .catch((error) => console.error('WebSocket connection error:', error));
 
@@ -142,11 +170,13 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
     if (contentPosting.contentId && token) {
       getStompClient(token!).then((client) => {
         if (client.connected) {
-          client.send(`/app/isLiked/${contentPosting.contentId}`);
+          client.send(`/app/isLiked/${contentPosting.contentId}`, {
+            Authorization: `Bearer ${token}`,
+          });
         }
-      })
-    };
-  }, [contentPosting.contentId, token])
+      });
+    }
+  }, [contentPosting.contentId, token]);
 
   const handleLike = () => {
     if (contentPosting.contentId && token) {
@@ -154,14 +184,18 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
         if (client.connected) {
           const likeSending: LikeSending = {
             contentId: contentPosting.contentId,
-            userId: userId!
-          }
+            userId: userId!,
+          };
           dispatch(toggleLikeContentPosting({ contentId: contentPosting.contentId }));
-          client.send(`/app/like/${contentPosting.contentId}`, {}, JSON.stringify(likeSending));
+          client.send(
+            `/app/like/${contentPosting.contentId}`,
+            { Authorization: `Bearer ${token}` },
+            JSON.stringify(likeSending),
+          );
         }
-      })
-    };
-  }
+      });
+    }
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -172,8 +206,10 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
           try {
             const received: Comment = JSON.parse(res.body);
             if (received) {
-              dispatch(addComment({ contentId: contentPosting.contentId, comment: received }))
-              dispatch(setCommentCount({ contentId: contentPosting.contentId, count: received.count! }));
+              dispatch(addComment({ contentId: contentPosting.contentId, comment: received }));
+              dispatch(
+                setCommentCount({ contentId: contentPosting.contentId, count: received.count! }),
+              );
             }
           } catch (error) {
             console.error(error);
@@ -189,20 +225,24 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
 
   const sendComment = () => {
     if (valueChange && contentPosting.contentId && token) {
-      getStompClient(token!).then(client => {
+      getStompClient(token!).then((client) => {
         if (client.connected) {
           const commentSending: Comment = {
             contentId: contentPosting.contentId,
             userId: userId!,
             content: valueChange,
             createdDate: DateTime.now().setZone('Asia/Ho_Chi_Minh').toISO()!,
-          }
-          client.send(`/app/comment/${contentPosting.contentId}`, {}, JSON.stringify(commentSending))
+          };
+          client.send(
+            `/app/comment/${contentPosting.contentId}`,
+            { Authorization: `Bearer ${token}` },
+            JSON.stringify(commentSending),
+          );
         }
-      })
+      });
       setValueChange('');
     }
-  }
+  };
 
   const fetchMoreData = () => {
     if (!hasMore) return;
@@ -242,7 +282,7 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
         <div className="space-y-3">
           <h3 className="text-lg font-semibold leading-tight">{contentPosting.contentName}</h3>
           <div className="text-sm text-muted-foreground leading-relaxed">
-            <p className={cn("")}>{contentPosting.content}</p>
+            <p className={cn('')}>{contentPosting.content}</p>
             {/* <Button variant="link" className="p-0 h-auto text-primary text-sm mt-1" onClick={() => setReadMore(!isReadMore)} >
               {isReadMore ? "Thu gọn" : "Đọc thêm"}
             </Button> */}
@@ -261,11 +301,15 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
           <div className="flex items-center space-x-6">
             <button
               onClick={handleLike}
-              className={cn("flex items-center space-x-2 text-muted-foreground hover:text-red-500 transition-colors group cursor-pointer", contentPosting.isLiked && "text-red-500")}>
+              className={cn(
+                'flex items-center space-x-2 text-muted-foreground hover:text-red-500 transition-colors group cursor-pointer',
+                contentPosting.isLiked && 'text-red-500',
+              )}
+            >
               <Icons.heart
                 className={cn(
-                  "h-4 w-4 group-hover:fill-red-500 transition-colors",
-                  contentPosting.isLiked && "fill-red-500"
+                  'h-4 w-4 group-hover:fill-red-500 transition-colors',
+                  contentPosting.isLiked && 'fill-red-500',
                 )}
               />
               <span className="text-sm">{contentPosting.likeCount}</span>
@@ -286,18 +330,21 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
           </Button>
         </div>
         <InfiniteScroll
-          dataLength={(contentPosting && contentPosting.comment) ? contentPosting.comment.length : 0}
+          dataLength={contentPosting && contentPosting.comment ? contentPosting.comment.length : 0}
           next={fetchMoreData}
           hasMore={hasMore}
           loader={hasMore && <p>Loading more...</p>}
-          className='mt-4 flex flex-col gap-4'
+          className="mt-4 flex flex-col gap-4"
         >
-          {contentPosting.comment && contentPosting.comment.length > 0 ?
-            contentPosting.comment.map(cmt => <CommentCard key={cmt.commentId} comment={cmt} />
-            ) : <p className='text-center text-sm text-muted-foreground'>Hãy là người bình luận đầu tiên</p>
-          }
+          {contentPosting.comment && contentPosting.comment.length > 0 ? (
+            contentPosting.comment.map((cmt) => <CommentCard key={cmt.commentId} comment={cmt} />)
+          ) : (
+            <p className="text-center text-sm text-muted-foreground">
+              Hãy là người bình luận đầu tiên
+            </p>
+          )}
         </InfiniteScroll>
-        <div className='fixed bottom-0 left-0 right-0 flex text-sm px-6 py-3 bg-card rounded-b-xl gap-2'>
+        <div className="fixed bottom-0 left-0 right-0 flex text-sm px-6 py-3 bg-card rounded-b-xl gap-2">
           <Avatar className="h-8 w-8 border border-border">
             <AvatarImage
               src={avatarUrl || '/placeholder.svg'}
@@ -306,23 +353,26 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
             />
             <AvatarFallback>{contentPosting.userName.charAt(0)}</AvatarFallback>
           </Avatar>
-          <div className='flex-1 relative'>
+          <div className="flex-1 relative">
             <Input
-              type='text'
-              placeholder='Nhập bình luận'
-              className='rounded-full text-sm'
+              type="text"
+              placeholder="Nhập bình luận"
+              className="rounded-full text-sm"
               onChange={(e) => setValueChange(e.target.value)}
-              value={valueChange} onKeyDown={(e) => {
+              value={valueChange}
+              onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   sendComment();
                 }
-              }} />
+              }}
+            />
             <Button
-              variant='ghost'
-              className='absolute top-1/2 right-0 -translate-y-1/2 -translate-x-1/2 cursor-pointer rounded-full size-7'
+              variant="ghost"
+              className="absolute top-1/2 right-0 -translate-y-1/2 -translate-x-1/2 cursor-pointer rounded-full size-7"
               disabled={!valueChange?.trim()}
-              onClick={sendComment}>
-              <Icons.send className='text-blue-500' size={14} />
+              onClick={sendComment}
+            >
+              <Icons.send className="text-blue-500" size={14} />
             </Button>
           </div>
         </div>
