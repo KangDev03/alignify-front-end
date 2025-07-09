@@ -238,7 +238,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
           createdAt,
           categories: campaignRaw.categoryIds
             ? campaignRaw.categoryIds.map((catId) => {
-                return categories!.find((cat) => cat.categoryId === catId)!;
+                return categories!.data!.find((cat) => cat.categoryId === catId)!;
               })
             : _categories,
         };
@@ -415,7 +415,8 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
             <p className="font-medium">Danh mục *</p>
             <div className="flex flex-wrap gap-2">
               {categories &&
-                categories.map((category) => (
+                categories.data &&
+                categories.data.map((category) => (
                   <Badge
                     key={category.categoryId}
                     variant={

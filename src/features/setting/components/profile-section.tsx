@@ -599,7 +599,9 @@ export default function ProfileSection() {
                     </p> */}
                     <div className="flex flex-wrap gap-2">
                       {categories &&
-                        categories.data.map((category) => (
+                        categories.data &&
+                        categories.data.data &&
+                        categories.data.data.map((category) => (
                           <Badge
                             key={category.categoryId}
                             variant={
@@ -812,25 +814,28 @@ export default function ProfileSection() {
                       Chọn tối đa 3 lĩnh vực kinh doanh của công ty
                     </p> */}
                     <div className="flex flex-wrap gap-2">
-                      {categories?.data.map((category) => (
-                        <Badge
-                          key={category.categoryId}
-                          variant={
-                            form.watch('categoryIds')?.includes(category.categoryId)
-                              ? 'default'
-                              : 'outline'
-                          }
-                          className={cn(
-                            'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize',
-                          )}
-                          onClick={() => handleSelectCategory(category.categoryId)}
-                        >
-                          {category.categoryName}
-                          {form.watch('categoryIds')?.includes(category.categoryId) && (
-                            <X className="h-3 w-3" />
-                          )}
-                        </Badge>
-                      ))}
+                      {categories &&
+                        categories.data &&
+                        categories.data.data &&
+                        categories?.data?.data.map((category) => (
+                          <Badge
+                            key={category.categoryId}
+                            variant={
+                              form.watch('categoryIds')?.includes(category.categoryId)
+                                ? 'default'
+                                : 'outline'
+                            }
+                            className={cn(
+                              'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize',
+                            )}
+                            onClick={() => handleSelectCategory(category.categoryId)}
+                          >
+                            {category.categoryName}
+                            {form.watch('categoryIds')?.includes(category.categoryId) && (
+                              <X className="h-3 w-3" />
+                            )}
+                          </Badge>
+                        ))}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       Đã chọn: {form.watch('categoryIds')?.length || 0}/3
