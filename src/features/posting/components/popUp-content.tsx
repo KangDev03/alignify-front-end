@@ -88,7 +88,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       // toast.success('Đăng bài thành công!');
     } catch (err) {
       if (isApiResponseError(err)) {
-        if (Number(err.data.error) === 403) {
+        if (Number(err.data.status) === 403) {
           toast.error('Bạn không có quyền đăng chiến dịch!');
         } else {
           toast.error('Đăng bài thất bại. Vui lòng thử lại!');

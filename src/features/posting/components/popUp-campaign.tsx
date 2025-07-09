@@ -268,7 +268,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
         toast.error('Cập nhật chiến dịch thất bại. Vui lòng thử lại!');
       } else {
         if (isApiResponseError(err)) {
-          if (Number(err.data.error) === 403) {
+          if (Number(err.data.status) === 403) {
             toast.error('Bạn không có quyền đăng chiến dịch!');
           } else {
             toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
@@ -629,7 +629,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                       'flex',
                       isExtended.find((item) => item.idx === idx)?.extended
                         ? ' items-start'
-                        : ' items-center',
+                        : ' items-start',
                     )}
                   >
                     <Button
@@ -657,7 +657,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                     </Button>
                     <div
                       key={item.id}
-                      className="flex-1 flex flex-col gap-2 p-2 border rounded-lg bg-gray-100"
+                      className="flex-1 flex flex-col gap-2 p-2 border rounded-lg "
                     >
                       <div className="flex gap-0">
                         <FormField
@@ -681,7 +681,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                   }}
                                   value={field.value || undefined}
                                 >
-                                  <SelectTrigger className="w-full bg-white">
+                                  <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Nền tảng" />
                                   </SelectTrigger>
                                   <SelectContent>
