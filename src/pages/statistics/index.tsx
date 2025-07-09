@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect,useState } from 'react';
 import {
   CheckCircle,
   DollarSign,
@@ -47,7 +47,13 @@ interface StatisticsProps {
 }
 
 export default function StatisticsPage({ userRole }: StatisticsProps) {
-  const userId = useAppSelector((state) => state.auth.id);  const numericId = userId ? Number(userId) : undefined;
+  const userId = useAppSelector((state) => state.auth.id);
+  const safeUserId = userId ?? '';
+  console.log('[DEBUG] userId:', userId);
+  const brandSkip = userRole !== 'BRAND' || !userId;
+  const influencerSkip = userRole !== 'INFLUENCER' || !userId;
+  console.log('[DEBUG] brandSkip:', brandSkip);
+  console.log('[DEBUG] influencerSkip:', influencerSkip);
   const [selectedYear, setSelectedYear] = useState('2024');
   const [selectedPeriod, setSelectedPeriod] = useState('6months');
 
@@ -56,13 +62,31 @@ export default function StatisticsPage({ userRole }: StatisticsProps) {
     data: brand,
     isLoading: brandLoading,
     error: brandError,
-  } = useGetBrandStatisticsQuery(numericId as number, { skip: userRole !== 'BRAND' || !numericId });
+  } = useGetBrandStatisticsQuery(safeUserId, { skip: brandSkip });
 
   const {
     data: influencer,
     isLoading: influencerLoading,
     error: influencerError,
-  } = useGetInfluencerStatisticsQuery(numericId as number, { skip: userRole !== 'INFLUENCER' || !numericId });
+  } = useGetInfluencerStatisticsQuery(safeUserId, { skip: influencerSkip });
+  // Log API response for influencer statistics using useEffect
+  useEffect(() => {
+    console.log('[DEBUG] userRole:', userRole);
+    console.log('[DEBUG] influencerLoading:', influencerLoading);
+    console.log('[DEBUG] influencerError:', influencerError);
+    console.log('[DEBUG] influencer:', influencer);
+    if (userRole === 'INFLUENCER') {
+      if (influencerLoading) {
+        console.log('API /api/v1/statistics/influencer: Loading...');
+      }
+      if (influencerError) {
+        console.log('API /api/v1/statistics/influencer: Error', influencerError);
+      }
+      if (influencer) {
+        console.log('API /api/v1/statistics/influencer: Data', influencer);
+      }
+    }
+  }, [userRole, influencer, influencerLoading, influencerError]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN', {
