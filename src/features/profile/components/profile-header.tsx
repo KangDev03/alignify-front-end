@@ -70,7 +70,7 @@ export function ProfileHeader({ profile, me }: ProfileHeaderProps) {
       <CardContent>
         <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
           <Popover open={isPopoverOpen} onOpenChange={setPopoverOpen}>
-            <PopoverTrigger>
+            <PopoverTrigger asChild>
               <Avatar className="h-24 w-24">
                 <AvatarImage
                   src={(me ? avatarUrl! : profile.avatarUrl) ?? '/placeholder.svg'}
