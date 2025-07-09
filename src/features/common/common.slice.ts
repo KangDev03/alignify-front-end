@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
-import type { Campaign,CategoriesResponse, Category, Role, RolesResponse } from './common.type';
+import type { Campaign, CategoriesResponse, Category, Role, RolesResponse } from './common.type';
 
 interface CommonState {
   role: Role[] | null;

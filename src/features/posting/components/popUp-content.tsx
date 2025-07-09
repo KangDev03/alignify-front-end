@@ -220,8 +220,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
             <p className="font-medium">Danh mục *</p>
             <div className="flex flex-wrap gap-2">
               {categories &&
-                categories.data &&
-                categories.data.map((category) => (
+                categories.map((category) => (
                   <Badge
                     key={category.categoryId}
                     variant={

@@ -599,9 +599,7 @@ export default function ProfileSection() {
                     </p> */}
                     <div className="flex flex-wrap gap-2">
                       {categories &&
-                        categories.data &&
-                        categories.data.data &&
-                        categories.data.data.map((category) => (
+                        categories.data!.map((category) => (
                           <Badge
                             key={category.categoryId}
                             variant={
@@ -815,9 +813,7 @@ export default function ProfileSection() {
                     </p> */}
                     <div className="flex flex-wrap gap-2">
                       {categories &&
-                        categories.data &&
-                        categories.data.data &&
-                        categories?.data?.data.map((category) => (
+                        categories?.data?.map((category) => (
                           <Badge
                             key={category.categoryId}
                             variant={
