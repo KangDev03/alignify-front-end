@@ -45,7 +45,7 @@ import { updateCampaignSlice } from '@/features/my-campaign/campaign.slice';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
-import { parseIsoToDateTime } from '@/utils/format';
+import { isApiResponseError, parseIsoToDateTime } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { campaignFormSchema, type CampaignFormValues } from '../posting.schema';
@@ -264,11 +264,18 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
       form.reset();
       // toast.success('Đăng bài thành công!');
     } catch (err) {
-      console.log(err);
       if (onUpdating) {
         toast.error('Cập nhật chiến dịch thất bại. Vui lòng thử lại!');
       } else {
-        toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
+        if (isApiResponseError(err)) {
+          if (Number(err.data.status) === 403) {
+            toast.error('Bạn không có quyền đăng chiến dịch!');
+          } else {
+            toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
+          }
+        } else {
+          toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
+        }
       }
     }
   };
@@ -621,7 +628,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                       'flex',
                       isExtended.find((item) => item.idx === idx)?.extended
                         ? ' items-start'
-                        : ' items-center',
+                        : ' items-start',
                     )}
                   >
                     <Button
@@ -649,7 +656,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                     </Button>
                     <div
                       key={item.id}
-                      className="flex-1 flex flex-col gap-2 p-2 border rounded-lg bg-gray-100"
+                      className="flex-1 flex flex-col gap-2 p-2 border rounded-lg "
                     >
                       <div className="flex gap-0">
                         <FormField
@@ -673,7 +680,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                   }}
                                   value={field.value || undefined}
                                 >
-                                  <SelectTrigger className="w-full bg-white">
+                                  <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Nền tảng" />
                                   </SelectTrigger>
                                   <SelectContent>

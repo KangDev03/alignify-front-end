@@ -31,6 +31,7 @@ import { useUpdateContentPostingMutation } from '@/features/profile/profile.serv
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
+import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
 
@@ -86,8 +87,15 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       });
       // toast.success('Đăng bài thành công!');
     } catch (err) {
-      console.log(err);
-      toast.error('Đăng bài thất bại. Vui lòng thử lại!');
+      if (isApiResponseError(err)) {
+        if (Number(err.data.status) === 403) {
+          toast.error('Bạn không có quyền đăng chiến dịch!');
+        } else {
+          toast.error('Đăng bài thất bại. Vui lòng thử lại!');
+        }
+      } else {
+        toast.error('Đăng bài thất bại. Vui lòng thử lại!');
+      }
     }
   };
 

@@ -113,7 +113,7 @@ export function HomePage() {
                   if (value === 'all') {
                     setSelectedCategory({ categoryId: 'all', categoryName: 'Tất Cả' });
                   } else {
-                    const found = categories?.data.find((cat) => cat.categoryId === value);
+                    const found = categories?.data!.find((cat) => cat.categoryId === value);
                     if (found) setSelectedCategory(found);
                   }
                 }}
@@ -125,7 +125,7 @@ export function HomePage() {
                   <SelectItem value="all" className="capitalize">
                     Tất Cả
                   </SelectItem>
-                  {categories?.data.map((category) => (
+                  {categories?.data!.map((category) => (
                     <SelectItem
                       key={category.categoryId}
                       value={category.categoryId}

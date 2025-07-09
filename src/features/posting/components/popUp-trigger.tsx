@@ -12,7 +12,7 @@ import ContentPopUp from './popUp-content';
 
 export default function PopUpTrigger() {
   const { role } = useAppSelector((state: RootState) => state.auth);
-  const userRole: RoleName = role;
+  const userRole: RoleName = role!;
 
   return (
     userRole !== 'ADMIN' && (

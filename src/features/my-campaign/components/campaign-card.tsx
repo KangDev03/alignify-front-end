@@ -38,7 +38,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
-  const userRole: RoleName = role;
+  const userRole: RoleName = role!;
   const sendNotification = useSendNotification();
   const isApplied = campaign.appliedInfluencerIds?.includes(id!);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
