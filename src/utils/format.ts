@@ -109,3 +109,12 @@ export const isApiResponseError = (err: unknown): err is ApiResponseError => {
     'path' in err.data
   );
 };
+
+export const formatPrice = (price: number) => {
+  if (price === 0) return 'Miễn phí';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+  }).format(price);
+};

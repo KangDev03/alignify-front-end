@@ -40,11 +40,97 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 
 import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
+import type { Plan, PlanResponse } from '@/features/upgrade-plan/components/upgrade-plan.type';
 
 type UserRole = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
 
 interface UpgradePlanProps {
   userRole: UserRole;
+}
+export const formatPlans = (fetchedPlans: PlanResponse, isAnnual: boolean) => {
+  if (!fetchedPlans?.data) return [];
+
+  const filteredPlans = fetchedPlans.data.filter((plan: Plan) =>
+    isAnnual ? plan.planType === 'one_year' : plan.planType === 'one_month',
+  );
+
+  const sortedPlans = [...filteredPlans].sort((a, b) => a.price - b.price);
+  const middleIndex = Math.floor(sortedPlans.length / 2);
+
+  return sortedPlans.map((plan, index) => {
+    const isFree = plan.price === 0;
+    const isPremium = index === sortedPlans.length - 1;
+    const isMiddle = index === middleIndex;
+    const isSuggested = fetchedPlans.data.some(
+      (p: Plan) => p.planId === plan.planId && Boolean(p.isPopular),
+    );
+
+    let badge = '';
+    let badgeColor = '';
+
+    if (isFree) {
+      badge = 'Hiện tại';
+      badgeColor = 'bg-green-500';
+    } else if (isMiddle) {
+      badge = 'Phổ biến';
+      badgeColor = 'bg-blue-500';
+    } else if (isPremium) {
+      badge = 'Cao cấp';
+      badgeColor = 'bg-purple-500';
+    }
+
+    return {
+      id: plan.planId,
+      name: plan.planName,
+      description: plan.description,
+      price: plan.price,
+      originalPrice:
+        isAnnual && plan.discount ? Math.round(plan.price / (1 - plan.discount)) : undefined,
+      planType: plan.planType === 'one_month' ? '/tháng' : '/năm',
+      badge,
+      badgeColor,
+      popular: isSuggested,
+      planPermission: plan.planPermissions.map((perm) => ({
+        planPermissionId: perm.planPermissionId || '',
+        roleId: perm.roleId || '',
+        planPermissionName: perm.planPermissionName,
+        limited: perm.limited,
+      })),
+
+      planCount: plan.planCount,
+      createdAt: plan.createdAt,
+      permission: plan.permissions.map((p) => ({
+        permissionId: p.permissionId,
+        permissionName: p.permissionName,
+        permissionDescription: p.permissionDescription,
+      })),
+
+      buttonText: isFree ? 'Gói hiện tại' : isPremium ? 'Liên hệ tư vấn' : 'Nâng cấp ngay',
+      buttonVariant: (isFree ? 'secondary' : isPremium ? 'outline' : 'default') as
+        | 'link'
+        | 'default'
+        | 'secondary'
+        | 'outline'
+        | 'destructive'
+        | 'ghost',
+    };
+  });
+};
+export function formatPlanPermissonName(regex: string) {
+  switch (regex) {
+    case 'search_result':
+      return 'Kết quả tìm kiếm';
+    case 'campaign_members':
+      return 'Số thành viên tham gia chiến dịch';
+
+    case 'campaign_invitation':
+      return 'Số lời mời thành viên tham gia chiến dịch';
+
+    case 'campaign_apply':
+      return 'Số chiến dịch được ứng tuyển';
+    default:
+      break;
+  }
 }
 
 export function UpgradePlan({ userRole }: UpgradePlanProps) {
@@ -62,66 +148,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
     }
   }, [isLoading, fetchedPlans]);
 
-  const plans = useMemo(() => {
-    if (!fetchedPlans?.data) return [];
-
-    const filteredPlans = fetchedPlans.data.filter((plan) =>
-      isAnnual ? plan.planType === 'one_year' : plan.planType === 'one_month',
-    );
-
-    const sortedPlans = [...filteredPlans].sort((a, b) => a.price - b.price);
-
-    const middleIndex = Math.floor(sortedPlans.length / 2);
-
-    return sortedPlans.map((plan, index) => {
-      const isFree = plan.price === 0;
-      const isPremium = index === sortedPlans.length - 1;
-      const isMiddle = index === middleIndex;
-      const isSuggested = fetchedPlans.data.some(
-        (p) => p.planName === plan.planName && Boolean(p.popular),
-      );
-
-      let badge = '';
-      let badgeColor = '';
-
-      if (isFree) {
-        badge = 'Hiện tại';
-        badgeColor = 'bg-green-500';
-      } else if (isMiddle) {
-        badge = 'Phổ biến';
-        badgeColor = 'bg-blue-500';
-      } else if (isPremium) {
-        badge = 'Cao cấp';
-        badgeColor = 'bg-purple-500';
-      }
-
-      return {
-        id: plan.planId,
-        name: plan.planName,
-        description: plan.description,
-        price: plan.price,
-        originalPrice:
-          isAnnual && plan.discount ? Math.round(plan.price / (1 - plan.discount)) : undefined,
-        period: plan.planType === 'one_month' ? '/tháng' : '/năm',
-        badge,
-        badgeColor,
-        popular: isSuggested,
-        features: plan.feature.map((f) => ({
-          name: f.name,
-          included: f.amount > 0,
-          limit: f.amount > 0 ? `${f.amount}` : undefined,
-        })),
-        buttonText: isFree ? 'Gói hiện tại' : isPremium ? 'Liên hệ tư vấn' : 'Nâng cấp ngay',
-        buttonVariant: (isFree ? 'secondary' : isPremium ? 'outline' : 'default') as
-          | 'link'
-          | 'default'
-          | 'secondary'
-          | 'outline'
-          | 'destructive'
-          | 'ghost',
-      };
-    });
-  }, [fetchedPlans, isAnnual]);
+  const plans = useMemo(() => formatPlans(fetchedPlans!, isAnnual), [fetchedPlans, isAnnual]);
 
   const handleUpgrade = (planId: string) => {
     if (planId === currentPlan) return;
@@ -206,38 +233,54 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                     {plan.price === 0 ? 'Miễn phí' : formatPrice(plan.price)}
                   </span>
                   {plan.price > 0 && (
-                    <span className="text-muted-foreground ml-1">{plan.period}</span>
+                    <span className="text-muted-foreground ml-1">{plan.planType}</span>
                   )}
                 </div>
                 {plan.originalPrice && plan.originalPrice > plan.price && (
                   <div className="text-sm text-muted-foreground line-through">
                     {formatPrice(plan.originalPrice)}
-                    {plan.period}
+                    {plan.planType}
                   </div>
                 )}
               </div>
             </CardHeader>
 
             <CardContent className="space-y-3">
-              {plan.features.map((feature, index) => (
-                <div key={index} className="flex items-start space-x-3">
-                  {feature.included ? (
-                    <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  ) : (
-                    <X className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                  )}
-                  <div className="flex-1">
-                    <span
-                      className={feature.included ? 'text-foreground' : 'text-muted-foreground'}
-                    >
-                      {feature.name}
-                    </span>
-                    {feature.limit && (
-                      <div className="text-xs text-muted-foreground">{feature.limit}</div>
-                    )}
-                  </div>
-                </div>
-              ))}
+              {plan.planPermission.map(
+                (
+                  planPermission: {
+                    planPermissionId: string;
+                    roleId: string;
+                    planPermissionName: string;
+                    limited: number | undefined;
+                  },
+                  index: number,
+                ) => {
+                  // You can define your own logic for "included"
+                  const included =
+                    planPermission.limited === undefined || planPermission.limited > 0;
+                  return (
+                    <div key={index} className="flex items-start space-x-3">
+                      {included ? (
+                        <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      ) : (
+                        <X className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      )}
+                      <div className=" flex-1">
+                        <span className={included ? 'text-foreground' : 'text-muted-foreground'}>
+                          {formatPlanPermissonName(planPermission.planPermissionName)}
+                        </span>
+                        {planPermission.limited !== undefined && (
+                          <div className="text-xs text-muted-foreground">
+                            {planPermission.limited}
+                            {plan.planType}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                },
+              )}
             </CardContent>
 
             <CardFooter>
@@ -256,7 +299,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
       </div>
 
       {/* Features Comparison */}
-      {plans.length > 0 && plans[0].features && (
+      {plans.length > 0 && plans[0].planPermission && (
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-center mb-8">So sánh tính năng chi tiết</h2>
           <Card>
@@ -274,17 +317,22 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {plans[0].features.map((_, featureIndex) => (
+                    {plans[0].planPermission.map((_: any, featureIndex: number) => (
                       <tr key={featureIndex} className="border-b hover:bg-muted/50">
-                        <td className="p-4 font-medium">{plans[0].features[featureIndex].name}</td>
+                        <td className="p-4 font-medium">
+                          {formatPlanPermissonName(
+                            plans[0].planPermission[featureIndex].planPermissionName,
+                          )}
+                        </td>
                         {plans.map((plan) => (
                           <td key={plan.id} className="text-center p-4">
-                            {plan.features[featureIndex].included ? (
+                            {plan.planPermission[featureIndex].limited === undefined ||
+                            plan.planPermission[featureIndex].limited > 0 ? (
                               <div className="flex flex-col items-center">
                                 <Check className="h-5 w-5 text-green-500" />
-                                {plan.features[featureIndex].limit && (
+                                {plan.planPermission[featureIndex].limited !== undefined && (
                                   <span className="text-xs text-muted-foreground mt-1">
-                                    {plan.features[featureIndex].limit}
+                                    {plan.planPermission[featureIndex].limited}
                                   </span>
                                 )}
                               </div>
@@ -354,9 +402,9 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                   <span className="font-semibold">{selectedPlanData?.name}</span>
                   <span className="font-bold">
                     {selectedPlanData?.price ? formatPrice(selectedPlanData.price) : 'Miễn phí'}
-                    {selectedPlanData?.period &&
+                    {selectedPlanData?.planType &&
                       selectedPlanData.price > 0 &&
-                      selectedPlanData.period}
+                      selectedPlanData.planType}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">{selectedPlanData?.description}</p>
