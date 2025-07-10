@@ -16,6 +16,7 @@ export const usersSlice = createSlice({
   reducers: {
     setUsers: (state, action: PayloadAction<UserDTO[]>) => {
       if (action.payload && action.payload.length > 0) state.users = action.payload;
+      else state.users = [];
     },
     removeUser: (state, action: PayloadAction<string>) => {
       state.users = state.users.filter((user) => user.userId !== action.payload);
