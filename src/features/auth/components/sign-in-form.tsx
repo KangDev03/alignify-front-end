@@ -47,14 +47,16 @@ export default function SignInForm() {
   async function onSubmit(values: { email: string; password: string }) {
     try {
       const response = await login(values).unwrap();
-
       dispatch(setCredentials(response));
       navigate('/home');
       toast.success('Đăng nhập thành công!');
     } catch (err: unknown) {
-      console.log(err);
       if (isApiResponseError(err)) {
-        toast.error(err.data.error);
+        if (err.data.status === 404) toast.error('Email không tồn tại!');
+        else if (err.data.status === 401) toast.error('Mật khẩu không chính xác');
+        else {
+          toast.error('Đăng nhập thất bại!');
+        }
       } else {
         toast.error('Đăng nhập thất bại!');
       }

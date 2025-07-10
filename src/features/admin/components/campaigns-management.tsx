@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import Stomp from 'stompjs';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -25,8 +27,13 @@ import {
 } from '@/components/ui/table';
 
 import { Icons } from '@/components/icons/icons';
+import type { Campaign, CommonPageableRequest } from '@/features/common/common.type';
+import { getStompClient } from '@/lib/stom-client';
+import type { RootState } from '@/redux/store';
 
 export function CampaignsManagement() {
+  const { token } = useSelector((state: RootState) => state.auth);
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const campaigns = [
@@ -120,6 +127,43 @@ export function CampaignsManagement() {
     console.log('Deleting campaign:', campaignId);
     // Logic xóa chiến dịch
   };
+  useEffect(() => {
+    if (!token) return;
+    let subscription: any;
+    getStompClient(token).then((client) => {
+      subscription = client.subscribe(`/topic/campaigns`, (res: Stomp.Message) => {
+        try {
+          const received: Campaign[] = JSON.parse(res.body);
+          if (received) {
+            console.log(received);
+          }
+        } catch (error) {
+          console.error('Error parsing STOMP message:', error);
+        }
+      });
+    });
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      getStompClient(token!).then((client) => {
+        if (client.connected) {
+          const pageRequest: CommonPageableRequest = {
+            pageNumber: 0,
+            pageSize: 10,
+          };
+          client.send(
+            `/app/campaigns`,
+            { Authorization: `Bearer ${token}` },
+            JSON.stringify(pageRequest),
+          );
+        }
+      });
+    }
+  }, [token]);
 
   return (
     <div className="space-y-6">

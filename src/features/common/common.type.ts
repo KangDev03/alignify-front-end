@@ -1,3 +1,5 @@
+import type { Permission } from '../admin/admin.type';
+
 export type RoleName = 'INFLUENCER' | 'BRAND' | 'ADMIN';
 
 export interface ApiReponseSuccess<T> {
@@ -151,6 +153,7 @@ export interface UserDTO {
   name: string;
   avatarUrl?: string;
   createdAt?: string;
+  permissions?: Permission[];
 }
 
 export const SupportedPlatforms: ISupportedPlatforms[] = [
