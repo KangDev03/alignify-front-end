@@ -10,6 +10,8 @@ import { getStompClient } from '@/lib/stom-client';
 import type { RootState } from '@/redux/store';
 
 import UserRow from './user-row';
+import { useGetAllPermissionQuery } from '../../admin.service';
+import type { Permission } from '../../admin.type';
 
 interface NormalRowsProps {
   isInfluencerRole: boolean;
@@ -18,6 +20,8 @@ interface NormalRowsProps {
 
 const UserRows = ({ isInfluencerRole, isBanned }: NormalRowsProps) => {
   const { token } = useSelector((state: RootState) => state.auth);
+  const { data } = useGetAllPermissionQuery();
+  const permissions: Permission[] = data ? data.data : [];
   const collections = isInfluencerRole ? 'influencers' : 'brands';
   const type = isBanned ? 'banned' : 'normal';
   const [users, setUsers] = useState<UserDTO[]>([]);
@@ -67,6 +71,7 @@ const UserRows = ({ isInfluencerRole, isBanned }: NormalRowsProps) => {
       <UserRow
         key={user.userId}
         user={user}
+        permissions={permissions}
         isBanned={isBanned}
         isInfluencerRole={isInfluencerRole}
       />
