@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from 'react';
 import {
   Check,
   CreditCard,
@@ -14,11 +14,18 @@ import {
   TrendingUp,
   X,
   Zap,
-} from "lucide-react"
+} from 'lucide-react';
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -26,177 +33,122 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Switch } from "@/components/ui/switch"
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
 
-type UserRole = "INFLUENCER" | "BRAND" | "ADMIN" | null
+import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
+
+type UserRole = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
 
 interface UpgradePlanProps {
-  userRole: UserRole
-}
-
-interface PlanFeature {
-  name: string
-  included: boolean
-  limit?: string
-}
-
-interface Plan {
-  id: string
-  name: string
-  price: number
-  originalPrice?: number
-  period: string
-  description: string
-  badge?: string
-  badgeColor?: string
-  popular?: boolean
-  features: PlanFeature[]
-  buttonText: string
-  buttonVariant: "default" | "outline" | "secondary"
+  userRole: UserRole;
 }
 
 export function UpgradePlan({ userRole }: UpgradePlanProps) {
-  const [isAnnual, setIsAnnual] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState<string>("")
-  const [showPaymentDialog, setShowPaymentDialog] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState("card")
+  const [isAnnual, setIsAnnual] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string>('');
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('card');
 
-  const currentPlan = userRole === "INFLUENCER" ? "creator" : "starter"
+  const currentPlan = userRole === 'INFLUENCER' ? 'creator' : 'starter';
+  const { data: fetchedPlans, isLoading } = useGetPlansByRoleQuery(userRole ?? '');
 
-  const influencerPlans: Plan[] = [
-    {
-      id: "creator",
-      name: "Creator",
-      price: 0,
-      period: "Miễn phí",
-      description: "Gói miễn phí cho creator mới",
-      badge: "Hiện tại",
-      badgeColor: "bg-green-500",
-      features: [
-        { name: "Ứng tuyển 5 chiến dịch/tháng", included: true, limit: "5/tháng" },
-        { name: "Tìm kiếm 10 chiến dịch", included: true },
-      ],
-      buttonText: "Gói hiện tại",
-      buttonVariant: "secondary",
-    },
-    {
-      id: "pro-creator",
-      name: "Pro Creator",
-      price: isAnnual ? 1990000 : 199000,
-      originalPrice: isAnnual ? 2388000 : 199000,
-      period: isAnnual ? "/năm" : "/tháng",
-      description: "Gói nâng cao cho influencer chuyên nghiệp",
-      badge: "Phổ biến",
-      badgeColor: "bg-blue-500",
-      popular: true,
-      features: [
-        { name: "Ứng tuyển 10 chiến dịch/tháng", included: true, limit: "10/tháng" },
-        { name: "Tìm kiếm 20 chiến dịch", included: true },
-      ],
-      buttonText: "Nâng cấp ngay",
-      buttonVariant: "default",
-    },
-    {
-      id: "agency",
-      name: "Influencer Agency",
-      price: isAnnual ? 7990000 : 799000,
-      originalPrice: isAnnual ? 9588000 : 799000,
-      period: isAnnual ? "/năm" : "/tháng",
-      description: "Gói dành cho agency quản lý nhiều influencer",
-      badge: "Cao cấp",
-      badgeColor: "bg-purple-500",
-      features: [
-        { name: "Không giới hạn ứng tuyển", included: true, limit: "Không giới hạn" },
-        { name: "Tìm kiếm không giới hạn chiến dịch", included: true, limit: "Không giới hạn" },
-      ],
-      buttonText: "Liên hệ tư vấn",
-      buttonVariant: "outline",
-    },
-  ]
+  useEffect(() => {
+    if (!isLoading && fetchedPlans) {
+      console.log('dataa: ', fetchedPlans);
+    }
+  }, [isLoading, fetchedPlans]);
 
-  const brandPlans: Plan[] = [
-    {
-      id: "starter",
-      name: "Starter",
-      price: 0,
-      period: "Miễn phí",
-      description: "Bắt đầu với các tính năng cơ bản",
-      badge: "Hiện tại",
-      badgeColor: "bg-green-500",
-      features: [
-        { name: "Tạo tối đa 3 chiến dịch/tháng", included: true, limit: "3/tháng" },
-        { name: "Tìm kiếm 100 influencers", included: true, limit: "100/tháng" },
-        { name: "5 influencers/chiến dịch", included: true },
-      ],
-      buttonText: "Gói hiện tại",
-      buttonVariant: "secondary",
-    },
-    {
-      id: "professional",
-      name: "Professional",
-      price: isAnnual ? 4990000 : 499000,
-      originalPrice: isAnnual ? 5988000 : 499000,
-      period: isAnnual ? "/năm" : "/tháng",
-      description: "Cho các thương hiệu đang phát triển",
-      badge: "Phổ biến",
-      badgeColor: "bg-blue-500",
-      popular: true,
-      features: [
-        { name: "Tạo tối đa 25 chiến dịch/tháng", included: true, limit: "25/tháng" },
-        { name: "Tìm kiếm không giới hạn", included: true, limit: "Không giới hạn" },
-        { name: "Kết nối 100 influencers", included: true, limit: "100/tháng" },
-      ],
-      buttonText: "Nâng cấp ngay",
-      buttonVariant: "default",
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise",
-      price: isAnnual ? 14990000 : 1499000,
-      originalPrice: isAnnual ? 17988000 : 1499000,
-      period: isAnnual ? "/năm" : "/tháng",
-      description: "Giải pháp toàn diện cho doanh nghiệp",
-      badge: "Cao cấp",
-      badgeColor: "bg-purple-500",
-      features: [
-        { name: "Chiến dịch không giới hạn", included: true, limit: "Không giới hạn" },
-        { name: "Tìm kiếm không giới hạn influencers", included: true, limit: "Không giới hạn" },
-        { name: "Influencers không giới hạn", included: true, limit: "Không giới hạn" },
-      ],
-      buttonText: "Liên hệ tư vấn",
-      buttonVariant: "outline",
-    },
-  ]
+  const plans = useMemo(() => {
+    if (!fetchedPlans?.data) return [];
 
-  const plans = userRole === "INFLUENCER" ? influencerPlans : brandPlans
+    // Lọc gói theo isAnnual
+    const filteredPlans = fetchedPlans.data.filter((plan) =>
+      isAnnual ? plan.planType === 'one_year' : plan.planType === 'one_month',
+    );
+
+    // Sắp xếp theo giá tăng dần
+    const sortedPlans = [...filteredPlans].sort((a, b) => a.price - b.price);
+
+    const middleIndex = Math.floor(sortedPlans.length / 2);
+
+    return sortedPlans.map((plan, index) => {
+      const isFree = plan.price === 0;
+      const isPremium = index === sortedPlans.length - 1;
+      const isMiddle = index === middleIndex;
+      const isSuggested = fetchedPlans.data.some(
+        (p) => p.planName === plan.planName && Boolean(p.popular),
+      );
+
+      let badge = '';
+      let badgeColor = '';
+
+      if (isFree) {
+        badge = 'Hiện tại';
+        badgeColor = 'bg-green-500';
+      } else if (isMiddle) {
+        badge = 'Phổ biến';
+        badgeColor = 'bg-blue-500';
+      } else if (isPremium) {
+        badge = 'Cao cấp';
+        badgeColor = 'bg-purple-500';
+      }
+
+      return {
+        id: plan.planId,
+        name: plan.planName,
+        description: plan.description,
+        price: plan.price,
+        originalPrice:
+          isAnnual && plan.discount ? Math.round(plan.price / (1 - plan.discount)) : undefined,
+        period: plan.planType === 'one_month' ? '/tháng' : '/năm',
+        badge,
+        badgeColor,
+        popular: isSuggested,
+        features: plan.feature.map((f) => ({
+          name: f.name,
+          included: f.amount > 0,
+          limit: f.amount > 0 ? `${f.amount}` : undefined,
+        })),
+        buttonText: isFree ? 'Gói hiện tại' : isPremium ? 'Liên hệ tư vấn' : 'Nâng cấp ngay',
+        buttonVariant: (isFree ? 'secondary' : isPremium ? 'outline' : 'default') as
+          | 'link'
+          | 'default'
+          | 'secondary'
+          | 'outline'
+          | 'destructive'
+          | 'ghost',
+      };
+    });
+  }, [fetchedPlans, isAnnual]);
 
   const handleUpgrade = (planId: string) => {
-    if (planId === currentPlan) return
-    setSelectedPlan(planId)
-    if (planId === "agency" || planId === "enterprise") {
+    if (planId === currentPlan) return;
+    setSelectedPlan(planId);
+    if (planId === 'agency' || planId === 'enterprise') {
       // Redirect to contact form
-      console.log("Redirecting to contact form...")
+      console.log('Redirecting to contact form...');
     } else {
-      setShowPaymentDialog(true)
+      setShowPaymentDialog(true);
     }
-  }
+  };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
-  }
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
+  };
 
-  const selectedPlanData = plans.find((plan) => plan.id === selectedPlan)
+  const selectedPlanData = plans.find((plan) => plan.id === selectedPlan);
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
+      {}
       <div className="text-center mb-12">
         <div className="flex items-center justify-center mb-4">
           <Crown className="h-8 w-8 text-amber-500 mr-2" />
@@ -205,16 +157,20 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
           </h1>
         </div>
         <p className="text-xl text-muted-foreground mb-6">
-          {userRole === "INFLUENCER"
-            ? "Mở khóa tiềm năng của bạn với các tính năng cao cấp"
-            : "Tăng cường sức mạnh marketing với các công cụ chuyên nghiệp"}
+          {userRole === 'INFLUENCER'
+            ? 'Mở khóa tiềm năng của bạn với các tính năng cao cấp'
+            : 'Tăng cường sức mạnh marketing với các công cụ chuyên nghiệp'}
         </p>
 
         {/* Annual/Monthly Toggle */}
         <div className="flex items-center justify-center space-x-4 mb-8">
-          <span className={`text-sm ${isAnnual ? "text-muted-foreground" : "font-semibold"}`}>Hàng tháng</span>
+          <span className={`text-sm ${isAnnual ? 'text-muted-foreground' : 'font-semibold'}`}>
+            Hàng tháng
+          </span>
           <Switch checked={isAnnual} onCheckedChange={setIsAnnual} />
-          <span className={`text-sm ${isAnnual ? "font-semibold" : "text-muted-foreground"}`}>Hàng năm</span>
+          <span className={`text-sm ${isAnnual ? 'font-semibold' : 'text-muted-foreground'}`}>
+            Hàng năm
+          </span>
           <Badge variant="secondary" className="bg-green-100 text-green-700">
             <Gift className="h-3 w-3 mr-1" />
             Tiết kiệm 17%
@@ -227,8 +183,9 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
         {plans.map((plan) => (
           <Card
             key={plan.id}
-            className={`relative transition-all duration-300 hover:shadow-lg ${plan.popular ? "ring-2 ring-primary shadow-lg scale-105" : ""
-              } ${plan.id === currentPlan ? "border-green-500" : ""}`}
+            className={`relative transition-all duration-300 hover:shadow-lg ${
+              plan.popular ? 'ring-2 ring-primary shadow-lg scale-105' : ''
+            } ${plan.id === currentPlan ? 'border-green-500' : ''}`}
           >
             {plan.popular && (
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -247,8 +204,12 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
               <CardDescription className="text-sm">{plan.description}</CardDescription>
               <div className="mt-4">
                 <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-bold">{plan.price === 0 ? "Miễn phí" : formatPrice(plan.price)}</span>
-                  {plan.price > 0 && <span className="text-muted-foreground ml-1">{plan.period}</span>}
+                  <span className="text-4xl font-bold">
+                    {plan.price === 0 ? 'Miễn phí' : formatPrice(plan.price)}
+                  </span>
+                  {plan.price > 0 && (
+                    <span className="text-muted-foreground ml-1">{plan.period}</span>
+                  )}
                 </div>
                 {plan.originalPrice && plan.originalPrice > plan.price && (
                   <div className="text-sm text-muted-foreground line-through">
@@ -268,10 +229,14 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                     <X className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                   )}
                   <div className="flex-1">
-                    <span className={feature.included ? "text-foreground" : "text-muted-foreground"}>
+                    <span
+                      className={feature.included ? 'text-foreground' : 'text-muted-foreground'}
+                    >
                       {feature.name}
                     </span>
-                    {feature.limit && <div className="text-xs text-muted-foreground">{feature.limit}</div>}
+                    {feature.limit && (
+                      <div className="text-xs text-muted-foreground">{feature.limit}</div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -293,67 +258,75 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
       </div>
 
       {/* Features Comparison */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold text-center mb-8">So sánh tính năng chi tiết</h2>
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-4 font-semibold">Tính năng</th>
-                    {plans.map((plan) => (
-                      <th key={plan.id} className="text-center p-4 font-semibold min-w-[150px]">
-                        {plan.name}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {plans[0].features.map((_, featureIndex) => (
-                    <tr key={featureIndex} className="border-b hover:bg-muted/50">
-                      <td className="p-4 font-medium">{plans[0].features[featureIndex].name}</td>
+      {plans.length > 0 && plans[0].features && (
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-center mb-8">So sánh tính năng chi tiết</h2>
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-4 font-semibold">Tính năng</th>
                       {plans.map((plan) => (
-                        <td key={plan.id} className="text-center p-4">
-                          {plan.features[featureIndex].included ? (
-                            <div className="flex flex-col items-center">
-                              <Check className="h-5 w-5 text-green-500" />
-                              {plan.features[featureIndex].limit && (
-                                <span className="text-xs text-muted-foreground mt-1">
-                                  {plan.features[featureIndex].limit}
-                                </span>
-                              )}
-                            </div>
-                          ) : (
-                            <X className="h-5 w-5 text-muted-foreground mx-auto" />
-                          )}
-                        </td>
+                        <th key={plan.id} className="text-center p-4 font-semibold min-w-[150px]">
+                          {plan.name}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                  </thead>
+                  <tbody>
+                    {plans[0].features.map((_, featureIndex) => (
+                      <tr key={featureIndex} className="border-b hover:bg-muted/50">
+                        <td className="p-4 font-medium">{plans[0].features[featureIndex].name}</td>
+                        {plans.map((plan) => (
+                          <td key={plan.id} className="text-center p-4">
+                            {plan.features[featureIndex].included ? (
+                              <div className="flex flex-col items-center">
+                                <Check className="h-5 w-5 text-green-500" />
+                                {plan.features[featureIndex].limit && (
+                                  <span className="text-xs text-muted-foreground mt-1">
+                                    {plan.features[featureIndex].limit}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <X className="h-5 w-5 text-muted-foreground mx-auto" />
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Benefits Section */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <Card className="text-center p-6">
           <Zap className="h-12 w-12 text-blue-500 mx-auto mb-4" />
           <h3 className="font-semibold mb-2">Tăng hiệu suất</h3>
-          <p className="text-sm text-muted-foreground">Công cụ tự động hóa giúp tiết kiệm thời gian</p>
+          <p className="text-sm text-muted-foreground">
+            Công cụ tự động hóa giúp tiết kiệm thời gian
+          </p>
         </Card>
         <Card className="text-center p-6">
           <Shield className="h-12 w-12 text-green-500 mx-auto mb-4" />
           <h3 className="font-semibold mb-2">Bảo mật cao</h3>
-          <p className="text-sm text-muted-foreground">Dữ liệu được bảo vệ với tiêu chuẩn enterprise</p>
+          <p className="text-sm text-muted-foreground">
+            Dữ liệu được bảo vệ với tiêu chuẩn enterprise
+          </p>
         </Card>
         <Card className="text-center p-6">
           <Headphones className="h-12 w-12 text-purple-500 mx-auto mb-4" />
           <h3 className="font-semibold mb-2">Hỗ trợ 24/7</h3>
-          <p className="text-sm text-muted-foreground">Đội ngũ hỗ trợ chuyên nghiệp luôn sẵn sàng</p>
+          <p className="text-sm text-muted-foreground">
+            Đội ngũ hỗ trợ chuyên nghiệp luôn sẵn sàng
+          </p>
         </Card>
         <Card className="text-center p-6">
           <TrendingUp className="h-12 w-12 text-orange-500 mx-auto mb-4" />
@@ -370,7 +343,9 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
               <Crown className="h-5 w-5 text-amber-500 mr-2" />
               Nâng cấp lên {selectedPlanData?.name}
             </DialogTitle>
-            <DialogDescription>Hoàn tất thanh toán để kích hoạt gói {selectedPlanData?.name} của bạn</DialogDescription>
+            <DialogDescription>
+              Hoàn tất thanh toán để kích hoạt gói {selectedPlanData?.name} của bạn
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6">
@@ -380,8 +355,10 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-semibold">{selectedPlanData?.name}</span>
                   <span className="font-bold">
-                    {selectedPlanData?.price ? formatPrice(selectedPlanData.price) : "Miễn phí"}
-                    {selectedPlanData?.period && selectedPlanData.price > 0 && selectedPlanData.period}
+                    {selectedPlanData?.price ? formatPrice(selectedPlanData.price) : 'Miễn phí'}
+                    {selectedPlanData?.period &&
+                      selectedPlanData.price > 0 &&
+                      selectedPlanData.period}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">{selectedPlanData?.description}</p>
@@ -390,8 +367,9 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                   selectedPlanData.originalPrice > selectedPlanData.price && (
                     <div className="mt-2 text-sm text-green-600">
                       <Gift className="h-4 w-4 inline mr-1" />
-                      Tiết kiệm {formatPrice(selectedPlanData.originalPrice - selectedPlanData.price)} khi thanh toán
-                      hàng năm
+                      Tiết kiệm{' '}
+                      {formatPrice(selectedPlanData.originalPrice - selectedPlanData.price)} khi
+                      thanh toán hàng năm
                     </div>
                   )}
               </CardContent>
@@ -419,7 +397,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
               </RadioGroup>
             </div>
 
-            {paymentMethod === "card" && (
+            {paymentMethod === 'card' && (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -451,8 +429,8 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
             </Button>
             <Button
               onClick={() => {
-                console.log("Processing payment...")
-                setShowPaymentDialog(false)
+                console.log('Processing payment...');
+                setShowPaymentDialog(false);
               }}
             >
               <Sparkles className="h-4 w-4 mr-2" />
@@ -462,5 +440,5 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
