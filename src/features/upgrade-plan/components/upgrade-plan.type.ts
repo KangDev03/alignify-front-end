@@ -13,7 +13,7 @@ export interface Plan {
   planCount: number;
   feature: FearturePlan[] | [];
   createdAt: string;
-  isPopular: boolean;
+  popular: boolean;
 }
 interface FearturePlan {
   name: string;

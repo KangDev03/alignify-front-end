@@ -65,12 +65,10 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
   const plans = useMemo(() => {
     if (!fetchedPlans?.data) return [];
 
-    // Lọc gói theo isAnnual
     const filteredPlans = fetchedPlans.data.filter((plan) =>
       isAnnual ? plan.planType === 'one_year' : plan.planType === 'one_month',
     );
 
-    // Sắp xếp theo giá tăng dần
     const sortedPlans = [...filteredPlans].sort((a, b) => a.price - b.price);
 
     const middleIndex = Math.floor(sortedPlans.length / 2);
