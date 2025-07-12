@@ -52,7 +52,11 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
   const sendNotification = useSendNotification();
   const handleConfirmInvitation = async (accepted: boolean) => {
     try {
-      await confirmInvitation({ invitationId: invitation.invitationId, accepted });
+      await confirmInvitation({
+        invitationId: invitation.invitationId,
+        accepted,
+        campaignId: invitation.campaign.campaignId,
+      });
       if (isSuccess) {
         sendNotification({
           userId: userId!,
@@ -108,25 +112,27 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
                 Deadline: {formatDate(invitation.deadline).toLocaleDateString('vi-VN')}
               </p> */}
         </div>
-        <div className="flex justify-center gap-10">
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            className="w-24"
-            onClick={() => handleConfirmInvitation(false)}
-          >
-            Từ chối
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            className="w-24"
-            onClick={() => handleConfirmInvitation(true)}
-          >
-            Chấp nhận
-          </Button>
-        </div>
+        {role === 'INFLUENCER' && (
+          <div className="flex justify-center gap-10">
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              className="w-24"
+              onClick={() => handleConfirmInvitation(false)}
+            >
+              Từ chối
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              className="w-24"
+              onClick={() => handleConfirmInvitation(true)}
+            >
+              Chấp nhận
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
