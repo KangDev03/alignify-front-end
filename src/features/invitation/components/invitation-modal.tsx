@@ -119,7 +119,7 @@ export default function InvitationModal() {
     if (selectedInfluencers.includes(influencerId)) {
       newSelected = selectedInfluencers.filter((id) => id !== influencerId);
     } else if (selectedInfluencers.length === maxInfluencerCount) {
-      newSelected = selectedInfluencers;
+      newSelected = [...selectedInfluencers];
       newSelected.pop();
       newSelected = [...newSelected, influencerId];
     } else {
