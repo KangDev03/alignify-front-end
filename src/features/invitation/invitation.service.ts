@@ -1,6 +1,10 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type { InvitationsRequest } from './invitation.type';
+import type {
+  ConfirmInvitationsRequest,
+  InvitationResponse,
+  InvitationsRequest,
+} from './invitation.type';
 import type { CampaignResponse } from '../my-campaign/campaign.type';
 
 export const invitationApi = baseApi.injectEndpoints({
@@ -18,7 +22,25 @@ export const invitationApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    getAllInvitations: builder.query<InvitationResponse, { roleName: string }>({
+      query: (data) => ({
+        url: `/invitations/${data.roleName.toLowerCase()}`,
+        method: 'GET',
+      }),
+    }),
+    confirmInvitation: builder.mutation<void, ConfirmInvitationsRequest>({
+      query: (data) => ({
+        url: `/invitations/${data.invitationId}/confirm`,
+        method: 'POST',
+        params: { accepted: data.accepted },
+      }),
+    }),
   }),
 });
 
-export const { useGetAllRecruitingCampaignQuery, useSendInvitationsMutation } = invitationApi;
+export const {
+  useGetAllRecruitingCampaignQuery,
+  useSendInvitationsMutation,
+  useGetAllInvitationsQuery,
+  useConfirmInvitationMutation,
+} = invitationApi;

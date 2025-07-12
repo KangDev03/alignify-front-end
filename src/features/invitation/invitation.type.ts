@@ -1,15 +1,4 @@
-import type { Campaign, UserDTO } from '../common/common.type';
-import type { CampaignResponse } from '../my-campaign/campaign.type';
-
-export interface InvitationResponse {
-  invitationId: string;
-  campaign: Campaign;
-  user: UserDTO;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
-  createdAt: string;
-  repliedAt?: string;
-  message: string;
-}
+import type { ApiReponseSuccess, Campaign, UserDTO } from '../common/common.type';
 
 export interface InvitationsRequest {
   influencerIds: string[];
@@ -21,8 +10,17 @@ export interface Invitation {
   invitationId: string;
   influencerId: string;
   user: UserDTO;
-  campaign: CampaignResponse;
+  campaign: Campaign;
   message: string;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
   createdAt: string;
+}
+
+export interface InvitationResponse extends ApiReponseSuccess<Invitation[]> {
+  data: Invitation[];
+}
+
+export interface ConfirmInvitationsRequest {
+  invitationId: string;
+  accepted: boolean;
 }

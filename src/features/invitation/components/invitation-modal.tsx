@@ -257,7 +257,6 @@ export default function InvitationModal() {
                     /> */}
                   </div>
 
-                  {/* Message */}
                   <FormField
                     control={form.control}
                     name="message"
@@ -292,12 +291,10 @@ export default function InvitationModal() {
                 </div>
               </div>
 
-              {/* Right Column - Campaign & Invitation Details */}
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Chọn Influencer</h3>
 
-                  {/* Search and Filter */}
                   <div className="flex gap-2 mb-4">
                     <div className="flex-1 relative">
                       <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -355,7 +352,6 @@ export default function InvitationModal() {
                     </Button>
                   </div>
 
-                  {/* Influencer List */}
                   <div className="max-h-96 overflow-y-auto space-y-3 no-scrollbar">
                     {influencerRaw?.data && influencerRaw?.data.length > 0 ? (
                       influencerRaw.data.map((influencer) => {
