@@ -39,7 +39,7 @@ function AppLayout() {
         try {
           const received: UserBan = JSON.parse(res.body);
           if (received && received.userId && received.userId === userId) {
-            toast.error(
+            toast.warning(
               'Tài khoản của bạn đã bị khóa vào lúc: ' +
                 formatTime(parseIsoToDateTime(received.createdAt)) +
                 ' ' +
