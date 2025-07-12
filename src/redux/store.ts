@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
+import { usersSlice } from '@/features/admin/admin.slice';
 import applicantReducer from '@/features/applicants/applicant.slice';
 import authReducer from '@/features/auth/auth.slice';
 import commonReducer from '@/features/common/common.slice';
@@ -31,6 +32,7 @@ export const store = configureStore({
     notification: notificationSlice.reducer,
     campaign: campaignSlice.reducer,
     profile: profileSlice.reducer,
+    usersManagment: usersSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

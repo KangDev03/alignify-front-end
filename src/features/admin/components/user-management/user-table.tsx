@@ -6,20 +6,22 @@ interface UserTableProps {
   isInfluencerRole: boolean;
   isBanned: boolean;
 }
-const UserTable = ({ isInfluencerRole, isBanned }: UserTableProps) => (
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead>Người dùng</TableHead>
-        {/* <TableHead>Trạng thái</TableHead> */}
-        {/* <TableHead>Gói đăng ký</TableHead> */}
-        <TableHead>Ngày tham gia</TableHead>
-        <TableHead className="text-right">Thao tác</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      <UserRows isBanned={isBanned} isInfluencerRole={isInfluencerRole} />
-    </TableBody>
-  </Table>
-);
+const UserTable = ({ isInfluencerRole, isBanned }: UserTableProps) => {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Người dùng</TableHead>
+          {/* <TableHead>Trạng thái</TableHead> */}
+          {/* <TableHead>Gói đăng ký</TableHead> */}
+          <TableHead>Ngày tham gia</TableHead>
+          <TableHead className="text-right">Thao tác</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <UserRows isBanned={isBanned} isInfluencerRole={isInfluencerRole} />
+      </TableBody>
+    </Table>
+  );
+};
 export default UserTable;
