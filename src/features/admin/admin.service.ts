@@ -1,6 +1,6 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type { PermissionBlockRequest, PermissionResponse } from './admin.type';
+import type { PermissionBlockRequest, PermissionResponse, ReasonResponse } from './admin.type';
 
 const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,7 +19,17 @@ const adminApi = baseApi.injectEndpoints({
         },
       }),
     }),
+    getAllReasonForBanned: builder.query<ReasonResponse, void>({
+      query: () => ({
+        url: '/reasons',
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useGetAllPermissionQuery, useBlockPermissionMutation } = adminApi;
+export const {
+  useGetAllPermissionQuery,
+  useBlockPermissionMutation,
+  useGetAllReasonForBannedQuery,
+} = adminApi;

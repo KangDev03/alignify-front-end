@@ -54,12 +54,9 @@ export default function SignInForm() {
       if (isApiResponseError(err)) {
         if (err.data.status === 404) toast.error('Email không tồn tại!');
         else if (err.data.status === 401) toast.error('Mật khẩu không chính xác');
-        else {
-          toast.error('Đăng nhập thất bại!');
-        }
-      } else {
-        toast.error('Đăng nhập thất bại!');
-      }
+        else if (err.data.status === 403) toast.error('Tài khoản của bạn đã bị cấm!');
+        else toast.error('Đăng nhập thất bại!');
+      } else toast.error('Đăng nhập thất bại!');
     }
   }
 
@@ -77,10 +74,9 @@ export default function SignInForm() {
         if (isApiResponseError(err)) {
           if (Number(err.data.status === 404)) toast.error('Email không tồn tại!');
           else if (Number(err.data.status) === 401) toast.error('Mật khẩu không chính xác!');
-          else toast.error('Đăng nhập thất bại!');
-        } else {
-          toast.error('Đăng nhập thất bại!');
-        }
+          else if (err.data.status === 403) toast.error('Tài khoản của bạn đã bị cấm!');
+          else toast.error('Đăng nhập với Google thất bại!');
+        } else toast.error('Đăng nhập với Google thất bại!');
       }
     },
     onError: () => {

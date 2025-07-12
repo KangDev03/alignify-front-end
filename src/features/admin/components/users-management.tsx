@@ -113,7 +113,7 @@ export function UsersManagement() {
 
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle></CardTitle>
+            <CardTitle>Danh sách người dùng</CardTitle>
           </CardHeader>
           <CardContent>
             <UserTable

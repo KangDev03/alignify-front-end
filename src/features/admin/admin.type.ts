@@ -15,3 +15,13 @@ export interface PermissionBlockRequest {
   permissionId: string;
   block: boolean;
 }
+
+export interface Reason {
+  reasonId: string;
+  title: string;
+  description: string;
+}
+
+export interface ReasonResponse extends ApiReponseSuccess<Reason[]> {
+  data: Reason[];
+}
