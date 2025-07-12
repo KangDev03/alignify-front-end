@@ -13,7 +13,7 @@ export const invitationApi = baseApi.injectEndpoints({
     }),
     sendInvitations: builder.mutation<void, InvitationsRequest>({
       query: (data) => ({
-        url: `/${data.campaignId}/invitations`,
+        url: `/campaigns/${data.campaignId}/invitations`,
         method: 'POST',
         body: data,
       }),
