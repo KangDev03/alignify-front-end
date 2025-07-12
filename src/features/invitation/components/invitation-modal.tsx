@@ -115,11 +115,11 @@ export default function InvitationModal() {
       return;
     }
     let newSelected: string[];
-    const maxInluemcerNum = selectedCampaign.influencerCountExpected;
+    const maxInfluencerCount = selectedCampaign.influencerCountExpected;
     if (selectedInfluencers.includes(influencerId)) {
       newSelected = selectedInfluencers.filter((id) => id !== influencerId);
-    } else if (selectedInfluencers.length === maxInluemcerNum) {
-      newSelected = selectedInfluencers;
+    } else if (selectedInfluencers.length === maxInfluencerCount) {
+      newSelected = [...selectedInfluencers];
       newSelected.pop();
       newSelected = [...newSelected, influencerId];
     } else {
