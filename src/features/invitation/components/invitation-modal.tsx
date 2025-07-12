@@ -270,7 +270,6 @@ export default function InvitationModal() {
                             placeholder="Xin chào! Chúng tôi rất mong muốn hợp tác với bạn trong chiến dịch này..."
                             rows={4}
                             {...field}
-                            value={selectedCampaign ? recommendLetter(selectedCampaign) : ''}
                           />
                         </FormControl>
                         <FormMessage />
