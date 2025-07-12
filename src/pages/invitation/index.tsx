@@ -1,54 +1,18 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useSelector } from 'react-redux';
 
-import InvitationList from '@/features/invitation/components/invitation-list';
-import InvitationModal from '@/features/invitation/components/invitation-modal';
+import BrandInvitations from '@/features/invitation/components/invitation-brand';
+import InfluencerInvitations from '@/features/invitation/components/invitation-influencer';
+import type { RootState } from '@/redux/store';
 
 export default function Invitation() {
+  const { role } = useSelector((state: RootState) => state.auth);
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Quản lý lời mời</h1>
-          <p className="mt-2 text-muted-foreground">
-            Mời influencer tham gia chiến dịch và theo dõi trạng thái
-          </p>
-        </div>
-
-        <InvitationModal />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="gap-2 h-fit">
-          <CardHeader>
-            <CardTitle className="text-sm">Tổng lời mời</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">24</div>
-          </CardContent>
-        </Card>
-
-        <Card className="gap-2 h-fit">
-          <CardHeader>
-            <CardTitle className="text-sm">Chờ phản hồi</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">8</div>
-          </CardContent>
-        </Card>
-
-        <Card className="gap-2 h-fit">
-          <CardHeader>
-            <CardTitle className="text-sm">Tỷ lệ chấp nhận</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">75%</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <InvitationList />
-    </div>
+    <>
+      {role === 'INFLUENCER' && <InfluencerInvitations />}
+      {role === 'BRAND' && <BrandInvitations />}
+    </>
   );
 }

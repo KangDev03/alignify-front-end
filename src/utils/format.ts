@@ -109,3 +109,10 @@ export const isApiResponseError = (err: unknown): err is ApiResponseError => {
     'path' in err.data
   );
 };
+
+export const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount);
+};
