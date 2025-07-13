@@ -110,6 +110,13 @@ export const isApiResponseError = (err: unknown): err is ApiResponseError => {
   );
 };
 
+export const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount);
+};
+
 export const formatPrice = (price: number) => {
   if (price === 0) return 'Miễn phí';
   return new Intl.NumberFormat('vi-VN', {

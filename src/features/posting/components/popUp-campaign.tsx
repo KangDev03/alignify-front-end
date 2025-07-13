@@ -219,7 +219,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
           brandName,
           campaignId,
           createdAt,
-          influencerCountCurrent = 0,
+          joinedInfluencerIds,
           applicationTotal = 0,
           appliedInfluencerIds = [],
           status,
@@ -228,7 +228,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
         const newCampaign: Campaign = {
           ...campaignRaw,
           campaignId,
-          influencerCountCurrent,
+          joinedInfluencerIds,
           appliedInfluencerIds,
           applicationTotal,
           brandAvartar,
