@@ -1,10 +1,19 @@
 'use client';
 
+import { useSelector } from 'react-redux';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import InvitationList from '@/features/invitation/components/invitation-list';
+import type { RootState } from '@/redux/store';
 
 export default function InfluencerInvitations() {
+  const { invitations } = useSelector((state: RootState) => state.invitation);
+
+  const getInvitationsCountByStatus = (status?: string) => {
+    return invitations.reduce((count, inv) => (inv.status === status ? count + 1 : count), 0);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -20,7 +29,7 @@ export default function InfluencerInvitations() {
             <CardTitle className="text-sm">Tổng lời mời</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">24</div>
+            <div className="text-2xl font-bold">{invitations.length}</div>
           </CardContent>
         </Card>
         <Card className="gap-2 h-fit">
@@ -28,7 +37,9 @@ export default function InfluencerInvitations() {
             <CardTitle className="text-sm">Đã phản hồi</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">8</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {getInvitationsCountByStatus('ACCEPTED') + getInvitationsCountByStatus('REJECTED')}
+            </div>
           </CardContent>
         </Card>
         <Card className="gap-2 h-fit">
@@ -36,7 +47,9 @@ export default function InfluencerInvitations() {
             <CardTitle className="text-sm">Chờ phản hồi</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">8</div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {getInvitationsCountByStatus('PENDING')}
+            </div>
           </CardContent>
         </Card>
       </div>

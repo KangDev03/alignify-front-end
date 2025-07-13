@@ -30,7 +30,7 @@ export const invitationApi = baseApi.injectEndpoints({
     }),
     confirmInvitation: builder.mutation<void, ConfirmInvitationsRequest>({
       query: (data) => ({
-        url: `/invitations/${data.invitationId}/confirm`,
+        url: `/campaigns/${data.campaignId}/invitations/${data.invitationId}/confirm`,
         method: 'POST',
         params: { accepted: data.accepted },
       }),

@@ -7,61 +7,53 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { RootState } from '@/redux/store';
 
 import InvitationCard from './invitation-card';
-import { useGetAllInvitationsQuery } from '../invitation.service';
 
 export default function InvitationList() {
-  const { role } = useSelector((state: RootState) => state.auth);
-
-  const { data: invitationsRaw } = useGetAllInvitationsQuery({ roleName: role! });
+  const { invitations } = useSelector((state: RootState) => state.invitation);
 
   const filterInvitations = (status?: string) => {
-    if (!status) return invitationsRaw?.data;
-    return invitationsRaw?.data.filter((inv) => inv.status === status);
+    return invitations.filter((inv) => inv.status === status);
   };
 
   return (
     <div className="space-y-6">
       <Tabs defaultValue="all" className="w-full">
-        {invitationsRaw && invitationsRaw.data && invitationsRaw.data.length > 0 && (
-          <>
-            <TabsList>
-              <TabsTrigger value="all">Tất cả ({invitationsRaw?.data.length})</TabsTrigger>
-              <TabsTrigger value="PENDING">
-                Chờ phản hồi ({filterInvitations('PENDING')?.length})
-              </TabsTrigger>
-              <TabsTrigger value="ACCEPTED">
-                Đã chấp nhận ({filterInvitations('ACCEPTED')?.length})
-              </TabsTrigger>
-              <TabsTrigger value="REJECTED">
-                Đã từ chối ({filterInvitations('REJECTED')?.length})
-              </TabsTrigger>
-            </TabsList>
+        <TabsList>
+          <TabsTrigger value="all">Tất cả ({invitations.length})</TabsTrigger>
+          <TabsTrigger value="PENDING">
+            Chờ phản hồi ({filterInvitations('PENDING')?.length})
+          </TabsTrigger>
+          <TabsTrigger value="ACCEPTED">
+            Đã chấp nhận ({filterInvitations('ACCEPTED')?.length})
+          </TabsTrigger>
+          <TabsTrigger value="REJECTED">
+            Đã từ chối ({filterInvitations('REJECTED')?.length})
+          </TabsTrigger>
+        </TabsList>
 
-            <TabsContent value="all" className="grid grid-cols-3 gap-6">
-              {invitationsRaw?.data.map((invitation) => (
-                <InvitationCard key={invitation.invitationId} invitation={invitation} />
-              ))}
-            </TabsContent>
+        <TabsContent value="all" className="grid grid-cols-3 gap-6">
+          {invitations.map((invitation) => (
+            <InvitationCard key={invitation.invitationId} invitation={invitation} />
+          ))}
+        </TabsContent>
 
-            <TabsContent value="PENDING" className="grid grid-cols-3 gap-6">
-              {filterInvitations('PENDING')?.map((invitation) => (
-                <InvitationCard key={invitation.invitationId} invitation={invitation} />
-              ))}
-            </TabsContent>
+        <TabsContent value="PENDING" className="grid grid-cols-3 gap-6">
+          {filterInvitations('PENDING')?.map((invitation) => (
+            <InvitationCard key={invitation.invitationId} invitation={invitation} />
+          ))}
+        </TabsContent>
 
-            <TabsContent value="ACCEPTED" className="grid grid-cols-3 gap-6">
-              {filterInvitations('ACCEPTED')?.map((invitation) => (
-                <InvitationCard key={invitation.invitationId} invitation={invitation} />
-              ))}
-            </TabsContent>
+        <TabsContent value="ACCEPTED" className="grid grid-cols-3 gap-6">
+          {filterInvitations('ACCEPTED')?.map((invitation) => (
+            <InvitationCard key={invitation.invitationId} invitation={invitation} />
+          ))}
+        </TabsContent>
 
-            <TabsContent value="REJECTED" className="grid grid-cols-3 gap-6">
-              {filterInvitations('REJECTED')?.map((invitation) => (
-                <InvitationCard key={invitation.invitationId} invitation={invitation} />
-              ))}
-            </TabsContent>
-          </>
-        )}
+        <TabsContent value="REJECTED" className="grid grid-cols-3 gap-6">
+          {filterInvitations('REJECTED')?.map((invitation) => (
+            <InvitationCard key={invitation.invitationId} invitation={invitation} />
+          ))}
+        </TabsContent>
       </Tabs>
     </div>
   );
