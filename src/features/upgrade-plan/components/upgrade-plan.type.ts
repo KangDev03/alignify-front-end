@@ -13,6 +13,7 @@ export interface Plan {
   planCount: number;
   createdAt: string;
   isPopular: boolean;
+  isActive: boolean;
 }
 interface Permission {
   permissionId: string;
@@ -44,9 +45,15 @@ export interface ConvertedPlan {
   buttonVariant: string;
   createdAt: string;
 }
+
+export interface PermissionResponse extends ApiReponseSuccess<Permission[]> {
+  data: Permission[];
+}
 export interface PlanResponse extends ApiReponseSuccess<Plan[]> {
   data: Plan[];
+  id?: string;
 }
+
 export interface ConvertedPlanResponse extends ApiReponseSuccess<ConvertedPlan[]> {
   data: ConvertedPlan[];
 }

@@ -41,6 +41,7 @@ import { Switch } from '@/components/ui/switch';
 
 import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
 import type { Plan, PlanResponse } from '@/features/upgrade-plan/components/upgrade-plan.type';
+import { formatPlanPermissonName } from '@/utils/format';
 
 type UserRole = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
 
@@ -116,22 +117,6 @@ export const formatPlans = (fetchedPlans: PlanResponse, isAnnual: boolean) => {
     };
   });
 };
-export function formatPlanPermissonName(regex: string) {
-  switch (regex) {
-    case 'search_result':
-      return 'Kết quả tìm kiếm';
-    case 'campaign_members':
-      return 'Số thành viên tham gia chiến dịch';
-
-    case 'campaign_invitation':
-      return 'Số lời mời thành viên tham gia chiến dịch';
-
-    case 'campaign_apply':
-      return 'Số chiến dịch được ứng tuyển';
-    default:
-      break;
-  }
-}
 
 export function UpgradePlan({ userRole }: UpgradePlanProps) {
   const [isAnnual, setIsAnnual] = useState(false);

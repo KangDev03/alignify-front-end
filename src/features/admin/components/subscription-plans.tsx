@@ -1,6 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -24,11 +27,17 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Icons } from '@/components/icons/icons';
-import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
+import {
+  useCreatePlanMutation,
+  useGetPlansByRoleQuery,
+} from '@/features/upgrade-plan/components/upgrade-plan.service';
 import type { Plan } from '@/features/upgrade-plan/components/upgrade-plan.type';
 import { formatPlans } from '@/pages/upgrade-plan';
+import { isApiResponseError } from '@/utils/format';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import PlanCard from './plan-management/plan-card';
+import { planSchema, type PlanValues } from '../admin.schema';
 
 export function SubscriptionPlans() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -36,26 +45,8 @@ export function SubscriptionPlans() {
   const [selectedRole, setSelectedRole] = useState<'brand' | 'influencer'>('brand');
   const [isAnnual, setIsAnnual] = useState(false);
 
-  const [newPlan, setNewPlan] = useState({
-    name: '',
-    price: '',
-    duration: 'monthly',
-    description: '',
-    features: [''],
-    targetRole: 'brand' as 'brand' | 'influencer',
-    maxCampaigns: '',
-    maxInfluencers: '',
-    maxApplications: '',
-    portfolioItems: '',
-    maxSearches: '',
-    analyticsAccess: false,
-    prioritySupport: false,
-    customBranding: false,
-    isActive: true,
-  });
-
+  //Get plan by Role
   const { data: fetchedPlans } = useGetPlansByRoleQuery('');
-
   const influencerPlans = useMemo(() => {
     if (!fetchedPlans?.data) return [];
     return formatPlans(
@@ -78,27 +69,46 @@ export function SubscriptionPlans() {
     );
   }, [fetchedPlans, isAnnual]);
 
-  const handleCreatePlan = () => {
-    console.log('Creating plan:', newPlan);
-    // Logic tạo gói mới
-    setIsCreateDialogOpen(false);
-    setNewPlan({
-      name: '',
-      price: '',
-      duration: 'monthly',
-      description: '',
-      features: [''],
-      targetRole: 'brand',
-      maxCampaigns: '',
-      maxInfluencers: '',
-      maxApplications: '',
-      portfolioItems: '',
-      maxSearches: '',
-      analyticsAccess: false,
-      prioritySupport: false,
-      customBranding: false,
-      isActive: true,
-    });
+  // Create plan by admin
+  const form = useForm<PlanValues>({
+    mode: 'onSubmit',
+    resolver: zodResolver(planSchema),
+    defaultValues: {},
+  });
+  const [createPlan] = useCreatePlanMutation();
+
+  const onSubmit = async (values: PlanValues) => {
+    try {
+      const formData = new FormData();
+
+      formData.append('planName', values.planName);
+      formData.append('description', values.description);
+      formData.append('roleId', values.roleId);
+      formData.append('price', values.price.toString());
+      formData.append('discount', values.discount.toString());
+      formData.append('planType', values.planType);
+      formData.append('planCount', values.planCount.toString());
+      formData.append('isPopular', values.isPopular.toString());
+      formData.append('isActive', values.isActive.toString());
+
+      values.permissionIds.forEach((id) => {
+        formData.append('permissionIds', id);
+      });
+
+      formData.append('planPermissions', JSON.stringify(values.planPermissions));
+
+      // Gọi API tạo plan
+      await createPlan(formData).unwrap();
+
+      toast.success('Tạo gói đăng ký thành công!');
+      form.reset();
+    } catch (err) {
+      if (isApiResponseError(err)) {
+        toast.error('Tạo gói thất bại!');
+      } else {
+        toast.error('Tạo gói thất bại. Vui lòng thử lại!');
+      }
+    }
   };
 
   // const handleEditPlan = (plan: any) => {
@@ -138,130 +148,115 @@ export function SubscriptionPlans() {
               <DialogTitle>Tạo gói đăng ký mới</DialogTitle>
               <DialogDescription>Tạo gói đăng ký mới cho brand hoặc influencer</DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="name">Tên gói</Label>
-                  <Input
-                    id="name"
-                    value={newPlan.name}
-                    onChange={(e) => setNewPlan((prev) => ({ ...prev, name: e.target.value }))}
-                    placeholder="Nhập tên gói"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="price">Giá (VNĐ)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    value={newPlan.price}
-                    onChange={(e) => setNewPlan((prev) => ({ ...prev, price: e.target.value }))}
-                    placeholder="Nhập giá gói"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="targetRole">Đối tượng</Label>
-                <Select
-                  value={newPlan.targetRole}
-                  onValueChange={(value) =>
-                    setNewPlan((prev) => ({ ...prev, targetRole: value as 'brand' | 'influencer' }))
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Chọn đối tượng" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="brand">Brand</SelectItem>
-                    <SelectItem value="influencer">Influencer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* <div className="flex flex-col gap-2">
-                <Label htmlFor="description">Mô tả</Label>
-                <Textarea
-                  id="description"
-                  value={newPlan.description}
-                  onChange={(e) => setNewPlan((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Nhập mô tả gói"
-                />
-              </div> */}
-
-              {/* Role-specific limits */}
-              {newPlan.targetRole === 'brand' ? (
+            <Form {...form}>
+              <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-2">
-                    <Label htmlFor="maxCampaigns">Số chiến dịch tối đa</Label>
-                    <Input
-                      id="maxCampaigns"
-                      type="number"
-                      value={newPlan.maxCampaigns}
-                      onChange={(e) =>
-                        setNewPlan((prev) => ({ ...prev, maxCampaigns: e.target.value }))
-                      }
-                      placeholder="0 cho không giới hạn"
-                    />
+                    <Label htmlFor="planName">Tên gói</Label>
+                    <Input {...form.register('planName')} placeholder="Nhập tên gói" />
+                    {form.formState.errors.planName && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.planName.message}
+                      </p>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <Label htmlFor="maxInfluencers">Số influencers tối đa</Label>
-                    <Input
-                      id="maxInfluencers"
-                      type="number"
-                      value={newPlan.maxInfluencers}
-                      onChange={(e) =>
-                        setNewPlan((prev) => ({ ...prev, maxInfluencers: e.target.value }))
-                      }
-                      placeholder="0 cho không giới hạn"
+                    <Label htmlFor="price">Giá (VNĐ)</Label>
+                    <Input type="number" {...form.register('price', { valueAsNumber: true })} />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="roleId">Đối tượng</Label>
+                  <Select
+                    value={form.watch('roleId')}
+                    onValueChange={(value) =>
+                      form.setValue('roleId', value as 'brand' | 'influencer')
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn đối tượng" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="brand">Brand</SelectItem>
+                      <SelectItem value="influencer">Influencer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {form.watch('roleId') === 'brand' && (
+                    <>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="planCount">Số chiến dịch tối đa</Label>
+                        <Input
+                          type="number"
+                          {...form.register('planCount', { valueAsNumber: true })}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="permissionIds">Số influencers tối đa</Label>
+                        <Input
+                          type="text"
+                          {...form.register('permissionIds.0')}
+                          placeholder="Nhập ID quyền 1"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {form.watch('roleId') === 'influencer' && (
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="planCount">Số ứng tuyển tối đa</Label>
+                      <Input
+                        type="number"
+                        {...form.register('planCount', { valueAsNumber: true })}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="discount">Giảm giá (%)</Label>
+                  <Input type="number" {...form.register('discount', { valueAsNumber: true })} />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="planType">Loại gói (monthly/annual)</Label>
+                  <Input {...form.register('planType')} />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="isActive">Kích hoạt gói</Label>
+                    <Switch
+                      checked={form.watch('isActive')}
+                      onCheckedChange={(checked) => form.setValue('isActive', checked)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="isPopular">Phổ biến</Label>
+                    <Switch
+                      checked={form.watch('isPopular')}
+                      onCheckedChange={(checked) => form.setValue('isPopular', checked)}
                     />
                   </div>
                 </div>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="maxApplications">Số ứng tuyển tối đa</Label>
-                  <Input
-                    id="maxApplications"
-                    type="number"
-                    value={newPlan.maxApplications}
-                    onChange={(e) =>
-                      setNewPlan((prev) => ({ ...prev, maxApplications: e.target.value }))
-                    }
-                    placeholder="0 cho không giới hạn"
-                  />
-                </div>
-              )}
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="maxSearches">Số kết quả tìm kiếm</Label>
-                <Input
-                  id="maxSearches"
-                  type="number"
-                  value={newPlan.maxSearches}
-                  onChange={(e) => setNewPlan((prev) => ({ ...prev, maxSearches: e.target.value }))}
-                  placeholder="0 cho không giới hạn"
-                />
-              </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="isActive">Kích hoạt gói</Label>
-                  <Switch
-                    id="isActive"
-                    checked={newPlan.isActive}
-                    onCheckedChange={(checked) =>
-                      setNewPlan((prev) => ({ ...prev, isActive: checked }))
-                    }
-                  />
+                {/* Bạn có thể thêm phần quản lý permission nâng cao tại đây nếu cần */}
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => setIsCreateDialogOpen(false)}
+                  >
+                    Hủy
+                  </Button>
+                  <Button type="submit">Tạo gói</Button>
                 </div>
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  Hủy
-                </Button>
-                <Button onClick={handleCreatePlan}>Tạo gói</Button>
-              </div>
-            </div>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>

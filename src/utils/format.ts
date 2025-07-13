@@ -118,3 +118,20 @@ export const formatPrice = (price: number) => {
     minimumFractionDigits: 0,
   }).format(price);
 };
+
+export const formatPlanPermissonName = (regex: string) => {
+  switch (regex) {
+    case 'search_result':
+      return 'Kết quả tìm kiếm';
+    case 'campaign_members':
+      return 'Số thành viên tham gia chiến dịch';
+
+    case 'campaign_invitation':
+      return 'Số lời mời thành viên tham gia chiến dịch';
+
+    case 'campaign_apply':
+      return 'Số chiến dịch được ứng tuyển';
+    default:
+      break;
+  }
+};

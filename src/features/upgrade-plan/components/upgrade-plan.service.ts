@@ -1,6 +1,6 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type { Plan, PlanResponse } from './upgrade-plan.type';
+import type { PermissionResponse, Plan, PlanRequest, PlanResponse } from './upgrade-plan.type';
 
 export const planApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -8,11 +8,11 @@ export const planApi = baseApi.injectEndpoints({
       query: (roleId) => `/plans?roleId=${roleId}`,
     }),
 
-    createPlan: builder.mutation<PlanResponse, Plan>({
-      query: (newPlan) => ({
+    createPlan: builder.mutation<PlanResponse, PlanRequest>({
+      query: (formData) => ({
         url: '/plans',
         method: 'POST',
-        body: newPlan,
+        body: formData.formData,
       }),
     }),
 
@@ -28,6 +28,12 @@ export const planApi = baseApi.injectEndpoints({
       query: (planId) => ({
         url: `/plans/${planId}`,
         method: 'DELETE',
+      }),
+    }),
+    getPermission: builder.query<PermissionResponse, void>({
+      query: () => ({
+        url: `/plans/permission`,
+        method: 'GET',
       }),
     }),
   }),

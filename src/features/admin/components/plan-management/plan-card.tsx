@@ -12,9 +12,10 @@ import {
 
 import { Icons } from '@/components/icons/icons';
 import type { ConvertedPlan } from '@/features/upgrade-plan/components/upgrade-plan.type';
-import { formatPrice } from '@/utils/format';
+import { formatPlanPermissonName, formatPrice } from '@/utils/format';
 
 const PlanCard = (plan: ConvertedPlan) => {
+  console.log(plan.planPermission);
   return (
     <Card key={plan.id} className={`relative`}>
       {plan.popular && (
@@ -116,7 +117,12 @@ const PlanCard = (plan: ConvertedPlan) => {
             {plan.planPermission.slice(0, 4).map((planPermission, index) => (
               <li key={index} className="flex items-start space-x-2 text-sm">
                 <Icons.check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>{String(planPermission)}</span>
+                <span>
+                  {formatPlanPermissonName(planPermission.planPermissionName)}
+                  {typeof planPermission.limited === 'number'
+                    ? ` tối đa ${planPermission.limited}`
+                    : ''}
+                </span>
               </li>
             ))}
             {plan.planPermission.length > 4 && (
