@@ -103,8 +103,8 @@ export function UsersManagement() {
                 <Icons.userCheck className="h-4 w-4" />
                 <span>Bình thường</span>
               </TabsTrigger>
-              <TabsTrigger value="BANNED" className="flex items-center space-x-2">
-                <Icons.userRoundX className="h-4 w-4" />
+              <TabsTrigger value="BANNED" className="flex items-center space-x-2 text-red-600">
+                <Icons.userRoundX className="h-4 w-4 text-red-600" />
                 <span>Đã cấm</span>
               </TabsTrigger>
             </TabsList>
@@ -113,7 +113,7 @@ export function UsersManagement() {
 
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle></CardTitle>
+            <CardTitle>Danh sách người dùng</CardTitle>
           </CardHeader>
           <CardContent>
             <UserTable

@@ -47,17 +47,16 @@ export default function SignInForm() {
   async function onSubmit(values: { email: string; password: string }) {
     try {
       const response = await login(values).unwrap();
-
       dispatch(setCredentials(response));
       navigate('/home');
       toast.success('Đăng nhập thành công!');
     } catch (err: unknown) {
-      console.log(err);
       if (isApiResponseError(err)) {
-        toast.error(err.data.error);
-      } else {
-        toast.error('Đăng nhập thất bại!');
-      }
+        if (err.data.status === 404) toast.error('Email không tồn tại!');
+        else if (err.data.status === 401) toast.error('Mật khẩu không chính xác');
+        else if (err.data.status === 403) toast.error('Tài khoản của bạn đã bị cấm!');
+        else toast.error('Đăng nhập thất bại!');
+      } else toast.error('Đăng nhập thất bại!');
     }
   }
 
@@ -75,10 +74,9 @@ export default function SignInForm() {
         if (isApiResponseError(err)) {
           if (Number(err.data.status === 404)) toast.error('Email không tồn tại!');
           else if (Number(err.data.status) === 401) toast.error('Mật khẩu không chính xác!');
-          else toast.error('Đăng nhập thất bại!');
-        } else {
-          toast.error('Đăng nhập thất bại!');
-        }
+          else if (err.data.status === 403) toast.error('Tài khoản của bạn đã bị cấm!');
+          else toast.error('Đăng nhập với Google thất bại!');
+        } else toast.error('Đăng nhập với Google thất bại!');
       }
     },
     onError: () => {

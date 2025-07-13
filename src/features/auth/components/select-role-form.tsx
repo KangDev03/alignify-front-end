@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 import { Icons } from '@/components/icons/icons';
-import { useGetRolesQuery } from '@/features/auth/auth.service';
 import type { Role } from '@/features/auth/auth.type';
+import { useGetRolesQuery } from '@/features/common/common.service';
 
 const ROLE_CONFIGS = {
   BRAND: {

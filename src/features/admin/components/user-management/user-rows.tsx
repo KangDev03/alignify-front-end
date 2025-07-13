@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { AlertCircleIcon } from 'lucide-react';
 import Stomp from 'stompjs';
 
@@ -10,6 +10,9 @@ import { getStompClient } from '@/lib/stom-client';
 import type { RootState } from '@/redux/store';
 
 import UserRow from './user-row';
+import { useGetAllPermissionQuery, useGetAllReasonForBannedQuery } from '../../admin.service';
+import { setUsers } from '../../admin.slice';
+import type { Permission, Reason } from '../../admin.type';
 
 interface NormalRowsProps {
   isInfluencerRole: boolean;
@@ -17,10 +20,15 @@ interface NormalRowsProps {
 }
 
 const UserRows = ({ isInfluencerRole, isBanned }: NormalRowsProps) => {
+  const dispatch = useDispatch();
+  const { users } = useSelector((state: RootState) => state.usersManagment);
   const { token } = useSelector((state: RootState) => state.auth);
+  const { data } = useGetAllPermissionQuery();
+  const { data: reasonDataRaw } = useGetAllReasonForBannedQuery();
+  const permissions: Permission[] = data ? data.data : [];
+  const reasons: Reason[] = reasonDataRaw ? reasonDataRaw.data : [];
   const collections = isInfluencerRole ? 'influencers' : 'brands';
   const type = isBanned ? 'banned' : 'normal';
-  const [users, setUsers] = useState<UserDTO[]>([]);
   useEffect(() => {
     if (!token) return;
     let subscription: any;
@@ -31,6 +39,7 @@ const UserRows = ({ isInfluencerRole, isBanned }: NormalRowsProps) => {
           try {
             const received: UserDTO[] = JSON.parse(res.body);
             if (received) {
+              dispatch(setUsers(received));
               setUsers(received);
             }
           } catch (error) {
@@ -42,7 +51,7 @@ const UserRows = ({ isInfluencerRole, isBanned }: NormalRowsProps) => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [token, collections, type]);
+  }, [token, collections, type, dispatch]);
 
   useEffect(() => {
     if (token) {
@@ -67,8 +76,10 @@ const UserRows = ({ isInfluencerRole, isBanned }: NormalRowsProps) => {
       <UserRow
         key={user.userId}
         user={user}
+        permissions={permissions}
         isBanned={isBanned}
         isInfluencerRole={isInfluencerRole}
+        reasons={reasons}
       />
     ))
   ) : (
