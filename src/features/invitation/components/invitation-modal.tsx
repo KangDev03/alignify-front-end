@@ -91,7 +91,15 @@ export default function InvitationModal() {
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign>();
   const [sendInvitation, { isLoading: isSending, isSuccess }] = useSendInvitationsMutation();
   const [toastId, setToastId] = useState<string | number | undefined>();
-
+  let max =
+    selectedCampaign?.influencerCountExpected &&
+    selectedCampaign?.invitedInfluencerIds &&
+    selectedCampaign.joinedInfluencerIds
+      ? selectedCampaign.influencerCountExpected -
+        selectedCampaign.joinedInfluencerIds.length -
+        selectedCampaign.invitedInfluencerIds.length
+      : 0;
+  if (max <= 0) max = 0;
   const form = useForm<InvitationFormValues>({
     resolver: zodResolver(invitationSchema),
     defaultValues: {
@@ -115,10 +123,9 @@ export default function InvitationModal() {
       return;
     }
     let newSelected: string[];
-    const maxInfluencerCount = selectedCampaign.influencerCountExpected;
     if (selectedInfluencers.includes(influencerId)) {
       newSelected = selectedInfluencers.filter((id) => id !== influencerId);
-    } else if (selectedInfluencers.length === maxInfluencerCount) {
+    } else if (selectedInfluencers.length === max) {
       newSelected = [...selectedInfluencers];
       newSelected.pop();
       newSelected = [...newSelected, influencerId];
@@ -330,7 +337,11 @@ export default function InvitationModal() {
                       <p>
                         Tối đa:
                         <span className="font-semibold">
-                          {selectedCampaign?.influencerCountExpected ?? 0}
+                          {selectedCampaign
+                            ? max <= 0
+                              ? 'Bạn đã đạt giới hạn mời hoặc chiến dịch đã đủ người tham gia'
+                              : max
+                            : 0}
                         </span>
                       </p>
                       <p>
@@ -356,6 +367,7 @@ export default function InvitationModal() {
                     {influencerRaw?.data && influencerRaw?.data.length > 0 ? (
                       influencerRaw.data.map((influencer) => {
                         if (selectedCampaign?.joinedInfluencerIds.includes(influencer.id)) return;
+                        if (selectedCampaign?.invitedInfluencerIds?.includes(influencer.id)) return;
                         return (
                           <Card
                             key={influencer.id}
