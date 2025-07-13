@@ -42,7 +42,11 @@ export function LandingHeader() {
           </Button>
           <Button
             onClick={() => { }}
+<<<<<<< HEAD
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+=======
+            className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
+>>>>>>> ae9e771d50d45bb28d5f4fad511fa2055b82d8cf
           >
             Đăng ký
           </Button>

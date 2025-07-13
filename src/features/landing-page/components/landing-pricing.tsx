@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +14,23 @@ interface Plan {
   popular: boolean;
 }
 
+=======
+import type { PlanFeature } from "@/components/ui/plan-card";
+import { PlanCard } from "@/components/ui/plan-card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+interface Plan {
+  name: string;
+  price: string | number;
+  description: string;
+  features: (string | PlanFeature)[];
+  popular?: boolean;
+  badge?: string;
+  badgeColor?: string;
+  buttonText?: string;
+  buttonVariant?: "default" | "outline" | "secondary";
+}
+>>>>>>> ae9e771d50d45bb28d5f4fad511fa2055b82d8cf
 interface LandingPricingProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -40,6 +58,7 @@ export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencer
           <TabsContent value="brands">
             <div className="grid md:grid-cols-3 gap-8">
               {brandPlans.map((plan, index) => (
+<<<<<<< HEAD
                 <Card key={index} className={`relative ${plan.popular ? "border-blue-500 shadow-lg scale-105" : ""}`}>
                   {plan.popular && (
                     <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
@@ -65,12 +84,32 @@ export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencer
                     </Button>
                   </CardContent>
                 </Card>
+=======
+                <PlanCard
+                  key={index}
+                  name={plan.name}
+                  price={plan.price}
+                  description={plan.description}
+                  badge={plan.badge}
+                  badgeColor={plan.badgeColor || "bg-blue-500"}
+                  popular={plan.popular}
+                  features={Array.isArray(plan.features) && typeof plan.features[0] === "string"
+                    ? (plan.features as string[]).map(f => ({ name: f, included: true }))
+                    : (plan.features as PlanFeature[])
+                  }
+                  buttonText={plan.buttonText || "Bắt đầu ngay"}
+                  buttonVariant={plan.buttonVariant || (plan.popular ? "default" : "outline")}
+                  onClick={onGetStarted}
+                  highlightColor="ring-2 ring-blue-500"
+                />
+>>>>>>> ae9e771d50d45bb28d5f4fad511fa2055b82d8cf
               ))}
             </div>
           </TabsContent>
           <TabsContent value="influencers">
             <div className="grid md:grid-cols-3 gap-8">
               {influencerPlans.map((plan, index) => (
+<<<<<<< HEAD
                 <Card key={index} className={`relative ${plan.popular ? "border-purple-500 shadow-lg scale-105" : ""}`}>
                   {plan.popular && (
                     <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500">
@@ -96,6 +135,25 @@ export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencer
                     </Button>
                   </CardContent>
                 </Card>
+=======
+                <PlanCard
+                  key={index}
+                  name={plan.name}
+                  price={plan.price}
+                  description={plan.description}
+                  badge={plan.badge}
+                  badgeColor={plan.badgeColor || "bg-purple-500"}
+                  popular={plan.popular}
+                  features={Array.isArray(plan.features) && typeof plan.features[0] === "string"
+                    ? (plan.features as string[]).map(f => ({ name: f, included: true }))
+                    : (plan.features as PlanFeature[])
+                  }
+                  buttonText={plan.buttonText || "Bắt đầu ngay"}
+                  buttonVariant={plan.buttonVariant || (plan.popular ? "default" : "outline")}
+                  onClick={onGetStarted}
+                  highlightColor="ring-2 ring-purple-500"
+                />
+>>>>>>> ae9e771d50d45bb28d5f4fad511fa2055b82d8cf
               ))}
             </div>
           </TabsContent>
