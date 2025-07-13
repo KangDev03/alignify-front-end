@@ -51,8 +51,10 @@ import {
   SendHorizontal,
   Settings,
   Share2,
+  Shield,
   Star,
   Store,
+  Target,
   ThumbsUp,
   Trash,
   Trash2,
@@ -64,7 +66,7 @@ import {
   Users,
   X,
   Youtube,
-  Zap,
+  Zap
 } from 'lucide-react';
 
 export const Icons = {
@@ -134,4 +136,6 @@ export const Icons = {
   layoutDashboard: LayoutDashboard,
   creditCard: CreditCard,
   userRoundX: UserRoundX,
+  target: Target,
+  shield: Shield,
 };
