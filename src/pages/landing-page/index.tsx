@@ -73,11 +73,9 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       price: "Miễn phí",
       description: "Dành cho startup và doanh nghiệp nhỏ",
       features: [
-        "3 chiến dịch/tháng",
+        "Tạo tối đa 3 chiến dịch/tháng",
         "Tìm kiếm 100 influencers",
-        "Kết nối 5 influencers",
-        "1 thành viên team",
-        "Support cơ bản",
+        "5 influencers/chiến dịch",
       ],
       popular: false,
     },
@@ -86,13 +84,9 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       price: "499.000đ/tháng",
       description: "Dành cho doanh nghiệp vừa",
       features: [
-        "25 chiến dịch/tháng",
+        "Tạo tối đa 25 chiến dịch/tháng",
         "Tìm kiếm không giới hạn",
         "Kết nối 100 influencers",
-        "5 thành viên team",
-        "Campaign templates",
-        "Automated matching",
-        "Priority support",
       ],
       popular: true,
     },
@@ -101,13 +95,9 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       price: "1.499.000đ/tháng",
       description: "Dành cho doanh nghiệp lớn",
       features: [
-        "Không giới hạn chiến dịch",
-        "Multi-brand management",
-        "Advanced analytics",
-        "API access",
-        "White-label solution",
-        "Dedicated account manager",
-        "Custom integrations",
+        "Chiến dịch không giới hạn",
+        "Tìm kiếm không giới hạn influencers",
+        "Influencers không giới hạn",
       ],
       popular: false,
     },
@@ -120,10 +110,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       description: "Dành cho creator mới bắt đầu",
       features: [
         "Ứng tuyển 5 chiến dịch/tháng",
-        "Portfolio 10 hình ảnh",
-        "Thống kê cơ bản",
-        "Chat với brands",
-        "Community access",
+        "Tìm kiếm 10 chiến dịch",
       ],
       popular: false,
     },
@@ -132,13 +119,8 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       price: "199.000đ/tháng",
       description: "Dành cho influencer chuyên nghiệp",
       features: [
-        "Ứng tuyển không giới hạn",
-        "Portfolio không giới hạn",
-        "Media kit tự động",
-        "Priority trong search",
-        "Analytics chi tiết",
-        "Brand collaboration tools",
-        "Priority support",
+        "Ứng tuyển 10 chiến dịch/tháng",
+        "Tìm kiếm 20 chiến dịch",
       ],
       popular: true,
     },
@@ -147,13 +129,8 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       price: "799.000đ/tháng",
       description: "Dành cho agency và MCN",
       features: [
-        "Quản lý nhiều hồ sơ influencer",
-        "Agency dashboard",
-        "Client management tools",
-        "Revenue tracking",
-        "Team collaboration",
-        "White-label options",
-        "Dedicated support",
+        "Không giới hạn ứng tuyển",
+        "Tìm kiếm không giới hạn chiến dịch",
       ],
       popular: false,
     },
@@ -232,7 +209,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           <Button
             size="lg"
             onClick={onGetStarted}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
           >
             Bắt đầu ngay hôm nay
             <Icons.arrowRight className="ml-2 h-5 w-5" />
