@@ -123,10 +123,9 @@ export default function InvitationModal() {
       return;
     }
     let newSelected: string[];
-    const maxInfluencerCount = selectedCampaign.influencerCountExpected;
     if (selectedInfluencers.includes(influencerId)) {
       newSelected = selectedInfluencers.filter((id) => id !== influencerId);
-    } else if (selectedInfluencers.length === maxInfluencerCount) {
+    } else if (selectedInfluencers.length === max) {
       newSelected = [...selectedInfluencers];
       newSelected.pop();
       newSelected = [...newSelected, influencerId];
@@ -338,9 +337,11 @@ export default function InvitationModal() {
                       <p>
                         Tối đa:
                         <span className="font-semibold">
-                          {max <= 0
-                            ? 'Bạn đã đạt giới hạn mời hoặc chiến dịch đã đủ người tham gia'
-                            : max}
+                          {selectedCampaign
+                            ? max <= 0
+                              ? 'Bạn đã đạt giới hạn mời hoặc chiến dịch đã đủ người tham gia'
+                              : max
+                            : 0}
                         </span>
                       </p>
                       <p>

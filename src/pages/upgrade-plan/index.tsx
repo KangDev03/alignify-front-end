@@ -10,7 +10,6 @@ import {
   Headphones,
   Shield,
   Sparkles,
-  Star,
   TrendingUp,
   X,
   Zap,
@@ -18,7 +17,7 @@ import {
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -29,6 +28,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PlanCard } from "@/components/ui/plan-card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Switch } from "@/components/ui/switch"
 
@@ -113,7 +113,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
         { name: "Không giới hạn ứng tuyển", included: true, limit: "Không giới hạn" },
         { name: "Tìm kiếm không giới hạn chiến dịch", included: true, limit: "Không giới hạn" },
       ],
-      buttonText: "Liên hệ tư vấn",
+      buttonText: "Nâng cấp ngay",
       buttonVariant: "outline",
     },
   ]
@@ -167,7 +167,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
         { name: "Tìm kiếm không giới hạn influencers", included: true, limit: "Không giới hạn" },
         { name: "Influencers không giới hạn", included: true, limit: "Không giới hạn" },
       ],
-      buttonText: "Liên hệ tư vấn",
+      buttonText: "Nâng cấp ngay",
       buttonVariant: "outline",
     },
   ]
@@ -225,70 +225,21 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
       {/* Plans Grid */}
       <div className="grid md:grid-cols-3 gap-8 mb-12">
         {plans.map((plan) => (
-          <Card
+          <PlanCard
             key={plan.id}
-            className={`relative transition-all duration-300 hover:shadow-lg ${plan.popular ? "ring-2 ring-primary shadow-lg scale-105" : ""
-              } ${plan.id === currentPlan ? "border-green-500" : ""}`}
-          >
-            {plan.popular && (
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground px-4 py-1">
-                  <Star className="h-3 w-3 mr-1" />
-                  Được đề xuất
-                </Badge>
-              </div>
-            )}
-
-            <CardHeader className="text-center pb-4">
-              <div className="flex items-center justify-center mb-2">
-                <Badge className={`${plan.badgeColor} text-white`}>{plan.badge}</Badge>
-              </div>
-              <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-              <CardDescription className="text-sm">{plan.description}</CardDescription>
-              <div className="mt-4">
-                <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-bold">{plan.price === 0 ? "Miễn phí" : formatPrice(plan.price)}</span>
-                  {plan.price > 0 && <span className="text-muted-foreground ml-1">{plan.period}</span>}
-                </div>
-                {plan.originalPrice && plan.originalPrice > plan.price && (
-                  <div className="text-sm text-muted-foreground line-through">
-                    {formatPrice(plan.originalPrice)}
-                    {plan.period}
-                  </div>
-                )}
-              </div>
-            </CardHeader>
-
-            <CardContent className="space-y-3">
-              {plan.features.map((feature, index) => (
-                <div key={index} className="flex items-start space-x-3">
-                  {feature.included ? (
-                    <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  ) : (
-                    <X className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                  )}
-                  <div className="flex-1">
-                    <span className={feature.included ? "text-foreground" : "text-muted-foreground"}>
-                      {feature.name}
-                    </span>
-                    {feature.limit && <div className="text-xs text-muted-foreground">{feature.limit}</div>}
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-
-            <CardFooter>
-              <Button
-                className="w-full"
-                variant={plan.buttonVariant}
-                onClick={() => handleUpgrade(plan.id)}
-                disabled={plan.id === currentPlan}
-              >
-                {plan.id === currentPlan && <Check className="h-4 w-4 mr-2" />}
-                {plan.buttonText}
-              </Button>
-            </CardFooter>
-          </Card>
+            name={plan.name}
+            price={plan.price === 0 ? "Miễn phí" : formatPrice(plan.price)}
+            description={plan.description}
+            badge={plan.badge}
+            badgeColor={plan.badgeColor}
+            popular={plan.popular}
+            features={plan.features}
+            buttonText={plan.buttonText}
+            buttonVariant={plan.buttonVariant}
+            onClick={() => handleUpgrade(plan.id)}
+            disabled={plan.id === currentPlan}
+            highlightColor={plan.popular ? "ring-2 ring-primary" : undefined}
+          />
         ))}
       </div>
 

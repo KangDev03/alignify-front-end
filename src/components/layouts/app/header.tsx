@@ -152,7 +152,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => handlePageChange('upgrade-plan' as CurrentPage)}
-                className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 border-0 shadow-md"
+                className="flex items-center space-x-2 text-white dark:text-black bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700 border-0 shadow-md"
               >
                 <Icons.crown className="h-4 w-4" />
                 <span className="hidden md:inline">Nâng cấp</span>
