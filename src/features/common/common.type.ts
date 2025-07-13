@@ -1,3 +1,5 @@
+import type { Permission } from '../admin/admin.type';
+
 export type RoleName = 'INFLUENCER' | 'BRAND' | 'ADMIN';
 
 export interface ApiReponseSuccess<T> {
@@ -135,7 +137,7 @@ export interface Campaign {
     followers: number;
   }[];
   influencerCountExpected: number;
-  influencerCountCurrent: number | 0;
+  joinedInfluencerIds: string[];
   applicationTotal: number | 0;
   appliedInfluencerIds?: string[];
 }
@@ -151,6 +153,7 @@ export interface UserDTO {
   name: string;
   avatarUrl?: string;
   createdAt?: string;
+  permissions?: Permission[];
 }
 
 export const SupportedPlatforms: ISupportedPlatforms[] = [

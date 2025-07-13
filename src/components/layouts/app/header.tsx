@@ -12,7 +12,13 @@ import ChatSheet from '@/features/chatting/components/chat-sheet';
 import NotificationTrigger from '@/features/notification/components/notification-trigger';
 import type { RootState } from '@/redux/store';
 
-type InfluencerPage = 'home' | 'my-campaign' | 'applications' | 'statistics' | 'upgrade-plan';
+type InfluencerPage =
+  | 'home'
+  | 'my-campaign'
+  | 'applications'
+  | 'invitations'
+  | 'statistics'
+  | 'upgrade-plan';
 type BrandPage =
   | 'home'
   | 'campaign-management'
@@ -39,6 +45,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
     if (userRole === 'INFLUENCER') {
       if (location.pathname.includes('/my-campaign')) return 'my-campaign';
       if (location.pathname.includes('/applications')) return 'applications';
+      if (location.pathname.includes('/invitation')) return 'invitations';
       if (location.pathname.includes('/statistics')) return 'statistics';
       if (location.pathname.includes('/upgrade-plan')) return 'upgrade-plan';
       return 'home';
@@ -68,6 +75,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
       if (page === 'home') navigate('/home');
       else if (page === 'my-campaign') navigate('/my-campaign');
       else if (page === 'applications') navigate('/applications');
+      else if (page === 'invitations') navigate('/invitation');
       else if (page === 'statistics') navigate('/statistics');
       else if (page === 'upgrade-plan') navigate('/upgrade-plan');
     } else if (userRole === 'BRAND') {
@@ -91,6 +99,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
         { id: 'home', label: 'Trang chủ', icon: Icons.home },
         { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
         { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
+        { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
         { id: 'statistics', label: 'Thống kê', icon: Icons.barChart3 },
       ]
       : userRole === 'BRAND'
