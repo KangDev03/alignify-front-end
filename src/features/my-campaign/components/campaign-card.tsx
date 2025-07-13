@@ -275,7 +275,12 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 onClick={handleApplyCampaign}
                 disabled={isApplying || isApplied}
               >
-                {isApplying ? 'Đang ứng tuyển...' : isApplied ? 'Đã ứng tuyển' : 'Ứng tuyển'}
+                {isApplying ?
+                  <>
+                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang đăng nhập...
+                  </>
+                  : isApplied ? 'Đã ứng tuyển' : 'Ứng tuyển'}
               </Button>
             </div>
           );
