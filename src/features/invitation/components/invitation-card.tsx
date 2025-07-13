@@ -86,7 +86,7 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
                 src={
                   role === 'INFLUENCER'
                     ? invitation.campaign.brandAvartar
-                    : invitation.user.avatarUrl || '/placeholder.svg'
+                    : (invitation.user.avatarUrl ?? '/placeholder.svg')
                 }
               />
               <AvatarFallback>
@@ -112,7 +112,7 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
                 Deadline: {formatDate(invitation.deadline).toLocaleDateString('vi-VN')}
               </p> */}
         </div>
-        {role === 'INFLUENCER' && (
+        {role === 'INFLUENCER' && invitation.status === 'PENDING' && (
           <div className="flex justify-center gap-10">
             <Button
               type="button"
