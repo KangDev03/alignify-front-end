@@ -53,8 +53,8 @@ export function SubscriptionPlans() {
   const [isAnnual, setIsAnnual] = useState(false);
   const { data: permissionData } = useGetPermissionQuery();
 
-  //Get plan by Role
   const { data: fetchedPlans } = useGetPlansByRoleQuery(selectedRole);
+  console.log(fetchedPlans);
   const influencerPlans = useMemo(() => {
     if (!fetchedPlans?.data) return [];
     return formatPlans(

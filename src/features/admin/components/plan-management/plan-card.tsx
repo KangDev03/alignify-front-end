@@ -12,11 +12,16 @@ import {
 
 import { Icons } from '@/components/icons/icons';
 import type { ConvertedPlan } from '@/features/upgrade-plan/components/upgrade-plan.type';
-import { formatPlanPermissonName, formatPrice } from '@/utils/format';
+import { formatPlanPermissionName, formatPrice } from '@/utils/format';
 
 const PlanCard = (plan: ConvertedPlan) => {
   return (
-    <Card key={plan.id} className={`relative`}>
+    <Card
+      key={plan.id}
+      className={`relative transition-all duration-300 hover:shadow-lg ${
+        plan.popular ? 'ring-2 ring-primary shadow-lg scale-105' : ''
+      } ${plan.id === plan.currentPlan ? 'border-green-500' : ''}`}
+    >
       {plan.popular && (
         <div className="absolute top-2 right-2">
           <Badge className="bg-yellow-400 text-black">Được đề xuất</Badge>
@@ -117,7 +122,7 @@ const PlanCard = (plan: ConvertedPlan) => {
               <li key={index} className="flex items-start space-x-2 text-sm">
                 <Icons.check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                 <span>
-                  {formatPlanPermissonName(planPermission.planPermissionName)}
+                  {formatPlanPermissionName(planPermission.planPermissionName)}
                   {typeof planPermission.limited === 'number'
                     ? ` tối đa ${planPermission.limited}`
                     : ''}

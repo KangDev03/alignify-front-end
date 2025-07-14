@@ -44,6 +44,7 @@ export interface ConvertedPlan {
   buttonText: string;
   buttonVariant: string;
   createdAt: string;
+  currentPlan: string;
 }
 
 export interface PlanRequest {
