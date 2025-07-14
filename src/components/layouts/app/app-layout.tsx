@@ -6,6 +6,7 @@ import Stomp from 'stompjs';
 // import AppFooter from '@/components/layouts/app/footer';
 import { AppHeader } from '@/components/layouts/app/header';
 import { useTheme } from '@/components/theme/theme-provider';
+import ChatBot from '@/features/assitant/components/chatbot';
 import { logout } from '@/features/auth/auth.slice';
 import type { UserBan } from '@/features/auth/auth.type';
 import { addReceivedNotification } from '@/features/notification/notification.slice';
@@ -41,9 +42,9 @@ function AppLayout() {
           if (received && received.userId && received.userId === userId) {
             toast.warning(
               'Tài khoản của bạn đã bị khóa vào lúc: ' +
-              formatTime(parseIsoToDateTime(received.createdAt)) +
-              ' ' +
-              formatDate(parseIsoToDateTime(received.createdAt)),
+                formatTime(parseIsoToDateTime(received.createdAt)) +
+                ' ' +
+                formatDate(parseIsoToDateTime(received.createdAt)),
             );
             handleLogout();
           }
@@ -93,7 +94,7 @@ function AppLayout() {
   if (roleName !== 'ADMIN') {
     backgroundImage =
       theme === 'dark' ||
-        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         ? '/background-dark.png'
         : '/background-light.png';
   }
@@ -111,6 +112,7 @@ function AppLayout() {
       >
         <Outlet />
         <PopUpTrigger />
+        <ChatBot />
       </main>
       {/* <AppFooter /> */}
     </div>
