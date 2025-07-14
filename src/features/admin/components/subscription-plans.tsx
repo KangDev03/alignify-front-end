@@ -54,7 +54,7 @@ export function SubscriptionPlans() {
   const { data: permissionData } = useGetPermissionQuery();
 
   //Get plan by Role
-  const { data: fetchedPlans } = useGetPlansByRoleQuery('');
+  const { data: fetchedPlans } = useGetPlansByRoleQuery(selectedRole);
   const influencerPlans = useMemo(() => {
     if (!fetchedPlans?.data) return [];
     return formatPlans(
