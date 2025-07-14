@@ -13,11 +13,7 @@ import { LandingHero } from "@/features/landing-page/components/landing-hero"
 import { LandingPricing } from "@/features/landing-page/components/landing-pricing"
 import { LandingTestimonials } from "@/features/landing-page/components/landing-testimonials"
 
-interface LandingPageProps {
-  onGetStarted: () => void
-}
-
-export function LandingPage({ onGetStarted }: LandingPageProps) {
+export function LandingPage() {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState("brands")
 
@@ -194,7 +190,6 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
         setActiveTab={setActiveTab}
         brandPlans={brandPlans}
         influencerPlans={influencerPlans}
-        onGetStarted={onGetStarted}
       />
 
       <LandingTestimonials testimonials={testimonials} />
@@ -208,7 +203,6 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           </p>
           <Button
             size="lg"
-            onClick={onGetStarted}
             className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
           >
             Bắt đầu ngay hôm nay
