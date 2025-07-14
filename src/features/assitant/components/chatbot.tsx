@@ -155,14 +155,18 @@ export default function ChatBot() {
                   className={`flex ${msg.senderType === 'USER' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={` rounded-lg text-sm max-w-[80%] ${
+                    className={`rounded-lg text-sm max-w-[80%] wrap-anywhere ${
                       msg.senderType === 'USER'
                         ? 'bg-primary text-white'
                         : 'bg-background text-primary border border-muted-foreground'
                     }`}
                   >
                     <div className="">
-                      {msg.messageType === 'TEXT' && <p className="px-3 py-2">{msg.content}</p>}
+                      {msg.messageType === 'TEXT' && (
+                        <p className="px-3 py-2 whitespace-pre-wrap text-wrap break-words">
+                          {msg.content.replace('[', '').replace(']', '')}
+                        </p>
+                      )}
                       {msg.messageType === 'CAMPAIGN_RECOMMENDATIONS' && (
                         <div className="flex flex-col gap-3">
                           {JSON.parse(msg.content).map((campaign: CampaignRecommendation) => (
@@ -171,7 +175,7 @@ export default function ChatBot() {
                               className="relative border rounded-lg shadow-sm flex gap-3 items-center overflow-hidden"
                             >
                               <div className="flex-1 relative z-10 p-3">
-                                <div className="font-semibold text-primary text-sm mb-1">
+                                <div className="font-semibold text-primary text-sm mb-1 break-words">
                                   {campaign.campaignName}
                                 </div>
                                 <div className="text-xs text-muted-foreground mb-1">
@@ -181,13 +185,13 @@ export default function ChatBot() {
                                   {campaign.categoryName.map((cat, idx) => (
                                     <p
                                       key={idx}
-                                      className="bg-muted px-2 py-0.5 rounded text-xs capitalize"
+                                      className="bg-muted px-2 py-0.5 rounded text-xs capitalize break-words"
                                     >
                                       {cat}
                                     </p>
                                   ))}
                                 </div>
-                                <div className="text-xs text-gray-600 mb-2">
+                                <div className="text-xs text-gray-600 mb-2 break-words">
                                   {campaign.reasonForMatch}
                                 </div>
                                 <div className="w-full">
