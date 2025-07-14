@@ -96,7 +96,7 @@ export default function ChatBot() {
             senderId: userId!,
             senderType: 'USER',
           };
-          setMessages((prev) => [...prev, newAssistMessagge]);
+          setMessages((prev) => [...prev, newAssistMessage]);
           setIsThinking(true);
           if (loadingTimeoutRef.current) clearTimeout(loadingTimeoutRef.current);
           loadingTimeoutRef.current = setTimeout(() => {
