@@ -149,9 +149,9 @@ export default function ChatBot() {
           </div>
           <div className="flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-small p-3">
             {isSuccess &&
-              messages.map((msg, idx) => (
+              messages.map((msg) => (
                 <div
-                  key={idx}
+                  key={msg.id}
                   className={`flex ${msg.senderType === 'USER' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
