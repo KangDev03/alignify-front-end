@@ -4,6 +4,7 @@ import type {
   ConfirmInvitationsRequest,
   InvitationResponse,
   InvitationsRequest,
+  RecommendInfluencersAssistantResponse,
 } from './invitation.type';
 import type { CampaignResponse } from '../my-campaign/campaign.type';
 
@@ -33,6 +34,15 @@ export const invitationApi = baseApi.injectEndpoints({
         url: `/campaigns/${data.campaignId}/invitations/${data.invitationId}/confirm`,
         method: 'POST',
         params: { accepted: data.accepted },
+      }),
+    }),
+    getRecommendInfluencers: builder.query<
+      RecommendInfluencersAssistantResponse,
+      { campaignId: string }
+    >({
+      query: (data) => ({
+        url: `/assistant/campaigns/${data.campaignId}/influencers`,
+        method: 'GET',
       }),
     }),
   }),
