@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { Icons } from '@/components/icons/icons';
 import { useForgotPasswordMutation } from '@/features/auth/auth.service';
 
 export default function ForgotPasswordForm() {
@@ -76,12 +77,17 @@ export default function ForgotPasswordForm() {
             type="submit"
             disabled={isLoading || submitted}
           >
-            {isLoading ? 'Đang gửi...' : submitted ? 'Email đã được gửi' : 'Gửi email xác nhận'}
+            {isLoading ?
+              <>
+                <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang gửi...
+              </>
+              : submitted ? 'Email đã được gửi' : 'Gửi email xác nhận'}
           </Button>
 
           {submitted && (
             <div className="text-sm text-center flex items-center justify-center font-semibold">
-              <p className="text-muted-foreground">Chưa nhận được yêu cầ xác thực?</p>
+              <p className="text-muted-foreground">Chưa nhận được yêu cầu xác thực?</p>
               <Button variant="link" type="submit">
                 Gửi lại
               </Button>

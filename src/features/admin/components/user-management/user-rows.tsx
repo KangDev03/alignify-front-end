@@ -83,7 +83,7 @@ const UserRows = ({ isInfluencerRole, isBanned }: NormalRowsProps) => {
       />
     ))
   ) : (
-    <Alert variant="default">
+    <Alert variant="default" className='mt-4'>
       <AlertCircleIcon />
       <AlertTitle>Không có tài khoản Brand nào</AlertTitle>
     </Alert>

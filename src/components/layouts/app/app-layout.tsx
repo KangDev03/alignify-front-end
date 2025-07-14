@@ -29,7 +29,7 @@ function AppLayout() {
     dispatch(logout());
     navigate('/auth/login');
   }, [dispatch, navigate]);
-  const { id: userId, token } = useAppSelector((state: RootState) => state.auth);
+  const { id: userId, token, role: roleName } = useAppSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (!token || !userId) return;
@@ -41,9 +41,9 @@ function AppLayout() {
           if (received && received.userId && received.userId === userId) {
             toast.warning(
               'Tài khoản của bạn đã bị khóa vào lúc: ' +
-                formatTime(parseIsoToDateTime(received.createdAt)) +
-                ' ' +
-                formatDate(parseIsoToDateTime(received.createdAt)),
+              formatTime(parseIsoToDateTime(received.createdAt)) +
+              ' ' +
+              formatDate(parseIsoToDateTime(received.createdAt)),
             );
             handleLogout();
           }
@@ -89,16 +89,19 @@ function AppLayout() {
     }
   }, [token, userId]);
 
-  const backgroundImage =
-    theme === 'dark' ||
-    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      ? '/background-dark.png'
-      : '/background-light.png';
+  let backgroundImage: string | undefined = undefined;
+  if (roleName !== 'ADMIN') {
+    backgroundImage =
+      theme === 'dark' ||
+        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        ? '/background-dark.png'
+        : '/background-light.png';
+  }
 
   return (
     <div
       className="flex min-h-screen flex-col bg-cover bg-no-repeat bg-fixed"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
+      style={backgroundImage ? { backgroundImage: `url(${backgroundImage})` } : {}}
     >
       <AppHeader onLogout={handleLogout} />
       <main

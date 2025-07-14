@@ -21,6 +21,7 @@ export interface InvitationResponse extends ApiReponseSuccess<Invitation[]> {
 }
 
 export interface ConfirmInvitationsRequest {
+  campaignId: string;
   invitationId: string;
   accepted: boolean;
 }

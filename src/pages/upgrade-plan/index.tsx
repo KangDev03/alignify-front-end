@@ -10,7 +10,6 @@ import {
   Headphones,
   Shield,
   Sparkles,
-  Star,
   TrendingUp,
   X,
   Zap,
@@ -191,7 +190,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
       {/* Plans Grid */}
       <div className="grid md:grid-cols-3 gap-8 mb-12">
         {plans.map((plan) => (
-          <Card
+          <PlanCard
             key={plan.id}
             className={`relative transition-all duration-300 hover:shadow-lg ${
               plan.popular ? 'ring-2 ring-primary shadow-lg scale-105' : ''

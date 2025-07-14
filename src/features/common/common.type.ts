@@ -140,6 +140,7 @@ export interface Campaign {
   joinedInfluencerIds: string[];
   applicationTotal: number | 0;
   appliedInfluencerIds?: string[];
+  invitedInfluencerIds?: string[];
 }
 
 export interface CommonPageableRequest {
