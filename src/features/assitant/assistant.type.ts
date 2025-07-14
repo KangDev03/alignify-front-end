@@ -7,7 +7,7 @@ export interface AssistantRequest {
 export interface CampaignRecommendation {
   campaignId: string;
   brandName: string;
-  brandAvartar: string;
+  brandAvatar: string;
   campaignName: string;
   imageUrl: string;
   categoryName: string[];
