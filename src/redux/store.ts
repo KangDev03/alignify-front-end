@@ -2,12 +2,15 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
+import { usersSlice } from '@/features/admin/admin.slice';
 import applicantReducer from '@/features/applicants/applicant.slice';
 import authReducer from '@/features/auth/auth.slice';
 import commonReducer from '@/features/common/common.slice';
 import { homeReducer, refetchReducer } from '@/features/home/home.slice';
+import { invitationSlice } from '@/features/invitation/invitation.slice';
 import { campaignSlice } from '@/features/my-campaign/campaign.slice';
 import { notificationSlice } from '@/features/notification/notification.slice';
+import { profileSlice } from '@/features/profile/profile.slice';
 
 import { baseApi } from './baseApi';
 
@@ -29,6 +32,9 @@ export const store = configureStore({
     home: homeReducer,
     notification: notificationSlice.reducer,
     campaign: campaignSlice.reducer,
+    profile: profileSlice.reducer,
+    usersManagment: usersSlice.reducer,
+    invitation: invitationSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -21,8 +21,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
+import { Icons } from '@/components/icons/icons';
 import { type SignInFormValues, signInSchema } from '@/features/auth/auth.schema';
 import { useAppDispatch } from '@/hooks/redux';
+import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
 
@@ -46,20 +48,16 @@ export default function SignInForm() {
   async function onSubmit(values: { email: string; password: string }) {
     try {
       const response = await login(values).unwrap();
-
       dispatch(setCredentials(response));
       navigate('/home');
-    } catch (err) {
-      console.error('Failed to login:', err);
-
-      if (typeof err === 'object' && err !== null && 'status' in err) {
-        const status = (err as { status?: any }).status;
-        if (status === 500) {
-          toast.error('Không thể kết nối đến server. Vui lòng thử lại sau!');
-        } else if (status === 401) {
-          toast.error('Email hoặc mật khẩu không chính xác!');
-        }
-      }
+      toast.success('Đăng nhập thành công!');
+    } catch (err: unknown) {
+      if (isApiResponseError(err)) {
+        if (err.data.status === 404) toast.error('Email không tồn tại!');
+        else if (err.data.status === 401) toast.error('Mật khẩu không chính xác');
+        else if (err.data.status === 403) toast.error('Tài khoản của bạn đã bị cấm!');
+        else toast.error('Đăng nhập thất bại!');
+      } else toast.error('Đăng nhập thất bại!');
     }
   }
 
@@ -72,8 +70,14 @@ export default function SignInForm() {
         const response = await loginViaGoogle({ code }).unwrap();
         dispatch(setCredentials(response));
         navigate('/home');
-      } catch (error) {
-        console.error('Server error:', error);
+        toast.success('Đăng nhập thành công!');
+      } catch (err: unknown) {
+        if (isApiResponseError(err)) {
+          if (Number(err.data.status === 404)) toast.error('Email không tồn tại!');
+          else if (Number(err.data.status) === 401) toast.error('Mật khẩu không chính xác!');
+          else if (err.data.status === 403) toast.error('Tài khoản của bạn đã bị cấm!');
+          else toast.error('Đăng nhập với Google thất bại!');
+        } else toast.error('Đăng nhập với Google thất bại!');
       }
     },
     onError: () => {
@@ -139,7 +143,12 @@ export default function SignInForm() {
               className="w-full bg-primary hover:bg-primary/90"
               disabled={isLoading}
             >
-              {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+              {isLoading ?
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang đăng nhập...
+                </>
+                : 'Đăng nhập'}
             </Button>
           </form>
         </Form>

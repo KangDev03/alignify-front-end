@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon';
 
+import type { ApiResponseError } from '@/features/common/common.type';
+
 export const parseIsoToDateTime = (isoString: string): DateTime => {
   return DateTime.fromISO(isoString, { setZone: true }).setZone('Asia/Ho_Chi_Minh');
 };
@@ -91,4 +93,26 @@ export const formatCommonLastTime = (date: string | DateTime | Date): string => 
   } else {
     return `${dt.toFormat('dd/MM/yyyy')}`;
   }
+};
+
+export const isApiResponseError = (err: unknown): err is ApiResponseError => {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'status' in err &&
+    'data' in err &&
+    typeof err.data === 'object' &&
+    err.data !== null &&
+    'status' in err.data &&
+    'error' in err.data &&
+    'timestamp' in err.data &&
+    'path' in err.data
+  );
+};
+
+export const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount);
 };

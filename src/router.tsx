@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router';
 
 import AppLayout from '@/components/layouts/app/app-layout';
+import { RequireAuth } from '@/features/auth/components/require-auth';
 import AdminPage from '@/pages/admin';
 import { Applicants } from '@/pages/applicants';
 import { ApplicationsPage } from '@/pages/applications';
@@ -12,6 +13,7 @@ import VerifyOtpPage from '@/pages/auth/verify-otp';
 import { CampaignManagement } from '@/pages/campaign-management';
 import { HomePage } from '@/pages/home';
 import Invitation from '@/pages/invitation';
+import { LandingPage } from '@/pages/landing-page';
 import { BrandProfilePage } from '@/pages/profile/brand-profile';
 import InfluencerProfilePage from '@/pages/profile/influencer-profile';
 import { Settings } from '@/pages/setting';
@@ -30,6 +32,9 @@ function Router() {
     <>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/landing-page" element={<LandingPage onGetStarted={() => {
+          console.log('Get Started clicked!');
+        }} />} />
         <Route path="/auth">
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
@@ -38,7 +43,11 @@ function Router() {
           <Route path="select-role" element={<SelectRolePage />} />
           <Route path="verify-otp" element={<VerifyOtpPage />} />
         </Route>
-        <Route element={<AppLayout />}>
+        <Route element={
+          <RequireAuth>
+            <AppLayout />
+          </RequireAuth>
+        }>
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/settings" element={<Settings />} />
@@ -60,6 +69,7 @@ function Router() {
           {roleName === 'BRAND' && <Route path="/user-profile" element={<BrandProfilePage />} />}
           <Route path="/influencer/:userId" element={<InfluencerProfilePage />} />
           <Route path="/brand/:userId" element={<BrandProfilePage />} />
+          {roleName === 'ADMIN' && <Route path="/dashboard" element={<AdminPage />} />}
         </Route>
         <Route path="/admin" element={<AdminPage />} />
       </Routes>

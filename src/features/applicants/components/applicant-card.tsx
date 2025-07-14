@@ -11,6 +11,7 @@ import type { Campaign } from '@/features/common/common.type';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import type { RootState } from '@/redux/store';
+import { formatNumber } from '@/utils/format';
 
 import { useConfirmApplicationMutation } from '../applicant.service';
 import { setConfirmApplicant } from '../applicant.slice';
@@ -23,7 +24,6 @@ export function ApplicantCard({
   applicant: ApplicantByBrand;
   status: 'waiting' | 'accepted' | 'rejected';
 }) {
-  console.log(applicant);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [confirmApplicant, { isLoading }] = useConfirmApplicationMutation();
@@ -80,10 +80,12 @@ export function ApplicantCard({
         </Avatar>
         <div>
           <p className="font-medium">{applicant.influencerName}</p>
-          <p className="text-sm text-muted-foreground">{applicant.follower} followers</p>
+          <p className="text-sm text-muted-foreground">
+            {formatNumber(applicant.follower ?? 0)} người theo dõi
+          </p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-            <div className="flex items-center">
-              <Star className="h-3 w-3 text-yellow-500 mr-1" />
+            <div className="flex items-center font-semibold">
+              <Star className="h-3 w-3 text-yellow-400 mr-1 fill-yellow-400" />
               {applicant.rating}
             </div>
           </div>
@@ -103,11 +105,21 @@ export function ApplicantCard({
             </Button>
             <Button onClick={() => handleConfirmApplicant(true)} size="sm" variant="default">
               <Check className="h-4 w-4 mr-1" />
-              Chấp nhận {isLoading && <span className="animate-pulse">...</span>}
+              Chấp nhận {isLoading &&
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang xử lý...
+                </>
+              }
             </Button>
             <Button onClick={() => handleConfirmApplicant(false)} size="sm" variant="destructive">
               <X className="h-4 w-4 mr-1" />
-              Từ chối {isLoading && <span className="animate-pulse">...</span>}
+              Từ chối {isLoading &&
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang xử lý...
+                </>
+              }
             </Button>
           </>
         )}

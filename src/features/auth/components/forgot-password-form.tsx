@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import { baseUrl } from '@/config';
+import { Icons } from '@/components/icons/icons';
 import { useForgotPasswordMutation } from '@/features/auth/auth.service';
 
 export default function ForgotPasswordForm() {
@@ -23,21 +23,21 @@ export default function ForgotPasswordForm() {
 
   const [forgotPassword, { isLoading, error }] = useForgotPasswordMutation();
 
-  const getEmailProviderLink = (email: string) => {
-    if (email.includes('@gmail.com')) return 'https://mail.google.com/mail/u/0/#inbox';
-    if (email.includes('@outlook.com') || email.includes('@hotmail.com'))
-      return 'https://outlook.live.com/mail/inbox';
-    if (email.includes('@yahoo.com')) return 'https://mail.yahoo.com/d/folders/1';
-    return 'https://www.google.com'; // fallback
-  };
+  // const getEmailProviderLink = (email: string) => {
+  //   if (email.includes('@gmail.com')) return 'https://mail.google.com/mail/u/0/#inbox';
+  //   if (email.includes('@outlook.com') || email.includes('@hotmail.com'))
+  //     return 'https://outlook.live.com/mail/inbox';
+  //   if (email.includes('@yahoo.com')) return 'https://mail.yahoo.com/d/folders/1';
+  //   return 'https://www.google.com'; // fallback
+  // };
 
   const handleSubmit = async (email: string) => {
     try {
-      // const baseUrl = window.location.origin;
-      const resetUrl = `${baseUrl}auth/reset-password`;
+      const baseUrl = window.location.origin;
+      const resetUrl = `${baseUrl}/auth/reset-password`;
 
-      const response = await forgotPassword({ email, url: resetUrl }).unwrap();
-      toast.success(response.message);
+      await forgotPassword({ email, url: resetUrl }).unwrap();
+      toast.success('Gửi xác thực thành công!');
       setSubmitted(true);
     } catch (err: any) {
       console.error('Lỗi khi gửi email:', err);
@@ -48,7 +48,7 @@ export default function ForgotPasswordForm() {
     <Card className="w-full max-w-md border-2 border-primary/20 bg-card shadow-lg">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl font-bold text-primary">Quên mật khẩu</CardTitle>
-        <CardDescription>Nhập email của bạn để nhận mã xác nhận</CardDescription>
+        <CardDescription>Nhập email của bạn để gửi yêu cầu xác thực</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -77,21 +77,28 @@ export default function ForgotPasswordForm() {
             type="submit"
             disabled={isLoading || submitted}
           >
-            {isLoading ? 'Đang gửi...' : submitted ? 'Email đã được gửi' : 'Gửi email xác nhận'}
+            {isLoading ?
+              <>
+                <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang gửi...
+              </>
+              : submitted ? 'Email đã được gửi' : 'Gửi email xác nhận'}
           </Button>
 
           {submitted && (
-            <div className="text-sm text-primary text-center mt-2">
-              Email khôi phục đã được gửi,&nbsp;
-              <a
+            <div className="text-sm text-center flex items-center justify-center font-semibold">
+              <p className="text-muted-foreground">Chưa nhận được yêu cầu xác thực?</p>
+              <Button variant="link" type="submit">
+                Gửi lại
+              </Button>
+              {/* <a
                 href={getEmailProviderLink(email)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline hover:text-primary/80"
+                className="hover:text-primary/80"
               >
-                truy cập email
-              </a>
-              .
+                Yêu cầ xác thực đã được gửi
+              </a> */}
             </div>
           )}
 

@@ -12,7 +12,6 @@ import {
   type RequestOTPResponse,
   type ResetPasswordRequest,
   type ResetPasswordResponse,
-  type RolesResponse,
   type VerifyOTPRequest,
   type VerifyOTPResponse,
 } from './auth.type';
@@ -26,13 +25,6 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
       invalidatesTags: ['Auth'],
-    }),
-
-    getRoles: builder.query<RolesResponse, void>({
-      query: () => ({
-        url: '/roles',
-        method: 'GET',
-      }),
     }),
 
     register: builder.mutation<RegisterResponse, RegisterRequest>({
@@ -117,13 +109,11 @@ export const authApi = baseApi.injectEndpoints({
   }),
 });
 
-// Export các hooks để sử dụng trong components
 export const {
   useLoginMutation,
   useLogoutMutation,
   useRefreshTokenMutation,
   useGetProfileQuery,
-  useGetRolesQuery,
   useRegisterMutation,
   useRequestOTPMutation,
   useVerifyOTPMutation,

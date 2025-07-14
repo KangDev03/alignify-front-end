@@ -23,10 +23,9 @@ import Brands from '@/features/home/components/brands';
 import Campaigns from '@/features/home/components/campaigns';
 import Forum from '@/features/home/components/forum';
 import Influencers from '@/features/home/components/influencers';
+import { useGetCampaignTop3Query, useGetTopInfluencerQuery } from '@/features/home/home.service';
 import { resetHomeState, setRefetch } from '@/features/home/home.slice';
 import type { homeTab } from '@/features/home/home.type';
-import { useGetCampaignTop3Query } from '@/features/my-campaign/campaign.service';
-import { useGetTopInfluencerQuery } from '@/features/profile/profile.service';
 import { useAppDispatch } from '@/hooks/redux';
 import { formatNumber } from '@/utils/format';
 
@@ -49,6 +48,7 @@ export function HomePage() {
     categoryId: 'all',
     categoryName: 'Tất Cả',
   });
+
   const [activeTab, setActiveTab] = useState<homeTab>('campaign');
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export function HomePage() {
                   if (value === 'all') {
                     setSelectedCategory({ categoryId: 'all', categoryName: 'Tất Cả' });
                   } else {
-                    const found = categories?.data.find((cat) => cat.categoryId === value);
+                    const found = categories?.data!.find((cat) => cat.categoryId === value);
                     if (found) setSelectedCategory(found);
                   }
                 }}
@@ -125,7 +125,7 @@ export function HomePage() {
                   <SelectItem value="all" className="capitalize">
                     Tất Cả
                   </SelectItem>
-                  {categories?.data.map((category) => (
+                  {categories?.data!.map((category) => (
                     <SelectItem
                       key={category.categoryId}
                       value={category.categoryId}
@@ -192,7 +192,9 @@ export function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {top3Campaign?.data && Array.isArray(top3Campaign?.data) && top3Campaign.data.length > 0 ? (
+                {top3Campaign?.data &&
+                Array.isArray(top3Campaign?.data) &&
+                top3Campaign.data.length > 0 ? (
                   top3Campaign.data.map((campaign) => (
                     <div
                       key={campaign.campaignId}

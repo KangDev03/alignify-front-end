@@ -22,6 +22,7 @@ import {
   useApplyCampaignMutation,
   useChangeStatusMutation,
 } from '@/features/my-campaign/campaign.service.ts';
+import CampaignPopUp from '@/features/posting/components/popUp-campaign.tsx';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
 import { useSendNotification } from '@/hooks/useSendNotification.ts';
 import type { RootState } from '@/redux/store.ts';
@@ -37,7 +38,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
-  const userRole: RoleName = role;
+  const userRole: RoleName = role!;
   const sendNotification = useSendNotification();
   const isApplied = campaign.appliedInfluencerIds?.includes(id!);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
@@ -212,6 +213,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 </DialogHeader>
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
+              <CampaignPopUp campaignData={campaign} />
             </Dialog>
 
             <Button variant="default" size="sm" className="flex-1" onClick={handleStartRecruit}>
@@ -273,12 +275,17 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 onClick={handleApplyCampaign}
                 disabled={isApplying || isApplied}
               >
-                {isApplying ? 'Đang ứng tuyển...' : isApplied ? 'Đã ứng tuyển' : 'Ứng tuyển'}
+                {isApplying ?
+                  <>
+                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang đăng nhập...
+                  </>
+                  : isApplied ? 'Đã ứng tuyển' : 'Ứng tuyển'}
               </Button>
             </div>
           );
         }
-        return (
+        return userRole === 'BRAND' ? (
           <div className="w-full grid grid-cols-2 gap-2">
             <Dialog>
               <DialogTrigger asChild>
@@ -332,6 +339,29 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               Kết thúc tuyển
             </Button>
           </div>
+        ) : (
+          userRole == 'INFLUENCER' && (
+            <Dialog {...commonProps}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center w-full">
+                  <Icons.eye className="h-4 w-full" />
+                  Xem chi tiết
+                </Button>
+              </DialogTrigger>
+              <DialogContent
+                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
+                showCloseButton={false}
+              >
+                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+                  <DialogTitle className="font-semibold text-xl text-center">
+                    Chiến dịch của {campaign.brandName}
+                  </DialogTitle>
+                  <DialogDescription className="hidden"></DialogDescription>
+                </DialogHeader>
+                <CampaignDetail key={campaign.campaignId} campaign={campaign} />
+              </DialogContent>
+            </Dialog>
+          )
         );
       case 'PENDING':
         return userRole === 'BRAND' ? (

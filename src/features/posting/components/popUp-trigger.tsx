@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { Icons } from '@/components/icons/icons';
-import { useGetCategoriesQuery } from '@/features/common/common.service';
 import type { RoleName } from '@/features/common/common.type';
 import { useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
@@ -13,9 +12,7 @@ import ContentPopUp from './popUp-content';
 
 export default function PopUpTrigger() {
   const { role } = useAppSelector((state: RootState) => state.auth);
-  const { data: rawData } = useGetCategoriesQuery();
-  const categories = rawData?.data;
-  const userRole: RoleName = role;
+  const userRole: RoleName = role!;
 
   return (
     userRole !== 'ADMIN' && (
@@ -51,8 +48,8 @@ export default function PopUpTrigger() {
             </Tooltip>
           )}
         </DialogTrigger>
-        {userRole === 'INFLUENCER' && <ContentPopUp categories={categories!} />}
-        {userRole === 'BRAND' && <CampaignPopUp categories={categories!} />}
+        {userRole === 'INFLUENCER' && <ContentPopUp />}
+        {userRole === 'BRAND' && <CampaignPopUp />}
       </Dialog>
     )
   );

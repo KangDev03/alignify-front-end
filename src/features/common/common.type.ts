@@ -1,18 +1,25 @@
-export type RoleName = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
+import type { Permission } from '../admin/admin.type';
+
+export type RoleName = 'INFLUENCER' | 'BRAND' | 'ADMIN';
 
 export interface ApiReponseSuccess<T> {
   status: number | string;
   message: string;
   data: T | null;
   timestamp: Date;
-  path?: string;
+  path: string;
 }
 
-export interface ApiReponseError {
+export interface ErrorData {
   status: number | string;
   error: string;
   timestamp: Date;
-  path?: string;
+  path: string;
+}
+
+export interface ApiResponseError {
+  status: number | string;
+  data: ErrorData;
 }
 
 export interface PageableResponse<T> {
@@ -73,14 +80,18 @@ export interface PageableResponse<T> {
 //   empty: boolean;
 // }
 
+export interface User {
+  userId: string;
+  name: string;
+  email: string;
+}
+
 export interface Category {
   categoryId: string;
   categoryName: string;
 }
 
-export interface CategoriesResponse extends ApiReponseSuccess<Category[]> {
-  data: Category[];
-}
+export type CategoriesResponse = ApiReponseSuccess<Category[]>;
 
 export interface SearchCampaignsResponse {
   campaigns: Campaign[];
@@ -94,9 +105,7 @@ export interface Role {
   roleName: RoleName;
 }
 
-export interface RolesResponse extends ApiReponseSuccess<Role[]> {
-  data: Role[];
-}
+export type RolesResponse = ApiReponseSuccess<Role[]>;
 
 export interface Campaign {
   campaignId: string;
@@ -128,9 +137,10 @@ export interface Campaign {
     followers: number;
   }[];
   influencerCountExpected: number;
-  influencerCountCurrent: number | 0;
+  joinedInfluencerIds: string[];
   applicationTotal: number | 0;
   appliedInfluencerIds?: string[];
+  invitedInfluencerIds?: string[];
 }
 
 export interface CommonPageableRequest {
@@ -142,7 +152,9 @@ export interface CommonPageableRequest {
 export interface UserDTO {
   userId: string;
   name: string;
-  avatarUrl: string | null;
+  avatarUrl?: string;
+  createdAt?: string;
+  permissions?: Permission[];
 }
 
 export const SupportedPlatforms: ISupportedPlatforms[] = [

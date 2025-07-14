@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
+import { Icons } from '@/components/icons/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { type ChangepasswordFormValues, changepasswordSchema } from '../setting.schema';
@@ -161,7 +162,12 @@ export default function SecuritySection() {
 
               <Button className="w-full" disabled={isLoading === true}>
                 <Key className="h-4 w-4 mr-2" />
-                {isLoading ? 'Đang cập nhật mật khẩu' : 'Cập nhật mật khẩu'}
+                {isLoading ?
+                  <>
+                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang cập nhật mật khẩu...
+                  </>
+                  : 'Cập nhật mật khẩu'}
               </Button>
             </form>
           </Form>

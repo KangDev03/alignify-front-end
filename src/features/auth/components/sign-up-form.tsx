@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
+import { Icons } from '@/components/icons/icons';
 import { type SignUpFormValues, signUpSchema } from '@/features/auth/auth.schema';
 import { useRequestOTPMutation } from '@/features/auth/auth.service';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -160,7 +161,12 @@ export default function SignUpForm() {
           <CardContent className="space-y-4">
             {renderFormFields()}
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Đang xử lý...' : 'Đăng ký'}
+              {isLoading ?
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang xử lý...
+                </>
+                : 'Đăng ký'}
             </Button>
           </CardContent>
 

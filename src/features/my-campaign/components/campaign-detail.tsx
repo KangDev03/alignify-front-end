@@ -172,7 +172,15 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
             <Icons.circleAlert size={14} />
             <p className="text-sm">Lượt theo dõi</p>
           </div>
-          <div className="flex justify-around items-start py-1">
+          <div
+            className={cn(
+              'flex items-start py-1',
+              Array.isArray(campaign.influencerRequirements) &&
+                campaign.influencerRequirements.length == 1
+                ? 'w-1/3 justify-center'
+                : 'justify-around',
+            )}
+          >
             {Array.isArray(campaign.influencerRequirements) &&
               campaign.influencerRequirements.map((require, idx) => {
                 let bg = '';
@@ -219,7 +227,14 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
 
         <div className="flex flex-col gap-2">
           <p className="font-semibold">Yêu cầu về các bài đăng trên các nền tảng</p>
-          <div className="flex justify-around items-start flex-wrap">
+          <div
+            className={cn(
+              'flex items-start flex-wrap',
+              orderedCampaignRequirements && orderedCampaignRequirements.length == 1
+                ? 'justify-start'
+                : 'justify-around',
+            )}
+          >
             {orderedCampaignRequirements.map((require) => {
               let color = '';
               const platform = require.platform.toLowerCase();
@@ -380,7 +395,14 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
                           )}
                           {require.details[selectedIndex].comment > 0 && (
                             <div className="flex items-center gap-1">
-                              <Icons.messageCircle size={14} className="text-blue-500 p-0" />
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <Icons.messageCircle size={14} className="text-blue-500 p-0" />
+                                </TooltipTrigger>
+                                <TooltipContent side="bottom" className="rounded-full text-xs py-1">
+                                  <p>Lượt bình luận</p>
+                                </TooltipContent>
+                              </Tooltip>
                               <p>{require.details[selectedIndex].comment}</p>
                             </div>
                           )}

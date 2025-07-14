@@ -1,4 +1,4 @@
-import type { ApiReponseError, ApiReponseSuccess, RoleName, UserDTO } from '../common/common.type';
+import type { ApiReponseSuccess, RoleName, UserDTO } from '../common/common.type';
 
 export interface LoginRequest {
   email: string;
@@ -15,11 +15,8 @@ interface ILoginReponse {
   user: UserDTO;
 }
 
-export interface LoginResponse extends ApiReponseSuccess<ILoginReponse> {
-  data: ILoginReponse;
-}
+export type LoginResponse = ApiReponseSuccess<ILoginReponse>;
 
-export type ApiError = ApiReponseError;
 export interface Role {
   roleId: string;
   roleName: RoleName;
@@ -61,7 +58,7 @@ export type ForgotPasswordResponse = ApiReponseSuccess<null>;
 
 export type ResetPasswordRequest = {
   password: string;
-  passwordConfirm: string; 
+  passwordConfirm: string;
   token: string;
 };
 
@@ -69,3 +66,9 @@ export type ResetPasswordResponse = {
   success: boolean;
   message: string;
 };
+
+export interface UserBan {
+  userId: string;
+  reasonId: string;
+  createdAt: string;
+}

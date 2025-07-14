@@ -1,7 +1,6 @@
 'use client';
 
 import type * as React from 'react';
-import { useNavigate } from 'react-router';
 import { BarChart3, CreditCard, Flag, Home, Megaphone, MessageSquare, Users } from 'lucide-react';
 
 import { Separator } from '@/components/ui/separator';
@@ -11,24 +10,16 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarRail,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 
-import { UserDropdown } from '@/components/layouts/app/user-dropdown';
-import { ThemeToggle } from '@/components/theme/theme-toggle';
-import { logout } from '@/features/auth/auth.slice';
-import { useAppDispatch } from '@/hooks/redux';
-import { baseApi } from '@/redux/baseApi';
-
 type AdminPage =
-  | 'dashboard'
+  | 'focus'
   | 'users'
   | 'campaigns'
   | 'forum-posts'
@@ -96,36 +87,13 @@ const navigationItems = [
 ];
 
 export function AdminLayout({ children, currentPage, onPageChange }: AdminLayoutProps) {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-
-  const handleLogout = () => {
-    dispatch(baseApi.util.resetApiState());
-    dispatch(logout());
-    navigate('/auth/login');
-  };
-
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <div className="flex items-center gap-2">
-                <img src="/Alignify_logo.png" alt="Alignify logo" className="h-12 object-contain" />
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Admin Panel</span>
-                  <span className="truncate text-xs">Alignify</span>
-                </div>
-              </div>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
-
+    <SidebarProvider className="gap-0">
+      <Sidebar className="m-0 p-0 pt-16" variant="inset" collapsible="icon">
         <SidebarContent>
           {navigationItems.map((group) => (
             <SidebarGroup key={group.title}>
-              <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+              <SidebarGroupLabel className="w-fit">{group.title}</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {group.items.map((item) => (
@@ -134,12 +102,12 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
                         asChild
                         isActive={currentPage === item.url}
                         onClick={() => onPageChange(item.url as AdminPage)}
-                        className="cursor-pointer transition-all duration-200"
+                        className="cursor-pointer transition-all duration-200 font-semibold"
                       >
-                        <button className="w-full">
+                        <div>
                           <item.icon />
                           <span>{item.title}</span>
-                        </button>
+                        </div>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
@@ -148,10 +116,9 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
             </SidebarGroup>
           ))}
         </SidebarContent>
-        <SidebarRail />
       </Sidebar>
 
-      <SidebarInset>
+      <SidebarInset className="mt-0 md:peer-data-[variant=inset]:m-4 md:peer-data-[variant=inset]:ml-2">
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
@@ -162,8 +129,6 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
                 .find((item) => item.url === currentPage)?.title || 'Dashboard'}
             </h1>
           </div>
-          <ThemeToggle />
-          <UserDropdown onLogout={handleLogout} />
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>

@@ -5,11 +5,13 @@ import { AlertCircleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { Icons } from '@/components/icons/icons';
+import type { Category } from '@/features/common/common.type';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
@@ -206,11 +208,20 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
                         />
                         <AvatarFallback>{brand.name.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <div className="flex-1">
+                      <div className="flex-1 flex flex-col gap-1">
                         <div className="flex items-center space-x-2">
                           <h3 className="font-semibold">{brand.name}</h3>
                         </div>
                         <p className="text-sm text-muted-foreground">{brand.bio}</p>
+                        {brand?.category && (
+                          <div className="flex gap-1 text-sm text-muted-foreground capitalize">
+                            {brand?.category.map((cat: Category, i) => (
+                              <Badge key={cat.categoryId ?? i} variant="outline">
+                                {cat.categoryName ?? cat}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                         <div className="flex items-center space-x-4 mt-2 text-sm">
                           <div className="flex items-center space-x-1">
                             <Icons.building2 className="h-4 w-4" />
