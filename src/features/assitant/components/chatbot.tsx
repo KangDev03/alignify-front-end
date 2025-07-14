@@ -87,7 +87,7 @@ export default function ChatBot() {
           const input: AssistantRequest = {
             question: message,
           };
-          const newAssistMessagge: AssistantMessage = {
+          const newAssistMessage: AssistantMessage = {
             roomId: userId!,
             content: message,
             createdAt: DateTime.now().setZone('Asia/Ho_Chi_Minh').toISO()!,
