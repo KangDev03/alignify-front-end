@@ -78,7 +78,7 @@ export default function ChatBot() {
     return () => {
       if (subMsg) subMsg.unsubscribe();
     };
-  }, [userId, token, messages]);
+  }, [userId, token]);
   const sendMessage = () => {
     if (message.trim() && token && userId) {
       getStompClient(token).then((client) => {
