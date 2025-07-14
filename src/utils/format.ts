@@ -139,6 +139,6 @@ export const formatPlanPermissionName = (regex: string) => {
     case 'campaign_apply':
       return 'Số chiến dịch được ứng tuyển';
     default:
-      break;
+      return regex;
   }
 };
