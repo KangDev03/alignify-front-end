@@ -1,5 +1,5 @@
 // export const host = 'https://alignify-backend.onrender.com';
 export const host = 'http://localhost:8080';
 
-export const version_controller = 'api/v1';
-export const baseUrl = `${host}/${version_controller}/`;
+export const api_version = 'api/v1';
+export const baseUrl = `${host}/${api_version}/`;
