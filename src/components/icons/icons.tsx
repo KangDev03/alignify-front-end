@@ -5,6 +5,7 @@ import {
   Ban,
   BarChart3,
   Bell,
+  Bot,
   Building,
   Building2,
   Calendar,
@@ -47,6 +48,7 @@ import {
   Play,
   Plus,
   RefreshCcw,
+  RefreshCw,
   Save,
   Search,
   SendHorizontal,
@@ -139,5 +141,7 @@ export const Icons = {
   userRoundX: UserRoundX,
   target: Target,
   shield: Shield,
+  bot: Bot,
   loader2: Loader2,
+  refreshCw: RefreshCw,
 };

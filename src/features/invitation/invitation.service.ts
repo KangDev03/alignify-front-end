@@ -2,8 +2,10 @@ import { baseApi } from '@/redux/baseApi';
 
 import type {
   ConfirmInvitationsRequest,
+  InfluencersAssistantRequest,
   InvitationResponse,
   InvitationsRequest,
+  RecommendInfluencersAssistantResponse,
 } from './invitation.type';
 import type { CampaignResponse } from '../my-campaign/campaign.type';
 
@@ -14,6 +16,21 @@ export const invitationApi = baseApi.injectEndpoints({
         url: '/campaigns/recruiting',
         method: 'GET',
       }),
+    }),
+    getInfluencersForInvitation: builder.query<
+      RecommendInfluencersAssistantResponse,
+      InfluencersAssistantRequest
+    >({
+      query: (data) => ({
+        url: data.assistant
+          ? `/assistant/campaigns/${data.campaignId}/influencers`
+          : '/campaigns/invitations/influencers',
+        method: 'GET',
+        params: data.assistant
+          ? undefined
+          : { pageSize: data.pageSize, pageNumber: data.pageNumber },
+      }),
+      providesTags: ['Home'],
     }),
     sendInvitations: builder.mutation<void, InvitationsRequest>({
       query: (data) => ({
@@ -35,6 +52,15 @@ export const invitationApi = baseApi.injectEndpoints({
         params: { accepted: data.accepted },
       }),
     }),
+    getRecommendInfluencers: builder.query<
+      RecommendInfluencersAssistantResponse,
+      { campaignId: string }
+    >({
+      query: (data) => ({
+        url: `/assistant/campaigns/${data.campaignId}/influencers`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -43,4 +69,5 @@ export const {
   useSendInvitationsMutation,
   useGetAllInvitationsQuery,
   useConfirmInvitationMutation,
+  useGetInfluencersForInvitationQuery,
 } = invitationApi;
