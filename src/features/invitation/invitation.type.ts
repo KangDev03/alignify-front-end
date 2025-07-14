@@ -31,7 +31,6 @@ export interface RecommendInfluencer {
   userId: string;
   name: string;
   avatarUrl: string;
-  DoB: string;
   gender: string;
   socialMediaLinks?: SocialMedia[];
   rating: number;
@@ -42,4 +41,11 @@ export interface RecommendInfluencer {
 export interface RecommendInfluencersAssistantResponse
   extends ApiReponseSuccess<RecommendInfluencer[]> {
   data: RecommendInfluencer[];
+}
+
+export interface InfluencersAssistantRequest {
+  campaignId?: string;
+  pageNumber?: number | 0;
+  pageSize?: number | 10;
+  assistant: boolean;
 }

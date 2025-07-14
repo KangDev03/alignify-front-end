@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { Icons } from '@/components/icons/icons';
 import { getStompClient } from '@/lib/stom-client';
@@ -212,12 +213,12 @@ export default function ChatBot() {
               ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="rounded-lg border bg-background shadow-sm p-3 max-w-[80%] animate-pulse flex items-center gap-2">
+                <Skeleton className="rounded-lg border bg-background shadow-sm p-3 max-w-[80%] flex items-center gap-2">
                   <Icons.bot className="size-5 text-primary" />
                   <span className="text-primary text-sm">
                     {isThinking ? 'Đang suy nghĩ ...' : 'Đang tải ...'}
                   </span>
-                </div>
+                </Skeleton>
               </div>
             )}
             <div ref={currentMessageRef} />

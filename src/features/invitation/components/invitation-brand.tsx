@@ -53,7 +53,7 @@ export default function BrandInvitations() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {Math.ceil(getInvitationsCountByStatus('ACCEPTED') / invitations.length) * 100}%
+              {Math.ceil(getInvitationsCountByStatus('ACCEPTED') ?? 0 / invitations.length) * 100}%
             </div>
           </CardContent>
         </Card>

@@ -48,6 +48,7 @@ import {
   Play,
   Plus,
   RefreshCcw,
+  RefreshCw,
   Save,
   Search,
   SendHorizontal,
@@ -142,4 +143,5 @@ export const Icons = {
   shield: Shield,
   bot: Bot,
   loader2: Loader2,
+  refreshCw: RefreshCw,
 };

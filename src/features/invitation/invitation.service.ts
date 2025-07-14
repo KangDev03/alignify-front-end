@@ -2,6 +2,7 @@ import { baseApi } from '@/redux/baseApi';
 
 import type {
   ConfirmInvitationsRequest,
+  InfluencersAssistantRequest,
   InvitationResponse,
   InvitationsRequest,
   RecommendInfluencersAssistantResponse,
@@ -15,6 +16,21 @@ export const invitationApi = baseApi.injectEndpoints({
         url: '/campaigns/recruiting',
         method: 'GET',
       }),
+    }),
+    getInfluencersForInvitation: builder.query<
+      RecommendInfluencersAssistantResponse,
+      InfluencersAssistantRequest
+    >({
+      query: (data) => ({
+        url: data.assistant
+          ? `/assistant/campaigns/${data.campaignId}/influencers`
+          : '/campaigns/invitations/influencers',
+        method: 'GET',
+        params: data.assistant
+          ? undefined
+          : { pageSize: data.pageSize, pageNumber: data.pageNumber },
+      }),
+      providesTags: ['Home'],
     }),
     sendInvitations: builder.mutation<void, InvitationsRequest>({
       query: (data) => ({
@@ -53,4 +69,5 @@ export const {
   useSendInvitationsMutation,
   useGetAllInvitationsQuery,
   useConfirmInvitationMutation,
+  useGetInfluencersForInvitationQuery,
 } = invitationApi;
