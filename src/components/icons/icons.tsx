@@ -5,6 +5,7 @@ import {
   Ban,
   BarChart3,
   Bell,
+  Bot,
   Building,
   Building2,
   Calendar,
@@ -66,7 +67,7 @@ import {
   Users,
   X,
   Youtube,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 export const Icons = {
@@ -138,4 +139,5 @@ export const Icons = {
   userRoundX: UserRoundX,
   target: Target,
   shield: Shield,
+  bot: Bot,
 };

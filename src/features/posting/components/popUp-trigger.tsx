@@ -17,7 +17,7 @@ export default function PopUpTrigger() {
   return (
     userRole !== 'ADMIN' && (
       <Dialog>
-        <DialogTrigger className="fixed bottom-6 right-10 cursor-pointer">
+        <DialogTrigger className="fixed bottom-24 right-8 cursor-pointer">
           {userRole === 'INFLUENCER' ? (
             <Tooltip delayDuration={500}>
               <TooltipTrigger>
