@@ -22,7 +22,7 @@ interface Permission {
 }
 
 interface PlanPermission {
-  planPermissionId: string;
+  planPermissionId?: string;
   roleId: string;
   planPermissionName: string;
   limited: number | undefined;
@@ -46,6 +46,21 @@ export interface ConvertedPlan {
   createdAt: string;
 }
 
+export interface PlanRequest {
+  formData: FormData;
+}
+export interface PlanSubmitData {
+  planName: string;
+  description: string;
+  roleId: string;
+  permissionIds: string[];
+  planPermissions?: PlanPermission[];
+  price: number;
+  discount: number;
+  planType: string;
+  isPopular: boolean;
+  isActive: boolean;
+}
 export interface PermissionResponse extends ApiReponseSuccess<Permission[]> {
   data: Permission[];
 }

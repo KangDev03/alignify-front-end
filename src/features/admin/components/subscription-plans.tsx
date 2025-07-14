@@ -13,9 +13,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Form } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -29,9 +35,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Icons } from '@/components/icons/icons';
 import {
   useCreatePlanMutation,
+  useGetPermissionQuery,
   useGetPlansByRoleQuery,
 } from '@/features/upgrade-plan/components/upgrade-plan.service';
-import type { Plan } from '@/features/upgrade-plan/components/upgrade-plan.type';
+import type { Plan, PlanSubmitData } from '@/features/upgrade-plan/components/upgrade-plan.type';
 import { formatPlans } from '@/pages/upgrade-plan';
 import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,6 +51,7 @@ export function SubscriptionPlans() {
   // const [_editingPlan, setEditingPlan] = useState<any>(null);
   const [selectedRole, setSelectedRole] = useState<'brand' | 'influencer'>('brand');
   const [isAnnual, setIsAnnual] = useState(false);
+  const { data: permissionData } = useGetPermissionQuery();
 
   //Get plan by Role
   const { data: fetchedPlans } = useGetPlansByRoleQuery('');
@@ -73,32 +81,36 @@ export function SubscriptionPlans() {
   const form = useForm<PlanValues>({
     mode: 'onSubmit',
     resolver: zodResolver(planSchema),
-    defaultValues: {},
+    defaultValues: {
+      planName: '',
+      description: '',
+      roleId: 'brand',
+      permissionIds: [],
+      planPermissions: {
+        roleId: 'brand',
+        planPermissionName: '',
+        limited: 0,
+      },
+      price: 0,
+      discount: 0,
+      planType: 'one_month',
+      isActive: true,
+      isPopular: false,
+    },
   });
   const [createPlan] = useCreatePlanMutation();
 
   const onSubmit = async (values: PlanValues) => {
+    console.log('Submitting with values:', values);
+
     try {
-      const formData = new FormData();
+      const planSubmitData: PlanSubmitData = {
+        ...values,
+        isActive: values.isActive ?? false,
+        isPopular: values.isPopular ?? false,
+      };
 
-      formData.append('planName', values.planName);
-      formData.append('description', values.description);
-      formData.append('roleId', values.roleId);
-      formData.append('price', values.price.toString());
-      formData.append('discount', values.discount.toString());
-      formData.append('planType', values.planType);
-      formData.append('planCount', values.planCount.toString());
-      formData.append('isPopular', values.isPopular.toString());
-      formData.append('isActive', values.isActive.toString());
-
-      values.permissionIds.forEach((id) => {
-        formData.append('permissionIds', id);
-      });
-
-      formData.append('planPermissions', JSON.stringify(values.planPermissions));
-
-      // Gọi API tạo plan
-      await createPlan(formData).unwrap();
+      await createPlan(planSubmitData).unwrap();
 
       toast.success('Tạo gói đăng ký thành công!');
       form.reset();
@@ -151,100 +163,223 @@ export function SubscriptionPlans() {
             <Form {...form}>
               <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="planName">Tên gói</Label>
-                    <Input {...form.register('planName')} placeholder="Nhập tên gói" />
-                    {form.formState.errors.planName && (
-                      <p className="text-sm text-red-500">
-                        {form.formState.errors.planName.message}
-                      </p>
+                  {/* Tên gói */}
+                  <FormField
+                    control={form.control}
+                    name="planName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tên gói</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Nhập tên gói" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="price">Giá (VNĐ)</Label>
-                    <Input type="number" {...form.register('price', { valueAsNumber: true })} />
-                  </div>
-                </div>
+                  />
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="roleId">Đối tượng</Label>
-                  <Select
-                    value={form.watch('roleId')}
-                    onValueChange={(value) =>
-                      form.setValue('roleId', value as 'brand' | 'influencer')
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn đối tượng" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="brand">Brand</SelectItem>
-                      <SelectItem value="influencer">Influencer</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {/* Giá */}
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Giá (VNĐ)</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  {form.watch('roleId') === 'brand' && (
-                    <>
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="planCount">Số chiến dịch tối đa</Label>
-                        <Input
-                          type="number"
-                          {...form.register('planCount', { valueAsNumber: true })}
-                        />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="permissionIds">Số influencers tối đa</Label>
-                        <Input
-                          type="text"
-                          {...form.register('permissionIds.0')}
-                          placeholder="Nhập ID quyền 1"
-                        />
-                      </div>
-                    </>
+                {/* Mô tả */}
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mô tả</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nhập mô tả" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
+                />
 
-                  {form.watch('roleId') === 'influencer' && (
-                    <div className="flex flex-col gap-2">
-                      <Label htmlFor="planCount">Số ứng tuyển tối đa</Label>
-                      <Input
-                        type="number"
-                        {...form.register('planCount', { valueAsNumber: true })}
-                      />
-                    </div>
+                {/* Permission */}
+                <FormField
+                  control={form.control}
+                  name="permissionIds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Quyền</FormLabel>
+                      <div className="grid grid-cols-2 gap-2">
+                        {permissionData?.data?.map((perm) => (
+                          <label key={perm.permissionId} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={field.value?.includes(perm.permissionId)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  field.onChange([...field.value, perm.permissionId]);
+                                } else {
+                                  field.onChange(
+                                    field.value.filter((id) => id !== perm.permissionId),
+                                  );
+                                }
+                              }}
+                            />
+                            <span>{perm.permissionName}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </div>
+                />
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="discount">Giảm giá (%)</Label>
-                  <Input type="number" {...form.register('discount', { valueAsNumber: true })} />
-                </div>
+                {/* Đối tượng */}
+                <FormField
+                  control={form.control}
+                  name="roleId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Đối tượng</FormLabel>
+                      <FormControl>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn đối tượng" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="brand">Brand</SelectItem>
+                            <SelectItem value="influencer">Influencer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="planType">Loại gói (monthly/annual)</Label>
-                  <Input {...form.register('planType')} />
-                </div>
+                {/* Dynamic Fields */}
+                {form.watch('roleId') === 'brand' && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="planPermissions.limited"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Số chiến dịch tối đa</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
+                    <FormField
+                      control={form.control}
+                      name="planPermissions.limited"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Số influencers tối đa (ID quyền)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Nhập ID quyền 1" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+
+                {form.watch('roleId') === 'influencer' && (
+                  <FormField
+                    control={form.control}
+                    name="planPermissions.limited"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Số ứng tuyển tối đa</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {/* Giảm giá */}
+                <FormField
+                  control={form.control}
+                  name="discount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Giảm giá (%)</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Loại gói */}
+                <FormField
+                  control={form.control}
+                  name="planType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Loại gói</FormLabel>
+                      <FormControl>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn loại gói" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="one_month">Hàng tháng</SelectItem>
+                            <SelectItem value="one_year">Hàng năm</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Switches */}
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="isActive">Kích hoạt gói</Label>
-                    <Switch
-                      checked={form.watch('isActive')}
-                      onCheckedChange={(checked) => form.setValue('isActive', checked)}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="isActive"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-between">
+                        <FormLabel>Kích hoạt gói</FormLabel>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="isPopular">Phổ biến</Label>
-                    <Switch
-                      checked={form.watch('isPopular')}
-                      onCheckedChange={(checked) => form.setValue('isPopular', checked)}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="isPopular"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-between">
+                        <FormLabel>Phổ biến</FormLabel>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
-                {/* Bạn có thể thêm phần quản lý permission nâng cao tại đây nếu cần */}
+                {/* Submit button */}
                 <div className="flex justify-end space-x-2">
                   <Button
                     variant="outline"

@@ -15,7 +15,6 @@ import type { ConvertedPlan } from '@/features/upgrade-plan/components/upgrade-p
 import { formatPlanPermissonName, formatPrice } from '@/utils/format';
 
 const PlanCard = (plan: ConvertedPlan) => {
-  console.log(plan.planPermission);
   return (
     <Card key={plan.id} className={`relative`}>
       {plan.popular && (

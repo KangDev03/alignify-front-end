@@ -1,19 +1,22 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type { PermissionResponse, Plan, PlanRequest, PlanResponse } from './upgrade-plan.type';
+import type { PermissionResponse, Plan, PlanResponse, PlanSubmitData } from './upgrade-plan.type';
 
 export const planApi = baseApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getPlansByRole: builder.query<PlanResponse, string>({
       query: (roleId) => `/plans?roleId=${roleId}`,
+      providesTags: ['Plan'],
     }),
 
-    createPlan: builder.mutation<PlanResponse, PlanRequest>({
-      query: (formData) => ({
+    createPlan: builder.mutation<PlanResponse, PlanSubmitData>({
+      query: (data) => ({
         url: '/plans',
         method: 'POST',
-        body: formData.formData,
+        body: data,
       }),
+      invalidatesTags: ['Plan'],
     }),
 
     updatePlan: builder.mutation<PlanResponse, { planId: string; plan: Plan }>({
@@ -22,6 +25,7 @@ export const planApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: plan,
       }),
+      invalidatesTags: ['Plan'],
     }),
 
     deletePlan: builder.mutation<void, string>({
@@ -29,12 +33,14 @@ export const planApi = baseApi.injectEndpoints({
         url: `/plans/${planId}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Plan'],
     }),
     getPermission: builder.query<PermissionResponse, void>({
       query: () => ({
         url: `/plans/permission`,
         method: 'GET',
       }),
+      providesTags: ['Plan'],
     }),
   }),
 });
@@ -44,4 +50,5 @@ export const {
   useCreatePlanMutation,
   useUpdatePlanMutation,
   useDeletePlanMutation,
+  useGetPermissionQuery,
 } = planApi;
