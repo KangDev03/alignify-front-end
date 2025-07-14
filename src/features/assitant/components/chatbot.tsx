@@ -33,7 +33,7 @@ export default function ChatBot() {
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (messages.length === 0 || !messages.length || !messages)
+    if (messages.length === 0)
       setMessages([
         {
           roomId: userId!,
