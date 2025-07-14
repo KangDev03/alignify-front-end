@@ -69,7 +69,7 @@ const PlanCard = (plan: ConvertedPlan) => {
         <div className="text-center">
           <div className="text-3xl font-bold">{formatPrice(plan.price)}</div>
           <div className="text-sm text-muted-foreground">
-            /{plan.planType === 'one_monthly' ? 'tháng' : 'năm'}
+            /{plan.planType === 'one_month' ? 'tháng' : 'năm'}
           </div>
         </div>
 
