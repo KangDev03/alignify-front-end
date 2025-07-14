@@ -96,25 +96,25 @@ export function AppHeader({ onLogout }: HeaderProps) {
   const navigationItems =
     userRole === 'INFLUENCER'
       ? [
-          { id: 'home', label: 'Trang chủ', icon: Icons.home },
-          { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
-          { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
-          { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
-          { id: 'statistics', label: 'Thống kê', icon: Icons.barChart3 },
-        ]
+        { id: 'home', label: 'Trang chủ', icon: Icons.home },
+        { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
+        { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
+        { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
+        { id: 'statistics', label: 'Thống kê', icon: Icons.barChart3 },
+      ]
       : userRole === 'BRAND'
         ? [
-            { id: 'home', label: 'Trang chủ', icon: Icons.home },
-            { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
-            { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
-            { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
-            { id: 'statistics', label: 'Báo cáo', icon: Icons.barChart3 },
-          ]
+          { id: 'home', label: 'Trang chủ', icon: Icons.home },
+          { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
+          { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
+          { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
+          { id: 'statistics', label: 'Báo cáo', icon: Icons.barChart3 },
+        ]
         : userRole === 'ADMIN'
           ? [
-              { id: 'home', label: 'Trang chủ', icon: Icons.home },
-              { id: 'dashboard', label: 'Quản lý và thống kê', icon: Icons.layoutDashboard },
-            ]
+            { id: 'home', label: 'Trang chủ', icon: Icons.home },
+            { id: 'dashboard', label: 'Quản lý và thống kê', icon: Icons.layoutDashboard },
+          ]
           : [{ id: 'home', label: 'Trang chủ', icon: Icons.home }];
 
   return (

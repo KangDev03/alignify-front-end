@@ -94,33 +94,33 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
         : [{ platform: '', followers: undefined }],
       campaignRequirements: campaignData?.campaignRequirements?.length
         ? campaignData.campaignRequirements.map((req) => ({
-            platform: req.platform,
-            post_type: req.post_type,
-            quantity: req.quantity,
-            postDetails: req.details.map((item) => {
-              const postType = item.post_type?.toLowerCase() as PostType;
-              return {
-                [postType]: {
-                  like: item.like,
-                  comment: item.comment,
-                  share: item.share,
-                },
-              };
-            }),
-          }))
+          platform: req.platform,
+          post_type: req.post_type,
+          quantity: req.quantity,
+          postDetails: req.details.map((item) => {
+            const postType = item.post_type?.toLowerCase() as PostType;
+            return {
+              [postType]: {
+                like: item.like,
+                comment: item.comment,
+                share: item.share,
+              },
+            };
+          }),
+        }))
         : [
-            {
-              platform: '',
-              post_type: '',
-              quantity: undefined,
-              postDetails: [
-                { post: { like: 0, comment: 0, share: 0 } },
-                { video: { like: 0, comment: 0, share: 0 } },
-                { story: { like: 0, comment: 0, share: 0 } },
-                { reel: { like: 0, comment: 0, share: 0 } },
-              ],
-            },
-          ],
+          {
+            platform: '',
+            post_type: '',
+            quantity: undefined,
+            postDetails: [
+              { post: { like: 0, comment: 0, share: 0 } },
+              { video: { like: 0, comment: 0, share: 0 } },
+              { story: { like: 0, comment: 0, share: 0 } },
+              { reel: { like: 0, comment: 0, share: 0 } },
+            ],
+          },
+        ],
       categoryIds: campaignData?.categories.map((cat) => cat.categoryId) || [],
       image: undefined,
     },
@@ -238,8 +238,8 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
           createdAt,
           categories: campaignRaw.categoryIds
             ? campaignRaw.categoryIds.map((catId) => {
-                return categories!.find((cat) => cat.categoryId === catId)!;
-              })
+              return categories!.find((cat) => cat.categoryId === catId)!;
+            })
             : _categories,
         };
         dispatch(updateCampaignSlice(newCampaign));
@@ -719,32 +719,32 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                       <Select
                                         onValueChange={field.onChange}
                                         value={field.value || undefined}
-                                        // onChange={() => {
-                                        //   const postType = field.value?.toLowerCase() || 'video';
-                                        //   const currentPostDetails =
-                                        //     form.watch(`campaignRequirements.${idx}.postDetails`) ||
-                                        //     [];
-                                        //   const updatedDetails = currentPostDetails.map(
-                                        //     (detail) => {
-                                        //       const oldValue = Object.values(detail)[0] as {
-                                        //         like: number;
-                                        //         comment: number;
-                                        //         share?: number;
-                                        //       };
-                                        //       return {
-                                        //         [postType]: {
-                                        //           like: oldValue.like,
-                                        //           comment: oldValue.comment,
-                                        //           share: oldValue.share ?? 0,
-                                        //         },
-                                        //       };
-                                        //     },
-                                        //   );
-                                        //   form.setValue(
-                                        //     `campaignRequirements.${idx}.postDetails`,
-                                        //     updatedDetails,
-                                        //   );
-                                        // }}
+                                      // onChange={() => {
+                                      //   const postType = field.value?.toLowerCase() || 'video';
+                                      //   const currentPostDetails =
+                                      //     form.watch(`campaignRequirements.${idx}.postDetails`) ||
+                                      //     [];
+                                      //   const updatedDetails = currentPostDetails.map(
+                                      //     (detail) => {
+                                      //       const oldValue = Object.values(detail)[0] as {
+                                      //         like: number;
+                                      //         comment: number;
+                                      //         share?: number;
+                                      //       };
+                                      //       return {
+                                      //         [postType]: {
+                                      //           like: oldValue.like,
+                                      //           comment: oldValue.comment,
+                                      //           share: oldValue.share ?? 0,
+                                      //         },
+                                      //       };
+                                      //     },
+                                      //   );
+                                      //   form.setValue(
+                                      //     `campaignRequirements.${idx}.postDetails`,
+                                      //     updatedDetails,
+                                      //   );
+                                      // }}
                                       >
                                         <SelectTrigger className="w-full capitalize bg-white">
                                           <SelectValue placeholder="Loại nội dung" />
@@ -819,7 +819,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                   );
                                   const postDetails = postTypeObj
                                     ? postTypeObj[selectedPostType as keyof typeof postTypeObj] ||
-                                      []
+                                    []
                                     : [];
 
                                   if (
@@ -921,10 +921,18 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
             <Button variant={'default'} type="submit" disabled={isPosting}>
               {onUpdating
                 ? isUpdating
-                  ? 'Đang cập nhật...'
+                  ?
+                  <>
+                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang cập nhật...
+                  </>
                   : 'Cập nhật'
                 : isPosting
-                  ? 'Đang đăng...'
+                  ?
+                  <>
+                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang đăng...
+                  </>
                   : 'Đăng chiến dịch'}
             </Button>
           </div>

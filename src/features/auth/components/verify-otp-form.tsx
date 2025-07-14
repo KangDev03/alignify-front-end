@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
+import { Icons } from '@/components/icons/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { type VerifyOTPFormValues, verifyOTPSchema } from '../auth.schema';
@@ -223,7 +224,12 @@ export default function VerifyOTPForm() {
               className="w-full bg-primary hover:bg-primary/90"
               disabled={isLoading}
             >
-              {isLoading ? 'Đang xử lý...' : 'Xác nhận'}
+              {isLoading ?
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang xử lý...
+                </>
+                : 'Xác nhận'}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               Không nhận được mã?{' '}

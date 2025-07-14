@@ -34,6 +34,7 @@ import {
   Image,
   Instagram,
   LayoutDashboard,
+  Loader2,
   LogOut,
   Mail,
   MapPin,
@@ -140,4 +141,5 @@ export const Icons = {
   target: Target,
   shield: Shield,
   bot: Bot,
+  loader2: Loader2,
 };

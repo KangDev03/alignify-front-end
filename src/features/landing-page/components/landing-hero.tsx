@@ -4,7 +4,7 @@ interface LandingHeroProps {
 
 export function LandingHero({ stats }: LandingHeroProps) {
   return (
-    <section className="py-20 px-4">
+    <section className="py-48 px-4">
       <div className="container mx-auto text-center">
         <div className="h-24 md:h-32 mb-2 md:mb-6 bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-blue-600 dark:to-purple-600 bg-clip-text">
           <h1 className="text-4xl md:text-6xl font-bold text-transparent">
@@ -17,6 +17,7 @@ export function LandingHero({ stats }: LandingHeroProps) {
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
           Nền tảng toàn diện giúp brands tìm kiếm influencer phù hợp và influencer kết nối với các cơ hội hợp tác tuyệt vời
         </p>
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
           {stats.map((stat, index) => (
