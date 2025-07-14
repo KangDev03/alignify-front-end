@@ -63,9 +63,9 @@ export default function ChatBot() {
           console.log(received);
           if (received) {
             setMessages((prev) => {
-              const newAssistMessagges = [...prev];
+              const newAssistMessages = [...prev];
               const newData = received.data.filter(
-                (msg) => !newAssistMessagges.some((amsg) => amsg.id === msg.id),
+                (msg) => !newAssistMessages.some((amsg) => amsg.id === msg.id),
               );
               return [...prev, ...newData];
             });
