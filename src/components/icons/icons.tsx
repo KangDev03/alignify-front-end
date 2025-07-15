@@ -49,6 +49,7 @@ import {
   Plus,
   RefreshCcw,
   RefreshCw,
+  Rss,
   Save,
   Search,
   SendHorizontal,
@@ -144,4 +145,5 @@ export const Icons = {
   bot: Bot,
   loader2: Loader2,
   refreshCw: RefreshCw,
+  rss: Rss,
 };
