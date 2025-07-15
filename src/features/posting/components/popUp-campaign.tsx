@@ -671,179 +671,180 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                       </Button>
                     </div>
 
-                    {/* Content Section */}
-                    <div className="p-4 space-y-4">
-                      {/* Platform Selection */}
-                      <FormField
-                        control={form.control}
-                        name={`campaignRequirements.${idx}.platform`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm font-medium">Chọn nền tảng</FormLabel>
-                            <FormControl>
-                              <Select
-                                onValueChange={(value) => {
-                                  field.onChange(value)
-                                  setExtended((prev) => {
-                                    const index = prev.findIndex((item) => item.idx === idx)
-                                    if (index === -1) {
-                                      return [...prev, { idx, extended: true }]
-                                    }
-                                    const newExtended = [...prev]
-                                    newExtended[index].extended = true
-                                    return newExtended
-                                  })
-                                }}
-                                value={field.value || undefined}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Chọn nền tảng mạng xã hội" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {socialPlatformOptions.map((opt) => (
-                                    <SelectItem key={opt.value} value={opt.value}>
-                                      <div className="flex items-center space-x-2">
-                                        <span>{opt.label}</span>
-                                      </div>
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Expanded Content */}
-                      {isExpanded && platform && (
-                        <div className="space-y-4 pt-2 border-t border-border/50">
-                          {/* Post Type and Quantity */}
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name={`campaignRequirements.${idx}.post_type`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm font-medium">Loại nội dung</FormLabel>
-                                  <FormControl>
-                                    <Select onValueChange={field.onChange} value={field.value || undefined}>
-                                      <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Chọn loại nội dung" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {SupportedPostTypeByPlatform[
-                                          (platform || "").toLowerCase() as keyof typeof SupportedPostTypeByPlatform
-                                        ]?.map((item) => {
-                                          const type = Object.keys(item)[0]
-                                          return (
-                                            <SelectItem key={type} value={type} className="capitalize">
-                                              {type}
-                                            </SelectItem>
-                                          )
-                                        })}
-                                      </SelectContent>
-                                    </Select>
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name={`campaignRequirements.${idx}.quantity`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm font-medium">Số lượng</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      {...field}
-                                      type="number"
-                                      min="1"
-                                      value={field.value ?? undefined}
-                                      onChange={(e) => field.onChange(Number(e.target.value))}
-                                      placeholder="Nhập số lượng"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          {/* Engagement Requirements */}
-                          {postType && quantity && quantity > 0 && (
-                            <div>
-                              <div className="flex items-center space-x-2">
-                                <div className="w-1 h-4 bg-primary rounded-full"></div>
-                                <Label className="text-sm font-medium text-primary">Yêu cầu tương tác</Label>
-                              </div>
-
-                              <div>
-                                {Array.from({ length: quantity }, (_, index) => {
-                                  const platformKey = (
-                                    platform || ""
-                                  ).toLowerCase() as keyof typeof SupportedPostTypeByPlatform
-                                  const postTypesArray = SupportedPostTypeByPlatform[platformKey] || []
-                                  const postTypeObj = postTypesArray.find((obj) => Object.keys(obj)[0] === postType)
-                                  const postDetails = postTypeObj
-                                    ? postTypeObj[postType as keyof typeof postTypeObj] || []
-                                    : []
-
-                                  if (!postDetails.length) return null
-
-                                  return (
-                                    <div key={index} className="bg-muted/20 rounded-lg px-4 py-2 space-y-3">
-                                      <div className="flex items-center space-x-2">
-                                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                          <span className="text-xs font-medium text-primary">{index + 1}</span>
+                    {/* Content Section: chỉ render khi isExpanded true */}
+                    {isExpanded && (
+                      <div className="p-4 space-y-4">
+                        {/* Platform Selection */}
+                        <FormField
+                          control={form.control}
+                          name={`campaignRequirements.${idx}.platform`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-medium">Chọn nền tảng</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={(value) => {
+                                    field.onChange(value)
+                                    setExtended((prev) => {
+                                      const index = prev.findIndex((item) => item.idx === idx)
+                                      if (index === -1) {
+                                        return [...prev, { idx, extended: true }]
+                                      }
+                                      const newExtended = [...prev]
+                                      newExtended[index].extended = true
+                                      return newExtended
+                                    })
+                                  }}
+                                  value={field.value || undefined}
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Chọn nền tảng mạng xã hội" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {socialPlatformOptions.map((opt) => (
+                                      <SelectItem key={opt.value} value={opt.value}>
+                                        <div className="flex items-center space-x-2">
+                                          <span>{opt.label}</span>
                                         </div>
-                                        <Label className="text-sm">Nội dung {index + 1}</Label>
-                                      </div>
-
-                                      <div className="grid grid-cols-3 gap-3">
-                                        {postDetails.map((require: string) => (
-                                          <FormField
-                                            key={`${idx}_${index}_${require}`}
-                                            control={form.control}
-                                            name={
-                                              `campaignRequirements.${idx}.postDetails.${index}.${postType}.${require}` as FieldPath<CampaignFormValues>
-                                            }
-                                            render={({ field }) => (
-                                              <FormItem>
-                                                <FormLabel className="text-xs font-medium capitalize flex items-center space-x-1">
-                                                  {require === "like" && <Icons.heart className="w-3 h-3" />}
-                                                  {require === "comment" && <Icons.messageCircle className="w-3 h-3" />}
-                                                  {require === "share" && <Icons.share2 className="w-3 h-3" />}
-                                                  <span>{require}</span>
-                                                </FormLabel>
-                                                <FormControl>
-                                                  <Input
-                                                    {...field}
-                                                    type="number"
-                                                    min={0}
-                                                    placeholder="0"
-                                                    value={(field.value as number) ?? 0}
-                                                    onChange={(e) => field.onChange(Number(e.target.value))}
-                                                    className="text-sm"
-                                                  />
-                                                </FormControl>
-                                                <FormMessage />
-                                              </FormItem>
-                                            )}
-                                          />
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            </div>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
                           )}
-                        </div>
-                      )}
-                    </div>
+                        />
+
+                        {/* Post Type and Quantity */}
+                        {platform && (
+                          <div className="space-y-4 pt-2 border-t border-border/50">
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name={`campaignRequirements.${idx}.post_type`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-sm font-medium">Loại nội dung</FormLabel>
+                                    <FormControl>
+                                      <Select onValueChange={field.onChange} value={field.value || undefined}>
+                                        <SelectTrigger className="w-full">
+                                          <SelectValue placeholder="Chọn loại nội dung" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {SupportedPostTypeByPlatform[
+                                            (platform || "").toLowerCase() as keyof typeof SupportedPostTypeByPlatform
+                                          ]?.map((item) => {
+                                            const type = Object.keys(item)[0]
+                                            return (
+                                              <SelectItem key={type} value={type} className="capitalize">
+                                                {type}
+                                              </SelectItem>
+                                            )
+                                          })}
+                                        </SelectContent>
+                                      </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name={`campaignRequirements.${idx}.quantity`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-sm font-medium">Số lượng</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        {...field}
+                                        type="number"
+                                        min="1"
+                                        value={field.value ?? undefined}
+                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                        placeholder="Nhập số lượng"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            {/* Engagement Requirements */}
+                            {postType && quantity && quantity > 0 && (
+                              <div>
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-1 h-4 bg-primary rounded-full"></div>
+                                  <Label className="text-sm font-medium text-primary">Yêu cầu tương tác</Label>
+                                </div>
+
+                                <div>
+                                  {Array.from({ length: quantity }, (_, index) => {
+                                    const platformKey = (
+                                      platform || ""
+                                    ).toLowerCase() as keyof typeof SupportedPostTypeByPlatform
+                                    const postTypesArray = SupportedPostTypeByPlatform[platformKey] || []
+                                    const postTypeObj = postTypesArray.find((obj) => Object.keys(obj)[0] === postType)
+                                    const postDetails = postTypeObj
+                                      ? postTypeObj[postType as keyof typeof postTypeObj] || []
+                                      : []
+
+                                    if (!postDetails.length) return null
+
+                                    return (
+                                      <div key={index} className="bg-muted/20 rounded-lg px-4 py-2 space-y-3">
+                                        <div className="flex items-center space-x-2">
+                                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <span className="text-xs font-medium text-primary">{index + 1}</span>
+                                          </div>
+                                          <Label className="text-sm">Nội dung {index + 1}</Label>
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-3">
+                                          {postDetails.map((require: string) => (
+                                            <FormField
+                                              key={`${idx}_${index}_${require}`}
+                                              control={form.control}
+                                              name={
+                                                `campaignRequirements.${idx}.postDetails.${index}.${postType}.${require}` as FieldPath<CampaignFormValues>
+                                              }
+                                              render={({ field }) => (
+                                                <FormItem>
+                                                  <FormLabel className="text-xs font-medium capitalize flex items-center space-x-1">
+                                                    {require === "like" && <Icons.heart className="w-3 h-3" />}
+                                                    {require === "comment" && <Icons.messageCircle className="w-3 h-3" />}
+                                                    {require === "share" && <Icons.share2 className="w-3 h-3" />}
+                                                    <span>{require}</span>
+                                                  </FormLabel>
+                                                  <FormControl>
+                                                    <Input
+                                                      {...field}
+                                                      type="number"
+                                                      min={0}
+                                                      placeholder="0"
+                                                      value={(field.value as number) ?? 0}
+                                                      onChange={(e) => field.onChange(Number(e.target.value))}
+                                                      className="text-sm"
+                                                    />
+                                                  </FormControl>
+                                                  <FormMessage />
+                                                </FormItem>
+                                              )}
+                                            />
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )
               })}
