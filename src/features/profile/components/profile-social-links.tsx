@@ -33,7 +33,7 @@ export function ProfileSocialLinks({ socialMediaLinks }: ProfileSocialLinksProps
               <div className="flex items-center space-x-2">
                 {link ? (
                   <>
-                    <span className="text-sm text-muted-foreground">{link}</span>
+                    <span className="text-sm text-muted-foreground line-clamp-1 w-70">{link}</span>
                     <Button variant="ghost" size="sm" onClick={() => window.open(link, '_blank')}>
                       <Icons.externalLink className="h-4 w-4" />
                     </Button>
