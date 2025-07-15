@@ -31,10 +31,7 @@ function Router() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/landing-page" element={<LandingPage onGetStarted={() => {
-          console.log('Get Started clicked!');
-        }} />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/auth">
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />

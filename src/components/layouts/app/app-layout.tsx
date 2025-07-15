@@ -6,6 +6,7 @@ import Stomp from 'stompjs';
 // import AppFooter from '@/components/layouts/app/footer';
 import { AppHeader } from '@/components/layouts/app/header';
 import { useTheme } from '@/components/theme/theme-provider';
+import ChatBot from '@/features/assitant/components/chatbot';
 import { logout } from '@/features/auth/auth.slice';
 import type { UserBan } from '@/features/auth/auth.type';
 import { addReceivedNotification } from '@/features/notification/notification.slice';
@@ -27,9 +28,9 @@ function AppLayout() {
   const handleLogout = useCallback(() => {
     dispatch(baseApi.util.resetApiState());
     dispatch(logout());
-    navigate('/auth/login');
+    navigate('/');
   }, [dispatch, navigate]);
-  const { id: userId, token } = useAppSelector((state: RootState) => state.auth);
+  const { id: userId, token, role: roleName } = useAppSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (!token || !userId) return;
@@ -89,16 +90,19 @@ function AppLayout() {
     }
   }, [token, userId]);
 
-  const backgroundImage =
-    theme === 'dark' ||
-      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      ? '/background-dark.png'
-      : '/background-light.png';
+  let backgroundImage: string | undefined = undefined;
+  if (roleName !== 'ADMIN') {
+    backgroundImage =
+      theme === 'dark' ||
+        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        ? '/background-dark.png'
+        : '/background-light.png';
+  }
 
   return (
     <div
       className="flex min-h-screen flex-col bg-cover bg-no-repeat bg-fixed"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
+      style={backgroundImage ? { backgroundImage: `url(${backgroundImage})` } : {}}
     >
       <AppHeader onLogout={handleLogout} />
       <main
@@ -108,6 +112,7 @@ function AppLayout() {
       >
         <Outlet />
         <PopUpTrigger />
+        <ChatBot />
       </main>
       {/* <AppFooter /> */}
     </div>

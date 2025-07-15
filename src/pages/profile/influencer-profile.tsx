@@ -2,8 +2,9 @@
 
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { AlertCircleIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { Icons } from '@/components/icons/icons';
 import { ForumPost } from '@/features/home/components/forum-post';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
 import { ProfileInfo } from '@/features/profile/components/profile-info';
+import { InfluencerProfileSkeletion } from '@/features/profile/components/profile-skeletion';
 import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { ProfileStats } from '@/features/profile/components/profile-stats';
 import {
@@ -25,6 +27,7 @@ import { useAppDispatch } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
 export default function InfluencerProfilePage() {
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
   let userId = location.pathname.split('/').pop() || undefined;
@@ -37,10 +40,21 @@ export default function InfluencerProfilePage() {
 
   const { contents } = useSelector((state: RootState) => state.profile);
 
-  const { data: profileRaw } = useGetInfluencerProfileUserQuery(userId ? userId : undefined, {
-    refetchOnMountOrArgChange: true,
-    refetchOnReconnect: true,
-  });
+  const { data: profileRaw, isError } = useGetInfluencerProfileUserQuery(
+    userId ? userId : undefined,
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    },
+  );
+
+  useEffect(() => {
+    if (isError) {
+      navigate('/home');
+      toast.error('Đã có lỗi bất ngờ xảy ra. Vui lòng thử lại!');
+    }
+  }, [isError, navigate]);
+
   // const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery({
   //   pageNumber: 0,
   //   pageSize: 10,
@@ -49,7 +63,7 @@ export default function InfluencerProfilePage() {
     if (contentPosting && !userId) dispatch(setContents(contentPosting));
   }, [contentPosting, dispatch, userId]);
   if (!profileRaw?.data) {
-    return <div>Loading...</div>;
+    return <InfluencerProfileSkeletion />;
   }
   const profile = profileRaw?.data;
   // const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)

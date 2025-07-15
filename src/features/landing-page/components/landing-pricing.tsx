@@ -18,10 +18,9 @@ interface LandingPricingProps {
   setActiveTab: (tab: string) => void;
   brandPlans: Plan[];
   influencerPlans: Plan[];
-  onGetStarted: () => void;
 }
 
-export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencerPlans, onGetStarted }: LandingPricingProps) {
+export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencerPlans }: LandingPricingProps) {
 
   return (
     <section id="pricing" className="py-20 px-4">
@@ -54,7 +53,6 @@ export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencer
                   }
                   buttonText={plan.buttonText || "Bắt đầu ngay"}
                   buttonVariant={plan.buttonVariant || (plan.popular ? "default" : "outline")}
-                  onClick={onGetStarted}
                   highlightColor="ring-2 ring-blue-500"
                 />
               ))}
@@ -77,7 +75,6 @@ export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencer
                   }
                   buttonText={plan.buttonText || "Bắt đầu ngay"}
                   buttonVariant={plan.buttonVariant || (plan.popular ? "default" : "outline")}
-                  onClick={onGetStarted}
                   highlightColor="ring-2 ring-purple-500"
                 />
               ))}

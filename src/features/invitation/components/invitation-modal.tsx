@@ -2,14 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogClose,
@@ -28,6 +24,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -35,16 +32,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 import { Icons } from '@/components/icons/icons';
 import { useGetCategoriesQuery, useGetRolesQuery } from '@/features/common/common.service';
 import type { Campaign, Category } from '@/features/common/common.type';
-import { useGetInfluencerProfilesQuery } from '@/features/home/home.service';
 import { cn } from '@/lib/utils';
-import { formatDate, formatNumber, isApiResponseError } from '@/utils/format';
+import { formatDate, isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import CandidateList from './candidate-list';
 import { type InvitationFormValues, invitationSchema } from '../invitation.schema';
 import {
   useGetAllRecruitingCampaignQuery,
@@ -66,7 +64,6 @@ ${campaign.brandName}`;
 
 export default function InvitationModal() {
   const closeDialogRef = useRef<HTMLButtonElement>(null);
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>({
     categoryId: 'all',
@@ -75,17 +72,11 @@ export default function InvitationModal() {
   const { data: categoryRaw } = useGetCategoriesQuery(undefined, { refetchOnFocus: true });
   const { data: roleRaw } = useGetRolesQuery(undefined, { refetchOnFocus: true });
   const influencerRoleId = roleRaw?.data?.find((item) => item.roleName === 'INFLUENCER')?.roleId;
-  const { data: influencerRaw } = useGetInfluencerProfilesQuery(
-    {
-      pageNumber: 0,
-      pageSize: 10,
-      roleId: influencerRoleId!,
-    },
-    { refetchOnFocus: true },
-  );
+
   const { data: campaignRaw } = useGetAllRecruitingCampaignQuery(undefined, {
     refetchOnFocus: true,
   });
+  const [isAssistantMode, setAssistantMode] = useState<boolean>(false);
 
   const [selectedInfluencers, setSelectedInfluencers] = useState<string[]>([]);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign>();
@@ -299,56 +290,66 @@ export default function InvitationModal() {
               </div>
 
               <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">Chọn Influencer</h3>
+                <h3 className="text-lg font-semibold">Chọn Influencer</h3>
 
-                  <div className="flex gap-2 mb-4">
-                    <div className="flex-1 relative">
-                      <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                      <Input
-                        placeholder="Tìm kiếm influencer..."
-                        className="pl-10"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                    </div>
-                    <Select value={selectedCategory.categoryId}>
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tất cả</SelectItem>
-                        {categoryRaw?.data?.map((cat) => (
-                          <SelectItem
-                            key={cat.categoryId}
-                            value={cat.categoryId}
-                            onClick={() => setSelectedCategory(cat)}
-                          >
-                            {cat.categoryName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                <div className="flex gap-2 mb-4">
+                  <div className="flex-1 relative">
+                    <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Tìm kiếm influencer..."
+                      className="pl-10"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </div>
-
-                  {/* Selected count */}
-                  <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg mb-4">
-                    <div className="text-sm text-blue-700">
-                      <p>
-                        Tối đa:
-                        <span className="font-semibold">
-                          {selectedCampaign
-                            ? max <= 0
-                              ? 'Bạn đã đạt giới hạn mời hoặc chiến dịch đã đủ người tham gia'
-                              : max
-                            : 0}
+                  <Select value={selectedCategory.categoryId}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tất cả</SelectItem>
+                      {categoryRaw?.data?.map((cat) => (
+                        <SelectItem
+                          key={cat.categoryId}
+                          value={cat.categoryId}
+                          onClick={() => setSelectedCategory(cat)}
+                        >
+                          {cat.categoryName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {!selectedCampaign && (
+                  <Alert variant="default">
+                    <Icons.circleAlert className="h-4 w-4 mr-2" />
+                    <AlertTitle>Vui lòng chọn chiến dịch của bạn!</AlertTitle>
+                  </Alert>
+                )}
+                {selectedCampaign && (
+                  <div
+                    className={cn(
+                      'flex items-center bg-blue-50 p-3 rounded-lg text-sm text-blue-600 font-semibold',
+                      selectedCampaign ? 'justify-between' : 'justify-end',
+                    )}
+                  >
+                    {selectedCampaign && (
+                      <p className="flex gap-1">
+                        Tối đa
+                        <span>
+                          {max <= 0
+                            ? 'Bạn đã đạt giới hạn mời hoặc chiến dịch đã đủ người tham gia'
+                            : max}
                         </span>
                       </p>
-                      <p>
-                        Đã chọn:
-                        <span className="font-semibold">{selectedInfluencers.length} </span>
+                    )}
+                    {selectedInfluencers.length > 0 && (
+                      <p className="flex gap-1">
+                        Đã chọn
+                        <span>{selectedInfluencers.length} </span>
+                        người
                       </p>
-                    </div>
+                    )}
                     <Button
                       type="button"
                       size="sm"
@@ -359,81 +360,32 @@ export default function InvitationModal() {
                         form.setValue('influencerIds', []);
                       }}
                     >
-                      Đặt lại
+                      <Icons.refreshCw /> Đặt lại
                     </Button>
                   </div>
-
-                  <div className="max-h-96 overflow-y-auto space-y-3 no-scrollbar">
-                    {influencerRaw?.data && influencerRaw?.data.length > 0 ? (
-                      influencerRaw.data.map((influencer) => {
-                        if (selectedCampaign?.joinedInfluencerIds.includes(influencer.id)) return;
-                        if (selectedCampaign?.invitedInfluencerIds?.includes(influencer.id)) return;
-                        return (
-                          <Card
-                            key={influencer.id}
-                            className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all py-2"
-                          >
-                            <CardContent className="flex items-center justify-between gap-4">
-                              <Checkbox
-                                checked={selectedInfluencers.includes(influencer.id)}
-                                disabled={selectedCampaign === undefined}
-                                onCheckedChange={() => handleInfluencerSelect(influencer.id)}
-                                className="cursor-pointer"
-                              />
-
-                              <div className="flex items-center space-x-4 flex-1">
-                                <Avatar className="h-14 w-14">
-                                  <AvatarImage
-                                    src={influencer.avatarUrl || '/placeholder.svg'}
-                                    alt={influencer.name}
-                                    className="object-cover"
-                                  />
-                                  <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                  <h3 className="font-semibold">{influencer.name}</h3>
-                                  {/* {influencer?.category && (
-                                    <p className="text-sm text-muted-foreground capitalize">
-                                      {influencer.category
-                                        .map((cat: any) => cat.categoryName)
-                                        .join(', ')}
-                                    </p>
-                                  )} */}
-                                  <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
-                                    <div className="flex items-center space-x-1">
-                                      <Icons.users className="h-4 w-4" />
-                                      <span>
-                                        {formatNumber(influencer.follower ?? 0)} followers
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                      <Icons.star className="h-4 w-4" />
-                                      <span>{influencer.rating}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => navigate(`/influencer/${influencer.id}`)}
-                              >
-                                Xem hồ sơ
-                              </Button>
-                            </CardContent>
-                          </Card>
-                        );
-                      })
-                    ) : (
-                      <Alert variant="default">
-                        <Icons.circleAlert className="h-4 w-4 mr-2" />
-                        <AlertTitle>Không có influencer nào</AlertTitle>
-                        <AlertDescription>Hãy kiểm tra lại dữ liệu.</AlertDescription>
-                      </Alert>
-                    )}
+                )}
+                {selectedCampaign && (
+                  <div className="flex items-center justify-end space-x-2">
+                    <Switch
+                      id="recommend-mode"
+                      className="cursor-pointer"
+                      checked={isAssistantMode}
+                      onClick={() => setAssistantMode(!isAssistantMode)}
+                    />
+                    <Label htmlFor="recommend-mode">Đề xuất</Label>
                   </div>
-                </div>
+                )}
+                {selectedCampaign && (
+                  <div className="max-h-96 overflow-y-auto space-y-3 no-scrollbar">
+                    <CandidateList
+                      handleInfluencerSelect={handleInfluencerSelect}
+                      influencerRoleId={influencerRoleId!}
+                      selectedCampaign={selectedCampaign}
+                      selectedInfluencers={selectedInfluencers}
+                      assistant={isAssistantMode}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </form>
