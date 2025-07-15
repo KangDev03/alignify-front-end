@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo,useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDispatch } from 'react-redux';
 import { AlertCircleIcon } from 'lucide-react';
@@ -81,6 +81,11 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
       : { term: '', pageNumber: pageNumber, pageSize: 10 },
     { skip: !isSearching },
   );
+  // Log dữ liệu trả về khi tìm kiếm chiến dịch
+  if (isSearching) {
+    // eslint-disable-next-line no-console
+    console.log('Kết quả tìm kiếm chiến dịch:', searchResult);
+  }
   let isLoading: boolean | null = null;
   if (isSearching) {
     isLoading = isLoadingSearch;
@@ -92,8 +97,14 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
   if ((isLoadingAll || isLoadingCategory || isLoadingSearch) && campaignPosting.length === 0) {
     isLoading = true;
   }
+  // Chuẩn hóa lấy mảng campaign cho search, dùng useMemo để tối ưu và tránh warning
+  const searchCampaigns = useMemo(() => {
+    if (!isSearching) return [];
+    if (Array.isArray(searchResult?.data)) return searchResult?.data;
+    return searchResult?.data?.campaigns ?? [];
+  }, [isSearching, searchResult]);
   const hasMore = isSearching
-    ? (searchResult?.data?.campaigns?.length ?? 0) === 10
+    ? (searchCampaigns.length ?? 0) === 10
     : isAll
       ? (allData?.data?.campaigns?.length ?? 0) === 10
       : (categoryData?.data?.campaigns?.length ?? 0) === 10;
@@ -101,16 +112,22 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
   useEffect(() => {
     if (pageNumber === 0 && !isLoading) {
       if (isSearching && searchResult) {
-        dispatch(setCampaignPosting(searchResult));
+        dispatch(setCampaignPosting(searchCampaigns));
       } else if (isAll && allData) {
-        dispatch(setCampaignPosting(allData));
+        const campaigns = Array.isArray(allData?.data)
+          ? allData?.data
+          : allData?.data?.campaigns ?? [];
+        dispatch(setCampaignPosting(campaigns));
       } else if (!isAll && categoryData) {
-        dispatch(setCampaignPosting(categoryData));
+        const campaigns = Array.isArray(categoryData?.data)
+          ? categoryData?.data
+          : categoryData?.data?.campaigns ?? [];
+        dispatch(setCampaignPosting(campaigns));
       } else {
         dispatch(resetCampaignPosting());
       }
     }
-  }, [allData, categoryData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading]);
+  }, [allData, categoryData, isAll, pageNumber, dispatch, isSearching, searchResult, isLoading, searchCampaigns]);
   useEffect(() => {
     if (campaign) {
       if (isAll) refetchAll();
@@ -220,10 +237,7 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
   if (
     !isLoading &&
     isSearching &&
-    (!searchResult ||
-      !searchResult.data ||
-      !searchResult.data.campaigns ||
-      searchResult?.data.campaigns.length == 0)
+    searchCampaigns.length === 0
   ) {
     return (
       <Alert variant="default">
