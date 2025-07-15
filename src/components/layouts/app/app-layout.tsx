@@ -28,7 +28,7 @@ function AppLayout() {
   const handleLogout = useCallback(() => {
     dispatch(baseApi.util.resetApiState());
     dispatch(logout());
-    navigate('/auth/login');
+    navigate('/');
   }, [dispatch, navigate]);
   const { id: userId, token, role: roleName } = useAppSelector((state: RootState) => state.auth);
 
@@ -42,9 +42,9 @@ function AppLayout() {
           if (received && received.userId && received.userId === userId) {
             toast.warning(
               'Tài khoản của bạn đã bị khóa vào lúc: ' +
-                formatTime(parseIsoToDateTime(received.createdAt)) +
-                ' ' +
-                formatDate(parseIsoToDateTime(received.createdAt)),
+              formatTime(parseIsoToDateTime(received.createdAt)) +
+              ' ' +
+              formatDate(parseIsoToDateTime(received.createdAt)),
             );
             handleLogout();
           }
@@ -94,7 +94,7 @@ function AppLayout() {
   if (roleName !== 'ADMIN') {
     backgroundImage =
       theme === 'dark' ||
-      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         ? '/background-dark.png'
         : '/background-light.png';
   }

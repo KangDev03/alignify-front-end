@@ -12,6 +12,8 @@ import {
   Camera,
   Check,
   CheckCircle,
+  ChevronDown,
+  ChevronUp,
   CircleAlert,
   CircleCheckBig,
   CircleChevronDown,
@@ -32,8 +34,10 @@ import {
   Heart,
   Home,
   Image,
+  Inbox,
   Instagram,
   LayoutDashboard,
+  Link,
   Loader2,
   LogOut,
   Mail,
@@ -64,13 +68,14 @@ import {
   Trash2,
   TrendingUp,
   Twitter,
+  Upload,
   User,
   UserCheck,
   UserRoundX,
   Users,
   X,
   Youtube,
-  Zap,
+  Zap
 } from 'lucide-react';
 
 export const Icons = {
@@ -146,4 +151,9 @@ export const Icons = {
   loader2: Loader2,
   refreshCw: RefreshCw,
   rss: Rss,
+  chevronUp: ChevronUp,
+  chevronDown: ChevronDown,
+  upload: Upload,
+  inbox: Inbox,
+  link: Link,
 };
