@@ -8,7 +8,7 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
 
   if (!token) {
-    return <Navigate to="/landing-page" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
   return children;
 }
