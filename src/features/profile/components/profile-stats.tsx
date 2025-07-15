@@ -67,12 +67,18 @@ export function ProfileStats({ socialMedias }: { socialMedias: SocialMedia[] }) 
           {socialMediaPlatforms.map((platform) => {
             const Icon = platform.icon;
             return (
-              <div key={platform.platform} className="flex items-center justify-between">
+              <div
+                key={platform.platform}
+                className="flex items-center justify-between font-medium"
+              >
                 <div className="flex items-center space-x-2">
                   <Icon className={`h-4 w-4 ${platform.color}`} />
                   <span className="text-sm">{platform.platform}</span>
                 </div>
-                <span className="text-sm font-medium">{formatNumber(platform.followers)}</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm">{formatNumber(platform.followers)}</span>
+                  <Icons.rss className="h-4 w-4 -scale-x-90" />
+                </div>
               </div>
             );
           })}

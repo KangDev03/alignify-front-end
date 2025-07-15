@@ -1,6 +1,8 @@
 'use client';
 
-import { useLocation } from 'react-router';
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -9,18 +11,32 @@ import { useGetAllCampaignsOfBrandNoPageQuery } from '@/features/my-campaign/cam
 import { ContactInfoCard } from '@/features/profile/components/brand-contact';
 import { BrandHeaderCard } from '@/features/profile/components/brand-header';
 import { BrandInfoCard } from '@/features/profile/components/brand-info';
+import { BrandProfileSkeletion } from '@/features/profile/components/profile-skeletion';
 import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { useGetBrandProfileUserQuery } from '@/features/profile/profile.service';
 
 export function BrandProfilePage() {
+  const navigate = useNavigate();
   const location = useLocation();
   let userId = location.pathname.split('/').pop() || undefined;
   userId = userId === 'user-profile' ? undefined : userId;
 
-  const { data: profileRaw, isLoading } = useGetBrandProfileUserQuery(userId, {
+  const {
+    data: profileRaw,
+    isLoading,
+    isError,
+  } = useGetBrandProfileUserQuery(userId, {
     refetchOnMountOrArgChange: true,
     refetchOnReconnect: true,
   });
+
+  useEffect(() => {
+    if (isError) {
+      navigate('/home');
+      toast.error('Đã có lỗi bất ngờ xảy ra. Vui lòng thử lại!');
+    }
+  }, [isError, navigate]);
+
   const { data: campaignsRaw } = useGetAllCampaignsOfBrandNoPageQuery(undefined, {
     refetchOnMountOrArgChange: true,
     refetchOnReconnect: true,
@@ -30,7 +46,7 @@ export function BrandProfilePage() {
   const runningCampaigns = campaigns.filter((c) => c.status === 'RECRUITING');
   const completedCampaigns = campaigns.filter((c) => c.status === 'COMPLETED');
   if (isLoading || !profileRaw?.data) {
-    return <div>Loading...</div>;
+    return <BrandProfileSkeletion />;
   }
 
   const profile = profileRaw?.data;
