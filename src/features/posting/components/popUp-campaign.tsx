@@ -42,7 +42,7 @@ import {
 } from '@/features/common/common.type';
 import { setRefetch } from '@/features/home/home.slice';
 import { useUpdateCampaignDataMutation } from '@/features/my-campaign/campaign.service';
-import { updateCampaignSlice } from '@/features/my-campaign/campaign.slice';
+import { deleteCampaignSlice, updateCampaignSlice } from '@/features/my-campaign/campaign.slice';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
@@ -66,13 +66,15 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
   const sendNotification = useSendNotification();
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const [isExtended, setExtended] = useState<ExtendedState[]>([]);
-  const [postCampaign, { isLoading: isPosting }] = usePostCampaignMutation();
-  const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignDataMutation();
-  const [deleteCampaign, { isLoading: isDeleting }] = useDeleteCampaignMutation();
+  const [postCampaign, { isLoading: isPosting, isSuccess: isPostingSuccess }] =
+    usePostCampaignMutation();
+  const [updateCampaign, { isLoading: isUpdating, isSuccess: isUpdatingSuccess }] =
+    useUpdateCampaignDataMutation();
+  const [deleteCampaign, { isLoading: isDeleting, isSuccess: isDeletingSuccess }] =
+    useDeleteCampaignMutation();
   const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
   const { data: rawData } = useGetCategoriesQuery();
   const categories = rawData?.data;
-
   const onUpdating = campaignData !== undefined && campaignData !== null;
 
   const imageUrl = campaignData && campaignData.imageUrl;
@@ -96,33 +98,33 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
         : [{ platform: '', followers: undefined }],
       campaignRequirements: campaignData?.campaignRequirements?.length
         ? campaignData.campaignRequirements.map((req) => ({
-          platform: req.platform,
-          post_type: req.post_type,
-          quantity: req.quantity,
-          postDetails: req.details.map((item) => {
-            const postType = item.post_type?.toLowerCase() as PostType;
-            return {
-              [postType]: {
-                like: item.like,
-                comment: item.comment,
-                share: item.share,
-              },
-            };
-          }),
-        }))
+            platform: req.platform,
+            post_type: req.post_type,
+            quantity: req.quantity,
+            postDetails: req.details.map((item) => {
+              const postType = item.post_type?.toLowerCase() as PostType;
+              return {
+                [postType]: {
+                  like: item.like,
+                  comment: item.comment,
+                  share: item.share,
+                },
+              };
+            }),
+          }))
         : [
-          {
-            platform: '',
-            post_type: '',
-            quantity: undefined,
-            postDetails: [
-              { post: { like: 0, comment: 0, share: 0 } },
-              { video: { like: 0, comment: 0, share: 0 } },
-              { story: { like: 0, comment: 0, share: 0 } },
-              { reel: { like: 0, comment: 0, share: 0 } },
-            ],
-          },
-        ],
+            {
+              platform: '',
+              post_type: '',
+              quantity: undefined,
+              postDetails: [
+                { post: { like: 0, comment: 0, share: 0 } },
+                { video: { like: 0, comment: 0, share: 0 } },
+                { story: { like: 0, comment: 0, share: 0 } },
+                { reel: { like: 0, comment: 0, share: 0 } },
+              ],
+            },
+          ],
       categoryIds: campaignData?.categories.map((cat) => cat.categoryId) || [],
       image: undefined,
     },
@@ -240,44 +242,26 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
           createdAt,
           categories: campaignRaw.categoryIds
             ? campaignRaw.categoryIds.map((catId) => {
-              return categories!.find((cat) => cat.categoryId === catId)!;
-            })
+                return categories!.find((cat) => cat.categoryId === catId)!;
+              })
             : _categories,
         };
         dispatch(updateCampaignSlice(newCampaign));
-        sendNotification({
-          userId: id!,
-          content: `Cập nhật chiến dịch thành công`,
-          name: name!,
-          avatarUrl: avatarUrl!,
-        });
         await updateCampaign({ formData: formData, id: campaignData.campaignId }).unwrap();
       } else {
         await postCampaign({ formData }).unwrap();
         dispatch(setRefetch({ key: 'campaign', value: true }));
-        sendNotification({
-          userId: id!,
-          content: `Bạn đã đăng bài chiến dịch thành công`,
-          name: name!,
-          avatarUrl: avatarUrl!,
-        });
       }
       dialogCloseRef.current?.click();
       form.reset();
-      // toast.success('Đăng bài thành công!');
     } catch (err) {
       if (onUpdating) {
         toast.error('Cập nhật chiến dịch thất bại. Vui lòng thử lại!');
       } else {
         if (isApiResponseError(err)) {
-          if (Number(err.data.status) === 403) {
-            toast.error('Bạn không có quyền đăng chiến dịch!');
-          } else {
-            toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
-          }
-        } else {
-          toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
-        }
+          if (Number(err.data.status) === 403) toast.error('Bạn không có quyền đăng chiến dịch!');
+          else toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
+        } else toast.error('Đăng chiến dịch thất bại. Vui lòng thử lại!');
       }
     }
   };
@@ -303,13 +287,46 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
     if (!campaignData?.campaignId) return;
     try {
       await deleteCampaign(campaignData.campaignId).unwrap();
-      toast.success('Xóa chiến dịch thành công!');
-      dialogCloseRef.current?.click();
+      dispatch(deleteCampaignSlice({ campaignId: campaignData.campaignId }));
       dispatch(setRefetch({ key: 'campaign', value: true }));
+      dialogCloseRef.current?.click();
     } catch (_err) {
       toast.error('Xóa chiến dịch thất bại. Vui lòng thử lại!');
     }
   };
+
+  useEffect(() => {
+    if (isPostingSuccess) {
+      sendNotification({
+        userId: id!,
+        content: `Tạo chiến dịch thành công!`,
+        name: name!,
+        avatarUrl: avatarUrl!,
+      });
+    }
+  }, [isPostingSuccess, avatarUrl, name, id, sendNotification]);
+
+  useEffect(() => {
+    if (isUpdatingSuccess) {
+      sendNotification({
+        userId: id!,
+        content: `Cập nhật chiến dịch thành công!`,
+        name: name!,
+        avatarUrl: avatarUrl!,
+      });
+    }
+  }, [isUpdatingSuccess, avatarUrl, name, id, sendNotification]);
+
+  useEffect(() => {
+    if (isDeletingSuccess) {
+      sendNotification({
+        userId: id!,
+        content: `Xóa chiến dịch thành công!`,
+        name: name!,
+        avatarUrl: avatarUrl!,
+      });
+    }
+  }, [isDeletingSuccess, avatarUrl, name, id, sendNotification]);
 
   return (
     <DialogContent showCloseButton={false} className="p-0 py-6 sm:max-w-[650px] h-[85%] text-base">
@@ -637,13 +654,16 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
             <Label>Yêu cầu nền tảng *</Label>
             <div className="space-y-3">
               {contentFields.map((item, idx) => {
-                const isExpanded = isExtended.find((item) => item.idx === idx)?.extended
-                const platform = form.watch(`campaignRequirements.${idx}.platform`)
-                const postType = form.watch(`campaignRequirements.${idx}.post_type`)
-                const quantity = form.watch(`campaignRequirements.${idx}.quantity`)
+                const isExpanded = isExtended.find((item) => item.idx === idx)?.extended;
+                const platform = form.watch(`campaignRequirements.${idx}.platform`);
+                const postType = form.watch(`campaignRequirements.${idx}.post_type`);
+                const quantity = form.watch(`campaignRequirements.${idx}.quantity`);
 
                 return (
-                  <div key={item.id} className="border border-border rounded-lg overflow-hidden bg-card">
+                  <div
+                    key={item.id}
+                    className="border border-border rounded-lg overflow-hidden bg-card"
+                  >
                     {/* Header Section */}
                     <div className="flex items-center justify-between p-3 bg-muted/30 border-b">
                       <div className="flex items-center space-x-2">
@@ -653,24 +673,29 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                           size="sm"
                           onClick={() => {
                             setExtended((prev) => {
-                              const index = prev.findIndex((item) => item.idx === idx)
+                              const index = prev.findIndex((item) => item.idx === idx);
                               if (index === -1) {
-                                return [...prev, { idx, extended: true }]
+                                return [...prev, { idx, extended: true }];
                               }
-                              const newExtended = [...prev]
-                              newExtended[index].extended = !newExtended[index].extended
-                              return newExtended
-                            })
+                              const newExtended = [...prev];
+                              newExtended[index].extended = !newExtended[index].extended;
+                              return newExtended;
+                            });
                           }}
                           className="p-1 h-8 w-8"
                         >
-                          {isExpanded ? <Icons.chevronUp className="h-4 w-4" /> : <Icons.chevronDown className="h-4 w-4" />}
+                          {isExpanded ? (
+                            <Icons.chevronUp className="h-4 w-4" />
+                          ) : (
+                            <Icons.chevronDown className="h-4 w-4" />
+                          )}
                         </Button>
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 rounded-full bg-primary"></div>
                           <span className="font-medium text-sm">
                             Nền tảng {idx + 1}
-                            {platform && ` - ${socialPlatformOptions.find((opt) => opt.value === platform)?.label}`}
+                            {platform &&
+                              ` - ${socialPlatformOptions.find((opt) => opt.value === platform)?.label}`}
                           </span>
                         </div>
                       </div>
@@ -698,16 +723,16 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                               <FormControl>
                                 <Select
                                   onValueChange={(value) => {
-                                    field.onChange(value)
+                                    field.onChange(value);
                                     setExtended((prev) => {
-                                      const index = prev.findIndex((item) => item.idx === idx)
+                                      const index = prev.findIndex((item) => item.idx === idx);
                                       if (index === -1) {
-                                        return [...prev, { idx, extended: true }]
+                                        return [...prev, { idx, extended: true }];
                                       }
-                                      const newExtended = [...prev]
-                                      newExtended[index].extended = true
-                                      return newExtended
-                                    })
+                                      const newExtended = [...prev];
+                                      newExtended[index].extended = true;
+                                      return newExtended;
+                                    });
                                   }}
                                   value={field.value || undefined}
                                 >
@@ -739,22 +764,33 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                 name={`campaignRequirements.${idx}.post_type`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="text-sm font-medium">Loại nội dung</FormLabel>
+                                    <FormLabel className="text-sm font-medium">
+                                      Loại nội dung
+                                    </FormLabel>
                                     <FormControl>
-                                      <Select onValueChange={field.onChange} value={field.value || undefined}>
+                                      <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value || undefined}
+                                      >
                                         <SelectTrigger className="w-full capitalize">
                                           <SelectValue placeholder="Chọn loại nội dung" />
                                         </SelectTrigger>
                                         <SelectContent>
                                           {SupportedPostTypeByPlatform[
-                                            (platform || "").toLowerCase() as keyof typeof SupportedPostTypeByPlatform
+                                            (
+                                              platform || ''
+                                            ).toLowerCase() as keyof typeof SupportedPostTypeByPlatform
                                           ]?.map((item) => {
-                                            const type = Object.keys(item)[0]
+                                            const type = Object.keys(item)[0];
                                             return (
-                                              <SelectItem key={type} value={type} className='capitalize'>
+                                              <SelectItem
+                                                key={type}
+                                                value={type}
+                                                className="capitalize"
+                                              >
                                                 {type}
                                               </SelectItem>
-                                            )
+                                            );
                                           })}
                                         </SelectContent>
                                       </Select>
@@ -791,27 +827,37 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                               <div>
                                 <div className="flex items-center space-x-2">
                                   <div className="w-1 h-4 bg-primary rounded-full"></div>
-                                  <Label className="text-sm font-medium text-primary">Yêu cầu tương tác</Label>
+                                  <Label className="text-sm font-medium text-primary">
+                                    Yêu cầu tương tác
+                                  </Label>
                                 </div>
 
                                 <div>
                                   {Array.from({ length: quantity }, (_, index) => {
                                     const platformKey = (
-                                      platform || ""
-                                    ).toLowerCase() as keyof typeof SupportedPostTypeByPlatform
-                                    const postTypesArray = SupportedPostTypeByPlatform[platformKey] || []
-                                    const postTypeObj = postTypesArray.find((obj) => Object.keys(obj)[0] === postType)
+                                      platform || ''
+                                    ).toLowerCase() as keyof typeof SupportedPostTypeByPlatform;
+                                    const postTypesArray =
+                                      SupportedPostTypeByPlatform[platformKey] || [];
+                                    const postTypeObj = postTypesArray.find(
+                                      (obj) => Object.keys(obj)[0] === postType,
+                                    );
                                     const postDetails = postTypeObj
                                       ? postTypeObj[postType as keyof typeof postTypeObj] || []
-                                      : []
+                                      : [];
 
-                                    if (!postDetails.length) return null
+                                    if (!postDetails.length) return null;
 
                                     return (
-                                      <div key={index} className="bg-muted/20 rounded-lg px-4 py-2 space-y-3">
+                                      <div
+                                        key={index}
+                                        className="bg-muted/20 rounded-lg px-4 py-2 space-y-3"
+                                      >
                                         <div className="flex items-center space-x-2">
                                           <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                            <span className="text-xs font-medium text-primary">{index + 1}</span>
+                                            <span className="text-xs font-medium text-primary">
+                                              {index + 1}
+                                            </span>
                                           </div>
                                           <Label className="text-sm">Nội dung {index + 1}</Label>
                                         </div>
@@ -827,9 +873,15 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                               render={({ field }) => (
                                                 <FormItem>
                                                   <FormLabel className="text-xs font-medium capitalize flex items-center space-x-1">
-                                                    {require === "like" && <Icons.heart className="w-3 h-3" />}
-                                                    {require === "comment" && <Icons.messageCircle className="w-3 h-3" />}
-                                                    {require === "share" && <Icons.share2 className="w-3 h-3" />}
+                                                    {require === 'like' && (
+                                                      <Icons.heart className="w-3 h-3" />
+                                                    )}
+                                                    {require === 'comment' && (
+                                                      <Icons.messageCircle className="w-3 h-3" />
+                                                    )}
+                                                    {require === 'share' && (
+                                                      <Icons.share2 className="w-3 h-3" />
+                                                    )}
                                                     <span>{require}</span>
                                                   </FormLabel>
                                                   <FormControl>
@@ -839,7 +891,9 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                                       min={0}
                                                       placeholder="0"
                                                       value={(field.value as number) ?? 0}
-                                                      onChange={(e) => field.onChange(Number(e.target.value))}
+                                                      onChange={(e) =>
+                                                        field.onChange(Number(e.target.value))
+                                                      }
                                                       className="text-sm"
                                                     />
                                                   </FormControl>
@@ -850,7 +904,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                           ))}
                                         </div>
                                       </div>
-                                    )
+                                    );
                                   })}
                                 </div>
                               </div>
@@ -860,13 +914,15 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                       </div>
                     )}
                   </div>
-                )
+                );
               })}
 
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => appendContent({ platform: "", post_type: "", postDetails: [], quantity: 1 })}
+                onClick={() =>
+                  appendContent({ platform: '', post_type: '', postDetails: [], quantity: 1 })
+                }
                 className="w-full border-dashed border-2 hover:border-primary/50 hover:bg-primary/5"
               >
                 <Icons.plus className="w-4 h-4 mr-2" />
@@ -876,7 +932,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
           </div>
 
           <div className="flex justify-end gap-2.5">
-            <DialogClose name="close-campaignPopup" ref={dialogCloseRef}>
+            {onUpdating ? (
               <Button
                 variant={'outline'}
                 className="text-destructive hover:text-destructive"
@@ -884,39 +940,51 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                 onClick={onUpdating ? handleDeleteCampaign : undefined}
                 disabled={isDeleting}
               >
-                {onUpdating
-                  ? isDeleting
-                    ? (
-                      <>
-                        <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Đang cập nhật...
-                      </>
-                    )
-                    : 'Xoá'
-                  : 'Hủy'}
+                {isDeleting ? (
+                  <>
+                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang xóa
+                  </>
+                ) : (
+                  'Xoá'
+                )}
               </Button>
-            </DialogClose>
+            ) : (
+              <DialogClose name="close-campaignPopup" ref={dialogCloseRef}>
+                <Button
+                  variant={'outline'}
+                  className="text-destructive hover:text-destructive"
+                  type={onUpdating ? 'button' : 'reset'}
+                  onClick={onUpdating ? handleDeleteCampaign : undefined}
+                  disabled={isDeleting}
+                >
+                  Hủy
+                </Button>
+              </DialogClose>
+            )}
             <Button variant={'default'} type="submit" disabled={isPosting}>
-              {onUpdating
-                ? isUpdating
-                  ?
+              {onUpdating ? (
+                isUpdating ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang cập nhật...
+                    Đang cập nhật
                   </>
-                  : 'Cập nhật'
-                : isPosting
-                  ?
-                  <>
-                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang đăng...
-                  </>
-                  : 'Đăng chiến dịch'}
+                ) : (
+                  'Cập nhật'
+                )
+              ) : isPosting ? (
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang đăng
+                </>
+              ) : (
+                'Đăng chiến dịch'
+              )}
             </Button>
           </div>
         </form>
       </Form>
-      {/* <DialogClose ref={dialogCloseRef} className="hidden" /> */}
+      <DialogClose ref={dialogCloseRef} className="hidden" />
     </DialogContent>
   );
 }

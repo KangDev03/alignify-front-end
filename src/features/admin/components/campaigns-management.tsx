@@ -103,9 +103,15 @@ export function CampaignsManagement() {
   };
 
   const handleDeleteCampaign = async (campaignId: string) => {
+    let toastId: string | number | undefined;
     try {
-      await deleteCampaign(campaignId);
+      toastId = toast.loading('Đang xóa chiến dịch!', { duration: 2000 });
+      await deleteCampaign(campaignId).unwrap();
+      setCampaigns((prev) => prev.filter((campaign) => campaign.campaignId !== campaignId));
+      toast.dismiss(toastId);
+      toast.success('Xóa chiến dịch thành công!', { duration: 2000 });
     } catch (err) {
+      if (toastId) toast.dismiss(toastId);
       console.log(err);
       toast.error('Xóa chiến dịch thất bại. Thử lại sau!');
     }

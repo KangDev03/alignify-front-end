@@ -80,7 +80,8 @@ export default function InvitationModal() {
 
   const [selectedInfluencers, setSelectedInfluencers] = useState<string[]>([]);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign>();
-  const [sendInvitation, { isLoading: isSending, isSuccess }] = useSendInvitationsMutation();
+  const [sendInvitation, { isLoading: isSending, isSuccess, isError }] =
+    useSendInvitationsMutation();
   const [toastId, setToastId] = useState<string | number | undefined>();
   let max =
     selectedCampaign?.influencerCountExpected &&
@@ -123,6 +124,7 @@ export default function InvitationModal() {
     } else {
       newSelected = [...selectedInfluencers, influencerId];
     }
+    console.log(newSelected);
     setSelectedInfluencers(newSelected);
     form.setValue('influencerIds', newSelected);
   };
@@ -133,6 +135,7 @@ export default function InvitationModal() {
       closeDialogRef.current?.click();
       setSelectedInfluencers([]);
       form.reset();
+      console.log(values.influencerIds);
     } catch (error) {
       if (isApiResponseError(error)) {
         toast.error(error.data.error);
@@ -158,7 +161,13 @@ export default function InvitationModal() {
       setToastId(undefined);
     }
   }, [isSuccess, toastId]);
-
+  useEffect(() => {
+    if (isError && toastId) {
+      toast.dismiss(toastId);
+      toast.success('Gửi lời mời thất bại!', { duration: 2000 });
+      setToastId(undefined);
+    }
+  }, [isError, toastId]);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -286,10 +295,7 @@ export default function InvitationModal() {
                       Hủy
                     </Button>
                   </DialogClose>
-                  <Button type="submit">
-                    Gửi lời mời
-                    <Icons.send className="h-4 w-4 mr-2 -rotate-12" />
-                  </Button>
+                  <Button type="submit">Gửi lời mời</Button>
                 </div>
               </div>
 
