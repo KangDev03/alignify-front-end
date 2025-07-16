@@ -129,10 +129,10 @@ export default function InvitationModal() {
 
   const onSubmit = async (values: InvitationFormValues) => {
     try {
-      form.reset();
       await sendInvitation(values);
       closeDialogRef.current?.click();
       setSelectedInfluencers([]);
+      form.reset();
     } catch (error) {
       if (isApiResponseError(error)) {
         toast.error(error.data.error);
@@ -141,11 +141,15 @@ export default function InvitationModal() {
   };
 
   useEffect(() => {
-    if (isSending) {
+    if (isSending && !toastId) {
       const id = toast.loading('Đang gửi lời mời!', { duration: 2000 });
       setToastId(id);
     }
-  }, [isSending]);
+    if (!isSending && toastId) {
+      toast.dismiss(toastId);
+      setToastId(undefined);
+    }
+  }, [isSending, toastId]);
 
   useEffect(() => {
     if (isSuccess && toastId) {
