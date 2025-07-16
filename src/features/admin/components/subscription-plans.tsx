@@ -108,6 +108,11 @@ export function SubscriptionPlans() {
         ...values,
         isActive: values.isActive ?? false,
         isPopular: values.isPopular ?? false,
+        planPermissions: Array.isArray(values.planPermissions)
+          ? values.planPermissions
+          : values.planPermissions
+            ? [values.planPermissions]
+            : [],
       };
 
       await createPlan(planSubmitData).unwrap();

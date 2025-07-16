@@ -10,6 +10,7 @@ import {
   Headphones,
   Shield,
   Sparkles,
+  Star,
   TrendingUp,
   X,
   Zap,
@@ -41,6 +42,7 @@ import { Switch } from '@/components/ui/switch';
 import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
 import type { Plan, PlanResponse } from '@/features/upgrade-plan/components/upgrade-plan.type';
 import { formatPlanPermissonName } from '@/utils/format';
+import PlanCard from '@/features/admin/components/plan-management/plan-card';
 
 type UserRole = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
 
