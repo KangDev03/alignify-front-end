@@ -17,31 +17,17 @@ export function SubscriptionPlans() {
   const [selectedRole, setSelectedRole] = useState<'BRAND' | 'INFLUENCER'>('BRAND');
   const [isAnnual, setIsAnnual] = useState(false);
 
-  const { data: fetchedPlans } = useGetPlansByRoleQuery(selectedRole.toLowerCase());
+  const { data: fetchedBrandPlans } = useGetPlansByRoleQuery('brand');
+  const { data: fetchedInfluencerPlans } = useGetPlansByRoleQuery('influencer');
   const influencerPlans = useMemo(() => {
-    if (!fetchedPlans?.data) return [];
-    if (selectedRole === 'INFLUENCER')
-      return formatPlans(
-        'INFLUENCER',
-        {
-          ...fetchedPlans,
-        },
-        isAnnual,
-      );
-  }, [fetchedPlans, isAnnual, selectedRole]);
+    if (!fetchedInfluencerPlans?.data) return [];
+    return formatPlans('INFLUENCER', { ...fetchedInfluencerPlans }, isAnnual);
+  }, [fetchedInfluencerPlans, isAnnual]);
 
   const brandPlans = useMemo(() => {
-    if (!fetchedPlans?.data) return [];
-    if (selectedRole === 'BRAND')
-      return formatPlans(
-        'BRAND',
-        {
-          ...fetchedPlans,
-        },
-        isAnnual,
-      );
-    return [];
-  }, [fetchedPlans, isAnnual, selectedRole]);
+    if (!fetchedBrandPlans?.data) return [];
+    return formatPlans('BRAND', { ...fetchedBrandPlans }, isAnnual);
+  }, [fetchedBrandPlans, isAnnual]);
 
   // const handleEditPlan = (plan: any) => {
   //   setEditingPlan(plan);
@@ -82,26 +68,38 @@ export function SubscriptionPlans() {
         value={selectedRole}
         onValueChange={(value) => setSelectedRole(value as 'BRAND' | 'INFLUENCER')}
       >
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 mb-6 ">
           <TabsTrigger value="brand" className="flex items-center space-x-2">
             <Icons.crown className="h-4 w-4" />
             <span>Gói Brand ({brandPlans.length})</span>
           </TabsTrigger>
           <TabsTrigger value="influencer" className="flex items-center space-x-2">
             <Icons.camera className="h-4 w-4" />
-            <span>Gói Influencer ({(influencerPlans ?? []).length})</span>
+            <span>Gói Influencer ({influencerPlans.length})</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="brand" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {brandPlans.map((plan) => PlanCard(plan))}
+            {brandPlans.map((plan) => (
+              <PlanCard
+                key={plan.id}
+                {...plan}
+                currentPlan={selectedRole === 'BRAND' ? 'creator' : 'starter'}
+              />
+            ))}
           </div>
         </TabsContent>
 
         <TabsContent value="influencer" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {(influencerPlans ?? []).map((plan) => PlanCard(plan))}
+            {(influencerPlans ?? []).map((plan) => (
+              <PlanCard
+                key={plan.id}
+                {...plan}
+                currentPlan={selectedRole === 'INFLUENCER' ? 'creator' : 'starter'}
+              />
+            ))}
           </div>
         </TabsContent>
       </Tabs>

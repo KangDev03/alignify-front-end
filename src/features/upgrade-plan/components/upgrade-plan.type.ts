@@ -36,7 +36,7 @@ export interface ConvertedPlan {
   planType: string;
   badge: string;
   badgeColor: string;
-  popular: boolean;
+  isPopular: boolean;
   planPermission: PlanPermission[];
   permission: Permission[];
   planCount: number;

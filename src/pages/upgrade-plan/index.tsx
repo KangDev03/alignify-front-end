@@ -10,7 +10,6 @@ import {
   Headphones,
   Shield,
   Sparkles,
-  Star,
   TrendingUp,
   X,
   Zap,
@@ -67,7 +66,7 @@ export const formatPlans = (userRole: RoleName, fetchedPlans: PlanResponse, isAn
       badgeColor = 'bg-green-500';
     } else if (isMiddle) {
       badge = 'Phổ biến';
-      badgeColor = 'bg-blue-500';
+      badgeColor = 'bg-blue-600';
     } else if (isPremium) {
       badge = 'Cao cấp';
       badgeColor = 'bg-purple-500';
@@ -83,10 +82,9 @@ export const formatPlans = (userRole: RoleName, fetchedPlans: PlanResponse, isAn
       planType: plan.planType === 'one_month' ? '/tháng' : '/năm',
       badge,
       badgeColor,
-      popular: isSuggested,
+      isPopular: isSuggested,
       planPermission: plan.planPermissions.map((perm) => ({
         planPermissionId: perm.planPermissionId || '',
-        roleId: perm.roleId || '',
         planPermissionName: perm.planPermissionName,
         limited: perm.limited,
       })),
@@ -98,7 +96,6 @@ export const formatPlans = (userRole: RoleName, fetchedPlans: PlanResponse, isAn
         permissionName: p.permissionName,
         permissionDescription: p.permissionDescription,
       })),
-      isPopular: plan.isPopular,
       currentPlan: userRole === 'INFLUENCER' ? 'creator' : 'starter',
       buttonText: isFree ? 'Gói hiện tại' : isPremium ? 'Liên hệ tư vấn' : 'Nâng cấp ngay',
       buttonVariant: (isFree ? 'secondary' : isPremium ? 'outline' : 'default') as
@@ -114,12 +111,12 @@ export const formatPlans = (userRole: RoleName, fetchedPlans: PlanResponse, isAn
 
 export function UpgradePlan({ userRole }: UpgradePlanProps) {
   const [isAnnual, setIsAnnual] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string>('');
+  const [selectedPlan] = useState<string>('');
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('card');
 
   const currentPlan = userRole === 'INFLUENCER' ? 'creator' : 'starter';
-  const { data: fetchedPlans, isLoading } = useGetPlansByRoleQuery(userRole ?? '');
+  const { data: fetchedPlans, isLoading } = useGetPlansByRoleQuery(userRole.toLowerCase() ?? '');
 
   useEffect(() => {
     if (!isLoading && fetchedPlans) {
@@ -132,15 +129,15 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
     [fetchedPlans, isAnnual, userRole],
   );
 
-  const handleUpgrade = (planId: string) => {
-    if (planId === currentPlan) return;
-    setSelectedPlan(planId);
-    if (planId === 'agency' || planId === 'enterprise') {
-      console.log('Redirecting to contact form...');
-    } else {
-      setShowPaymentDialog(true);
-    }
-  };
+  // const handleUpgrade = (planId: string) => {
+  //   if (planId === currentPlan) return;
+  //   setSelectedPlan(planId);
+  //   if (planId === 'agency' || planId === 'enterprise') {
+  //     console.log('Redirecting to contact form...');
+  //   } else {
+  //     setShowPaymentDialog(true);
+  //   }
+  // };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -210,30 +207,31 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {plans[0].planPermission.map((_: any, featureIndex: number) => (
-                      <tr key={featureIndex} className="border-b hover:bg-muted/50">
-                        <td className="p-4 font-medium">
-                          {formatPlanPermissionName(
-                            plans[0].planPermission[featureIndex].planPermissionName,
-                          )}
+                    {plans[0].planPermission.map((feature, featureIndex) => (
+                      <tr key={feature.planPermissionId || featureIndex} className="border-b">
+                        <td className="p-4 font-medium text-left">
+                          {formatPlanPermissionName(feature.planPermissionName)}
                         </td>
-                        {plans.map((plan) => (
-                          <td key={plan.id} className="text-center p-4">
-                            {plan.planPermission[featureIndex].limited === undefined ||
-                            plan.planPermission[featureIndex].limited > 0 ? (
-                              <div className="flex flex-col items-center">
-                                <Check className="h-5 w-5 text-green-500" />
-                                {plan.planPermission[featureIndex].limited !== undefined && (
-                                  <span className="text-xs text-muted-foreground mt-1">
-                                    {plan.planPermission[featureIndex].limited}
-                                  </span>
-                                )}
-                              </div>
-                            ) : (
-                              <X className="h-5 w-5 text-muted-foreground mx-auto" />
-                            )}
-                          </td>
-                        ))}
+                        {plans.map((plan) => {
+                          const permission = plan.planPermission[featureIndex];
+                          return (
+                            <td key={plan.id} className="text-center p-4">
+                              {permission &&
+                              (permission.limited === undefined || permission.limited > 0) ? (
+                                <div className="flex flex-col items-center">
+                                  <Check className="h-5 w-5 text-green-500" />
+                                  {permission.limited !== undefined && (
+                                    <span className="text-xs text-muted-foreground mt-1">
+                                      {permission.limited}
+                                    </span>
+                                  )}
+                                </div>
+                              ) : (
+                                <X className="h-5 w-5 text-muted-foreground mx-auto" />
+                              )}
+                            </td>
+                          );
+                        })}
                       </tr>
                     ))}
                   </tbody>
