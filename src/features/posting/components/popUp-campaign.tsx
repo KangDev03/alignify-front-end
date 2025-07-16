@@ -737,7 +737,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                           ]?.map((item) => {
                                             const type = Object.keys(item)[0]
                                             return (
-                                              <SelectItem key={type} value={type} className="capitalize">
+                                              <SelectItem key={type} value={type}>
                                                 {type}
                                               </SelectItem>
                                             )
