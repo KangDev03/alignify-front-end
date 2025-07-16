@@ -25,6 +25,7 @@ import {
   DollarSign,
   Dot,
   Edit,
+  Ellipsis,
   ExternalLink,
   Eye,
   Facebook,
@@ -75,7 +76,7 @@ import {
   Users,
   X,
   Youtube,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 export const Icons = {
@@ -156,4 +157,5 @@ export const Icons = {
   upload: Upload,
   inbox: Inbox,
   link: Link,
+  ellipsis: Ellipsis,
 };

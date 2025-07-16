@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { Icons } from '@/components/icons/icons';
 import type { ContentPosting } from '@/features/home/home.type';
@@ -133,11 +134,11 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
   return (
     <Card
       key={contentPosting.contentId}
-      className="border border-border bg-card hover:bg-muted/30 transition-all"
+      className="border border-border bg-card transition-all"
     >
       <CardContent className="px-6">
-        <div className="flex items-start space-x-3 mb-4">
-          <Avatar className="h-10 w-10">
+        <div className="flex items-center justify-center space-x-3 mb-4">
+          <Avatar className="h-12 w-12">
             <AvatarImage
               src={contentPosting.userAvatar || '/placeholder.svg'}
               alt={contentPosting.userName}
@@ -146,7 +147,19 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
             <AvatarFallback>{contentPosting.userName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h4 className="font-medium">{contentPosting.userName}</h4>
+            <div className='flex flex-row items-center justify-between'>
+              <h4 className="font-medium">{contentPosting.userName}</h4>
+              <Popover>
+                <PopoverTrigger>
+                  <Button variant="ghost" size="sm" >
+                    <Icons.ellipsis size={20} className='cursor-pointer' />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-60">
+
+                </PopoverContent>
+              </Popover>
+            </div>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-muted-foreground">
                 {formatDate(parseIsoToDateTime(contentPosting.createdDate))}
