@@ -32,6 +32,7 @@ import {
   FileImage,
   FileText,
   Flag,
+  Globe,
   Heart,
   Home,
   Image,
@@ -40,6 +41,7 @@ import {
   LayoutDashboard,
   Link,
   Loader2,
+  Lock,
   LogOut,
   Mail,
   MapPin,
@@ -158,4 +160,6 @@ export const Icons = {
   inbox: Inbox,
   link: Link,
   ellipsis: Ellipsis,
+  lock: Lock,
+  globe: Globe,
 };

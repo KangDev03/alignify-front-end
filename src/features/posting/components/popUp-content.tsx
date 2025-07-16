@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DialogClose,
   DialogContent,
@@ -54,6 +55,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
   const categories = rawData?.data;
   const onUpdating = contentData !== undefined && contentData !== null;
   const imageUrl = contentData && contentData.imageUrl;
+
   const form = useForm<ContentFormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(contentFormSchema),
@@ -61,6 +63,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       contentName: contentData?.contentName ?? '',
       content: contentData?.content ?? '',
       categoryIds: contentData?.categories.map((cat) => cat.categoryId) ?? [],
+      isPublic: contentData?.isPublic ?? true,
       image: undefined,
     },
   });
@@ -73,28 +76,33 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       formData.append('contentPosting', JSON.stringify(contentRaw));
       if (onUpdating) {
         await updateContent({ formData, id: contentData.contentId }).unwrap();
+        toast.success("Cập nhật bài viết thành công!")
       } else {
         await postContent({ formData }).unwrap();
+        toast.success("Đăng bài viết thành công!")
       }
       dialogCloseRef.current?.click();
       form.reset();
       dispatch(setRefetch({ key: 'forum', value: true }));
       sendNotification({
         userId: id!,
-        content: `Bạn đã đăng bài thành công`,
+        content: onUpdating ? `Bạn đã cập nhật bài viết thành công` : `Bạn đã đăng bài thành công`,
         name: name!,
         avatarUrl: avatarUrl!,
       });
-      // toast.success('Đăng bài thành công!');
     } catch (err) {
       if (isApiResponseError(err)) {
         if (Number(err.data.status) === 403) {
           toast.error('Bạn không có quyền đăng bài viết!');
         } else {
-          toast.error('Đăng bài thất bại. Vui lòng thử lại!');
+          toast.error(
+            onUpdating ? "Cập nhật bài viết thất bại. Vui lòng thử lại!" : "Đăng bài thất bại. Vui lòng thử lại!",
+          )
         }
       } else {
-        toast.error('Đăng bài thất bại. Vui lòng thử lại!');
+        toast.error(
+          onUpdating ? "Cập nhật bài viết thất bại. Vui lòng thử lại!" : "Đăng bài thất bại. Vui lòng thử lại!",
+        )
       }
     }
   };
@@ -120,10 +128,12 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       <DialogHeader className="flex flex-col gap-1.5 px-6">
         <DialogTitle className="flex items-center gap-1 text-primary font-bold border-b-2 pb-1 border-primary w-fit">
           <Icons.penTool className="size-6 rotate-180" />
-          <p className="text-lg leading-4">Đăng bài viết mới</p>
+          <p className="text-lg leading-4">{onUpdating ? "Chỉnh sửa bài viết" : "Đăng bài viết mới"}</p>
         </DialogTitle>
         <DialogDescription>
-          Chia sẻ kinh nghiệm, mẹo hay hoặc đặt câu hỏi với cộng đồng influencer.
+          {onUpdating
+            ? "Chỉnh sửa nội dung và cài đặt quyền riêng tư cho bài viết của bạn."
+            : "Chia sẻ kinh nghiệm, mẹo hay hoặc đặt câu hỏi với cộng đồng influencer."}
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>
@@ -184,7 +194,11 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                             <DialogContent showCloseButton={false} className="p-3">
                               <div className="flex flex-col space-y-3">
                                 <img
-                                  src={URL.createObjectURL(field.value as File) ?? imageUrl}
+                                  src={
+                                    field.value instanceof File
+                                      ? URL.createObjectURL(field.value)
+                                      : imageUrl
+                                  }
                                   alt="Poster preview"
                                   className="object-contain max-w-full h-[600px]"
                                 />
@@ -223,24 +237,19 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                 categories.map((category) => (
                   <Badge
                     key={category.categoryId}
-                    variant={
-                      form.watch('categoryIds')?.includes(category.categoryId)
-                        ? 'default'
-                        : 'outline'
-                    }
+                    variant={form.watch("categoryIds")?.includes(category.categoryId) ? "default" : "outline"}
                     className={cn(
-                      'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize',
+                      "flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize",
                     )}
                     onClick={() => handleSelectCategory(category.categoryId)}
                   >
                     {category.categoryName}
-                    {form.watch('categoryIds')?.includes(category.categoryId) && (
-                      <Icons.x className="size-3" />
-                    )}
+                    {form.watch("categoryIds")?.includes(category.categoryId) && <Icons.x className="size-3" />}
                   </Badge>
                 ))}
             </div>
           </div>
+
           <FormField
             control={form.control}
             name="content"
@@ -258,6 +267,30 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="isPublic"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                <FormControl>
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="flex items-center gap-2">
+                    <Icons.globe className="w-4 h-4" />
+                    Công khai bài viết
+                  </FormLabel>
+                  <p className="text-sm text-muted-foreground">
+                    {field.value
+                      ? "Bài viết sẽ hiển thị công khai cho tất cả mọi người"
+                      : "Bài viết chỉ hiển thị cho bạn và những người bạn cho phép"}
+                  </p>
+                </div>
+              </FormItem>
+            )}
+          />
+
           <div className="flex justify-end gap-2.5">
             <DialogClose name="close-campaignPopup" ref={dialogCloseRef}>
               <Button
@@ -268,22 +301,24 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                 Hủy
               </Button>
             </DialogClose>
-            <Button variant={'default'} type="submit" disabled={isPosting}>
-              {onUpdating
-                ? isUpdating
-                  ?
+            <Button variant={'default'} type="submit" disabled={isPosting || isUpdating}>
+              {onUpdating ? (
+                isUpdating ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Đang cập nhật...
                   </>
-                  : 'Cập nhật'
-                : isPosting
-                  ?
-                  <>
-                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang đăng...
-                  </>
-                  : 'Đăng bài viết'}
+                ) : (
+                  "Cập nhật bài viết"
+                )
+              ) : isPosting ? (
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang đăng...
+                </>
+              ) : (
+                "Đăng bài viết"
+              )}
             </Button>
           </div>
         </form>

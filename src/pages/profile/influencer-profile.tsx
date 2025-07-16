@@ -9,10 +9,12 @@ import { toast } from 'sonner';
 import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Icons } from '@/components/icons/icons';
 import { ForumPost } from '@/features/home/components/forum-post';
+import ContentPopUp from '@/features/posting/components/popUp-content';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
 import { ProfileInfo } from '@/features/profile/components/profile-info';
 import { InfluencerProfileSkeletion } from '@/features/profile/components/profile-skeletion';
@@ -128,10 +130,15 @@ export default function InfluencerProfilePage() {
                             Bạn chưa đăng bài viết nào trong forum.
                           </p>
                         </div>
-                        <Button>
-                          <Icons.messageCircle className="h-4 w-4 mr-2" />
-                          Viết bài đầu tiên
-                        </Button>
+                        <Dialog>
+                          <DialogTrigger>
+                            <Button className="w-full">
+                              <Icons.penTool className="h-4 w-4 mr-2" />
+                              Tạo bài viết mới
+                            </Button>
+                          </DialogTrigger>
+                          <ContentPopUp />
+                        </Dialog>
                       </div>
                     </CardContent>
                   </Card>
