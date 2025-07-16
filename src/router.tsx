@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router';
 
 import AppLayout from '@/components/layouts/app/app-layout';
+import { RequireAuth } from '@/features/auth/components/require-auth';
 import AdminPage from '@/pages/admin';
 import { Applicants } from '@/pages/applicants';
 import { ApplicationsPage } from '@/pages/applications';
@@ -12,10 +13,11 @@ import VerifyOtpPage from '@/pages/auth/verify-otp';
 import { CampaignManagement } from '@/pages/campaign-management';
 import { HomePage } from '@/pages/home';
 import Invitation from '@/pages/invitation';
+import { LandingPage } from '@/pages/landing-page';
 import { BrandProfilePage } from '@/pages/profile/brand-profile';
 import InfluencerProfilePage from '@/pages/profile/influencer-profile';
 import { Settings } from '@/pages/setting';
-import { Statistics } from '@/pages/statistics';
+import Statistics from '@/pages/statistics';
 import { UpgradePlan } from '@/pages/upgrade-plan';
 
 import { useAppSelector } from './hooks/redux';
@@ -29,7 +31,7 @@ function Router() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/auth">
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
@@ -38,7 +40,11 @@ function Router() {
           <Route path="select-role" element={<SelectRolePage />} />
           <Route path="verify-otp" element={<VerifyOtpPage />} />
         </Route>
-        <Route element={<AppLayout />}>
+        <Route element={
+          <RequireAuth>
+            <AppLayout />
+          </RequireAuth>
+        }>
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/settings" element={<Settings />} />
@@ -47,7 +53,12 @@ function Router() {
           <Route path="/my-campaign" element={<MyCampaignPage />} />
           <Route path="/campaign-management" element={<CampaignManagement />} />
           <Route path="/invitation" element={<Invitation />} />
-          <Route path="/statistics" element={<Statistics userRole={roleName} />} />
+          {roleName === 'INFLUENCER' && (
+            <Route path="/statistics" element={<Statistics userRole="INFLUENCER" />} />
+          )}
+          {roleName === 'BRAND' && (
+            <Route path="/statistics" element={<Statistics userRole="BRAND" />} />
+          )}
           <Route path="/upgrade-plan" element={<UpgradePlan userRole={roleName} />} />
           {roleName === 'INFLUENCER' && (
             <Route path="/user-profile" element={<InfluencerProfilePage />} />
@@ -57,6 +68,7 @@ function Router() {
           <Route path="/brand/:userId" element={<BrandProfilePage />} />
           {roleName === 'ADMIN' && <Route path="/dashboard" element={<AdminPage />} />}
         </Route>
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </>
   );

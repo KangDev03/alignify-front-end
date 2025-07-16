@@ -10,7 +10,7 @@ import type {
   InfluencerProfileResponse,
 } from './home.type';
 import type { Campaign } from '../common/common.type';
-import type { CampaignResponse } from '../my-campaign/campaign.type';
+// import type { CampaignResponse } from '../my-campaign/campaign.type';
 
 interface HomeState {
   contentPosting: ContentPosting[] | [];
@@ -38,11 +38,9 @@ const homeSlice = createSlice({
         state.campaignPosting = [];
       }
     },
-    setCampaignPosting: (state, action: PayloadAction<CampaignResponse>) => {
-      if (Array.isArray(action.payload?.data)) {
-        state.campaignPosting = action.payload.data;
-      } else if (action.payload?.data?.campaigns) {
-        state.campaignPosting = action.payload.data.campaigns;
+    setCampaignPosting: (state, action: PayloadAction<Campaign[]>) => {
+      if (Array.isArray(action.payload)) {
+        state.campaignPosting = action.payload;
       } else {
         state.campaignPosting = [];
       }

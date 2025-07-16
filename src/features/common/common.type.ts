@@ -137,9 +137,10 @@ export interface Campaign {
     followers: number;
   }[];
   influencerCountExpected: number;
-  influencerCountCurrent: number | 0;
+  joinedInfluencerIds: string[];
   applicationTotal: number | 0;
   appliedInfluencerIds?: string[];
+  invitedInfluencerIds?: string[];
 }
 
 export interface CommonPageableRequest {

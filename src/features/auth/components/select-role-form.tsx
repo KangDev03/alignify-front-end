@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 import { Icons } from '@/components/icons/icons';
-import { useGetRolesQuery } from '@/features/auth/auth.service';
 import type { Role } from '@/features/auth/auth.type';
+import { useGetRolesQuery } from '@/features/common/common.service';
 
 const ROLE_CONFIGS = {
   BRAND: {
@@ -48,7 +48,12 @@ export default function SelectRoleForm() {
   };
 
   if (isLoading) {
-    return <div>Đang tải...</div>;
+    return (
+      <>
+        <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+        Đang cập nhật...
+      </>
+    );
   }
 
   const availableRoles =
@@ -104,18 +109,16 @@ interface RoleCardProps {
 function RoleCard({ title, description, icon, isSelected, onClick }: RoleCardProps) {
   return (
     <Card
-      className={`w-64 cursor-pointer transition duration-300 py-7 ${
-        isSelected
-          ? 'border-2 border-primary bg-primary/10 shadow-lg'
-          : 'hover:border-primary/30 hover:shadow-md'
-      }`}
+      className={`w-64 cursor-pointer transition duration-300 py-7 ${isSelected
+        ? 'border-2 border-primary bg-primary/10 shadow-lg'
+        : 'hover:border-primary/30 hover:shadow-md'
+        }`}
       onClick={onClick}
     >
       <CardContent className="flex flex-col items-center justify-center h-full text-center space-y-[22px]">
         <div
-          className={`w-16 h-16 rounded-full flex items-center justify-center ${
-            isSelected ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'
-          }`}
+          className={`w-16 h-16 rounded-full flex items-center justify-center ${isSelected ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'
+            }`}
         >
           {icon}
         </div>

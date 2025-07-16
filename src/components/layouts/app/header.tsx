@@ -12,7 +12,13 @@ import ChatSheet from '@/features/chatting/components/chat-sheet';
 import NotificationTrigger from '@/features/notification/components/notification-trigger';
 import type { RootState } from '@/redux/store';
 
-type InfluencerPage = 'home' | 'my-campaign' | 'applications' | 'statistics' | 'upgrade-plan';
+type InfluencerPage =
+  | 'home'
+  | 'my-campaign'
+  | 'applications'
+  | 'invitations'
+  | 'statistics'
+  | 'upgrade-plan';
 type BrandPage =
   | 'home'
   | 'campaign-management'
@@ -39,6 +45,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
     if (userRole === 'INFLUENCER') {
       if (location.pathname.includes('/my-campaign')) return 'my-campaign';
       if (location.pathname.includes('/applications')) return 'applications';
+      if (location.pathname.includes('/invitation')) return 'invitations';
       if (location.pathname.includes('/statistics')) return 'statistics';
       if (location.pathname.includes('/upgrade-plan')) return 'upgrade-plan';
       return 'home';
@@ -68,6 +75,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
       if (page === 'home') navigate('/home');
       else if (page === 'my-campaign') navigate('/my-campaign');
       else if (page === 'applications') navigate('/applications');
+      else if (page === 'invitations') navigate('/invitation');
       else if (page === 'statistics') navigate('/statistics');
       else if (page === 'upgrade-plan') navigate('/upgrade-plan');
     } else if (userRole === 'BRAND') {
@@ -88,24 +96,25 @@ export function AppHeader({ onLogout }: HeaderProps) {
   const navigationItems =
     userRole === 'INFLUENCER'
       ? [
-          { id: 'home', label: 'Trang chủ', icon: Icons.home },
-          { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
-          { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
-          { id: 'statistics', label: 'Thống kê', icon: Icons.barChart3 },
-        ]
+        { id: 'home', label: 'Trang chủ', icon: Icons.home },
+        { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
+        { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
+        { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
+        { id: 'statistics', label: 'Thống kê', icon: Icons.barChart3 },
+      ]
       : userRole === 'BRAND'
         ? [
-            { id: 'home', label: 'Trang chủ', icon: Icons.home },
-            { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
-            { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
-            { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
-            { id: 'statistics', label: 'Báo cáo', icon: Icons.barChart3 },
-          ]
+          { id: 'home', label: 'Trang chủ', icon: Icons.home },
+          { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
+          { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
+          { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
+          { id: 'statistics', label: 'Báo cáo', icon: Icons.barChart3 },
+        ]
         : userRole === 'ADMIN'
           ? [
-              { id: 'home', label: 'Trang chủ', icon: Icons.home },
-              { id: 'dashboard', label: 'Quản lý và thống kê', icon: Icons.layoutDashboard },
-            ]
+            { id: 'home', label: 'Trang chủ', icon: Icons.home },
+            { id: 'dashboard', label: 'Quản lý và thống kê', icon: Icons.layoutDashboard },
+          ]
           : [{ id: 'home', label: 'Trang chủ', icon: Icons.home }];
 
   return (
@@ -143,7 +152,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => handlePageChange('upgrade-plan' as CurrentPage)}
-                className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 border-0 shadow-md"
+                className="flex items-center space-x-2 text-white dark:text-black bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700 border-0 shadow-md hover:text-none transition duration-200"
               >
                 <Icons.crown className="h-4 w-4" />
                 <span className="hidden md:inline">Nâng cấp</span>

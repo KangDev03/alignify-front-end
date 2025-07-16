@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
+import { Icons } from '@/components/icons/icons';
 import { type ResetPasswordFormValues, resetPasswordSchema } from '@/features/auth/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -111,7 +112,12 @@ export default function ResetPasswordForm() {
               className="w-full bg-primary hover:bg-primary/90"
               disabled={isLoading}
             >
-              {isLoading ? 'Đang cập nhật...' : 'Cập nhật mật khẩu'}
+              {isLoading ?
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang cập nhật...
+                </>
+                : 'Cập nhật mật khẩu'}
             </Button>
           </form>
         </Form>

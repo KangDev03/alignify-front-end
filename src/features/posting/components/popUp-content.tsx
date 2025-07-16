@@ -175,7 +175,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                       {(field.value || imageUrl) && (
                         <div className="flex gap-4">
                           <Dialog>
-                            <DialogTrigger>
+                            <DialogTrigger asChild>
                               <Button type="button" variant="secondary" size="sm">
                                 <Icons.eye />
                                 <span>Xem trước ảnh</span>
@@ -271,10 +271,18 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
             <Button variant={'default'} type="submit" disabled={isPosting}>
               {onUpdating
                 ? isUpdating
-                  ? 'Đang cập nhật'
+                  ?
+                  <>
+                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang cập nhật...
+                  </>
                   : 'Cập nhật'
                 : isPosting
-                  ? 'Đang đăng bài...'
+                  ?
+                  <>
+                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang đăng...
+                  </>
                   : 'Đăng bài viết'}
             </Button>
           </div>

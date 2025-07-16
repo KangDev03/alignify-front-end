@@ -104,12 +104,30 @@ export function ApplicantCard({
               Hồ sơ
             </Button>
             <Button onClick={() => handleConfirmApplicant(true)} size="sm" variant="default">
-              <Check className="h-4 w-4 mr-1" />
-              Chấp nhận {isLoading && <span className="animate-pulse">...</span>}
+              {isLoading ? (
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <Check className="h-4 w-4 mr-1" />
+                  Chấp nhận
+                </>
+              )}
             </Button>
             <Button onClick={() => handleConfirmApplicant(false)} size="sm" variant="destructive">
-              <X className="h-4 w-4 mr-1" />
-              Từ chối {isLoading && <span className="animate-pulse">...</span>}
+              {isLoading ? (
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <X className="h-4 w-4 mr-1" />
+                  Từ chối
+                </>
+              )}
             </Button>
           </>
         )}
