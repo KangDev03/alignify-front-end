@@ -110,7 +110,7 @@ export function CampaignsManagement() {
       setCampaigns((prev) => prev.filter((campaign) => campaign.campaignId !== campaignId));
       toast.dismiss(toastId);
       toast.success('Xóa chiến dịch thành công!', { duration: 2000 });
-    } catch (err) {
+    } catch (_err) {
       if (toastId) toast.dismiss(toastId);
       toast.error('Xóa chiến dịch thất bại. Thử lại sau!');
     }
