@@ -393,7 +393,11 @@ export default function StatisticsPage({ userRole }: StatisticsProps) {
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{Number(influencer.acceptanceRate).toFixed(2)}%</div>
+              <div className="text-2xl font-bold">{
+                isNaN(Number(influencer.acceptanceRate))
+                  ? '0%'
+                  : Number(influencer.acceptanceRate).toFixed(2) + '%'
+              }</div>
             </CardContent>
           </Card>
 
