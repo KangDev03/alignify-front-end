@@ -6,7 +6,7 @@ export const planApi = baseApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (builder) => ({
     getPlansByRole: builder.query<PlanResponse, string>({
-      query: (roleId) => `/plans?roleId=${roleId}`,
+      query: (role) => `/plans/${role}`,
       providesTags: ['Plan'],
     }),
 

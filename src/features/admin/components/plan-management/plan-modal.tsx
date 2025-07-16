@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -31,35 +30,41 @@ import {
 import { Switch } from '@/components/ui/switch';
 
 import { Icons } from '@/components/icons/icons';
+import { useGetRolesQuery } from '@/features/common/common.service';
 import {
   useCreatePlanMutation,
   useGetPermissionQuery,
 } from '@/features/upgrade-plan/components/upgrade-plan.service';
-import type { PlanSubmitData } from '@/features/upgrade-plan/components/upgrade-plan.type';
+import type {
+  PlanPermissionSubmitData,
+  PlanSubmitData,
+} from '@/features/upgrade-plan/components/upgrade-plan.type';
 import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { planSchema, type PlanValues } from '../../admin.schema';
 
 export function PlanModal() {
+  const { data: rolesRaw } = useGetRolesQuery();
+  const roles = rolesRaw?.data;
   const { data: permissionData } = useGetPermissionQuery();
   const [createPlan] = useCreatePlanMutation();
-  const [role, setRole] = useState<'INFLUENCER' | 'BRAND'>('BRAND');
   const form = useForm<PlanValues>({
     mode: 'onSubmit',
     resolver: zodResolver(planSchema),
     defaultValues: {
       planName: '',
       description: '',
-      roleId: 'brand',
+      roleId: 'BRAND',
       permissionIds: [],
       planPermissions: {
-        roleId: 'brand',
-        planPermissionName: '',
-        limited: 0,
+        campaign_apply: undefined,
+        campaign_invitation: undefined,
+        campaign_members: undefined,
+        search_result: undefined,
       },
-      price: 0,
-      discount: 0,
+      price: undefined,
+      discount: undefined,
       planType: 'one_month',
       isActive: true,
       isPopular: false,
@@ -67,11 +72,24 @@ export function PlanModal() {
   });
 
   const onSubmit = async (values: PlanValues) => {
-    console.log('Submitting with values:', values);
-
     try {
+      const planPermissionsArray: PlanPermissionSubmitData[] = Object.entries(
+        values.planPermissions,
+      )
+        .map(([planPermissionName, limited]) => {
+          if (typeof limited === 'number' && limited >= 0)
+            return {
+              planPermissionName,
+              limited,
+            } as PlanPermissionSubmitData;
+          return undefined;
+        })
+        .filter((item): item is PlanPermissionSubmitData => item !== undefined);
+
       const planSubmitData: PlanSubmitData = {
         ...values,
+        roleId: roles!.find((role) => role.roleName === values.roleId)!.roleId,
+        planPermissions: planPermissionsArray,
         isActive: values.isActive ?? false,
         isPopular: values.isPopular ?? false,
       };
@@ -115,15 +133,14 @@ export function PlanModal() {
                       <div className="w-full flex items-center space-x-2">
                         <Switch
                           id="role"
-                          checked={field.value === 'BRAND'}
+                          checked={field.value === 'INFLUENCER'}
                           onCheckedChange={() => {
-                            if (role === 'BRAND') setRole('INFLUENCER');
-                            else setRole('BRAND');
-                            field.onChange(role);
+                            if (field.value === 'INFLUENCER') field.onChange('BRAND');
+                            else field.onChange('INFLUENCER');
                           }}
                         />
                         <Label htmlFor="role" className="lowercase">
-                          <p className="first-letter:uppercase">{role}</p>
+                          <p className="first-letter:uppercase">{field.value}</p>
                         </Label>
                       </div>
                     </FormControl>
@@ -152,7 +169,7 @@ export function PlanModal() {
                   <FormItem>
                     <FormLabel>Giá (VNĐ)</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input placeholder="Giá tiền" type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -180,90 +197,114 @@ export function PlanModal() {
                 <FormItem>
                   <FormLabel>Quyền</FormLabel>
                   <div className="grid grid-cols-2 gap-2">
-                    {permissionData?.data?.map((perm) => (
-                      <label key={perm.permissionId} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={field.value?.includes(perm.permissionId)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              field.onChange([...field.value, perm.permissionId]);
-                            } else {
-                              field.onChange(field.value.filter((id) => id !== perm.permissionId));
-                            }
-                          }}
-                        />
-                        <span>{perm.permissionName}</span>
-                      </label>
-                    ))}
+                    {permissionData?.data?.map((perm) => {
+                      if (
+                        perm.permissionName === 'posting' ||
+                        perm.permissionName === 'comment' ||
+                        perm.permissionName === 'all'
+                      )
+                        return;
+                      return (
+                        <label key={perm.permissionId} className="flex items-center space-x-2">
+                          <Input
+                            type="checkbox"
+                            checked={field.value?.includes(perm.permissionId)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                field.onChange([...field.value, perm.permissionId]);
+                              } else {
+                                field.onChange(
+                                  field.value.filter((id) => id !== perm.permissionId),
+                                );
+                              }
+                            }}
+                          />
+                          <span>{perm.permissionName}</span>
+                        </label>
+                      );
+                    })}
                   </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <div className="grid grid-cols-2 gap-4">
+              {form.watch('roleId') === 'BRAND' && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="planPermissions.campaign_invitation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lời mời tối đa</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Số lượng" type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-            {form.watch('roleId') === 'brand' && (
-              <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="planPermissions.campaign_members"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Số influencers tối đa</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Số lượng" type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+
+              {form.watch('roleId') === 'INFLUENCER' && (
                 <FormField
                   control={form.control}
-                  name="planPermissions.limited"
+                  name="planPermissions.campaign_apply"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Số chiến dịch tối đa</FormLabel>
+                      <FormLabel>Số ứng tuyển tối đa</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} />
+                        <Input placeholder="Số lượng" type="number" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              )}
 
-                <FormField
-                  control={form.control}
-                  name="planPermissions.limited"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Số influencers tối đa (ID quyền)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Nhập ID quyền 1" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
-
-            {form.watch('roleId') === 'influencer' && (
               <FormField
                 control={form.control}
-                name="planPermissions.limited"
+                name="planPermissions.search_result"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Số ứng tuyển tối đa</FormLabel>
+                    <FormLabel>Số kết quả tìm kiếm trả về</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input placeholder="Số lượng" type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-            <FormField
-              control={form.control}
-              name="discount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Giảm giá (%)</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+              <FormField
+                control={form.control}
+                name="discount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Giảm giá (%)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="Phần trăm" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="planType"

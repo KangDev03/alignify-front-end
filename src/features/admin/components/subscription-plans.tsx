@@ -7,7 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Icons } from '@/components/icons/icons';
 import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
-import type { Plan } from '@/features/upgrade-plan/components/upgrade-plan.type';
 import { formatPlans } from '@/pages/upgrade-plan';
 
 import PlanCard from './plan-management/plan-card';
@@ -15,31 +14,34 @@ import { PlanModal } from './plan-management/plan-modal';
 
 export function SubscriptionPlans() {
   // const [_editingPlan, setEditingPlan] = useState<any>(null);
-  const [selectedRole, setSelectedRole] = useState<'brand' | 'influencer'>('brand');
+  const [selectedRole, setSelectedRole] = useState<'BRAND' | 'INFLUENCER'>('BRAND');
   const [isAnnual, setIsAnnual] = useState(false);
 
-  const { data: fetchedPlans } = useGetPlansByRoleQuery(selectedRole);
+  const { data: fetchedPlans } = useGetPlansByRoleQuery(selectedRole.toLowerCase());
   const influencerPlans = useMemo(() => {
     if (!fetchedPlans?.data) return [];
-    return formatPlans(
-      {
-        ...fetchedPlans,
-        data: fetchedPlans.data.filter((plan: Plan) => plan.roleId === 'INFLUENCER'),
-      },
-      isAnnual,
-    );
-  }, [fetchedPlans, isAnnual]);
+    if (selectedRole === 'INFLUENCER')
+      return formatPlans(
+        'INFLUENCER',
+        {
+          ...fetchedPlans,
+        },
+        isAnnual,
+      );
+  }, [fetchedPlans, isAnnual, selectedRole]);
 
   const brandPlans = useMemo(() => {
     if (!fetchedPlans?.data) return [];
-    return formatPlans(
-      {
-        ...fetchedPlans,
-        data: fetchedPlans.data.filter((plan: Plan) => plan.roleId === 'BRAND'),
-      },
-      isAnnual,
-    );
-  }, [fetchedPlans, isAnnual]);
+    if (selectedRole === 'BRAND')
+      return formatPlans(
+        'BRAND',
+        {
+          ...fetchedPlans,
+        },
+        isAnnual,
+      );
+    return [];
+  }, [fetchedPlans, isAnnual, selectedRole]);
 
   // const handleEditPlan = (plan: any) => {
   //   setEditingPlan(plan);
@@ -78,7 +80,7 @@ export function SubscriptionPlans() {
       </div>
       <Tabs
         value={selectedRole}
-        onValueChange={(value) => setSelectedRole(value as 'brand' | 'influencer')}
+        onValueChange={(value) => setSelectedRole(value as 'BRAND' | 'INFLUENCER')}
       >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="brand" className="flex items-center space-x-2">
@@ -87,7 +89,7 @@ export function SubscriptionPlans() {
           </TabsTrigger>
           <TabsTrigger value="influencer" className="flex items-center space-x-2">
             <Icons.camera className="h-4 w-4" />
-            <span>Gói Influencer ({influencerPlans.length})</span>
+            <span>Gói Influencer ({(influencerPlans ?? []).length})</span>
           </TabsTrigger>
         </TabsList>
 
@@ -99,7 +101,7 @@ export function SubscriptionPlans() {
 
         <TabsContent value="influencer" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {influencerPlans.map((plan) => PlanCard(plan))}
+            {(influencerPlans ?? []).map((plan) => PlanCard(plan))}
           </div>
         </TabsContent>
       </Tabs>

@@ -14,16 +14,35 @@ export const planSchema = z.object({
   }),
   description: z.string(),
   roleId: z.string(),
-  permissionIds: z.array(z.string()).min(1, 'Chọn ít nhất một quyền'),
+  permissionIds: z.array(z.string()),
   planPermissions: z.object({
-    roleId: z.string(),
-    planPermissionName: z.string(),
-    limited: z.coerce.number().min(0, {
-      message: 'Giới hạn không được là số âm',
-    }),
+    search_result: z.coerce
+      .number()
+      .min(0, {
+        message: 'Giới hạn không được là số âm',
+      })
+      .optional(),
+    campaign_members: z.coerce
+      .number()
+      .min(0, {
+        message: 'Giới hạn không được là số âm',
+      })
+      .optional(),
+    campaign_invitation: z.coerce
+      .number()
+      .min(0, {
+        message: 'Giới hạn không được là số âm',
+      })
+      .optional(),
+    campaign_apply: z.coerce
+      .number()
+      .min(0, {
+        message: 'Giới hạn không được là số âm',
+      })
+      .optional(),
   }),
-  price: z.coerce.number().min(1, {
-    message: 'Giá tiền phải lớn 0',
+  price: z.coerce.number().min(0, {
+    message: 'Giá tiền không được nhỏ hơn 0',
   }),
   discount: z.coerce.number().min(0, {
     message: 'Giảm giá phải lớn hơn bằng 0',
