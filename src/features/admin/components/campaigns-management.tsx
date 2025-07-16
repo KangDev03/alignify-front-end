@@ -112,7 +112,6 @@ export function CampaignsManagement() {
       toast.success('Xóa chiến dịch thành công!', { duration: 2000 });
     } catch (err) {
       if (toastId) toast.dismiss(toastId);
-      console.log(err);
       toast.error('Xóa chiến dịch thất bại. Thử lại sau!');
     }
   };
