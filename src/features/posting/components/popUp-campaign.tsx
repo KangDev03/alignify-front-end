@@ -954,7 +954,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                 <Button
                   variant={'outline'}
                   className="text-destructive hover:text-destructive"
-                  type={onUpdating ? 'button' : 'reset'}
+                  type="button"
                   onClick={onUpdating ? handleDeleteCampaign : undefined}
                   disabled={isDeleting}
                 >
