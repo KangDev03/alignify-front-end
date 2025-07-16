@@ -18,14 +18,7 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -39,17 +32,16 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 
+import PlanCard from '@/features/admin/components/plan-management/plan-card';
+import type { RoleName } from '@/features/common/common.type';
 import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
 import type { Plan, PlanResponse } from '@/features/upgrade-plan/components/upgrade-plan.type';
-import { formatPlanPermissonName } from '@/utils/format';
-import PlanCard from '@/features/admin/components/plan-management/plan-card';
-
-type UserRole = 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
+import { formatPlanPermissionName } from '@/utils/format';
 
 interface UpgradePlanProps {
-  userRole: UserRole;
+  userRole: RoleName;
 }
-export const formatPlans = (fetchedPlans: PlanResponse, isAnnual: boolean) => {
+export const formatPlans = (userRole: RoleName, fetchedPlans: PlanResponse, isAnnual: boolean) => {
   if (!fetchedPlans?.data) return [];
 
   const filteredPlans = fetchedPlans.data.filter((plan: Plan) =>
@@ -106,7 +98,8 @@ export const formatPlans = (fetchedPlans: PlanResponse, isAnnual: boolean) => {
         permissionName: p.permissionName,
         permissionDescription: p.permissionDescription,
       })),
-
+      isPopular: plan.isPopular,
+      currentPlan: userRole === 'INFLUENCER' ? 'creator' : 'starter',
       buttonText: isFree ? 'Gói hiện tại' : isPremium ? 'Liên hệ tư vấn' : 'Nâng cấp ngay',
       buttonVariant: (isFree ? 'secondary' : isPremium ? 'outline' : 'default') as
         | 'link'
@@ -134,13 +127,15 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
     }
   }, [isLoading, fetchedPlans]);
 
-  const plans = useMemo(() => formatPlans(fetchedPlans!, isAnnual), [fetchedPlans, isAnnual]);
+  const plans = useMemo(
+    () => formatPlans(userRole, fetchedPlans!, isAnnual),
+    [fetchedPlans, isAnnual, userRole],
+  );
 
   const handleUpgrade = (planId: string) => {
     if (planId === currentPlan) return;
     setSelectedPlan(planId);
     if (planId === 'agency' || planId === 'enterprise') {
-      // Redirect to contact form
       console.log('Redirecting to contact form...');
     } else {
       setShowPaymentDialog(true);
@@ -192,95 +187,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
       {/* Plans Grid */}
       <div className="grid md:grid-cols-3 gap-8 mb-12">
         {plans.map((plan) => (
-          <PlanCard
-            key={plan.id}
-            className={`relative transition-all duration-300 hover:shadow-lg ${
-              plan.popular ? 'ring-2 ring-primary shadow-lg scale-105' : ''
-            } ${plan.id === currentPlan ? 'border-green-500' : ''}`}
-          >
-            {plan.popular && (
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground px-4 py-1">
-                  <Star className="h-3 w-3 mr-1" />
-                  Được đề xuất
-                </Badge>
-              </div>
-            )}
-
-            <CardHeader className="text-center pb-4">
-              <div className="flex items-center justify-center mb-2">
-                <Badge className={`${plan.badgeColor} text-white`}>{plan.badge}</Badge>
-              </div>
-              <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-              <CardDescription className="text-sm">{plan.description}</CardDescription>
-              <div className="mt-4">
-                <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-bold">
-                    {plan.price === 0 ? 'Miễn phí' : formatPrice(plan.price)}
-                  </span>
-                  {plan.price > 0 && (
-                    <span className="text-muted-foreground ml-1">{plan.planType}</span>
-                  )}
-                </div>
-                {plan.originalPrice && plan.originalPrice > plan.price && (
-                  <div className="text-sm text-muted-foreground line-through">
-                    {formatPrice(plan.originalPrice)}
-                    {plan.planType}
-                  </div>
-                )}
-              </div>
-            </CardHeader>
-
-            <CardContent className="space-y-3">
-              {plan.planPermission.map(
-                (
-                  planPermission: {
-                    planPermissionId: string;
-                    roleId: string;
-                    planPermissionName: string;
-                    limited: number | undefined;
-                  },
-                  index: number,
-                ) => {
-                  // You can define your own logic for "included"
-                  const included =
-                    planPermission.limited === undefined || planPermission.limited > 0;
-                  return (
-                    <div key={index} className="flex items-start space-x-3">
-                      {included ? (
-                        <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      ) : (
-                        <X className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      )}
-                      <div className=" flex-1">
-                        <span className={included ? 'text-foreground' : 'text-muted-foreground'}>
-                          {formatPlanPermissonName(planPermission.planPermissionName)}
-                        </span>
-                        {planPermission.limited !== undefined && (
-                          <div className="text-xs text-muted-foreground">
-                            {planPermission.limited}
-                            {plan.planType}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                },
-              )}
-            </CardContent>
-
-            <CardFooter>
-              <Button
-                className="w-full"
-                variant={plan.buttonVariant}
-                onClick={() => handleUpgrade(plan.id)}
-                disabled={plan.id === currentPlan}
-              >
-                {plan.id === currentPlan && <Check className="h-4 w-4 mr-2" />}
-                {plan.buttonText}
-              </Button>
-            </CardFooter>
-          </Card>
+          <PlanCard key={plan.id} {...plan} currentPlan={currentPlan} />
         ))}
       </div>
 
@@ -306,7 +213,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                     {plans[0].planPermission.map((_: any, featureIndex: number) => (
                       <tr key={featureIndex} className="border-b hover:bg-muted/50">
                         <td className="p-4 font-medium">
-                          {formatPlanPermissonName(
+                          {formatPlanPermissionName(
                             plans[0].planPermission[featureIndex].planPermissionName,
                           )}
                         </td>

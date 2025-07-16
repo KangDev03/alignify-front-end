@@ -15,15 +15,14 @@ export interface Plan {
   isPopular: boolean;
   isActive: boolean;
 }
-interface Permission {
+export interface Permission {
   permissionId: string;
   permissionName: string;
   permissionDescription: string;
 }
 
-interface PlanPermission {
+export interface PlanPermission {
   planPermissionId?: string;
-  roleId: string;
   planPermissionName: string;
   limited: number | undefined;
 }
@@ -44,17 +43,23 @@ export interface ConvertedPlan {
   buttonText: string;
   buttonVariant: string;
   createdAt: string;
+  currentPlan: string;
 }
 
 export interface PlanRequest {
   formData: FormData;
+}
+
+export interface PlanPermissionSubmitData {
+  planPermissionName: string;
+  limited: number | undefined;
 }
 export interface PlanSubmitData {
   planName: string;
   description: string;
   roleId: string;
   permissionIds: string[];
-  planPermissions?: PlanPermission[];
+  planPermissions?: PlanPermissionSubmitData[];
   price: number;
   discount: number;
   planType: string;

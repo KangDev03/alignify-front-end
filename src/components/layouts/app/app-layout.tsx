@@ -6,6 +6,7 @@ import Stomp from 'stompjs';
 // import AppFooter from '@/components/layouts/app/footer';
 import { AppHeader } from '@/components/layouts/app/header';
 import { useTheme } from '@/components/theme/theme-provider';
+import ChatBot from '@/features/assitant/components/chatbot';
 import { logout } from '@/features/auth/auth.slice';
 import type { UserBan } from '@/features/auth/auth.type';
 import { addReceivedNotification } from '@/features/notification/notification.slice';
@@ -27,7 +28,7 @@ function AppLayout() {
   const handleLogout = useCallback(() => {
     dispatch(baseApi.util.resetApiState());
     dispatch(logout());
-    navigate('/auth/login');
+    navigate('/');
   }, [dispatch, navigate]);
   const { id: userId, token, role: roleName } = useAppSelector((state: RootState) => state.auth);
 
@@ -111,6 +112,7 @@ function AppLayout() {
       >
         <Outlet />
         <PopUpTrigger />
+        <ChatBot />
       </main>
       {/* <AppFooter /> */}
     </div>

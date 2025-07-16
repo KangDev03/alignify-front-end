@@ -126,7 +126,7 @@ export const formatPrice = (price: number) => {
   }).format(price);
 };
 
-export const formatPlanPermissonName = (regex: string) => {
+export const formatPlanPermissionName = (regex: string) => {
   switch (regex) {
     case 'search_result':
       return 'Kết quả tìm kiếm';
@@ -139,6 +139,6 @@ export const formatPlanPermissonName = (regex: string) => {
     case 'campaign_apply':
       return 'Số chiến dịch được ứng tuyển';
     default:
-      break;
+      return regex;
   }
 };
