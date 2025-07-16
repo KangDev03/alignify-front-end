@@ -175,7 +175,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                       {(field.value || imageUrl) && (
                         <div className="flex gap-4">
                           <Dialog>
-                            <DialogTrigger>
+                            <DialogTrigger asChild>
                               <Button type="button" variant="secondary" size="sm">
                                 <Icons.eye />
                                 <span>Xem trước ảnh</span>
