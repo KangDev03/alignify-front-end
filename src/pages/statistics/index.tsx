@@ -153,7 +153,7 @@ export default function StatisticsPage({ userRole }: StatisticsProps) {
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{brand.acceptanceRate}%</div>
+              <div className="text-2xl font-bold">{Number(brand.acceptanceRate).toFixed(2)}%</div>
             </CardContent>
           </Card>
 
@@ -393,7 +393,7 @@ export default function StatisticsPage({ userRole }: StatisticsProps) {
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{influencer.acceptanceRate}%</div>
+              <div className="text-2xl font-bold">{Number(influencer.acceptanceRate).toFixed(2)}%</div>
             </CardContent>
           </Card>
 
