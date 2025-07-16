@@ -50,7 +50,7 @@ import { isApiResponseError, parseIsoToDateTime } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { campaignFormSchema, type CampaignFormValues } from '../posting.schema';
-import { usePostCampaignMutation } from '../posting.service';
+import { useDeleteCampaignMutation, usePostCampaignMutation } from '../posting.service';
 
 interface PopUpCampaignProps {
   campaignData?: Campaign;
@@ -68,6 +68,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
   const [isExtended, setExtended] = useState<ExtendedState[]>([]);
   const [postCampaign, { isLoading: isPosting }] = usePostCampaignMutation();
   const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignDataMutation();
+  const [deleteCampaign, { isLoading: isDeleting }] = useDeleteCampaignMutation();
   const { avatarUrl, id, name } = useSelector((state: RootState) => state.auth);
   const { data: rawData } = useGetCategoriesQuery();
   const categories = rawData?.data;
@@ -297,6 +298,19 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
       }
     }
   };
+
+  const handleDeleteCampaign = async () => {
+    if (!campaignData?.campaignId) return;
+    try {
+      await deleteCampaign(campaignData.campaignId).unwrap();
+      toast.success('Xóa chiến dịch thành công!');
+      dialogCloseRef.current?.click();
+      dispatch(setRefetch({ key: 'campaign', value: true }));
+    } catch (_err) {
+      toast.error('Xóa chiến dịch thất bại. Vui lòng thử lại!');
+    }
+  };
+
   return (
     <DialogContent showCloseButton={false} className="p-0 py-6 sm:max-w-[650px] h-[85%] text-base">
       <DialogHeader className="flex flex-col gap-1.5 px-6">
@@ -728,7 +742,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                     <FormLabel className="text-sm font-medium">Loại nội dung</FormLabel>
                                     <FormControl>
                                       <Select onValueChange={field.onChange} value={field.value || undefined}>
-                                        <SelectTrigger className="w-full">
+                                        <SelectTrigger className="w-full capitalize">
                                           <SelectValue placeholder="Chọn loại nội dung" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -737,7 +751,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                           ]?.map((item) => {
                                             const type = Object.keys(item)[0]
                                             return (
-                                              <SelectItem key={type} value={type}>
+                                              <SelectItem key={type} value={type} className='capitalize'>
                                                 {type}
                                               </SelectItem>
                                             )
@@ -866,9 +880,20 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
               <Button
                 variant={'outline'}
                 className="text-destructive hover:text-destructive"
-                type="reset"
+                type={onUpdating ? 'button' : 'reset'}
+                onClick={onUpdating ? handleDeleteCampaign : undefined}
+                disabled={isDeleting}
               >
-                {onUpdating ? 'Xóa' : 'Hủy'}
+                {onUpdating
+                  ? isDeleting
+                    ? (
+                      <>
+                        <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Đang cập nhật...
+                      </>
+                    )
+                    : 'Xoá'
+                  : 'Hủy'}
               </Button>
             </DialogClose>
             <Button variant={'default'} type="submit" disabled={isPosting}>

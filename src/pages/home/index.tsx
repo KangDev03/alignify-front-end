@@ -193,8 +193,8 @@ export function HomePage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {top3Campaign?.data &&
-                Array.isArray(top3Campaign?.data) &&
-                top3Campaign.data.length > 0 ? (
+                  Array.isArray(top3Campaign?.data) &&
+                  top3Campaign.data.length > 0 ? (
                   top3Campaign.data.map((campaign) => (
                     <div
                       key={campaign.campaignId}
