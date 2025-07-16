@@ -955,7 +955,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                   variant={'outline'}
                   className="text-destructive hover:text-destructive"
                   type="button"
-                  onClick={onUpdating ? handleDeleteCampaign : undefined}
+                  onClick={onUpdating ? handleDeleteCampaign : () => dialogCloseRef.current?.click()}
                   disabled={isDeleting}
                 >
                   Hủy
