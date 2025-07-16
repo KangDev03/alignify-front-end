@@ -16,7 +16,7 @@ import ChatSearch from './chat-search';
 export default function ChatSheet() {
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger asChild>
         <Button variant="ghost" size="sm">
           <Icons.messageCircle className="h-4 w-4" />
         </Button>
