@@ -66,9 +66,8 @@ function Router() {
           {roleName === 'BRAND' && <Route path="/user-profile" element={<BrandProfilePage />} />}
           <Route path="/influencer/:userId" element={<InfluencerProfilePage />} />
           <Route path="/brand/:userId" element={<BrandProfilePage />} />
-          {roleName === 'ADMIN' && <Route path="/dashboard" element={<AdminPage />} />}
         </Route>
-        <Route path="/admin" element={<AdminPage />} />
+        {roleName === 'ADMIN' && <Route path="/dashboard" element={<AdminPage />} />}
       </Routes>
     </>
   );

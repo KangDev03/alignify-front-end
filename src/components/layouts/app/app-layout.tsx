@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import Stomp from 'stompjs';
@@ -24,6 +25,7 @@ function AppLayout() {
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
   const location = useLocation();
+  const userRole = useSelector((state: RootState) => state.auth.role);
 
   const handleLogout = useCallback(() => {
     dispatch(baseApi.util.resetApiState());
@@ -104,7 +106,7 @@ function AppLayout() {
       className="flex min-h-screen flex-col bg-cover bg-no-repeat bg-fixed"
       style={backgroundImage ? { backgroundImage: `url(${backgroundImage})` } : {}}
     >
-      <AppHeader onLogout={handleLogout} />
+      {userRole !== 'ADMIN' && <AppHeader onLogout={handleLogout} />}
       <main
         className={cn(
           !location.pathname.includes('/dashboard') && 'container mx-auto px-6 py-8 relative ',
