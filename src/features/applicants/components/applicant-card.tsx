@@ -111,7 +111,8 @@ export function ApplicantCard({
             <Button
               type="button"
               variant="ghost"
-              size="sm"
+              size="icon"
+              className="p-0 w-fit h-fit m-0 hover:text-primary focus:text-primary"
               onClick={async (e) => {
                 e.stopPropagation();
                 window.open(applicant.cv_url, '_blank');
@@ -146,7 +147,7 @@ export function ApplicantCard({
               }}
             >
               <Icons.fileUser className="h-4 w-4 mr-1" />
-              CV
+              Đính kèm
             </Button>
             <Button
               onClick={(e) => {
