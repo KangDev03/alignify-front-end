@@ -19,8 +19,17 @@ export const profileSlice = createSlice({
         state.contents = action.payload.data;
       }
     },
+    updateContentSlice: (state, action: PayloadAction<ContentPosting>) => {
+      const contentPosting = action.payload;
+      const idx = state.contents.findIndex(
+        (content) => content.contentId === contentPosting.contentId,
+      );
+      if (idx !== -1 && idx >= 0) {
+        state.contents[idx] = contentPosting;
+      }
+    },
   },
 });
 
-export const { setContents } = profileSlice.actions;
+export const { setContents, updateContentSlice } = profileSlice.actions;
 export default profileSlice.reducer;

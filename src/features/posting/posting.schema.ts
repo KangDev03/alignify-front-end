@@ -19,12 +19,16 @@ export const contentFormSchema = z.object({
       message: 'Bạn chỉ có thể chọn tối đa 3 danh mục',
     })
     .optional(),
-  image: z.instanceof(File, { message: 'Poster phải là file ảnh' }).refine(
-    (file) => {
-      return ['image/jpeg', 'image/png', 'image/gif'].includes(file.type);
-    },
-    { message: 'Poster phải là file ảnh (JPEG, PNG, hoặc GIF)' },
-  ),
+  isPublic: z.boolean().optional(),
+  image: z
+    .instanceof(File, { message: 'File phải là file ảnh' })
+    .refine(
+      (file) => {
+        return ['image/jpeg', 'image/png', 'image/gif'].includes(file.type);
+      },
+      { message: 'Poster phải là file ảnh (JPEG, PNG, hoặc GIF)' },
+    )
+    .optional(),
 });
 
 export type ContentFormValues = z.infer<typeof contentFormSchema>;
@@ -43,7 +47,7 @@ export const campaignFormSchema = z
         (file) => {
           return ['image/jpeg', 'image/png', 'image/gif'].includes(file.type);
         },
-        { message: 'Poster phải là file ảnh (JPEG, PNG, hoặc GIF)' },
+        { message: 'Ảnh phải là dạng (JPEG, PNG, hoặc GIF)' },
       )
       .optional(),
     budget: z

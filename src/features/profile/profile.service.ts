@@ -38,7 +38,7 @@ export const profileApi = baseApi.injectEndpoints({
     updateContentPosting: builder.mutation<ForumPostingResponse, PostingRequest>({
       query: (data) => ({
         url: `/contentPosting/${data.id}`,
-        method: 'POST',
+        method: 'PUT',
         body: data.formData,
       }),
       invalidatesTags: ['Post'],
