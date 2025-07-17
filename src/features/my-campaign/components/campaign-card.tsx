@@ -68,6 +68,20 @@ const mockProgressData = {
   ],
 }
 
+const HotCampaignBadge = () => (
+  <div className="absolute top-3 right-3 z-10">
+    <div className="relative flex items-center gap-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">
+      <div className="relative">
+        <Icons.flame className="h-4 w-4 animate-pulse" />
+        <div className="absolute inset-0 animate-ping">
+          <Icons.flame className="h-4 w-4 opacity-75" />
+        </div>
+      </div>
+      <span>HOT</span>
+    </div>
+  </div>
+)
+
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const dispatch = useAppDispatch();
   const { role, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
@@ -81,6 +95,8 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const isApplied = campaign.appliedInfluencerIds?.includes(id!);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
   const [changeStatus] = useChangeStatusMutation();
+
+  const isHotCampaign = (campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0) > 0
 
   const handleApplyCampaign = async () => {
     try {
@@ -782,14 +798,20 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   return (
     <Card
       key={campaign.campaignId}
-      className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow pt-0"
+      className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow pt-0 relative"
     >
+
+      {isHotCampaign && <HotCampaignBadge />}
+
       <div className="w-full h-80 relative">
         <img
           src={campaign.imageUrl || "/placeholder.svg"}
           alt={campaign.campaignName}
           className="w-full h-full object-cover"
         />
+        {/* {isHotCampaign && (
+          <div className="absolute inset-0 bg-gradient-to-t from-orange-500/10 to-transparent pointer-events-none" />
+        )} */}
       </div>
       <CardContent className="px-6 w-full">
         <div className="flex items-center gap-3 mb-3">
@@ -820,6 +842,20 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 {cat.categoryName ?? cat}
               </Badge>
             ))}
+          </div>
+        )}
+
+        {isHotCampaign && (
+          <div className="flex items-center gap-2 mb-3 text-sm">
+            <div className="flex items-center gap-1 text-orange-600">
+              <Icons.users className="h-4 w-4" />
+              <span className="font-medium">
+                {campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0} ứng viên
+              </span>
+            </div>
+            <Badge variant="secondary" className="bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200 dark:hover:bg-orange-200">
+              Phổ biến
+            </Badge>
           </div>
         )}
 
