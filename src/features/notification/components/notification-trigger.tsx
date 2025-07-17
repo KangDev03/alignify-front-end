@@ -21,7 +21,7 @@ export default function NotificationTrigger() {
   const { received } = useSelector((state: RootState) => state.notification);
   return (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger>
         <Button variant="ghost" size="sm" className="relative">
           <Icons.bell className="h-4 w-4" />
           <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs"></span>
