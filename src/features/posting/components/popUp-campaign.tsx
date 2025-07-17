@@ -42,7 +42,11 @@ import {
 } from '@/features/common/common.type';
 import { setRefetch } from '@/features/home/home.slice';
 import { useUpdateCampaignDataMutation } from '@/features/my-campaign/campaign.service';
-import { deleteCampaignSlice, updateCampaignSlice } from '@/features/my-campaign/campaign.slice';
+import {
+  addCampaignSlice,
+  deleteCampaignSlice,
+  updateCampaignSlice,
+} from '@/features/my-campaign/campaign.slice';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
@@ -246,10 +250,14 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
               })
             : _categories,
         };
-        dispatch(updateCampaignSlice(newCampaign));
-        await updateCampaign({ formData: formData, id: campaignData.campaignId }).unwrap();
+        const res = await updateCampaign({
+          formData: formData,
+          id: campaignData.campaignId,
+        }).unwrap();
+        dispatch(updateCampaignSlice({ ...newCampaign, imageUrl: res.data.imageUrl }));
       } else {
-        await postCampaign({ formData }).unwrap();
+        const res = await postCampaign({ formData }).unwrap();
+        dispatch(addCampaignSlice(res.data));
         dispatch(setRefetch({ key: 'campaign', value: true }));
       }
       dialogCloseRef.current?.click();

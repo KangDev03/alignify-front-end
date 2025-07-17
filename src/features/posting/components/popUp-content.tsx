@@ -29,6 +29,7 @@ import { useGetCategoriesQuery } from '@/features/common/common.service';
 import { setRefetch } from '@/features/home/home.slice';
 import type { ContentPosting } from '@/features/home/home.type';
 import { useUpdateContentPostingMutation } from '@/features/profile/profile.service';
+import { updateContentSlice } from '@/features/profile/profile.slice';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
@@ -75,7 +76,17 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       if (file) formData.append('image', file);
       formData.append('contentPosting', JSON.stringify(contentRaw));
       if (onUpdating) {
-        await updateContent({ formData, id: contentData.contentId }).unwrap();
+        const res = await updateContent({ formData, id: contentData.contentId }).unwrap();
+        const updatedContent: ContentPosting = { ...contentData };
+        updatedContent.categories = values.categoryIds
+          ? values.categoryIds.map((catId) => {
+              return categories!.find((cat) => cat.categoryId === catId)!;
+            })
+          : contentData.categories;
+        updatedContent.contentName = values.contentName;
+        updatedContent.content = values.content;
+        updatedContent.imageUrl = res.data.imageUrl;
+        dispatch(updateContentSlice(updatedContent));
         toast.success('Cập nhật bài viết thành công!');
       } else {
         await postContent({ formData }).unwrap();
@@ -201,9 +212,9 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                               <div className="flex flex-col space-y-3">
                                 <img
                                   src={
-                                    field.value instanceof File
-                                      ? URL.createObjectURL(field.value)
-                                      : imageUrl
+                                    field.value
+                                      ? URL.createObjectURL(field.value as File)
+                                      : imageUrl!
                                   }
                                   alt="Poster preview"
                                   className="object-contain max-w-full h-[600px]"
