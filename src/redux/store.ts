@@ -24,7 +24,7 @@ const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 
 export const store = configureStore({
   reducer: {
-    auth: persistedAuthReducer, 
+    auth: persistedAuthReducer,
     [baseApi.reducerPath]: baseApi.reducer,
     common: commonReducer,
     homeRefetch: refetchReducer,
@@ -38,7 +38,7 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, 
+      serializableCheck: false,
     }).concat(baseApi.middleware),
 });
 

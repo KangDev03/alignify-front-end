@@ -27,8 +27,20 @@ export const postingApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Campaign'],
     }),
+
+    deletePost: builder.mutation<any, string>({
+      query: (postId) => ({
+        url: `/contentPosting/${postId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Post'],
+    }),
   }),
 });
 
-export const { usePostCampaignMutation, usePostContentMutation, useDeleteCampaignMutation } =
-  postingApi;
+export const {
+  usePostCampaignMutation,
+  usePostContentMutation,
+  useDeleteCampaignMutation,
+  useDeletePostMutation,
+} = postingApi;
