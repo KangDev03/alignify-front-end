@@ -13,7 +13,13 @@ export interface ApplicationByInfluencer {
   limited: number;
   status: string;
   createdAt: string;
+  cv_url: string;
 }
 export interface ApplicationResponse extends ApiReponseSuccess<ApplicationsByCampaginResponse[]> {
   data: ApplicationsByCampaginResponse[];
+}
+
+export interface ApplicationSubmitData {
+  campaignId: string;
+  CV: FormData;
 }

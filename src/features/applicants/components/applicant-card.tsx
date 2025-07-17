@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Check, Star, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -24,9 +25,13 @@ export function ApplicantCard({
   applicant: ApplicantByBrand;
   status: 'waiting' | 'accepted' | 'rejected';
 }) {
+  console.log(applicant);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [confirmApplicant, { isLoading }] = useConfirmApplicationMutation();
+  const [confirmApplicant] = useConfirmApplicationMutation();
+  const [acceptLoading, setAcceptLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
   const { applicants: allAplicants, selectCapaignId } = useAppSelector(
     (state: RootState) => state.applicant,
   );
@@ -38,6 +43,8 @@ export function ApplicantCard({
   )?.campaignResponse;
 
   const handleConfirmApplicant = async (accepted: boolean) => {
+    if (accepted) setAcceptLoading(true);
+    else setRejectLoading(true);
     try {
       await confirmApplicant({
         accepted: accepted,
@@ -64,11 +71,17 @@ export function ApplicantCard({
     } catch (error) {
       console.error('Error confirming applicant:', error);
       toast.error('Xác nhận ứng viên thất bại. Vui lòng thử lại sau.');
+    } finally {
+      setAcceptLoading(false);
+      setRejectLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+    <div
+      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+      onClick={() => navigate(`/influencer/${applicant.influencerId}`)}
+    >
       <div className="flex items-center gap-3">
         <Avatar className="h-12 w-12">
           <AvatarImage
@@ -98,13 +111,42 @@ export function ApplicantCard({
             <Button
               size="sm"
               variant="outline"
-              onClick={() => navigate(`/influencer/${applicant.influencerId}`)}
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (applicant.cv_url) {
+                  try {
+                    const response = await fetch(applicant.cv_url);
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const fileName =
+                      applicant.cv_url.split('/').pop() ||
+                      (applicant.cv_url.endsWith('.pdf') ? 'cv.pdf' : 'cv');
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                  } catch {
+                    toast.error('Không thể tải file CV. Vui lòng thử lại sau.');
+                  }
+                }
+              }}
             >
               <Icons.user className="h-4 w-4 mr-1" />
-              Hồ sơ
+              CV
             </Button>
-            <Button onClick={() => handleConfirmApplicant(true)} size="sm" variant="default">
-              {isLoading ? (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleConfirmApplicant(true);
+              }}
+              size="sm"
+              variant="default"
+              disabled={acceptLoading || rejectLoading}
+            >
+              {acceptLoading ? (
                 <>
                   <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Đang xử lý...
@@ -116,8 +158,16 @@ export function ApplicantCard({
                 </>
               )}
             </Button>
-            <Button onClick={() => handleConfirmApplicant(false)} size="sm" variant="destructive">
-              {isLoading ? (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleConfirmApplicant(false);
+              }}
+              size="sm"
+              variant="destructive"
+              disabled={acceptLoading || rejectLoading}
+            >
+              {rejectLoading ? (
                 <>
                   <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Đang xử lý...
