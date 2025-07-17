@@ -36,8 +36,7 @@ import type { RootState } from '@/redux/store';
 export function CampaignsManagement() {
   const { token } = useSelector((state: RootState) => state.auth);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [deleteCampaign, { isLoading: isDeleting, isSuccess, isError }] =
-    useDeleteCampaignMutation();
+  const [deleteCampaign, { isLoading: isDeleting, isSuccess }] = useDeleteCampaignMutation();
   const [toastId, setToastId] = useState<string | number | undefined>();
 
   useEffect(() => {
@@ -105,11 +104,8 @@ export function CampaignsManagement() {
   const handleDeleteCampaign = async (campaignId: string) => {
     let toastId: string | number | undefined;
     try {
-      toastId = toast.loading('Đang xóa chiến dịch!', { duration: 2000 });
       await deleteCampaign(campaignId).unwrap();
       setCampaigns((prev) => prev.filter((campaign) => campaign.campaignId !== campaignId));
-      toast.dismiss(toastId);
-      toast.success('Xóa chiến dịch thành công!', { duration: 2000 });
     } catch (_err) {
       if (toastId) toast.dismiss(toastId);
       toast.error('Xóa chiến dịch thất bại. Thử lại sau!');
@@ -132,12 +128,8 @@ export function CampaignsManagement() {
       toast.dismiss(toastId);
       toast.success('Xóa chiến dịch thành công!', { duration: 2000 });
       setToastId(undefined);
-    } else if (isError && toastId) {
-      toast.dismiss(toastId);
-      toast.error('Xóa chiến dịch thất bại. Thử lại sau!');
-      setToastId(undefined);
     }
-  }, [isSuccess, toastId, isError]);
+  }, [isSuccess, toastId]);
 
   return (
     <div className="space-y-6">

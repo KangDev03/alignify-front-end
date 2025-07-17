@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import Stomp from 'stompjs';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -28,6 +29,7 @@ import {
 import { Icons } from '@/components/icons/icons';
 import type { CommonPageableRequest } from '@/features/common/common.type';
 import type { ContentPosting } from '@/features/home/home.type';
+import { useDeletePostMutation } from '@/features/posting/posting.service';
 import { getStompClient } from '@/lib/stom-client';
 import type { RootState } from '@/redux/store';
 import { formatDate, parseIsoToDateTime } from '@/utils/format';
@@ -37,6 +39,8 @@ export function ForumPostsManagement() {
 
   const { token } = useSelector((state: RootState) => state.auth);
   const [contents, setContents] = useState<ContentPosting[]>([]);
+  const [deletePost, { isLoading: isDeleting, isSuccess }] = useDeletePostMutation();
+  const [toastId, setToastId] = useState<string | number | undefined>();
 
   useEffect(() => {
     if (!token) return;
@@ -97,9 +101,35 @@ export function ForumPostsManagement() {
   //   }
   // };
 
-  const handleDeletePost = (postId: string) => {
-    console.log('Deleting post:', postId);
+  const handleDeletePost = async (postId: string) => {
+    let toastId: string | number | undefined;
+    try {
+      await deletePost(postId).unwrap();
+      setContents((prev) => prev.filter((post) => post.contentId !== postId));
+    } catch (_err) {
+      if (toastId) toast.dismiss(toastId);
+      toast.error('Xóa bài viết thất bại!. Thử lại sau!');
+    }
   };
+
+  useEffect(() => {
+    if (isDeleting && !toastId) {
+      const id = toast.loading('Đang xóa bài viết!', { duration: 2000 });
+      setToastId(id);
+    }
+    if (!isDeleting && toastId) {
+      toast.dismiss(toastId);
+      setToastId(undefined);
+    }
+  }, [isDeleting, toastId]);
+
+  useEffect(() => {
+    if (isSuccess && toastId) {
+      toast.dismiss(toastId);
+      toast.success('Xóa bài viết thành công!', { duration: 2000 });
+      setToastId(undefined);
+    }
+  }, [isSuccess, toastId]);
 
   return (
     <div className="space-y-6">
