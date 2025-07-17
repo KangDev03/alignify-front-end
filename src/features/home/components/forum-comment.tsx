@@ -69,7 +69,7 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
           };
           client.send(
             `/app/comment/select/${contentPosting.contentId}`,
-            {},
+            { Authorization: `Bearer ${token}` },
             JSON.stringify(pageable),
           );
         }
@@ -85,6 +85,7 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
         commentSub = client.subscribe(
           `/topic/comments/select/${contentPosting.contentId}`,
           (res: any) => {
+            console.log(res.body);
             try {
               const received: Comment[] = JSON.parse(res.body);
               if (pageNumber === 0) {
@@ -115,6 +116,7 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
         likeSubscription = client.subscribe(
           `/topic/contents/${contentPosting.contentId}`,
           (res: any) => {
+            console.log(res.body);
             try {
               const receivedLike: ReceivedLike = JSON.parse(res.body);
               if (receivedLike) {
@@ -203,6 +205,7 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
     getStompClient(token)
       .then((client) => {
         commentsub = client.subscribe(`/topic/comments/${contentPosting.contentId}`, (res: any) => {
+          console.log(res.body);
           try {
             const received: Comment = JSON.parse(res.body);
             if (received) {

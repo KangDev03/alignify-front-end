@@ -25,12 +25,14 @@ import {
   DollarSign,
   Dot,
   Edit,
+  Ellipsis,
   ExternalLink,
   Eye,
   Facebook,
   FileImage,
   FileText,
   Flag,
+  Globe,
   Heart,
   Home,
   Image,
@@ -39,6 +41,7 @@ import {
   LayoutDashboard,
   Link,
   Loader2,
+  Lock,
   LogOut,
   Mail,
   MapPin,
@@ -75,7 +78,7 @@ import {
   Users,
   X,
   Youtube,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 export const Icons = {
@@ -156,4 +159,7 @@ export const Icons = {
   upload: Upload,
   inbox: Inbox,
   link: Link,
+  ellipsis: Ellipsis,
+  lock: Lock,
+  globe: Globe,
 };
