@@ -31,6 +31,7 @@ import {
   Facebook,
   FileImage,
   FileText,
+  FileUser,
   Flag,
   Globe,
   Heart,
@@ -162,4 +163,5 @@ export const Icons = {
   ellipsis: Ellipsis,
   lock: Lock,
   globe: Globe,
+  fileUser: FileUser,
 };
