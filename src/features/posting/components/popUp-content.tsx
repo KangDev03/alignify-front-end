@@ -5,7 +5,6 @@ import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   DialogClose,
   DialogContent,
@@ -22,6 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 import { Icons } from '@/components/icons/icons';
@@ -63,7 +63,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       contentName: contentData?.contentName ?? '',
       content: contentData?.content ?? '',
       categoryIds: contentData?.categories.map((cat) => cat.categoryId) ?? [],
-      isPublic: contentData?.isPublic ?? true,
+      isPublic: contentData?.isPublic ?? false,
       image: undefined,
     },
   });
@@ -76,10 +76,10 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       formData.append('contentPosting', JSON.stringify(contentRaw));
       if (onUpdating) {
         await updateContent({ formData, id: contentData.contentId }).unwrap();
-        toast.success("Cập nhật bài viết thành công!")
+        toast.success('Cập nhật bài viết thành công!');
       } else {
         await postContent({ formData }).unwrap();
-        toast.success("Đăng bài viết thành công!")
+        toast.success('Đăng bài viết thành công!');
       }
       dialogCloseRef.current?.click();
       form.reset();
@@ -96,13 +96,17 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
           toast.error('Bạn không có quyền đăng bài viết!');
         } else {
           toast.error(
-            onUpdating ? "Cập nhật bài viết thất bại. Vui lòng thử lại!" : "Đăng bài thất bại. Vui lòng thử lại!",
-          )
+            onUpdating
+              ? 'Cập nhật bài viết thất bại. Vui lòng thử lại!'
+              : 'Đăng bài thất bại. Vui lòng thử lại!',
+          );
         }
       } else {
         toast.error(
-          onUpdating ? "Cập nhật bài viết thất bại. Vui lòng thử lại!" : "Đăng bài thất bại. Vui lòng thử lại!",
-        )
+          onUpdating
+            ? 'Cập nhật bài viết thất bại. Vui lòng thử lại!'
+            : 'Đăng bài thất bại. Vui lòng thử lại!',
+        );
       }
     }
   };
@@ -128,12 +132,14 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       <DialogHeader className="flex flex-col gap-1.5 px-6">
         <DialogTitle className="flex items-center gap-1 text-primary font-bold border-b-2 pb-1 border-primary w-fit">
           <Icons.penTool className="size-6 rotate-180" />
-          <p className="text-lg leading-4">{onUpdating ? "Chỉnh sửa bài viết" : "Đăng bài viết mới"}</p>
+          <p className="text-lg leading-4">
+            {onUpdating ? 'Chỉnh sửa bài viết' : 'Đăng bài viết mới'}
+          </p>
         </DialogTitle>
         <DialogDescription>
           {onUpdating
-            ? "Chỉnh sửa nội dung và cài đặt quyền riêng tư cho bài viết của bạn."
-            : "Chia sẻ kinh nghiệm, mẹo hay hoặc đặt câu hỏi với cộng đồng influencer."}
+            ? 'Chỉnh sửa nội dung và cài đặt quyền riêng tư cho bài viết của bạn.'
+            : 'Chia sẻ kinh nghiệm, mẹo hay hoặc đặt câu hỏi với cộng đồng influencer.'}
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>
@@ -237,14 +243,20 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                 categories.map((category) => (
                   <Badge
                     key={category.categoryId}
-                    variant={form.watch("categoryIds")?.includes(category.categoryId) ? "default" : "outline"}
+                    variant={
+                      form.watch('categoryIds')?.includes(category.categoryId)
+                        ? 'default'
+                        : 'outline'
+                    }
                     className={cn(
-                      "flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize",
+                      'flex justify-center items-center gap-1 h-6 rounded-md text-xs font-medium cursor-pointer capitalize',
                     )}
                     onClick={() => handleSelectCategory(category.categoryId)}
                   >
                     {category.categoryName}
-                    {form.watch("categoryIds")?.includes(category.categoryId) && <Icons.x className="size-3" />}
+                    {form.watch('categoryIds')?.includes(category.categoryId) && (
+                      <Icons.x className="size-3" />
+                    )}
                   </Badge>
                 ))}
             </div>
@@ -272,21 +284,21 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
             control={form.control}
             name="isPublic"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex flex-col rounded-md border p-4">
                 <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  <div className="flex items-center gap-2">
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    <FormLabel className="flex items-center gap-2">
+                      <Icons.globe className="w-4 h-4" />
+                      Công khai
+                    </FormLabel>
+                  </div>
                 </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel className="flex items-center gap-2">
-                    <Icons.globe className="w-4 h-4" />
-                    Công khai bài viết
-                  </FormLabel>
-                  <p className="text-sm text-muted-foreground">
-                    {field.value
-                      ? "Bài viết sẽ hiển thị công khai cho tất cả mọi người"
-                      : "Bài viết chỉ hiển thị cho bạn và những người bạn cho phép"}
-                  </p>
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  {field.value
+                    ? 'Bài viết sẽ hiển thị công khai cho tất cả mọi người'
+                    : 'Bài viết chỉ hiển thị cho bạn'}
+                </p>
               </FormItem>
             )}
           />
@@ -309,7 +321,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                     Đang cập nhật...
                   </>
                 ) : (
-                  "Cập nhật bài viết"
+                  'Cập nhật bài viết'
                 )
               ) : isPosting ? (
                 <>
@@ -317,7 +329,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                   Đang đăng...
                 </>
               ) : (
-                "Đăng bài viết"
+                'Đăng bài viết'
               )}
             </Button>
           </div>
