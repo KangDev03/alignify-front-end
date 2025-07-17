@@ -68,18 +68,18 @@ export function SubscriptionPlans() {
         value={selectedRole}
         onValueChange={(value) => setSelectedRole(value as 'BRAND' | 'INFLUENCER')}
       >
-        <TabsList className="grid w-full grid-cols-2 mb-6 ">
-          <TabsTrigger value="brand" className="flex items-center space-x-2">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="BRAND" className="flex items-center space-x-2">
             <Icons.crown className="h-4 w-4" />
             <span>Gói Brand ({brandPlans.length})</span>
           </TabsTrigger>
-          <TabsTrigger value="influencer" className="flex items-center space-x-2">
+          <TabsTrigger value="INFLUENCER" className="flex items-center space-x-2">
             <Icons.camera className="h-4 w-4" />
             <span>Gói Influencer ({influencerPlans.length})</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="brand" className="space-y-6">
+        <TabsContent value="BRAND" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {brandPlans.map((plan) => (
               <PlanCard
@@ -91,9 +91,9 @@ export function SubscriptionPlans() {
           </div>
         </TabsContent>
 
-        <TabsContent value="influencer" className="space-y-6">
+        <TabsContent value="INFLUENCER" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {(influencerPlans ?? []).map((plan) => (
+            {influencerPlans.map((plan) => (
               <PlanCard
                 key={plan.id}
                 {...plan}

@@ -31,12 +31,15 @@ export interface ConvertedPlan {
   id: string;
   name: string;
   description: string;
+  roleId: string;
   price: number;
   originalPrice: number | undefined;
   planType: string;
   badge: string;
   badgeColor: string;
   isPopular: boolean;
+  isActive: boolean;
+  discount: number;
   planPermission: PlanPermission[];
   permission: Permission[];
   planCount: number;
@@ -48,6 +51,7 @@ export interface ConvertedPlan {
 
 export interface PlanRequest {
   formData: FormData;
+  id?: string;
 }
 
 export interface PlanPermissionSubmitData {
@@ -55,6 +59,7 @@ export interface PlanPermissionSubmitData {
   limited: number | undefined;
 }
 export interface PlanSubmitData {
+  planId?: string;
   planName: string;
   description: string;
   roleId: string;

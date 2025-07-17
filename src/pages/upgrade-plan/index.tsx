@@ -76,6 +76,7 @@ export const formatPlans = (userRole: RoleName, fetchedPlans: PlanResponse, isAn
       id: plan.planId,
       name: plan.planName,
       description: plan.description,
+      roleId: plan.roleId,
       price: plan.price,
       originalPrice:
         isAnnual && plan.discount ? Math.round(plan.price / (1 - plan.discount)) : undefined,
@@ -83,6 +84,8 @@ export const formatPlans = (userRole: RoleName, fetchedPlans: PlanResponse, isAn
       badge,
       badgeColor,
       isPopular: isSuggested,
+      isActive: plan.isActive,
+      discount: plan.discount,
       planPermission: plan.planPermissions.map((perm) => ({
         planPermissionId: perm.planPermissionId || '',
         planPermissionName: perm.planPermissionName,

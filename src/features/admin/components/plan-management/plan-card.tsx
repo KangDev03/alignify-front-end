@@ -17,21 +17,31 @@ import { useDeletePlanMutation } from '@/features/upgrade-plan/components/upgrad
 import type { ConvertedPlan } from '@/features/upgrade-plan/components/upgrade-plan.type';
 import { formatPlanPermissionName, formatPrice } from '@/utils/format';
 
+import { EditPlanModal } from './plan-edit';
+
 const PlanCard = ({
   id,
   name,
   description,
   price,
+  originalPrice,
   planType,
   badge,
   badgeColor,
   isPopular,
+  isActive,
   planPermission,
   planCount,
   currentPlan,
   buttonText,
   buttonVariant,
+  roleId,
+  discount,
+  permission,
+  createdAt,
 }: ConvertedPlan & { currentPlan: string }) => {
+  const location = useLocation();
+
   //Chức năng xóa Plan
   const [deletePlan] = useDeletePlanMutation();
   const handleDelete = async () => {
@@ -42,13 +52,37 @@ const PlanCard = ({
       console.error('Xóa thất bại:', err);
     }
   };
+  const plan: ConvertedPlan = {
+    id,
+    name,
+    description,
+    price,
+    originalPrice,
+    planType,
+    badge,
+    badgeColor,
+    isPopular,
+    isActive,
+    planPermission,
+    planCount,
+    currentPlan,
+    buttonText,
+    buttonVariant,
+    roleId,
+    discount,
+    permission,
+    createdAt,
+  };
 
-  const location = useLocation();
   return (
     <Card
       key={id}
       className={`relative transition-all duration-300 hover:shadow-lg ${
-        isPopular ? 'ring-2 ring-primary shadow-lg scale-105' : ''
+        isPopular && !location.pathname.endsWith('/dashboard')
+          ? 'ring-2 ring-primary shadow-lg scale-105'
+          : isPopular
+            ? 'ring-2 ring-primary shadow-lg'
+            : ''
       } ${id === currentPlan ? 'border-green-500' : ''}`}
     >
       {badge && location.pathname !== '/dashboard' && (
@@ -91,10 +125,10 @@ const PlanCard = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-                <DropdownMenuItem>
-                  <Icons.edit className="mr-2 h-4 w-4" />
-                  Chỉnh sửa
+                <DropdownMenuItem asChild>
+                  <EditPlanModal plan={plan} />
                 </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleDelete} className="text-red-600">
                   <Icons.trash2 className="mr-2 h-4 w-4" />

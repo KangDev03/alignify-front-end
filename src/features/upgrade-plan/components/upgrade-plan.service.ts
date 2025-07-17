@@ -1,6 +1,6 @@
 import { baseApi } from '@/redux/baseApi';
 
-import type { PermissionResponse, Plan, PlanResponse, PlanSubmitData } from './upgrade-plan.type';
+import type { PermissionResponse, PlanResponse, PlanSubmitData } from './upgrade-plan.type';
 
 export const planApi = baseApi.injectEndpoints({
   overrideExisting: true,
@@ -19,11 +19,11 @@ export const planApi = baseApi.injectEndpoints({
       invalidatesTags: ['Plan'],
     }),
 
-    updatePlan: builder.mutation<PlanResponse, { planId: string; plan: Plan }>({
-      query: ({ planId, plan }) => ({
-        url: `/plans/${planId}`,
+    editPlan: builder.mutation<PlanResponse, PlanSubmitData>({
+      query: (data) => ({
+        url: `/plans/${data.planId}`,
         method: 'PUT',
-        body: plan,
+        body: data,
       }),
       invalidatesTags: ['Plan'],
     }),
@@ -48,7 +48,7 @@ export const planApi = baseApi.injectEndpoints({
 export const {
   useGetPlansByRoleQuery,
   useCreatePlanMutation,
-  useUpdatePlanMutation,
   useDeletePlanMutation,
   useGetPermissionQuery,
+  useEditPlanMutation,
 } = planApi;
