@@ -109,6 +109,17 @@ export function ApplicantCard({
         {status === 'waiting' && (
           <>
             <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={async (e) => {
+                e.stopPropagation();
+                window.open(applicant.cv_url, '_blank');
+              }}
+            >
+              <Icons.eye />
+            </Button>
+            <Button
               size="sm"
               variant="outline"
               onClick={async (e) => {
@@ -134,7 +145,7 @@ export function ApplicantCard({
                 }
               }}
             >
-              <Icons.user className="h-4 w-4 mr-1" />
+              <Icons.fileUser className="h-4 w-4 mr-1" />
               CV
             </Button>
             <Button

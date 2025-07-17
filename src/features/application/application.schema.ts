@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 export const applicationFormSchema = z.object({
-  cv: z.instanceof(File, { message: 'File phải là file PDF *' }).refine(
+  cv: z.instanceof(File, { message: 'File phải là file ảnh *' }).refine(
     (file) => {
-      return ['application/pdf'].includes(file.type);
+      return ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type);
     },
-    { message: 'CV phải là file PDF *' },
+    { message: 'File phải là ảnh PDF *' },
   ),
 });
 

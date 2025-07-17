@@ -634,13 +634,13 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                           name="cv"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Tải lên CV của bạn</FormLabel>
+                              <FormLabel>Tải lên CV hoặc Portfolio của bạn</FormLabel>
                               <FormControl>
                                 <div>
                                   <Input
                                     id="poster-upload"
                                     type="file"
-                                    accept="application/pdf"
+                                    accept="image/jpeg,image/png,image/jpg"
                                     style={{ display: 'none' }}
                                     onChange={(e) =>
                                       field.onChange(
@@ -660,7 +660,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                                         size="sm"
                                       >
                                         <Icons.fileImage />
-                                        <span>Chọn CV</span>
+                                        <span>Chọn ảnh</span>
                                       </Button>
                                       <span className="text-sm">hoặc</span>
                                       <Button
@@ -672,7 +672,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                                         size="sm"
                                       >
                                         <Icons.fileImage />
-                                        <span>Sử dụng CV của bạn</span>
+                                        <span>Sử dụng của bạn</span>
                                       </Button>
                                     </div>
                                   </div>
@@ -690,7 +690,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                                     }
                                   >
                                     <Icons.eye />
-                                    <span>Xem trước CV</span>
+                                    <span>Xem trước</span>
                                   </Button>
                                   <Button
                                     type="button"
@@ -699,7 +699,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                                     onClick={() => field.onChange(undefined)}
                                   >
                                     <Icons.trash />
-                                    <span>Xóa CV</span>
+                                    <span>Xóa ảnh</span>
                                   </Button>
                                 </div>
                               )}
