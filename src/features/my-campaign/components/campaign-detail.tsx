@@ -42,11 +42,11 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
   const campaignRequirementsArray = Array.isArray(campaign.campaignRequirements)
     ? campaign.campaignRequirements
     : Object.entries(campaign.campaignRequirements || {}).map(([platform, quantity]) => ({
-        platform: platform as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
-        quantity: quantity as number,
-        post_type: '', // Placeholder, adjust if needed
-        details: [], // Placeholder, adjust if needed
-      }));
+      platform: platform as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
+      quantity: quantity as number,
+      post_type: '', // Placeholder, adjust if needed
+      details: [], // Placeholder, adjust if needed
+    }));
 
   const orderedCampaignRequirements = campaign.influencerRequirements
     .map((influencerReq) => {
@@ -56,6 +56,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
       return req || null;
     })
     .filter((req): req is NonNullable<typeof req> => req !== null);
+
   return (
     <div className="px-6 overflow-y-scroll scrollbar-small py-4">
       <div className="">
@@ -292,9 +293,9 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
                             className={cn(
                               'p-1 m-0 h-fit text-black',
                               require.details[idx].post_type === selected?.post_type &&
-                                require.platform === selected.platform &&
-                                idx === selectedIndex &&
-                                'text-primary',
+                              require.platform === selected.platform &&
+                              idx === selectedIndex &&
+                              'text-primary',
                             )}
                             key={require.post_type + idx}
                             onClick={() => {
