@@ -24,7 +24,7 @@ const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 
 export const store = configureStore({
   reducer: {
-    auth: persistedAuthReducer, // Sử dụng reducer đã được persist
+    auth: persistedAuthReducer,
     [baseApi.reducerPath]: baseApi.reducer,
     common: commonReducer,
     homeRefetch: refetchReducer,
@@ -38,10 +38,10 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // Tắt cảnh báo cho redux-persist
+      serializableCheck: false,
     }).concat(baseApi.middleware),
 });
 
-export const persistor = persistStore(store); // Tạo persistor
+export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

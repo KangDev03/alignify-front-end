@@ -1,9 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { toast } from 'sonner';
-import Stomp from 'stompjs';
+import { useState } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -28,70 +25,81 @@ import {
 } from '@/components/ui/table';
 
 import { Icons } from '@/components/icons/icons';
-import type { Campaign, CommonPageableRequest } from '@/features/common/common.type';
-import { useDeleteCampaignMutation } from '@/features/posting/posting.service';
-import { getStompClient } from '@/lib/stom-client';
-import type { RootState } from '@/redux/store';
 
 export function CampaignsManagement() {
-  const { token } = useSelector((state: RootState) => state.auth);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [deleteCampaign, { isLoading: isDeleting, isSuccess }] = useDeleteCampaignMutation();
-  const [toastId, setToastId] = useState<string | number | undefined>();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    if (!token) return;
-    let subscription: any;
-    getStompClient(token).then((client) => {
-      subscription = client.subscribe(`/topic/campaigns`, (res: Stomp.Message) => {
-        try {
-          const received: Campaign[] = JSON.parse(res.body);
-          if (received) {
-            setCampaigns(received);
-          }
-        } catch (error) {
-          console.error('Error parsing STOMP message:', error);
-        }
-      });
-    });
-    return () => {
-      if (subscription) subscription.unsubscribe();
-    };
-  }, [token]);
-
-  useEffect(() => {
-    if (token) {
-      getStompClient(token!).then((client) => {
-        if (client.connected) {
-          const pageRequest: CommonPageableRequest = {
-            pageNumber: 0,
-            pageSize: 10,
-          };
-          client.send(
-            `/app/campaigns`,
-            { Authorization: `Bearer ${token}` },
-            JSON.stringify(pageRequest),
-          );
-        }
-      });
-    }
-  }, [token]);
+  const campaigns = [
+    {
+      id: '1',
+      title: 'Chiến dịch quảng cáo sản phẩm làm đẹp mùa hè',
+      brand: 'Beauty Plus Vietnam',
+      brandAvatar: '/placeholder.svg?height=40&width=40',
+      status: 'active',
+      budget: '50,000,000 VNĐ',
+      startDate: '2024-01-15',
+      endDate: '2024-02-15',
+      applicants: 24,
+      selected: 8,
+      category: 'Làm đẹp',
+      description:
+        'Quảng bá dòng sản phẩm chăm sóc da mùa hè mới với các influencer beauty hàng đầu',
+    },
+    {
+      id: '2',
+      title: 'Chiến dịch sản phẩm công nghệ Q1',
+      brand: 'TechGear Store',
+      brandAvatar: '/placeholder.svg?height=40&width=40',
+      status: 'completed',
+      budget: '30,000,000 VNĐ',
+      startDate: '2024-01-01',
+      endDate: '2024-01-31',
+      applicants: 15,
+      selected: 5,
+      category: 'Công nghệ',
+      description: 'Review và quảng bá các sản phẩm công nghệ mới trong quý 1',
+    },
+    {
+      id: '3',
+      title: 'Chiến dịch thời trang xuân hè 2024',
+      brand: 'Fashion House',
+      brandAvatar: '/placeholder.svg?height=40&width=40',
+      status: 'pending',
+      budget: '75,000,000 VNĐ',
+      startDate: '2024-03-01',
+      endDate: '2024-04-01',
+      applicants: 32,
+      selected: 10,
+      category: 'Thời trang',
+      description: 'Quảng bá bộ sưu tập thời trang xuân hè mới với các fashion influencer',
+    },
+    {
+      id: '4',
+      title: 'Chiến dịch ẩm thực địa phương',
+      brand: 'Local Food Co.',
+      brandAvatar: '/placeholder.svg?height=40&width=40',
+      status: 'reported',
+      budget: '20,000,000 VNĐ',
+      startDate: '2024-02-01',
+      endDate: '2024-02-28',
+      applicants: 18,
+      selected: 6,
+      category: 'Ẩm thực',
+      description: 'Khám phá và quảng bá các món ăn địa phương đặc sắc',
+    },
+  ];
 
   const getStatusBadge = (status: string) => {
     const base = 'pointer-events-none hover:bg-transparent hover:text-inherit';
     switch (status) {
-      case 'DRAFT':
-        return <Badge className={`bg-gray-100 text-gray-800 ${base}`}>Đang chờ tuyển</Badge>;
-      case 'RECRUITING':
-        return <Badge className={`bg-blue-100 text-blue-800 ${base}`}>Đang tuyển</Badge>;
-      case 'COMPLETED':
-        return <Badge className={`bg-green-100 text-green-800 ${base}`}>Hoàn thành</Badge>;
-      case 'PENDING':
+      case 'active':
+        return <Badge className={`bg-green-100 text-green-800 ${base}`}>Đang chạy</Badge>;
+      case 'completed':
+        return <Badge className={`bg-blue-100 text-blue-800 ${base}`}>Hoàn thành</Badge>;
+      case 'pending':
         return <Badge className={`bg-yellow-100 text-yellow-800 ${base}`}>Chờ duyệt</Badge>;
-      case 'REPORTED':
+      case 'reported':
         return <Badge className={`bg-red-100 text-red-800 ${base}`}>Bị báo cáo</Badge>;
-      case 'PARTICIPATING':
-        return <Badge className={`bg-indigo-100 text-indigo-800 ${base}`}>Đang diễn ra</Badge>;
       default:
         return (
           <Badge variant="secondary" className={`${base}`}>
@@ -101,35 +109,17 @@ export function CampaignsManagement() {
     }
   };
 
-  const handleDeleteCampaign = async (campaignId: string) => {
-    let toastId: string | number | undefined;
-    try {
-      await deleteCampaign(campaignId).unwrap();
-      setCampaigns((prev) => prev.filter((campaign) => campaign.campaignId !== campaignId));
-    } catch (_err) {
-      if (toastId) toast.dismiss(toastId);
-      toast.error('Xóa chiến dịch thất bại. Thử lại sau!');
-    }
+  const filteredCampaigns = campaigns.filter(
+    (campaign) =>
+      campaign.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      campaign.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      campaign.category.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  const handleDeleteCampaign = (campaignId: string) => {
+    console.log('Deleting campaign:', campaignId);
+    // Logic xóa chiến dịch
   };
-
-  useEffect(() => {
-    if (isDeleting && !toastId) {
-      const id = toast.loading('Đang xóa chiến dịch!', { duration: 2000 });
-      setToastId(id);
-    }
-    if (!isDeleting && toastId) {
-      toast.dismiss(toastId);
-      setToastId(undefined);
-    }
-  }, [isDeleting, toastId]);
-
-  useEffect(() => {
-    if (isSuccess && toastId) {
-      toast.dismiss(toastId);
-      toast.success('Xóa chiến dịch thành công!', { duration: 2000 });
-      setToastId(undefined);
-    }
-  }, [isSuccess, toastId]);
 
   return (
     <div className="space-y-6">
@@ -145,10 +135,16 @@ export function CampaignsManagement() {
       <div className="flex items-center space-x-2">
         <div className="relative flex-1 max-w-sm">
           <Icons.search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Tìm kiếm chiến dịch..." className="pl-8" />
+          <Input
+            placeholder="Tìm kiếm chiến dịch..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8"
+          />
         </div>
       </div>
 
+      {/* Campaigns Table */}
       <Card>
         <CardHeader>
           <CardTitle>Danh sách chiến dịch</CardTitle>
@@ -168,24 +164,24 @@ export function CampaignsManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {campaigns.map((campaign) => (
-                <TableRow key={campaign.campaignId}>
+              {filteredCampaigns.map((campaign) => (
+                <TableRow key={campaign.id}>
                   <TableCell>
                     <div>
-                      <div className="font-medium">{campaign.campaignName}</div>
-                      {/* <div className="text-sm text-muted-foreground">{campaign.c}</div> */}
+                      <div className="font-medium">{campaign.title}</div>
+                      <div className="text-sm text-muted-foreground">{campaign.category}</div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Avatar className="h-6 w-6">
                         <AvatarImage
-                          src={campaign.brandAvartar || '/placeholder.svg'}
-                          alt={campaign.brandName}
+                          src={campaign.brandAvatar || '/placeholder.svg'}
+                          alt={campaign.brand}
                         />
-                        <AvatarFallback>{campaign.brandName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>{campaign.brand.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <span className="text-sm">{campaign.brandName}</span>
+                      <span className="text-sm">{campaign.brand}</span>
                     </div>
                   </TableCell>
                   <TableCell>{getStatusBadge(campaign.status)}</TableCell>
@@ -227,7 +223,7 @@ export function CampaignsManagement() {
                         )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => handleDeleteCampaign(campaign.campaignId)}
+                          onClick={() => handleDeleteCampaign(campaign.id)}
                           className="text-red-600"
                         >
                           <Icons.trash2 className="mr-2 h-4 w-4" />

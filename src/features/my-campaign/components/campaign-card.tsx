@@ -18,7 +18,6 @@ import {
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { Progress } from '@/components/ui/progress.tsx';
-import { Textarea } from '@/components/ui/textarea.tsx';
 
 import { Icons } from '@/components/icons/icons.tsx';
 import type { Campaign, RoleName } from '@/features/common/common.type.ts';
@@ -287,7 +286,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
             <Icons.upload className="h-5 w-5" />
             Cập nhật tiến độ chiến dịch
           </DialogTitle>
-          <DialogDescription>Gửi link nội dung theo yêu cầu của chiến dịch {campaign.campaignName}</DialogDescription>
+          <DialogDescription>{campaign.campaignName}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -308,7 +307,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 const detail = req.details[contentIndex]
 
                 return (
-                  <div key={contentIndex} className="bg-muted/30 rounded-lg p-3 space-y-3">
+                  <div key={contentIndex} className="bg-muted/30 rounded-lg px-3 py-1 space-y-3">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium">Nội dung {contentIndex + 1}</h4>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -340,17 +339,6 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                         placeholder="https://..."
                         value={progressUpdates[key] || ""}
                         onChange={(e) => setProgressUpdates((prev) => ({ ...prev, [key]: e.target.value }))}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor={`desc-${key}`}>Mô tả nội dung</Label>
-                      <Textarea
-                        id={`desc-${key}`}
-                        placeholder="Mô tả chi tiết về nội dung đã tạo..."
-                        value={progressDescriptions[key] || ""}
-                        onChange={(e) => setProgressDescriptions((prev) => ({ ...prev, [key]: e.target.value }))}
-                        rows={2}
                       />
                     </div>
                   </div>
@@ -397,7 +385,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               Tiến độ chiến dịch
             </DialogTitle>
             <DialogDescription>
-              Theo dõi tiến độ của các influencer trong chiến dịch {campaign.campaignName}
+              {campaign.campaignName}
             </DialogDescription>
           </DialogHeader>
 
@@ -518,15 +506,6 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                   Chỉnh sửa
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
-                  <DialogTitle className="font-semibold text-xl text-center ">
-                    Chiến dịch của {campaign.brandName}
-                  </DialogTitle>
-                  <DialogDescription className="hidden"></DialogDescription>
-                </DialogHeader>
-                <CampaignDetail key={campaign.campaignId} campaign={campaign} />
-              </DialogContent>
               <CampaignPopUp campaignData={campaign} />
             </Dialog>
 
