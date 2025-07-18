@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -28,6 +27,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import ConfirmMoveDraftDialog from './confirm-dialog';
 import { contractFormSchema, type ContractFormValues } from '../../campaign.schema';
 import { useChangeStatusMutation, useUpdateContractMutation } from '../../campaign.service';
 import { changeCampaignStatus, updateContractSlice } from '../../campaign.slice';
@@ -220,34 +220,7 @@ export default function RecruitingCampaignDialog({
           </DialogContent>
         </Dialog>
       )}
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline" size="sm">
-            <Icons.edit className="h-4 w-4 mr-1" />
-            Chỉnh sửa
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px] " showCloseButton={false}>
-          <DialogHeader className="border-b-2 border-border py-3">
-            <DialogTitle className="font-semibold text-xl text-center">
-              Chiến dịch của {campaign.brandName}
-            </DialogTitle>
-            <DialogDescription>
-              Bạn có chắc chắn muốn chỉnh sửa chiến dịch không? Hành động này sẽ đưa chiến dịch của
-              bạn về trạng thái nháp. Mọi đơn ứng tuyển và lời mời sẽ bị xóa. Hãy đảm bảo rằng chính
-              bạn là người thực hiện!
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-between">
-            <DialogClose>
-              <Button variant={'destructive'}>Hủy</Button>
-            </DialogClose>
-            <Button variant={'default'} onClick={handleMoveToDraft}>
-              Xác nhận
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ConfirmMoveDraftDialog campaign={campaign} handleMoveToDraft={handleMoveToDraft} />
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="flex items-center w-full bg-transparent">

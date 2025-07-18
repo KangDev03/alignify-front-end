@@ -41,7 +41,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const currentPath = location.pathname;
   const sendNotification = useSendNotification();
   const isHotCampaign =
-    (campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0) > 10;
+    (campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0) > 0;
 
   const renderDialogCampaign = () => {
     switch (campaign.status.toUpperCase()) {
@@ -116,7 +116,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
         {isHotCampaign && (
           <div className="flex items-center gap-2 mb-3 text-sm">
-            <div className="flex items-center gap-1 text-orange-600">
+            <div className="flex items-center gap-1 text-blue -600">
               <Icons.users className="h-4 w-4" />
               <span className="font-medium">
                 {campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0} ứng viên
