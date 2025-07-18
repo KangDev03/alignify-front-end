@@ -38,6 +38,8 @@ export function CampaignsManagement() {
   const navigate = useNavigate();
   const { token } = useSelector((state: RootState) => state.auth);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [deleteCampaign, { isLoading: isDeleting, isSuccess }] = useDeleteCampaignMutation();
+  const [toastId, setToastId] = useState<string | number | undefined>();
 
   useEffect(() => {
     if (!token) return;
