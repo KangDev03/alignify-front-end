@@ -141,6 +141,7 @@ export interface Campaign {
   applicationTotal: number | 0;
   appliedInfluencerIds?: string[];
   invitedInfluencerIds?: string[];
+  contractUrl?: string;
 }
 
 export interface CommonPageableRequest {
