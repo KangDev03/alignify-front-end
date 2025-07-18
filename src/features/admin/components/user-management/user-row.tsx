@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -60,7 +59,6 @@ interface UserRowProps {
 const UserRow = ({ user, isBanned, isInfluencerRole, permissions, reasons }: UserRowProps) => {
   const dispatch = useDispatch();
   const sendNotification = useSendNotification();
-  const navigate = useNavigate();
   const { token, id: userId } = useSelector((state: RootState) => state.auth);
   const [blockPermission] = useBlockPermissionMutation();
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
@@ -146,16 +144,16 @@ const UserRow = ({ user, isBanned, isInfluencerRole, permissions, reasons }: Use
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Cấp quyền người dùng</DropdownMenuLabel>
-              <DropdownMenuItem
-                className="cursor-pointer flex items-center gap-2 hover:text-blue-600 focus:text-blue-600"
-                onClick={() =>
-                  navigate(
-                    isInfluencerRole ? `/influencer/${user.userId}` : `/brand/${user.userId}`,
-                  )
-                }
-              >
-                <Icons.eye className="h-4 w-4 hover:text-blue-600 focus:text-blue-600" />
-                Xem hồ sơ
+              <DropdownMenuItem className="cursor-pointer flex items-center gap-2 hover:text-blue-600 focus:text-blue-600">
+                <a
+                  href={isInfluencerRole ? `/influencer/${user.userId}` : `/brand/${user.userId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 w-full"
+                >
+                  <Icons.eye className="h-4 w-4 hover:text-blue-600 focus:text-blue-600" />
+                  Xem hồ sơ
+                </a>
               </DropdownMenuItem>
               {/* <DropdownMenuItem>
               <Icons.mail className="mr-2 h-4 w-4" />

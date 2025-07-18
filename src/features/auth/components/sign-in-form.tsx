@@ -23,7 +23,8 @@ import { Input } from '@/components/ui/input';
 
 import { Icons } from '@/components/icons/icons';
 import { type SignInFormValues, signInSchema } from '@/features/auth/auth.schema';
-import { useAppDispatch } from '@/hooks/redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -36,6 +37,7 @@ export default function SignInForm() {
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
   const [loginViaGoogle] = useGoogleLoginMutation();
+  const { role: roleName } = useAppSelector((state: RootState) => state.auth);
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -49,7 +51,11 @@ export default function SignInForm() {
     try {
       const response = await login(values).unwrap();
       dispatch(setCredentials(response));
-      navigate('/home');
+      if (roleName === 'ADMIN') {
+        navigate('/dashboard');
+      } else {
+        navigate('/home');
+      }
       toast.success('Đăng nhập thành công!');
     } catch (err: unknown) {
       if (isApiResponseError(err)) {
@@ -69,7 +75,11 @@ export default function SignInForm() {
       try {
         const response = await loginViaGoogle({ code }).unwrap();
         dispatch(setCredentials(response));
-        navigate('/home');
+        if (roleName === 'ADMIN') {
+          navigate('/dashboard');
+        } else {
+          navigate('/home');
+        }
         toast.success('Đăng nhập thành công!');
       } catch (err: unknown) {
         if (isApiResponseError(err)) {

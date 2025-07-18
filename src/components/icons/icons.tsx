@@ -1,4 +1,5 @@
 import {
+  AlertCircle,
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
@@ -24,6 +25,7 @@ import {
   Crown,
   DollarSign,
   Dot,
+  Download,
   Edit,
   Ellipsis,
   ExternalLink,
@@ -33,6 +35,7 @@ import {
   FileText,
   FileUser,
   Flag,
+  Flame,
   Globe,
   Heart,
   Home,
@@ -164,4 +167,7 @@ export const Icons = {
   lock: Lock,
   globe: Globe,
   fileUser: FileUser,
+  download: Download,
+  alertCircle: AlertCircle,
+  flame: Flame,
 };
