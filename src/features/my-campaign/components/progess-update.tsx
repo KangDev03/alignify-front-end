@@ -20,7 +20,7 @@ interface ProgressUpdateDialogProps {
   campaign: Campaign;
 }
 const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
-  const handleSubmitProgress = () => {};
+  // const handleSubmitProgress = () => {};
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -29,7 +29,7 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
           Cập nhật tiến độ
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto scrollbar-thin">
+      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Icons.upload className="h-5 w-5" />
@@ -38,7 +38,7 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
           <DialogDescription>{campaign.campaignName}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 scrollbar-thin">
           {campaign.campaignRequirements?.map((req, reqIndex) => {
             let style = '';
             const platform = req.platform.toLowerCase();
