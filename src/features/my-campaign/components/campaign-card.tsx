@@ -49,6 +49,7 @@ import { formatDate } from '@/utils/format.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import CampaignDetail from './campaign-detail.tsx';
+import HotCampaignBadge from './HotCampaignBadge.tsx';
 import { StatusBadge } from './status-badge.tsx';
 import { contractFormSchema, type ContractFormValues } from '../campaign.schema.ts';
 import { changeCampaignStatus, updateContractSlice } from '../campaign.slice.ts';
@@ -85,20 +86,6 @@ const mockProgressData = {
   ],
 };
 
-const HotCampaignBadge = () => (
-  <div className="absolute top-3 right-3 z-10">
-    <div className="relative flex items-center gap-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">
-      <div className="relative">
-        <Icons.flame className="h-4 w-4 animate-pulse" />
-        <div className="absolute inset-0 animate-ping">
-          <Icons.flame className="h-4 w-4 opacity-75" />
-        </div>
-      </div>
-      <span>HOT</span>
-    </div>
-  </div>
-);
-
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const dispatch = useAppDispatch();
   const { role, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
@@ -115,7 +102,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const [uploadContract, { isLoading: isUploading }] = useUploadContractMutation();
   const [updateContract, { isLoading: isContractUpdating }] = useUpdateContractMutation();
   const isHotCampaign =
-    (campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0) > 0;
+    (campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0) > 10;
 
   const handleApplyCampaign = async (values: ApplicationFormValues) => {
     try {

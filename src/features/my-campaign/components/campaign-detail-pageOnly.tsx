@@ -15,10 +15,13 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { Icons } from '@/components/icons/icons';
-import { useGetCampaignByIdQuery } from '@/features/admin/admin.service';
+import { StatusBadge } from '@/features/application/components/status-badge';
 import type { Campaign } from '@/features/common/common.type';
+import { useGetCampaignByIdQuery } from '@/features/my-campaign/campaign.service';
 import { cn } from '@/lib/utils';
 import { formatDate, formatNumber } from '@/utils/format';
+
+import HotCampaignBadge from './HotCampaignBadge';
 
 export interface SelectRequirement {
   platform: string;
@@ -26,11 +29,11 @@ export interface SelectRequirement {
   index: number;
 }
 
-export default function AdminCampaignDetail() {
+export default function CampaignDetailPage() {
   const { campaignId } = useParams<{ campaignId: string }>();
   const [selectRequirement, setSelectRequirement] = useState<SelectRequirement[]>([]);
-  const { data: campaign, isLoading, isError } = useGetCampaignByIdQuery(campaignId!);
-
+  const { data: campaignRaw, isLoading, isError } = useGetCampaignByIdQuery(campaignId!);
+  const campaign = campaignRaw?.data;
   const initializeSelectRequirement = (campaignRequirements: Campaign['campaignRequirements']) => {
     return campaignRequirements.map((req) => ({
       platform: req.platform,
@@ -46,18 +49,19 @@ export default function AdminCampaignDetail() {
   }, [campaign?.campaignRequirements]);
 
   if (isLoading) return <div className="p-8 text-center">Đang tải...</div>;
-  if (isError || !campaign) return <div className="p-8 text-center text-destructive">Không tìm thấy chiến dịch.</div>;
+  if (isError || !campaign)
+    return <div className="p-8 text-center text-destructive">Không tìm thấy chiến dịch.</div>;
 
   // console.log(campaign);
 
   const campaignRequirementsArray = Array.isArray(campaign.campaignRequirements)
     ? campaign.campaignRequirements
     : Object.entries(campaign.campaignRequirements || {}).map(([platform, quantity]) => ({
-      platform: platform as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
-      quantity: quantity as number,
-      post_type: '', // Placeholder, adjust if needed
-      details: [], // Placeholder, adjust if needed
-    }));
+        platform: platform as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
+        quantity: quantity as number,
+        post_type: '', // Placeholder, adjust if needed
+        details: [], // Placeholder, adjust if needed
+      }));
 
   const orderedCampaignRequirements = (campaign.influencerRequirements || [])
     .map((influencerReq) => {
@@ -68,18 +72,29 @@ export default function AdminCampaignDetail() {
     })
     .filter((req): req is NonNullable<typeof req> => req !== null);
 
+  const isHotCampaign =
+    (campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0) > 0;
+
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
-      <Card>
+      <Card className="relative">
+        {isHotCampaign && <HotCampaignBadge />}
         <CardHeader>
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={campaign.brandAvartar || '/placeholder.svg'} alt={campaign.brandName} />
-              <AvatarFallback>{campaign.brandName ? campaign.brandName.charAt(0) : '?'}</AvatarFallback>
+              <AvatarImage
+                src={campaign.brandAvartar || '/placeholder.svg'}
+                alt={campaign.brandName}
+              />
+              <AvatarFallback>
+                {campaign.brandName ? campaign.brandName.charAt(0) : '?'}
+              </AvatarFallback>
             </Avatar>
             <div>
               <CardTitle className="text-lg">{campaign.campaignName}</CardTitle>
-              <div className="text-sm text-muted-foreground">{campaign.brandName} • {formatDate(campaign.createdAt)}</div>
+              <div className="text-sm text-muted-foreground">
+                {campaign.brandName} • {formatDate(campaign.createdAt)}
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -88,7 +103,8 @@ export default function AdminCampaignDetail() {
             <img
               src={campaign.imageUrl || '/placeholder.svg'}
               alt={campaign.campaignName}
-              className="w-full h-full object-cover" />
+              className="w-full h-full object-cover"
+            />
           </div>
 
           <div>
@@ -100,22 +116,54 @@ export default function AdminCampaignDetail() {
             <div className="flex flex-wrap gap-2">
               <h4 className="text-sm font-medium">Danh mục:</h4>
               {campaign.categories.map((cat: any, i: number) => (
-                <Badge key={cat.categoryId ?? i} variant="outline">{cat.categoryName ?? cat}</Badge>
+                <Badge key={cat.categoryId ?? i} variant="outline">
+                  {cat.categoryName ?? cat}
+                </Badge>
               ))}
             </div>
           )}
-
+          <div className="flex items-center justify-between">
+            {isHotCampaign && (
+              <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-1 text-blue-600">
+                  <Icons.users className="h-4 w-4" />
+                  <span className="font-medium">
+                    {campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0} ứng
+                    viên
+                  </span>
+                </div>
+                <Badge
+                  variant="secondary"
+                  className="bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200 dark:hover:bg-orange-200"
+                >
+                  Phổ biến
+                </Badge>
+              </div>
+            )}
+            <Button size={'sm'} className="text-xs rounded-lg font-bold">
+              Ứng tuyển
+            </Button>
+          </div>
           <div className="flex flex-wrap gap-2">
             <h4 className="text-sm font-medium">Nền tảng:</h4>
-            {campaign.campaignRequirements?.map((require: any, idx: number) => {
+            {orderedCampaignRequirements.map((require: any, idx: number) => {
               let style = '';
               const platform = require.platform.toLowerCase();
               switch (platform) {
-                case 'facebook': style = 'bg-blue-500'; break;
-                case 'youtube': style = 'bg-red-500'; break;
-                case 'instagram': style = 'bg-gradient-to-br from-purple-700 via-pink-500 to-yellow-400'; break;
-                case 'tiktok': style = 'bg-black'; break;
-                default: break;
+                case 'facebook':
+                  style = 'bg-blue-500';
+                  break;
+                case 'youtube':
+                  style = 'bg-red-500';
+                  break;
+                case 'instagram':
+                  style = 'bg-gradient-to-br from-purple-700 via-pink-500 to-yellow-400';
+                  break;
+                case 'tiktok':
+                  style = 'bg-black';
+                  break;
+                default:
+                  break;
               }
               const Icon = Icons[require.platform.toLowerCase() as keyof typeof Icons];
               return (
@@ -131,7 +179,6 @@ export default function AdminCampaignDetail() {
             })}
           </div>
           <div className="grid grid-cols-2 gap-4">
-
             <div className="flex flex-col">
               <h4 className="text-sm font-medium mb-1">Ngân sách</h4>
               <div className="flex items-center w-fit mr-4">
@@ -147,14 +194,13 @@ export default function AdminCampaignDetail() {
                 <p>{`${formatDate(campaign.startAt)} - ${formatDate(campaign.dueAt)}`}</p>
               </div>
             </div>
-
           </div>
 
           <Separator />
 
           <div className="flex flex-row gap-2 items-center">
             <p className="text-sm font-medium">Trạng thái:</p>
-            <Badge variant="secondary">{campaign.status}</Badge>
+            {StatusBadge(campaign.status)}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -168,18 +214,32 @@ export default function AdminCampaignDetail() {
                 let bg = '';
                 const platform = require.platform.toLowerCase();
                 switch (platform) {
-                  case 'facebook': bg = 'bg-blue-500'; break;
-                  case 'youtube': bg = 'bg-red-500'; break;
-                  case 'instagram': bg = 'bg-gradient-to-br from-purple-700 via-pink-500 to-yellow-400'; break;
-                  case 'tiktok': bg = 'bg-black stroke-3'; break;
-                  default: break;
+                  case 'facebook':
+                    bg = 'bg-blue-500';
+                    break;
+                  case 'youtube':
+                    bg = 'bg-red-500';
+                    break;
+                  case 'instagram':
+                    bg = 'bg-gradient-to-br from-purple-700 via-pink-500 to-yellow-400';
+                    break;
+                  case 'tiktok':
+                    bg = 'bg-black stroke-3';
+                    break;
+                  default:
+                    break;
                 }
                 const Icon = Icons[platform as keyof typeof Icons];
                 return (
-                  <div key={require.platform + idx} className="flex flex-col items-center gap-1 text-sm">
+                  <div
+                    key={require.platform + idx}
+                    className="flex flex-col items-center gap-1 text-sm"
+                  >
                     <Icon className={`size-10 rounded-xl bg-black border-2 p-1 text-white ${bg}`} />
                     <p className="flex gap-2">
-                      <span className="font-semibold text-primary">{formatNumber(require.followers)}</span>
+                      <span className="font-semibold text-primary">
+                        {formatNumber(require.followers)}
+                      </span>
                     </p>
                   </div>
                 );
@@ -254,9 +314,9 @@ export default function AdminCampaignDetail() {
                               className={cn(
                                 'p-1 m-0 h-fit text-black',
                                 require.details[idx].post_type === selected?.post_type &&
-                                require.platform === selected.platform &&
-                                idx === selectedIndex &&
-                                'text-primary',
+                                  require.platform === selected.platform &&
+                                  idx === selectedIndex &&
+                                  'text-primary',
                               )}
                               key={require.post_type + idx}
                               onClick={() => {
@@ -297,7 +357,10 @@ export default function AdminCampaignDetail() {
                                 {require.platform.toLowerCase() === 'tiktok' && (
                                   <Tooltip>
                                     <TooltipTrigger>
-                                      <Icons.heart size={14} className="text-red-500 fill-red-500" />
+                                      <Icons.heart
+                                        size={14}
+                                        className="text-red-500 fill-red-500"
+                                      />
                                     </TooltipTrigger>
                                     <TooltipContent
                                       side="bottom"
@@ -342,7 +405,10 @@ export default function AdminCampaignDetail() {
                                 {require.platform.toLowerCase() === 'instagram' && (
                                   <Tooltip>
                                     <TooltipTrigger>
-                                      <Icons.heart size={14} className="text-red-500 fill-red-500" />
+                                      <Icons.heart
+                                        size={14}
+                                        className="text-red-500 fill-red-500"
+                                      />
                                     </TooltipTrigger>
                                     <TooltipContent
                                       side="bottom"
@@ -361,7 +427,10 @@ export default function AdminCampaignDetail() {
                                   <TooltipTrigger>
                                     <Icons.messageCircle size={14} className="text-blue-500 p-0" />
                                   </TooltipTrigger>
-                                  <TooltipContent side="bottom" className="rounded-full text-xs py-1">
+                                  <TooltipContent
+                                    side="bottom"
+                                    className="rounded-full text-xs py-1"
+                                  >
                                     <p>Lượt bình luận</p>
                                   </TooltipContent>
                                 </Tooltip>
@@ -383,7 +452,6 @@ export default function AdminCampaignDetail() {
               })}
             </div>
           </div>
-
         </CardContent>
       </Card>
     </div>

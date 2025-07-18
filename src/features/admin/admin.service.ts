@@ -1,4 +1,3 @@
-import type { Campaign } from '@/features/common/common.type';
 import { baseApi } from '@/redux/baseApi';
 
 import type { PermissionBlockRequest, PermissionResponse, ReasonResponse } from './admin.type';
@@ -26,12 +25,6 @@ const adminApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
     }),
-    getCampaignById: builder.query<Campaign, string>({
-      query: (campaignId) => ({
-        url: `/campaigns/${campaignId}`,
-        method: 'GET',
-      }),
-    }),
   }),
 });
 
@@ -39,5 +32,4 @@ export const {
   useGetAllPermissionQuery,
   useBlockPermissionMutation,
   useGetAllReasonForBannedQuery,
-  useGetCampaignByIdQuery,
 } = adminApi;
