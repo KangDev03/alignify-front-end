@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import Stomp from 'stompjs';
 
@@ -35,7 +34,6 @@ import { getStompClient } from '@/lib/stom-client';
 import type { RootState } from '@/redux/store';
 
 export function CampaignsManagement() {
-  const navigate = useNavigate();
   const { token } = useSelector((state: RootState) => state.auth);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [deleteCampaign, { isLoading: isDeleting, isSuccess }] = useDeleteCampaignMutation();
@@ -218,7 +216,9 @@ export function CampaignsManagement() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
                         <DropdownMenuItem
-                          onClick={() => navigate(`/dashboard/campaign/${campaign.campaignId}`)}
+                          onClick={() =>
+                            window.open(`/campaign-details/${campaign.campaignId}`, '_blank')
+                          }
                         >
                           <Icons.eye className="mr-2 h-4 w-4" />
                           Xem chi tiết
