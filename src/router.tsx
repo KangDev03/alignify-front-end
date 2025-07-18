@@ -41,11 +41,13 @@ function Router() {
           <Route path="select-role" element={<SelectRolePage />} />
           <Route path="verify-otp" element={<VerifyOtpPage />} />
         </Route>
-        <Route element={
-          <RequireAuth>
-            <AppLayout />
-          </RequireAuth>
-        }>
+        <Route
+          element={
+            <RequireAuth>
+              <AppLayout />
+            </RequireAuth>
+          }
+        >
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/settings" element={<Settings />} />
@@ -60,7 +62,7 @@ function Router() {
           {roleName === 'BRAND' && (
             <Route path="/statistics" element={<Statistics userRole="BRAND" />} />
           )}
-          <Route path="/upgrade-plan" element={<UpgradePlan userRole={roleName} />} />
+          <Route path="/upgrade-plan" element={<UpgradePlan userRole={roleName!} />} />
           {roleName === 'INFLUENCER' && (
             <Route path="/user-profile" element={<InfluencerProfilePage />} />
           )}
