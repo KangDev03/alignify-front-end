@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Calendar, DollarSignIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   Accordion,
@@ -17,6 +19,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Icons } from '@/components/icons/icons.tsx';
 import type { Campaign } from '@/features/common/common.type.ts';
 import { cn } from '@/lib/utils.ts';
+import type { RootState } from '@/redux/store.ts';
 import { formatDate, formatNumber } from '@/utils/format.ts';
 
 import { StatusBadge } from './status-badge.tsx';
@@ -28,6 +31,7 @@ export interface SelectRequirement {
 }
 
 export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
+  const { id: userId } = useSelector((state: RootState) => state.auth);
   const initializeSelectRequirement = (campaignRequirements: Campaign['campaignRequirements']) => {
     return campaignRequirements.map((req) => ({
       platform: req.platform,
@@ -166,6 +170,43 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
           <p className="text-sm font-medium">Trạng thái:</p>
           {StatusBadge(campaign.status)}
         </div>
+
+        {(campaign.joinedInfluencerIds.includes(userId!) ||
+          campaign.brandId === userId ||
+          campaign.appliedInfluencerIds?.includes(userId!)) && (
+          <div className="flex flex-row gap-2 items-center">
+            <p className="text-sm font-medium">Hợp đồng:</p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (campaign.contractUrl) {
+                  try {
+                    const response = await fetch(campaign.contractUrl);
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const fileName =
+                      campaign.contractUrl.split('/').pop() ||
+                      (campaign.contractUrl.endsWith('.pdf') ? 'cv.pdf' : 'cv');
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                  } catch {
+                    toast.error('Không thể tải file CV. Vui lòng thử lại sau.');
+                  }
+                }
+              }}
+            >
+              <Icons.fileUser className="h-4 w-4 mr-1" />
+              {campaign.contractUrl ? 'Đính kèm' : 'Chưa tải lên'}
+            </Button>
+          </div>
+        )}
 
         <div className="flex flex-col gap-2">
           <p className="font-semibold">Yêu cầu về influencer</p>

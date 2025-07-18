@@ -30,6 +30,16 @@ export const campaignSlice = createSlice({
         state.campaigns[campaignIndex].status = status;
       }
     },
+    updateContractSlice: (
+      state,
+      action: PayloadAction<{ campaignId: string; contractUrl: string }>,
+    ) => {
+      const { campaignId, contractUrl } = action.payload;
+      const campaignIndex = state.campaigns.findIndex((c) => c.campaignId === campaignId);
+      if (campaignIndex !== -1) {
+        state.campaigns[campaignIndex].contractUrl = contractUrl;
+      }
+    },
     updateCampaignSlice: (state, action: PayloadAction<Campaign>) => {
       const idx = state.campaigns.findIndex(
         (campaign) => campaign.campaignId === action.payload.campaignId,
@@ -56,5 +66,6 @@ export const {
   updateCampaignSlice,
   deleteCampaignSlice,
   addCampaignSlice,
+  updateContractSlice,
 } = campaignSlice.actions;
 export default campaignSlice.reducer;

@@ -6,3 +6,8 @@ export interface CampaignState {
 export interface CampaignResponse extends ApiReponseSuccess<CampaignState> {
   data: CampaignState;
 }
+
+export interface ContractSubmitData {
+  campaignId: string;
+  contract: FormData;
+}
