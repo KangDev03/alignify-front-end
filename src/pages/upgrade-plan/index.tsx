@@ -30,9 +30,12 @@ import { Switch } from '@/components/ui/switch';
 
 import PlanCard from '@/features/admin/components/plan-management/plan-card';
 import type { RoleName } from '@/features/common/common.type';
-import { useCreatePayMutation } from '@/features/Payment/PayOS/payos.service';
+import {
+  useCreatePayOSMutation,
+  useCreatePaypalMutation,
+} from '@/features/payment/payment.service';
 import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
-import { formatPlanPermissionName, formatPlanType } from '@/utils/format';
+import { formatPlanPermissionName, formatPlanType, formatPrice } from '@/utils/format';
 
 interface UpgradePlanProps {
   userRole: RoleName;
@@ -108,10 +111,11 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
   const [showPaymentDialog, setShowPaymentDialog] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [selectedPlanId, setSelectedPlanId] = useState<string>();
+
   const currentPlan = userRole === 'INFLUENCER' ? 'creator' : 'starter';
   const { data: fetchedPlans, isLoading } = useGetPlansByRoleQuery(userRole.toLowerCase() ?? '');
-  const [createPay] = useCreatePayMutation();
-
+  const [createPayOS] = useCreatePayOSMutation();
+  const [createPaypal] = useCreatePaypalMutation();
   useEffect(() => {
     if (!isLoading && fetchedPlans) {
       console.log('dataa: ', fetchedPlans);
@@ -119,25 +123,24 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
   }, [isLoading, fetchedPlans]);
 
   const handleUpgrade = (planId: string) => {
-    if (planId === currentPlan) return;
+    if (planId === currentPlanId) return;
 
     const selected = plansFilter.find((plan) => plan.planId === planId);
     setSelectedPlanId(planId);
 
-    if (selected?.price === 0) {
-      console.log('Gói miễn phí, xử lý kích hoạt trực tiếp tại đây nếu cần.');
+    if (!selected) return;
+
+    if (selected.price === 0) {
+      setCurrentPlanId(planId);
+      console.log('Gói miễn phí đã được kích hoạt.');
       return;
     }
 
     setShowPaymentDialog(true);
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(price);
-  };
+  const [currentPlanId, setCurrentPlanId] = useState<string>(currentPlan);
+
   if (!fetchedPlans || !fetchedPlans.data || fetchedPlans.data.length <= 0) {
     return <p>Không có plan nào</p>;
   }
@@ -149,7 +152,10 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
   plansFilter = [...plansFilter].sort((a, b) => a.price - b.price);
 
   const selectedPlanData = plansFilter.find((plan) => plan.planId === selectedPlanId);
-  console.log(selectedPlanData?.price);
+  const convertVndToUsd = (vnd: number) => {
+    const exchangeRate = 25000;
+    return parseFloat((vnd / exchangeRate).toFixed(2));
+  };
   const handleConfirmPayment = async () => {
     if (!selectedPlanData) {
       console.error('Không có selectedPlanData');
@@ -158,30 +164,41 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
 
     if (selectedPlanData.price === 0) {
       console.log('Gói miễn phí, không cần thanh toán');
-      // TODO: Gọi API kích hoạt gói miễn phí nếu cần
       return;
     }
 
-    const payload = {
-      productName: selectedPlanData.planName,
-      description: `Thanh toán gói ${selectedPlanData.planName}`,
-      returnUrl: 'http://localhost:8080/success',
-      cancelUrl: 'http://localhost:8080/cancel',
-      price: selectedPlanData.price,
-    };
-
     try {
-      const res = await createPay(payload).unwrap();
-      if (res.error === 0 && res.data?.checkoutUrl) {
-        window.location.href = res.data.checkoutUrl;
+      if (paymentMethod === 'paypal') {
+        const usdPrice = convertVndToUsd(selectedPlanData.price);
+        const res = await createPaypal({ price: usdPrice }).unwrap();
+
+        // ✅ res giờ sẽ là: { redirectUrl: '...' }
+        if (res?.redirectUrl) {
+          setCurrentPlanId(selectedPlanData.planId);
+          window.location.href = res.redirectUrl;
+        } else {
+          console.error('Không nhận được approval URL từ Paypal');
+        }
       } else {
-        console.error('Không có checkoutUrl hoặc có lỗi:', res.message);
+        const res = await createPayOS({
+          productName: selectedPlanData.planName,
+          description: `Thanh toán gói ${selectedPlanData.planName}`,
+          returnUrl: 'http://localhost:3000/upgrade-plan',
+          cancelUrl: 'http://localhost:3000/upgrade-plan',
+          price: selectedPlanData.price,
+        }).unwrap();
+
+        if (res.error === 0 && res.data?.checkoutUrl) {
+          setCurrentPlanId(selectedPlanData.planId);
+          window.location.href = res.data.checkoutUrl;
+        } else {
+          console.error('Không có checkoutUrl hoặc có lỗi:', res.message);
+        }
       }
     } catch (err) {
-      console.error('Lỗi khi gọi createPay:', err);
+      console.error('Lỗi khi gọi API thanh toán:', err);
     }
   };
-
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
@@ -219,11 +236,15 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
               {location.pathname !== '/dashboard' && (
                 <Button
                   className={
-                    'w-full mt-4 py-2 text-base font-semibold rounded-xl  bg-blue-500 text-white hover:bg-blue-600'
+                    'w-full mt-4 py-2 text-base font-semibold rounded-xl ' +
+                    (plan.planId === currentPlanId
+                      ? 'bg-blue-500 text-white cursor-default'
+                      : 'bg-blue-500 text-white hover:bg-blue-600')
                   }
-                  onClick={() => handleUpgrade(plan.planId)}
+                  onClick={() => plan.planId !== currentPlanId && handleUpgrade(plan.planId)}
+                  disabled={plan.planId === currentPlanId}
                 >
-                  Nâng cấp
+                  {plan.planId === currentPlanId ? 'Gói Hiện tại' : 'Nâng cấp'}
                 </Button>
               )}
             </PlanCard>
@@ -369,9 +390,9 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                   <Label htmlFor="bank">Chuyển khoản ngân hàng</Label>
                 </div>
                 <div className="flex items-center space-x-2 p-3 border rounded-lg">
-                  <RadioGroupItem value="momo" id="momo" />
+                  <RadioGroupItem value="paypal" id="paypal" />
                   <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-                  <Label htmlFor="momo">Paypal</Label>
+                  <Label htmlFor="paypal">Paypal</Label>
                 </div>
               </RadioGroup>
             </div>
