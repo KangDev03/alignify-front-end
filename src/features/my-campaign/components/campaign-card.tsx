@@ -25,7 +25,6 @@ import {
   FormMessage,
 } from '@/components/ui/form.tsx';
 import { Input } from '@/components/ui/input.tsx';
-import { Label } from '@/components/ui/label.tsx';
 import { Progress } from '@/components/ui/progress.tsx';
 
 import { Icons } from '@/components/icons/icons.tsx';
@@ -50,6 +49,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import CampaignDetail from './campaign-detail.tsx';
 import HotCampaignBadge from './HotCampaignBadge.tsx';
+import ProgressUpdateDialog from './progess-update.tsx';
 import { StatusBadge } from './status-badge.tsx';
 import { contractFormSchema, type ContractFormValues } from '../campaign.schema.ts';
 import { changeCampaignStatus, updateContractSlice } from '../campaign.slice.ts';
@@ -90,8 +90,6 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const dispatch = useAppDispatch();
   const { role, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
   const [openDialog, setOpenDialog] = useState<string | null>(null);
-  const [progressUpdates, setProgressUpdates] = useState<Record<string, string>>({});
-  const [progressDescriptions, setProgressDescriptions] = useState<Record<string, string>>({});
   const location = useLocation();
   const currentPath = location.pathname;
   const userRole: RoleName = role!;
@@ -299,23 +297,6 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
     }
   };
 
-  const handleSubmitProgress = () => {
-    console.log('Progress updates:', progressUpdates);
-    console.log('Progress descriptions:', progressDescriptions);
-
-    sendNotification({
-      userId: campaign.brandId,
-      content: `${name!} đã cập nhật tiến độ cho chiến dịch\n${campaign?.campaignName}`,
-      avatarUrl: avatarUrl!,
-      name: name!,
-    });
-
-    toast.success('Cập nhật tiến độ thành công!');
-    setOpenDialog(null);
-    setProgressUpdates({});
-    setProgressDescriptions({});
-  };
-
   const handleApproveProgress = (progressId: string) => {
     console.log(`Approving progress with ID: ${progressId}`);
     toast.success('Đã duyệt nội dung!');
@@ -351,100 +332,6 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         return 'Chưa xác định';
     }
   };
-
-  const renderProgressUpdateDialog = () => (
-    <Dialog
-      open={openDialog === `progress-${campaign.campaignId}`}
-      onOpenChange={(open) => setOpenDialog(open ? `progress-${campaign.campaignId}` : null)}
-    >
-      <DialogTrigger asChild>
-        <Button variant="default" size="sm">
-          <Icons.upload className="h-4 w-4 mr-2" />
-          Cập nhật tiến độ
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Icons.upload className="h-5 w-5" />
-            Cập nhật tiến độ chiến dịch
-          </DialogTitle>
-          <DialogDescription>{campaign.campaignName}</DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-6">
-          {campaign.campaignRequirements?.map((req, reqIndex) => (
-            <div key={reqIndex} className="border rounded-lg p-4 space-y-4">
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="capitalize">
-                  {req.platform.toLowerCase()}
-                </Badge>
-                <Badge variant="secondary" className="capitalize">
-                  {req.post_type}
-                </Badge>
-                <span className="text-sm text-muted-foreground">{req.quantity} nội dung</span>
-              </div>
-
-              {Array.from({ length: req.quantity }, (_, contentIndex) => {
-                const key = `${reqIndex}-${contentIndex}`;
-                const detail = req.details[contentIndex];
-
-                return (
-                  <div key={contentIndex} className="bg-muted/30 rounded-lg px-3 py-1 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium">Nội dung {contentIndex + 1}</h4>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        {detail?.like > 0 && (
-                          <div className="flex items-center gap-1">
-                            <Icons.heart className="h-4 w-4 text-red-500" />
-                            <span>{detail.like}+ likes</span>
-                          </div>
-                        )}
-                        {detail?.comment > 0 && (
-                          <div className="flex items-center gap-1">
-                            <Icons.messageCircle className="h-4 w-4 text-blue-500" />
-                            <span>{detail.comment}+ comments</span>
-                          </div>
-                        )}
-                        {detail?.share > 0 && (
-                          <div className="flex items-center gap-1">
-                            <Icons.share2 className="h-4 w-4 text-green-500" />
-                            <span>{detail.share}+ shares</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor={`link-${key}`}>Link nội dung *</Label>
-                      <Input
-                        id={`link-${key}`}
-                        placeholder="https://..."
-                        value={progressUpdates[key] || ''}
-                        onChange={(e) =>
-                          setProgressUpdates((prev) => ({ ...prev, [key]: e.target.value }))
-                        }
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-
-        <div className="flex justify-end gap-2 pt-4">
-          <DialogClose asChild>
-            <Button variant="outline">Hủy</Button>
-          </DialogClose>
-          <Button onClick={handleSubmitProgress}>
-            <Icons.send className="h-4 w-4 mr-2" />
-            Gửi cập nhật
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
 
   const renderViewProgressDialog = () => {
     const campaignProgress =
@@ -1109,17 +996,25 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                   Chỉnh sửa
                 </Button>
               </DialogTrigger>
-              <DialogContent
-                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
-                showCloseButton={false}
-              >
-                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
+              <DialogContent className="sm:max-w-[600px] " showCloseButton={false}>
+                <DialogHeader className="border-b-2 border-border py-3">
                   <DialogTitle className="font-semibold text-xl text-center">
                     Chiến dịch của {campaign.brandName}
                   </DialogTitle>
-                  <DialogDescription className="hidden"></DialogDescription>
+                  <DialogDescription>
+                    Bạn có chắc chắn muốn chỉnh sửa chiến dịch không? Hành động này sẽ đưa chiến
+                    dịch của bạn về trạng thái nháp. Mọi đơn ứng tuyển và lời mời sẽ bị xóa. Hãy đảm
+                    bảo rằng chính bạn là người thực hiện!
+                  </DialogDescription>
                 </DialogHeader>
-                <CampaignDetail key={campaign.campaignId} campaign={campaign} />
+                <div className="flex justify-between">
+                  <DialogClose>
+                    <Button variant={'destructive'}>Hủy</Button>
+                  </DialogClose>
+                  <Button variant={'default'} onClick={handleMoveToDraft}>
+                    Xác nhận
+                  </Button>
+                </div>
               </DialogContent>
             </Dialog>
 
@@ -1218,7 +1113,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               </DialogContent>
             </Dialog>
 
-            {renderProgressUpdateDialog()}
+            <ProgressUpdateDialog campaign={campaign} />
           </div>
         );
       case 'COMPLETED':
