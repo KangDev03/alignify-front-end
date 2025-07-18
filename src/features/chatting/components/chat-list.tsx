@@ -26,7 +26,7 @@ export default function ChatList() {
       {rooms.map((room) => {
         return (
           <Sheet key={room.chatRoomId}>
-            <SheetTrigger asChild>
+            <SheetTrigger>
               <ChatCard {...room} />
             </SheetTrigger>
             <SheetContent className="w-[466px] gap-0 border-0" closeStyle="hidden">

@@ -91,7 +91,7 @@ function AppLayout() {
   }, [token, userId]);
 
   let backgroundImage: string | undefined = undefined;
-  if (roleName !== 'ADMIN') {
+  if (roleName !== 'ADMIN' && location.pathname !== '/settings') {
     backgroundImage =
       theme === 'dark' ||
         (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -104,7 +104,7 @@ function AppLayout() {
       className="flex min-h-screen flex-col bg-cover bg-no-repeat bg-fixed"
       style={backgroundImage ? { backgroundImage: `url(${backgroundImage})` } : {}}
     >
-      <AppHeader onLogout={handleLogout} />
+      {roleName !== 'ADMIN' && <AppHeader onLogout={handleLogout} />}
       <main
         className={cn(
           !location.pathname.includes('/dashboard') && 'container mx-auto px-6 py-8 relative ',

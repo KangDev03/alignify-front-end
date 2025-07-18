@@ -38,6 +38,8 @@ import { applyForApplciation } from '@/features/home/home.slice.ts';
 import {
   useApplyCampaignMutation,
   useChangeStatusMutation,
+  useUpdateContractMutation,
+  useUploadContractMutation,
 } from '@/features/my-campaign/campaign.service.ts';
 import CampaignPopUp from '@/features/posting/components/popUp-campaign.tsx';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
@@ -48,7 +50,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import CampaignDetail from './campaign-detail.tsx';
 import { StatusBadge } from './status-badge.tsx';
-import { changeCampaignStatus } from '../campaign.slice.ts';
+import { contractFormSchema, type ContractFormValues } from '../campaign.schema.ts';
+import { changeCampaignStatus, updateContractSlice } from '../campaign.slice.ts';
 
 const mockProgressData = {
   'campaign-1': [
@@ -82,6 +85,20 @@ const mockProgressData = {
   ],
 };
 
+const HotCampaignBadge = () => (
+  <div className="absolute top-3 right-3 z-10">
+    <div className="relative flex items-center gap-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">
+      <div className="relative">
+        <Icons.flame className="h-4 w-4 animate-pulse" />
+        <div className="absolute inset-0 animate-ping">
+          <Icons.flame className="h-4 w-4 opacity-75" />
+        </div>
+      </div>
+      <span>HOT</span>
+    </div>
+  </div>
+);
+
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const dispatch = useAppDispatch();
   const { role, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
@@ -95,6 +112,10 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const isApplied = campaign.appliedInfluencerIds?.includes(id!);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
   const [changeStatus] = useChangeStatusMutation();
+  const [uploadContract, { isLoading: isUploading }] = useUploadContractMutation();
+  const [updateContract, { isLoading: isContractUpdating }] = useUpdateContractMutation();
+  const isHotCampaign =
+    (campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0) > 0;
 
   const handleApplyCampaign = async (values: ApplicationFormValues) => {
     try {
@@ -115,6 +136,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       });
       dispatch(applyForApplciation({ campaignId: campaign.campaignId, influencerId: id! }));
       toast.success('Ứng tuyển thành công.');
+      form.reset();
     } catch (error) {
       console.log(error);
       toast.error('Ứng tuyển thất bại. Vui lòng thử lại sau.');
@@ -136,10 +158,19 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       });
     });
   };
+  const contractForm = useForm<ContractFormValues>({
+    mode: 'all',
+    resolver: zodResolver(contractFormSchema),
+    defaultValues: {
+      contract: undefined,
+    },
+  });
 
-  const handleStartRecruit = async () => {
+  const handleStartRecruit = async (values: ContractFormValues) => {
     try {
-      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'RECRUITING' }).unwrap();
+      const contract = new FormData();
+      contract.append('file', values.contract);
+      await uploadContract({ campaignId: campaign.campaignId, contract: contract }).unwrap();
       sendNotification({
         userId: id!,
         content: `${campaign?.campaignName} bắt đầu tuyển dụng`,
@@ -147,7 +178,56 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         avatarUrl: avatarUrl!,
       });
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'RECRUITING' }));
+      dispatch(
+        updateContractSlice({
+          campaignId: campaign.campaignId,
+          contractUrl: URL.createObjectURL(values.contract),
+        }),
+      );
       toast.success('Chiến dịch bắt đầu tuyển!');
+      contractForm.reset();
+    } catch (error) {
+      console.error(error);
+      toast.error('Chuyển giai đoạn thất bại!');
+    }
+  };
+
+  const handleUpdateContract = async (values: ContractFormValues) => {
+    try {
+      const contract = new FormData();
+      contract.append('file', values.contract);
+      await updateContract({ campaignId: campaign.campaignId, contract: contract }).unwrap();
+      dispatch(
+        updateContractSlice({
+          campaignId: campaign.campaignId,
+          contractUrl: URL.createObjectURL(values.contract),
+        }),
+      );
+      toast.success('Tải lên thành công!');
+      contractForm.reset();
+    } catch (error) {
+      console.error(error);
+      toast.error('Chuyển giai đoạn thất bại!');
+    }
+  };
+
+  const handleMoveToDraft = async () => {
+    try {
+      await changeStatus({ campaignId: campaign.campaignId, newStatus: 'DRAFT' }).unwrap();
+      sendNotificationForAll(
+        campaign.appliedInfluencerIds ?? [],
+        `Đã xóa chiến dịch\n${campaign?.campaignName}`,
+        name!,
+        avatarUrl!,
+      );
+      sendNotification({
+        userId: id!,
+        content: `Chiến dịch đã về dạng nháp\n${campaign?.campaignName}`,
+        name: name!,
+        avatarUrl: avatarUrl!,
+      });
+
+      dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'DRAFT' }));
     } catch (error) {
       console.error(error);
       toast.error('Chuyển giai đoạn thất bại!');
@@ -550,10 +630,102 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               <CampaignPopUp campaignData={campaign} />
             </Dialog>
 
-            <Button variant="default" size="sm" className="flex-1" onClick={handleStartRecruit}>
-              <Icons.play className="h-4 w-4 mr-1" />
-              Đăng tuyển
-            </Button>
+            <Dialog>
+              <DialogTrigger className="flex-1">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="flex-1 w-full"
+                  type="button"
+                  // onClick={handleStartRecruit}
+                >
+                  <Icons.play className="h-4 w-4 mr-1" />
+                  Đăng tuyển
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] flex flex-col gap-4">
+                <DialogHeader>
+                  <DialogTitle>Bạn có chắc chắn muốn ứng tuyển vào chiến dịch không ?</DialogTitle>
+                </DialogHeader>
+                <Form {...contractForm}>
+                  <form onSubmit={contractForm.handleSubmit(handleStartRecruit)}>
+                    <FormField
+                      control={contractForm.control}
+                      name="contract"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tải lên hợp đồng của bạn</FormLabel>
+                          <FormControl>
+                            <div>
+                              <Input
+                                id="contract-upload"
+                                type="file"
+                                accept="image/jpeg,image/png,image/jpg"
+                                style={{ display: 'none' }}
+                                onChange={(e) =>
+                                  field.onChange(e.target.files?.[0] ?? field.value ?? undefined)
+                                }
+                                ref={field.ref}
+                              />
+                              <div className="flex flex-col gap-2">
+                                <div className="flex gap-2 items-center">
+                                  <Button
+                                    type="button"
+                                    onClick={() =>
+                                      document.getElementById('contract-upload')?.click()
+                                    }
+                                    variant="outline"
+                                    size="sm"
+                                  >
+                                    <Icons.fileImage />
+                                    <span>Chọn hợp đồng</span>
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                          {field.value && (
+                            <div className="flex gap-4 justify-end">
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                onClick={() =>
+                                  window.open(URL.createObjectURL(field.value), '_blank')
+                                }
+                              >
+                                <Icons.eye />
+                                <span>Xem trước</span>
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => field.onChange(undefined)}
+                              >
+                                <Icons.trash />
+                                <span>Xóa hợp đồng</span>
+                              </Button>
+                            </div>
+                          )}
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" variant="default" size="sm" className="flex-1 mt-2">
+                      {isUploading ? (
+                        <>
+                          <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Đang đăng chiến dịch
+                        </>
+                      ) : (
+                        'Đăng tuyển'
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
           </div>
         );
       case 'RECRUITING':
@@ -706,7 +878,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                             </FormItem>
                           )}
                         />
-                        <Button type="submit" variant="default" size="sm" className="flex-1">
+                        <Button type="submit" variant="default" size="sm" className="flex-1 mt-2">
                           {isApplying ? (
                             <>
                               <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -726,6 +898,138 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         }
         return userRole === 'BRAND' ? (
           <div className="w-full grid grid-cols-2 gap-2">
+            {campaign.contractUrl ? (
+              <Button
+                variant="outline"
+                size="sm"
+                type="button"
+                onClick={() => window.open(campaign.contractUrl, '_blank')}
+              >
+                <Icons.fileText className="h-4 w-4 mr-1" />
+                Hợp đồng
+              </Button>
+            ) : (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Icons.fileText className="h-4 w-4 mr-1" />
+                    Hợp đồng
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px] " showCloseButton={false}>
+                  <DialogHeader>
+                    <DialogTitle className="font-semibold text-xl text-center">
+                      Chiến dịch của {campaign.brandName}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <Form {...contractForm}>
+                    <form onSubmit={contractForm.handleSubmit(handleUpdateContract)}>
+                      <FormField
+                        control={contractForm.control}
+                        name="contract"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tải lên hợp đồng của bạn</FormLabel>
+                            <FormControl>
+                              <div>
+                                <Input
+                                  id="contract-upload"
+                                  type="file"
+                                  accept="image/jpeg,image/png,image/jpg"
+                                  style={{ display: 'none' }}
+                                  onChange={(e) =>
+                                    field.onChange(e.target.files?.[0] ?? field.value ?? undefined)
+                                  }
+                                  ref={field.ref}
+                                />
+                                <div className="flex flex-col gap-2">
+                                  <div className="flex gap-2 items-center">
+                                    <Button
+                                      type="button"
+                                      onClick={() =>
+                                        document.getElementById('contract-upload')?.click()
+                                      }
+                                      variant="outline"
+                                      size="sm"
+                                    >
+                                      <Icons.fileImage />
+                                      <span>Chọn hợp đồng</span>
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                            {field.value && (
+                              <div className="flex gap-4 justify-end">
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() =>
+                                    window.open(URL.createObjectURL(field.value), '_blank')
+                                  }
+                                >
+                                  <Icons.eye />
+                                  <span>Xem trước</span>
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => field.onChange(undefined)}
+                                >
+                                  <Icons.trash />
+                                  <span>Xóa hợp đồng</span>
+                                </Button>
+                              </div>
+                            )}
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" variant="default" size="sm" className="flex-1 mt-2">
+                        {isContractUpdating ? (
+                          <>
+                            <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Đang tải
+                          </>
+                        ) : (
+                          'Tải lên'
+                        )}
+                      </Button>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            )}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Icons.edit className="h-4 w-4 mr-1" />
+                  Chỉnh sửa
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] " showCloseButton={false}>
+                <DialogHeader className="border-b-2 border-border py-3">
+                  <DialogTitle className="font-semibold text-xl text-center">
+                    Chiến dịch của {campaign.brandName}
+                  </DialogTitle>
+                  <DialogDescription>
+                    Bạn có chắc chắn muốn chỉnh sửa chiến dịch không? Hành động này sẽ đưa chiến
+                    dịch của bạn về trạng thái nháp. Mọi đơn ứng tuyển và lời mời sẽ bị xóa. Hãy đảm
+                    bảo rằng chính bạn là người thực hiện!
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex justify-between">
+                  <DialogClose>
+                    <Button variant={'destructive'}>Hủy</Button>
+                  </DialogClose>
+                  <Button variant={'default'} onClick={handleMoveToDraft}>
+                    Xác nhận
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Dialog>
               <DialogTrigger asChild>
                 <Button
@@ -750,34 +1054,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 <CampaignDetail key={campaign.campaignId} campaign={campaign} />
               </DialogContent>
             </Dialog>
-
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Icons.edit className="h-4 w-4 mr-1" />
-                  Chỉnh sửa
-                </Button>
-              </DialogTrigger>
-              <DialogContent
-                className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4"
-                showCloseButton={false}
-              >
-                <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
-                  <DialogTitle className="font-semibold text-xl text-center">
-                    Chiến dịch của {campaign.brandName}
-                  </DialogTitle>
-                  <DialogDescription className="hidden"></DialogDescription>
-                </DialogHeader>
-                <CampaignDetail key={campaign.campaignId} campaign={campaign} />
-              </DialogContent>
-            </Dialog>
-
-            <Button
-              variant="default"
-              size="sm"
-              className="col-span-2 w-full"
-              onClick={handleEndRecuit}
-            >
+            <Button variant="default" size="sm" className="" onClick={handleEndRecuit}>
               <Icons.play className="h-4 w-4 mr-1" />
               Kết thúc tuyển
             </Button>
@@ -992,14 +1269,19 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   return (
     <Card
       key={campaign.campaignId}
-      className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow pt-0"
+      className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow pt-0 relative"
     >
+      {isHotCampaign && <HotCampaignBadge />}
+
       <div className="w-full h-80 relative">
         <img
           src={campaign.imageUrl || '/placeholder.svg'}
           alt={campaign.campaignName}
           className="w-full h-full object-cover"
         />
+        {/* {isHotCampaign && (
+          <div className="absolute inset-0 bg-gradient-to-t from-orange-500/10 to-transparent pointer-events-none" />
+        )} */}
       </div>
       <CardContent className="px-6 w-full">
         <div className="flex items-center gap-3 mb-3">
@@ -1033,6 +1315,23 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                 {cat.categoryName ?? cat}
               </Badge>
             ))}
+          </div>
+        )}
+
+        {isHotCampaign && (
+          <div className="flex items-center gap-2 mb-3 text-sm">
+            <div className="flex items-center gap-1 text-orange-600">
+              <Icons.users className="h-4 w-4" />
+              <span className="font-medium">
+                {campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0} ứng viên
+              </span>
+            </div>
+            <Badge
+              variant="secondary"
+              className="bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200 dark:hover:bg-orange-200"
+            >
+              Phổ biến
+            </Badge>
           </div>
         )}
 
