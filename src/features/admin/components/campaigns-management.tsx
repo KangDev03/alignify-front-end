@@ -36,8 +36,6 @@ import type { RootState } from '@/redux/store';
 export function CampaignsManagement() {
   const { token } = useSelector((state: RootState) => state.auth);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [deleteCampaign, { isLoading: isDeleting, isSuccess }] = useDeleteCampaignMutation();
-  const [toastId, setToastId] = useState<string | number | undefined>();
 
   useEffect(() => {
     if (!token) return;

@@ -1,9 +1,8 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useEffect, useState } from 'react';
 import {
   Check,
-  CreditCard,
   Crown,
   Gift,
   Globe,
@@ -13,11 +12,10 @@ import {
   TrendingUp,
   X,
   Zap,
-} from "lucide-react"
+} from 'lucide-react';
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -25,178 +23,169 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { PlanCard } from "@/components/ui/plan-card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Switch } from "@/components/ui/switch"
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
 
-type UserRole = "INFLUENCER" | "BRAND" | "ADMIN" | null
+import PlanCard from '@/features/admin/components/plan-management/plan-card';
+import type { RoleName } from '@/features/common/common.type';
+import { useCreatePayMutation } from '@/features/Payment/PayOS/payos.service';
+import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
+import { formatPlanPermissionName, formatPlanType } from '@/utils/format';
 
 interface UpgradePlanProps {
-  userRole: UserRole
+  userRole: RoleName;
 }
 
-interface PlanFeature {
-  name: string
-  included: boolean
-  limit?: string
-}
+// export const formatPlans: ConvertedPlan[] = (
+//   userRole: RoleName,
+//   fetchedPlans: PlanResponse,
+//   isAnnual: boolean,
+// ) => {
+//   if (!fetchedPlans?.data) return [];
 
-interface Plan {
-  id: string
-  name: string
-  price: number
-  originalPrice?: number
-  period: string
-  description: string
-  badge?: string
-  badgeColor?: string
-  popular?: boolean
-  features: PlanFeature[]
-  buttonText: string
-  buttonVariant: "default" | "outline" | "secondary"
-}
+//   const filteredPlans = fetchedPlans.data.filter((plan: Plan) =>
+//     isAnnual ? plan.planType === 'one_year' : plan.planType === 'one_month',
+//   );
 
+//   const sortedPlans = [...filteredPlans].sort((a, b) => a.price - b.price);
+//   const _middleIndex = Math.floor(sortedPlans.length / 2);
+
+//   return sortedPlans.map((plan, _index) => {
+//     // const isFree = plan.price === 0;
+//     // const isPremium = index === sortedPlans.length - 1;
+//     // const isMiddle = index === middleIndex;
+//     const isSuggested = fetchedPlans.data.some(
+//       (p: Plan) => p.planId === plan.planId && Boolean(p.isPopular),
+//     );
+
+//     // let badge = '';
+//     // let badgeColor = '';
+
+//     // if (isFree) {
+//     //   badge = 'Hiện tại';
+//     //   badgeColor = 'bg-green-500';
+//     // } else if (isMiddle) {
+//     //   badge = 'Phổ biến';
+//     //   badgeColor = 'bg-blue-600';
+//     // } else if (isPremium) {
+//     //   badge = 'Cao cấp';
+//     //   badgeColor = 'bg-purple-500';
+//     // }
+
+//     return {
+//       id: plan.planId,
+//       name: plan.planName,
+//       description: plan.description,
+//       roleId: plan.roleId,
+//       price: plan.price,
+//       originalPrice:
+//         isAnnual && plan.discount ? Math.round(plan.price / (1 - plan.discount)) : undefined,
+//       planType: plan.planType === 'one_month' ? '/tháng' : '/năm',
+//       isPopular: isSuggested,
+//       isActive: plan.isActive,
+//       discount: plan.discount,
+//       planPermission: plan.planPermissions.map((perm) => ({
+//         planPermissionId: perm.planPermissionId || '',
+//         planPermissionName: perm.planPermissionName,
+//         limited: perm.limited,
+//       })),
+
+//       planCount: plan.planCount,
+//       createdAt: plan.createdAt,
+//       permission: plan.permissions.map((p) => ({
+//         permissionId: p.permissionId,
+//         permissionName: p.permissionName,
+//         permissionDescription: p.permissionDescription,
+//       })),
+//       currentPlan: userRole === 'INFLUENCER' ? 'creator' : 'starter',
+//     };
+//   });
+// };
 export function UpgradePlan({ userRole }: UpgradePlanProps) {
-  const [isAnnual, setIsAnnual] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState<string>("")
-  const [showPaymentDialog, setShowPaymentDialog] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState("card")
+  const [isAnnual, setIsAnnual] = useState<boolean>(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState<boolean>(false);
+  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [selectedPlanId, setSelectedPlanId] = useState<string>();
+  const currentPlan = userRole === 'INFLUENCER' ? 'creator' : 'starter';
+  const { data: fetchedPlans, isLoading } = useGetPlansByRoleQuery(userRole.toLowerCase() ?? '');
+  const [createPay] = useCreatePayMutation();
 
-  const currentPlan = userRole === "INFLUENCER" ? "creator" : "starter"
-
-  const influencerPlans: Plan[] = [
-    {
-      id: "creator",
-      name: "Creator",
-      price: 0,
-      period: "Miễn phí",
-      description: "Gói miễn phí cho creator mới",
-      badge: "Hiện tại",
-      badgeColor: "bg-green-500",
-      features: [
-        { name: "Ứng tuyển 5 chiến dịch/tháng", included: true, limit: "5/tháng" },
-        { name: "Tìm kiếm 10 chiến dịch", included: true },
-      ],
-      buttonText: "Gói hiện tại",
-      buttonVariant: "secondary",
-    },
-    {
-      id: "pro-creator",
-      name: "Pro Creator",
-      price: isAnnual ? 1990000 : 199000,
-      originalPrice: isAnnual ? 2388000 : 199000,
-      period: isAnnual ? "/năm" : "/tháng",
-      description: "Gói nâng cao cho influencer chuyên nghiệp",
-      badge: "Phổ biến",
-      badgeColor: "bg-blue-500",
-      popular: true,
-      features: [
-        { name: "Ứng tuyển 10 chiến dịch/tháng", included: true, limit: "10/tháng" },
-        { name: "Tìm kiếm 20 chiến dịch", included: true },
-      ],
-      buttonText: "Nâng cấp ngay",
-      buttonVariant: "default",
-    },
-    {
-      id: "agency",
-      name: "Influencer Agency",
-      price: isAnnual ? 7990000 : 799000,
-      originalPrice: isAnnual ? 9588000 : 799000,
-      period: isAnnual ? "/năm" : "/tháng",
-      description: "Gói dành cho agency quản lý nhiều influencer",
-      badge: "Cao cấp",
-      badgeColor: "bg-purple-500",
-      features: [
-        { name: "Không giới hạn ứng tuyển", included: true, limit: "Không giới hạn" },
-        { name: "Tìm kiếm không giới hạn chiến dịch", included: true, limit: "Không giới hạn" },
-      ],
-      buttonText: "Nâng cấp ngay",
-      buttonVariant: "outline",
-    },
-  ]
-
-  const brandPlans: Plan[] = [
-    {
-      id: "starter",
-      name: "Starter",
-      price: 0,
-      period: "Miễn phí",
-      description: "Bắt đầu với các tính năng cơ bản",
-      badge: "Hiện tại",
-      badgeColor: "bg-green-500",
-      features: [
-        { name: "Tạo tối đa 3 chiến dịch/tháng", included: true, limit: "3/tháng" },
-        { name: "Tìm kiếm 100 influencers", included: true, limit: "100/tháng" },
-        { name: "5 influencers/chiến dịch", included: true },
-      ],
-      buttonText: "Gói hiện tại",
-      buttonVariant: "secondary",
-    },
-    {
-      id: "professional",
-      name: "Professional",
-      price: isAnnual ? 4990000 : 499000,
-      originalPrice: isAnnual ? 5988000 : 499000,
-      period: isAnnual ? "/năm" : "/tháng",
-      description: "Cho các thương hiệu đang phát triển",
-      badge: "Phổ biến",
-      badgeColor: "bg-blue-500",
-      popular: true,
-      features: [
-        { name: "Tạo tối đa 25 chiến dịch/tháng", included: true, limit: "25/tháng" },
-        { name: "Tìm kiếm không giới hạn", included: true, limit: "Không giới hạn" },
-        { name: "Kết nối 100 influencers", included: true, limit: "100/tháng" },
-      ],
-      buttonText: "Nâng cấp ngay",
-      buttonVariant: "default",
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise",
-      price: isAnnual ? 14990000 : 1499000,
-      originalPrice: isAnnual ? 17988000 : 1499000,
-      period: isAnnual ? "/năm" : "/tháng",
-      description: "Giải pháp toàn diện cho doanh nghiệp",
-      badge: "Cao cấp",
-      badgeColor: "bg-purple-500",
-      features: [
-        { name: "Chiến dịch không giới hạn", included: true, limit: "Không giới hạn" },
-        { name: "Tìm kiếm không giới hạn influencers", included: true, limit: "Không giới hạn" },
-        { name: "Influencers không giới hạn", included: true, limit: "Không giới hạn" },
-      ],
-      buttonText: "Nâng cấp ngay",
-      buttonVariant: "outline",
-    },
-  ]
-
-  const plans = userRole === "INFLUENCER" ? influencerPlans : brandPlans
+  useEffect(() => {
+    if (!isLoading && fetchedPlans) {
+      console.log('dataa: ', fetchedPlans);
+    }
+  }, [isLoading, fetchedPlans]);
 
   const handleUpgrade = (planId: string) => {
-    if (planId === currentPlan) return
-    setSelectedPlan(planId)
-    if (planId === "agency" || planId === "enterprise") {
-      // Redirect to contact form
-      console.log("Redirecting to contact form...")
-    } else {
-      setShowPaymentDialog(true)
+    if (planId === currentPlan) return;
+
+    const selected = plansFilter.find((plan) => plan.planId === planId);
+    setSelectedPlanId(planId);
+
+    if (selected?.price === 0) {
+      console.log('Gói miễn phí, xử lý kích hoạt trực tiếp tại đây nếu cần.');
+      return;
     }
-  }
+
+    setShowPaymentDialog(true);
+  };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
+  };
+  if (!fetchedPlans || !fetchedPlans.data || fetchedPlans.data.length <= 0) {
+    return <p>Không có plan nào</p>;
   }
 
-  const selectedPlanData = plans.find((plan) => plan.id === selectedPlan)
+  let plansFilter = [...fetchedPlans.data].filter(
+    (item) => item.planType === (isAnnual ? 'one_year' : 'one_month'),
+  );
+
+  plansFilter = [...plansFilter].sort((a, b) => a.price - b.price);
+
+  const selectedPlanData = plansFilter.find((plan) => plan.planId === selectedPlanId);
+  console.log(selectedPlanData?.price);
+  const handleConfirmPayment = async () => {
+    if (!selectedPlanData) {
+      console.error('Không có selectedPlanData');
+      return;
+    }
+
+    if (selectedPlanData.price === 0) {
+      console.log('Gói miễn phí, không cần thanh toán');
+      // TODO: Gọi API kích hoạt gói miễn phí nếu cần
+      return;
+    }
+
+    const payload = {
+      productName: selectedPlanData.planName,
+      description: `Thanh toán gói ${selectedPlanData.planName}`,
+      returnUrl: 'http://localhost:8080/success',
+      cancelUrl: 'http://localhost:8080/cancel',
+      price: selectedPlanData.price,
+    };
+
+    try {
+      const res = await createPay(payload).unwrap();
+      if (res.error === 0 && res.data?.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      } else {
+        console.error('Không có checkoutUrl hoặc có lỗi:', res.message);
+      }
+    } catch (err) {
+      console.error('Lỗi khi gọi createPay:', err);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
+      {}
       <div className="text-center mb-12">
         <div className="flex items-center justify-center mb-4">
           <Crown className="h-8 w-8 text-amber-500 mr-2" />
@@ -205,106 +194,122 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
           </h1>
         </div>
         <p className="text-xl text-muted-foreground mb-6">
-          {userRole === "INFLUENCER"
-            ? "Mở khóa tiềm năng của bạn với các tính năng cao cấp"
-            : "Tăng cường sức mạnh marketing với các công cụ chuyên nghiệp"}
+          {userRole === 'INFLUENCER'
+            ? 'Mở khóa tiềm năng của bạn với các tính năng cao cấp'
+            : 'Tăng cường sức mạnh marketing với các công cụ chuyên nghiệp'}
         </p>
 
         {/* Annual/Monthly Toggle */}
         <div className="flex items-center justify-center space-x-4 mb-8">
-          <span className={`text-sm ${isAnnual ? "text-muted-foreground" : "font-semibold"}`}>Hàng tháng</span>
+          <span className={`text-sm ${isAnnual ? 'text-muted-foreground' : 'font-semibold'}`}>
+            Hàng tháng
+          </span>
           <Switch checked={isAnnual} onCheckedChange={setIsAnnual} />
-          <span className={`text-sm ${isAnnual ? "font-semibold" : "text-muted-foreground"}`}>Hàng năm</span>
-          <Badge variant="secondary" className="bg-green-100 text-green-700">
-            <Gift className="h-3 w-3 mr-1" />
-            Tiết kiệm 17%
-          </Badge>
+          <span className={`text-sm ${isAnnual ? 'font-semibold' : 'text-muted-foreground'}`}>
+            Hàng năm
+          </span>
         </div>
       </div>
 
       {/* Plans Grid */}
       <div className="grid md:grid-cols-3 gap-8 mb-12">
-        {plans.map((plan) => (
-          <PlanCard
-            key={plan.id}
-            name={plan.name}
-            price={plan.price === 0 ? "Miễn phí" : formatPrice(plan.price)}
-            description={plan.description}
-            badge={plan.badge}
-            badgeColor={plan.badgeColor}
-            popular={plan.popular}
-            features={plan.features}
-            buttonText={plan.buttonText}
-            buttonVariant={plan.buttonVariant}
-            onClick={() => handleUpgrade(plan.id)}
-            disabled={plan.id === currentPlan}
-            highlightColor={plan.popular ? "ring-2 ring-primary" : undefined}
-          />
-        ))}
+        {plansFilter.map((plan) => {
+          return (
+            <PlanCard key={plan.planId} plan={plan} currentPlan={currentPlan}>
+              {location.pathname !== '/dashboard' && (
+                <Button
+                  className={
+                    'w-full mt-4 py-2 text-base font-semibold rounded-xl  bg-blue-500 text-white hover:bg-blue-600'
+                  }
+                  onClick={() => handleUpgrade(plan.planId)}
+                >
+                  Nâng cấp
+                </Button>
+              )}
+            </PlanCard>
+          );
+        })}
       </div>
 
       {/* Features Comparison */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold text-center mb-8">So sánh tính năng chi tiết</h2>
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-4 font-semibold">Tính năng</th>
-                    {plans.map((plan) => (
-                      <th key={plan.id} className="text-center p-4 font-semibold min-w-[150px]">
-                        {plan.name}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {plans[0].features.map((_, featureIndex) => (
-                    <tr key={featureIndex} className="border-b hover:bg-muted/50">
-                      <td className="p-4 font-medium">{plans[0].features[featureIndex].name}</td>
-                      {plans.map((plan) => (
-                        <td key={plan.id} className="text-center p-4">
-                          {plan.features[featureIndex].included ? (
-                            <div className="flex flex-col items-center">
-                              <Check className="h-5 w-5 text-green-500" />
-                              {plan.features[featureIndex].limit && (
-                                <span className="text-xs text-muted-foreground mt-1">
-                                  {plan.features[featureIndex].limit}
-                                </span>
-                              )}
-                            </div>
-                          ) : (
-                            <X className="h-5 w-5 text-muted-foreground mx-auto" />
-                          )}
-                        </td>
+      {plansFilter!.length > 0 && plansFilter![0].planPermissions && (
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-center mb-8">So sánh tính năng chi tiết</h2>
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-4 font-semibold">Tính năng</th>
+                      {plansFilter!.map((plan) => (
+                        <th
+                          key={plan.planId}
+                          className="text-center p-4 font-semibold min-w-[150px]"
+                        >
+                          {plan.planName}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                  </thead>
+                  <tbody>
+                    {plansFilter![0].planPermissions.map((feature, featureIndex) => (
+                      <tr key={feature.planPermissionId || featureIndex} className="border-b">
+                        <td className="p-4 font-medium text-left">
+                          {formatPlanPermissionName(feature.planPermissionName)}
+                        </td>
+                        {plansFilter!.map((plan) => {
+                          const permission = plan.planPermissions[featureIndex];
+                          return (
+                            <td key={plan.planId} className="text-center p-4">
+                              {permission &&
+                              (permission.limited === undefined || permission.limited > 0) ? (
+                                <div className="flex flex-col items-center">
+                                  <Check className="h-5 w-5 text-green-500" />
+                                  {permission.limited !== undefined && (
+                                    <span className="text-xs text-muted-foreground mt-1">
+                                      {permission.limited}
+                                    </span>
+                                  )}
+                                </div>
+                              ) : (
+                                <X className="h-5 w-5 text-muted-foreground mx-auto" />
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Benefits Section */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <Card className="text-center p-6">
           <Zap className="h-12 w-12 text-blue-500 mx-auto mb-4" />
           <h3 className="font-semibold mb-2">Tăng hiệu suất</h3>
-          <p className="text-sm text-muted-foreground">Công cụ tự động hóa giúp tiết kiệm thời gian</p>
+          <p className="text-sm text-muted-foreground">
+            Công cụ tự động hóa giúp tiết kiệm thời gian
+          </p>
         </Card>
         <Card className="text-center p-6">
           <Shield className="h-12 w-12 text-green-500 mx-auto mb-4" />
           <h3 className="font-semibold mb-2">Bảo mật cao</h3>
-          <p className="text-sm text-muted-foreground">Dữ liệu được bảo vệ với tiêu chuẩn enterprise</p>
+          <p className="text-sm text-muted-foreground">
+            Dữ liệu được bảo vệ với tiêu chuẩn enterprise
+          </p>
         </Card>
         <Card className="text-center p-6">
           <Headphones className="h-12 w-12 text-purple-500 mx-auto mb-4" />
           <h3 className="font-semibold mb-2">Hỗ trợ 24/7</h3>
-          <p className="text-sm text-muted-foreground">Đội ngũ hỗ trợ chuyên nghiệp luôn sẵn sàng</p>
+          <p className="text-sm text-muted-foreground">
+            Đội ngũ hỗ trợ chuyên nghiệp luôn sẵn sàng
+          </p>
         </Card>
         <Card className="text-center p-6">
           <TrendingUp className="h-12 w-12 text-orange-500 mx-auto mb-4" />
@@ -319,44 +324,45 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Crown className="h-5 w-5 text-amber-500 mr-2" />
-              Nâng cấp lên {selectedPlanData?.name}
+              Nâng cấp lên {selectedPlanData?.planName}
             </DialogTitle>
-            <DialogDescription>Hoàn tất thanh toán để kích hoạt gói {selectedPlanData?.name} của bạn</DialogDescription>
+            <DialogDescription>
+              Hoàn tất thanh toán để kích hoạt gói {selectedPlanData?.planName} của bạn
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6">
             {/* Plan Summary */}
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold">{selectedPlanData?.name}</span>
-                  <span className="font-bold">
-                    {selectedPlanData?.price ? formatPrice(selectedPlanData.price) : "Miễn phí"}
-                    {selectedPlanData?.period && selectedPlanData.price > 0 && selectedPlanData.period}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">{selectedPlanData?.description}</p>
-                {isAnnual &&
-                  selectedPlanData?.originalPrice &&
-                  selectedPlanData.originalPrice > selectedPlanData.price && (
-                    <div className="mt-2 text-sm text-green-600">
-                      <Gift className="h-4 w-4 inline mr-1" />
-                      Tiết kiệm {formatPrice(selectedPlanData.originalPrice - selectedPlanData.price)} khi thanh toán
-                      hàng năm
-                    </div>
-                  )}
-              </CardContent>
-            </Card>
+            {selectedPlanData && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold">{selectedPlanData?.planName}</span>
+                    <span className="font-bold">
+                      {selectedPlanData?.price ? formatPrice(selectedPlanData.price) : 'Miễn phí'}/
+                      {formatPlanType(selectedPlanData?.planType) &&
+                        selectedPlanData.price > 0 &&
+                        formatPlanType(selectedPlanData.planType)}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{selectedPlanData?.description}</p>
+                  {isAnnual &&
+                    selectedPlanData?.price &&
+                    selectedPlanData.price > selectedPlanData.price && (
+                      <div className="mt-2 text-sm text-green-600">
+                        <Gift className="h-4 w-4 inline mr-1" />
+                        Tiết kiệm {formatPrice(selectedPlanData.price - selectedPlanData.price)} khi
+                        thanh toán hàng năm
+                      </div>
+                    )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Payment Method */}
             <div className="space-y-4">
               <Label className="text-base font-semibold">Phương thức thanh toán</Label>
               <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                <div className="flex items-center space-x-2 p-3 border rounded-lg">
-                  <RadioGroupItem value="card" id="card" />
-                  <CreditCard className="h-4 w-4" />
-                  <Label htmlFor="card">Thẻ tín dụng/ghi nợ</Label>
-                </div>
                 <div className="flex items-center space-x-2 p-3 border rounded-lg">
                   <RadioGroupItem value="bank" id="bank" />
                   <Globe className="h-4 w-4" />
@@ -364,13 +370,13 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                 </div>
                 <div className="flex items-center space-x-2 p-3 border rounded-lg">
                   <RadioGroupItem value="momo" id="momo" />
-                  <div className="w-4 h-4 bg-pink-500 rounded-full"></div>
-                  <Label htmlFor="momo">Ví MoMo</Label>
+                  <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                  <Label htmlFor="momo">Paypal</Label>
                 </div>
               </RadioGroup>
             </div>
 
-            {paymentMethod === "card" && (
+            {/* {paymentMethod === 'card' && (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -393,7 +399,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
 
           <DialogFooter>
@@ -402,8 +408,8 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
             </Button>
             <Button
               onClick={() => {
-                console.log("Processing payment...")
-                setShowPaymentDialog(false)
+                handleConfirmPayment();
+                setShowPaymentDialog(false);
               }}
             >
               <Sparkles className="h-4 w-4 mr-2" />
@@ -413,5 +419,5 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
