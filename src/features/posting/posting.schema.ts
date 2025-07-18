@@ -24,7 +24,7 @@ export const contentFormSchema = z.object({
     .instanceof(File, { message: 'File phải là file ảnh' })
     .refine(
       (file) => {
-        return ['image/jpeg', 'image/png', 'image/gif'].includes(file.type);
+        return ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type);
       },
       { message: 'Poster phải là file ảnh (JPEG, PNG, hoặc GIF)' },
     )
@@ -45,7 +45,7 @@ export const campaignFormSchema = z
       .instanceof(File, { message: 'Poster phải là file ảnh' })
       .refine(
         (file) => {
-          return ['image/jpeg', 'image/png', 'image/gif'].includes(file.type);
+          return ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type);
         },
         { message: 'Ảnh phải là dạng (JPEG, PNG, hoặc GIF)' },
       )
