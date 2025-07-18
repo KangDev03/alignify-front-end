@@ -172,7 +172,6 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
         const usdPrice = convertVndToUsd(selectedPlanData.price);
         const res = await createPaypal({ price: usdPrice }).unwrap();
 
-        // ✅ res giờ sẽ là: { redirectUrl: '...' }
         if (res?.redirectUrl) {
           setCurrentPlanId(selectedPlanData.planId);
           window.location.href = res.redirectUrl;
