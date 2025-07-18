@@ -52,12 +52,6 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
       const contract = new FormData();
       contract.append('file', values.contract);
       await uploadContract({ campaignId: campaign.campaignId, contract: contract }).unwrap();
-      // useSendNotification({
-      //   userId: id!,
-      //   content: `${campaign?.campaignName} bắt đầu tuyển dụng`,
-      //   name: name!,
-      //   avatarUrl: avatarUrl!,
-      // });
       sendNotification({
         userId: id!,
         content: `${campaign?.campaignName} bắt đầu tuyển dụng`,
@@ -92,13 +86,7 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
 
       <Dialog>
         <DialogTrigger className="flex-1">
-          <Button
-            variant="default"
-            size="sm"
-            className="flex-1 w-full"
-            type="button"
-            // onClick={handleStartRecruit}
-          >
+          <Button variant="default" size="sm" className="flex-1 w-full" type="button">
             <Icons.play className="h-4 w-4 mr-1" />
             Đăng tuyển
           </Button>
