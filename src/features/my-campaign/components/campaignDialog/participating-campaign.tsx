@@ -20,7 +20,7 @@ import { useChangeStatusMutation } from '../../campaign.service';
 import { changeCampaignStatus } from '../../campaign.slice';
 import { sendNotificationForAll } from '../campaign-card';
 import CampaignDetail from '../campaign-detail';
-import ProgressUpdateDialog from '../progess-update';
+import ProgressUpdateDialog from './progess-update';
 import ViewProgressDialog from '../view-progress';
 
 interface ParticipatingCampaignDialogProps {

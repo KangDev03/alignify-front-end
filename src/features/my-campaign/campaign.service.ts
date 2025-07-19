@@ -1,7 +1,14 @@
 import type { CommonPageableRequest } from '@/features/common/common.type';
 import { baseApi } from '@/redux/baseApi';
 
-import type { CampaignResponse, ContractSubmitData, OneCampaignResponse } from './campaign.type';
+import type {
+  CampaignResponse,
+  CampaignTrackingResponse,
+  ContractSubmitData,
+  OneCampaignResponse,
+  PostDetailsSubmitData,
+  StatsRequest,
+} from './campaign.type';
 import type { ApplicationSubmitData } from '../application/application.type';
 import type { CampaignPostingResponse, PostingRequest } from '../posting/posting.type';
 
@@ -85,6 +92,37 @@ export const campaignApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getCampaignTrackingById: builder.query<CampaignTrackingResponse, string>({
+      query: (campaignId) => ({
+        url: `/campaigns/${campaignId}/trackings`,
+        method: 'GET',
+      }),
+    }),
+    uploadPostDetails: builder.mutation<void, PostDetailsSubmitData>({
+      query: (data) => ({
+        url: `/campaigns/${data.campaignId}/trackings/${data.trackingId}/posts`,
+        method: 'POST',
+        body: { postDetailsTrackings: data.postDetails },
+      }),
+    }),
+    getStatsFromPost: builder.query<void, StatsRequest>({
+      query: (data) => {
+        let platformEndpoint = '';
+        if (data.platform === 'tiktok') {
+          platformEndpoint = `tiktok/video/${data.postId}/statsV2"`;
+        } else if (data.platform === 'youtube') {
+          platformEndpoint = `youtube/${data.postId}"`;
+        } else if (data.platform === 'facebook') {
+          platformEndpoint = `facebook/post${data.postId}"`;
+        } else if (data.platform === 'instagram') {
+          platformEndpoint = `instagram/post_or_reel_or_stories_or_TV_post/${data.postId}"`;
+        }
+        return {
+          url: `/rapidapi/${platformEndpoint}`,
+          method: 'GET',
+        };
+      },
+    }),
   }),
 });
 export const {
@@ -99,4 +137,6 @@ export const {
   useUploadContractMutation,
   useUpdateContractMutation,
   useGetCampaignByIdQuery,
+  useGetCampaignTrackingByIdQuery,
+  useUploadPostDetailsMutation,
 } = campaignApi;
