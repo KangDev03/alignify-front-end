@@ -118,9 +118,9 @@ export default function RecruitingCampaignDialog({
       toast.error('Chuyển giai đoạn thất bại!');
     }
   };
-  return userRole === 'BRAND' ? (
+  return (
     <div className="w-full grid grid-cols-2 gap-2">
-      {campaign.contractUrl ? (
+      {userRole === 'BRAND' && campaign.contractUrl ? (
         <Button
           variant="outline"
           size="sm"
@@ -238,30 +238,12 @@ export default function RecruitingCampaignDialog({
           <CampaignDetail key={campaign.campaignId} campaign={campaign} />
         </DialogContent>
       </Dialog>
-      <Button variant="default" size="sm" className="" onClick={handleEndRecuit}>
-        <Icons.play className="h-4 w-4 mr-1" />
-        Kết thúc tuyển
-      </Button>
+      {userRole === 'BRAND' && (
+        <Button variant="default" size="sm" className="" onClick={handleEndRecuit}>
+          <Icons.play className="h-4 w-4 mr-1" />
+          Kết thúc tuyển
+        </Button>
+      )}
     </div>
-  ) : (
-    userRole == 'INFLUENCER' && (
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline" size="sm" className="flex items-center w-full bg-transparent">
-            <Icons.eye className="h-4 w-full" />
-            Xem chi tiết
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
-          <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
-            <DialogTitle className="font-semibold text-xl text-center">
-              Chiến dịch của {campaign.brandName}
-            </DialogTitle>
-            <DialogDescription className="hidden"></DialogDescription>
-          </DialogHeader>
-          <CampaignDetail key={campaign.campaignId} campaign={campaign} />
-        </DialogContent>
-      </Dialog>
-    )
   );
 }
