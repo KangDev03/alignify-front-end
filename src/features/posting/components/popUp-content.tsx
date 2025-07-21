@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 import { Icons } from '@/components/icons/icons';
@@ -28,6 +29,7 @@ import { useGetCategoriesQuery } from '@/features/common/common.service';
 import { setRefetch } from '@/features/home/home.slice';
 import type { ContentPosting } from '@/features/home/home.type';
 import { useUpdateContentPostingMutation } from '@/features/profile/profile.service';
+import { updateContentSlice } from '@/features/profile/profile.slice';
 import { useSendNotification } from '@/hooks/useSendNotification';
 import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
@@ -54,6 +56,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
   const categories = rawData?.data;
   const onUpdating = contentData !== undefined && contentData !== null;
   const imageUrl = contentData && contentData.imageUrl;
+
   const form = useForm<ContentFormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(contentFormSchema),
@@ -61,6 +64,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       contentName: contentData?.contentName ?? '',
       content: contentData?.content ?? '',
       categoryIds: contentData?.categories.map((cat) => cat.categoryId) ?? [],
+      isPublic: contentData?.isPublic ?? false,
       image: undefined,
     },
   });
@@ -72,29 +76,48 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       if (file) formData.append('image', file);
       formData.append('contentPosting', JSON.stringify(contentRaw));
       if (onUpdating) {
-        await updateContent({ formData, id: contentData.contentId }).unwrap();
+        const res = await updateContent({ formData, id: contentData.contentId }).unwrap();
+        const updatedContent: ContentPosting = { ...contentData };
+        updatedContent.categories = values.categoryIds
+          ? values.categoryIds.map((catId) => {
+              return categories!.find((cat) => cat.categoryId === catId)!;
+            })
+          : contentData.categories;
+        updatedContent.contentName = values.contentName;
+        updatedContent.content = values.content;
+        updatedContent.imageUrl = res.data.imageUrl;
+        dispatch(updateContentSlice(updatedContent));
+        toast.success('Cập nhật bài viết thành công!');
       } else {
         await postContent({ formData }).unwrap();
+        toast.success('Đăng bài viết thành công!');
       }
       dialogCloseRef.current?.click();
       form.reset();
       dispatch(setRefetch({ key: 'forum', value: true }));
       sendNotification({
         userId: id!,
-        content: `Bạn đã đăng bài thành công`,
+        content: onUpdating ? `Bạn đã cập nhật bài viết thành công` : `Bạn đã đăng bài thành công`,
         name: name!,
         avatarUrl: avatarUrl!,
       });
-      // toast.success('Đăng bài thành công!');
     } catch (err) {
       if (isApiResponseError(err)) {
         if (Number(err.data.status) === 403) {
           toast.error('Bạn không có quyền đăng bài viết!');
         } else {
-          toast.error('Đăng bài thất bại. Vui lòng thử lại!');
+          toast.error(
+            onUpdating
+              ? 'Cập nhật bài viết thất bại. Vui lòng thử lại!'
+              : 'Đăng bài thất bại. Vui lòng thử lại!',
+          );
         }
       } else {
-        toast.error('Đăng bài thất bại. Vui lòng thử lại!');
+        toast.error(
+          onUpdating
+            ? 'Cập nhật bài viết thất bại. Vui lòng thử lại!'
+            : 'Đăng bài thất bại. Vui lòng thử lại!',
+        );
       }
     }
   };
@@ -120,10 +143,14 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
       <DialogHeader className="flex flex-col gap-1.5 px-6">
         <DialogTitle className="flex items-center gap-1 text-primary font-bold border-b-2 pb-1 border-primary w-fit">
           <Icons.penTool className="size-6 rotate-180" />
-          <p className="text-lg leading-4">Đăng bài viết mới</p>
+          <p className="text-lg leading-4">
+            {onUpdating ? 'Chỉnh sửa bài viết' : 'Đăng bài viết mới'}
+          </p>
         </DialogTitle>
         <DialogDescription>
-          Chia sẻ kinh nghiệm, mẹo hay hoặc đặt câu hỏi với cộng đồng influencer.
+          {onUpdating
+            ? 'Chỉnh sửa nội dung và cài đặt quyền riêng tư cho bài viết của bạn.'
+            : 'Chia sẻ kinh nghiệm, mẹo hay hoặc đặt câu hỏi với cộng đồng influencer.'}
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>
@@ -184,7 +211,11 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                             <DialogContent showCloseButton={false} className="p-3">
                               <div className="flex flex-col space-y-3">
                                 <img
-                                  src={URL.createObjectURL(field.value as File) ?? imageUrl}
+                                  src={
+                                    field.value
+                                      ? URL.createObjectURL(field.value as File)
+                                      : imageUrl!
+                                  }
                                   alt="Poster preview"
                                   className="object-contain max-w-full h-[600px]"
                                 />
@@ -241,6 +272,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                 ))}
             </div>
           </div>
+
           <FormField
             control={form.control}
             name="content"
@@ -258,6 +290,30 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="isPublic"
+            render={({ field }) => (
+              <FormItem className="flex flex-col rounded-md border p-4">
+                <FormControl>
+                  <div className="flex items-center gap-2">
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    <FormLabel className="flex items-center gap-2">
+                      <Icons.globe className="w-4 h-4" />
+                      Công khai
+                    </FormLabel>
+                  </div>
+                </FormControl>
+                <p className="text-sm text-muted-foreground">
+                  {field.value
+                    ? 'Bài viết sẽ hiển thị công khai cho tất cả mọi người'
+                    : 'Bài viết chỉ hiển thị cho bạn'}
+                </p>
+              </FormItem>
+            )}
+          />
+
           <div className="flex justify-end gap-2.5">
             <DialogClose name="close-campaignPopup" ref={dialogCloseRef}>
               <Button
@@ -268,22 +324,24 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                 Hủy
               </Button>
             </DialogClose>
-            <Button variant={'default'} type="submit" disabled={isPosting}>
-              {onUpdating
-                ? isUpdating
-                  ?
+            <Button variant={'default'} type="submit" disabled={isPosting || isUpdating}>
+              {onUpdating ? (
+                isUpdating ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Đang cập nhật...
                   </>
-                  : 'Cập nhật'
-                : isPosting
-                  ?
-                  <>
-                    <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang đăng...
-                  </>
-                  : 'Đăng bài viết'}
+                ) : (
+                  'Cập nhật bài viết'
+                )
+              ) : isPosting ? (
+                <>
+                  <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang đăng...
+                </>
+              ) : (
+                'Đăng bài viết'
+              )}
             </Button>
           </div>
         </form>

@@ -26,8 +26,12 @@ type BrandPage =
   | 'invitations'
   | 'statistics'
   | 'upgrade-plan';
+<<<<<<< HEAD
 type AdminPage = 'home' | 'dashboard';
 type CurrentPage = InfluencerPage | BrandPage | AdminPage;
+=======
+type CurrentPage = InfluencerPage | BrandPage;
+>>>>>>> d59fa911f75603360ddcf2df8d4ea45253d42c35
 
 interface HeaderProps {
   onLogout: () => void;
@@ -49,15 +53,18 @@ export function AppHeader({ onLogout }: HeaderProps) {
       if (location.pathname.includes('/statistics')) return 'statistics';
       if (location.pathname.includes('/upgrade-plan')) return 'upgrade-plan';
       return 'home';
-    } else if (userRole === 'BRAND') {
+    } else {
       if (location.pathname.includes('/campaign-management')) return 'campaign-management';
       if (location.pathname.includes('/applicants')) return 'applicants';
       if (location.pathname.includes('/invitation')) return 'invitations';
       if (location.pathname.includes('/statistics')) return 'statistics';
       if (location.pathname.includes('/upgrade-plan')) return 'upgrade-plan';
+<<<<<<< HEAD
       return 'home';
     } else if (userRole === 'ADMIN') {
       if (location.pathname.includes('/dashboard')) return 'dashboard';
+=======
+>>>>>>> d59fa911f75603360ddcf2df8d4ea45253d42c35
       return 'home';
     }
   };
@@ -78,18 +85,25 @@ export function AppHeader({ onLogout }: HeaderProps) {
       else if (page === 'invitations') navigate('/invitation');
       else if (page === 'statistics') navigate('/statistics');
       else if (page === 'upgrade-plan') navigate('/upgrade-plan');
+<<<<<<< HEAD
     } else if (userRole === 'BRAND') {
+=======
+    } else {
+>>>>>>> d59fa911f75603360ddcf2df8d4ea45253d42c35
       if (page === 'home') navigate('/home');
       else if (page === 'campaign-management') navigate('/campaign-management');
       else if (page === 'applicants') navigate('/applicants');
       else if (page === 'invitations') navigate('/invitation');
       else if (page === 'statistics') navigate('/statistics');
       else if (page === 'upgrade-plan') navigate('/upgrade-plan');
+<<<<<<< HEAD
     } else if (userRole === 'ADMIN') {
       if (page === 'home') navigate('/home');
       else if (page === 'dashboard') navigate('/dashboard');
     } else {
       if (page === 'home') navigate('/home');
+=======
+>>>>>>> d59fa911f75603360ddcf2df8d4ea45253d42c35
     }
   };
 
@@ -101,6 +115,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
         { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
         { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
         { id: 'statistics', label: 'Thống kê', icon: Icons.barChart3 },
+<<<<<<< HEAD
       ]
       : userRole === 'BRAND'
         ? [
@@ -116,6 +131,16 @@ export function AppHeader({ onLogout }: HeaderProps) {
             { id: 'dashboard', label: 'Quản lý và thống kê', icon: Icons.layoutDashboard },
           ]
           : [{ id: 'home', label: 'Trang chủ', icon: Icons.home }];
+=======
+      ]
+      : [
+        { id: 'home', label: 'Trang chủ', icon: Icons.home },
+        { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
+        { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
+        { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
+        { id: 'statistics', label: 'Báo cáo', icon: Icons.barChart3 },
+      ]
+>>>>>>> d59fa911f75603360ddcf2df8d4ea45253d42c35
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -147,6 +172,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
           </nav>
 
           <div className="flex items-center space-x-2">
+<<<<<<< HEAD
             {userRole !== 'ADMIN' && (
               <Button
                 variant="ghost"
@@ -158,8 +184,19 @@ export function AppHeader({ onLogout }: HeaderProps) {
                 <span className="hidden md:inline">Nâng cấp</span>
               </Button>
             )}
+=======
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handlePageChange('upgrade-plan' as CurrentPage)}
+              className="flex items-center space-x-2 text-white dark:text-black bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700 border-0 shadow-md hover:text-none transition duration-200"
+            >
+              <Icons.crown className="h-4 w-4" />
+              <span className="hidden md:inline">Nâng cấp</span>
+            </Button>
+>>>>>>> d59fa911f75603360ddcf2df8d4ea45253d42c35
             <NotificationTrigger />
-            {userRole !== 'ADMIN' && <ChatSheet />}
+            <ChatSheet />
             <ThemeToggle />
             <UserDropdown onLogout={onLogout} />
           </div>

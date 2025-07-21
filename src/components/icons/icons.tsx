@@ -1,4 +1,5 @@
 import {
+  AlertCircle,
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
@@ -24,13 +25,18 @@ import {
   Crown,
   DollarSign,
   Dot,
+  Download,
   Edit,
+  Ellipsis,
   ExternalLink,
   Eye,
   Facebook,
   FileImage,
   FileText,
+  FileUser,
   Flag,
+  Flame,
+  Globe,
   Heart,
   Home,
   Image,
@@ -39,6 +45,7 @@ import {
   LayoutDashboard,
   Link,
   Loader2,
+  Lock,
   LogOut,
   Mail,
   MapPin,
@@ -75,7 +82,7 @@ import {
   Users,
   X,
   Youtube,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 export const Icons = {
@@ -156,4 +163,11 @@ export const Icons = {
   upload: Upload,
   inbox: Inbox,
   link: Link,
+  ellipsis: Ellipsis,
+  lock: Lock,
+  globe: Globe,
+  fileUser: FileUser,
+  download: Download,
+  alertCircle: AlertCircle,
+  flame: Flame,
 };

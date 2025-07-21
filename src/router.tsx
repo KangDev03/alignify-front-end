@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router';
 
 import AppLayout from '@/components/layouts/app/app-layout';
 import { RequireAuth } from '@/features/auth/components/require-auth';
+import CampaignDetailPage from '@/features/my-campaign/components/campaign-detail-pageOnly';
 import AdminPage from '@/pages/admin';
 import { Applicants } from '@/pages/applicants';
 import { ApplicationsPage } from '@/pages/applications';
@@ -40,11 +41,13 @@ function Router() {
           <Route path="select-role" element={<SelectRolePage />} />
           <Route path="verify-otp" element={<VerifyOtpPage />} />
         </Route>
-        <Route element={
-          <RequireAuth>
-            <AppLayout />
-          </RequireAuth>
-        }>
+        <Route
+          element={
+            <RequireAuth>
+              <AppLayout />
+            </RequireAuth>
+          }
+        >
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/settings" element={<Settings />} />
@@ -66,9 +69,9 @@ function Router() {
           {roleName === 'BRAND' && <Route path="/user-profile" element={<BrandProfilePage />} />}
           <Route path="/influencer/:userId" element={<InfluencerProfilePage />} />
           <Route path="/brand/:userId" element={<BrandProfilePage />} />
-          {roleName === 'ADMIN' && <Route path="/dashboard" element={<AdminPage />} />}
         </Route>
-        <Route path="/admin" element={<AdminPage />} />
+        {roleName === 'ADMIN' && <Route path="/dashboard" element={<AdminPage />} />}
+        <Route path="/campaign-details/:campaignId" element={<CampaignDetailPage />} />
       </Routes>
     </>
   );

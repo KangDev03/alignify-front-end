@@ -1,6 +1,7 @@
 'use client';
 
 import type * as React from 'react';
+import { useNavigate } from 'react-router';
 import { BarChart3, CreditCard, Flag, Home, Megaphone, MessageSquare, Users } from 'lucide-react';
 
 import { Separator } from '@/components/ui/separator';
@@ -10,6 +11,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
@@ -17,6 +19,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+
+import { UserDropdown } from '@/components/layouts/app/user-dropdown';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { logout } from '@/features/auth/auth.slice';
+import { useAppDispatch } from '@/hooks/redux';
+import { baseApi } from '@/redux/baseApi';
 
 type AdminPage =
   | 'focus'
@@ -87,9 +95,31 @@ const navigationItems = [
 ];
 
 export function AdminLayout({ children, currentPage, onPageChange }: AdminLayoutProps) {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(baseApi.util.resetApiState());
+    dispatch(logout());
+    navigate('/auth/login');
+  };
+
   return (
     <SidebarProvider className="gap-0">
-      <Sidebar className="m-0 p-0 pt-16" variant="inset" collapsible="icon">
+      <Sidebar variant="inset" collapsible="icon">
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <div className="flex items-center gap-2">
+                <img src="/Alignify_logo.png" alt="Alignify logo" className="h-12 object-contain" />
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Admin Panel</span>
+                  <span className="truncate text-xs">Alignify</span>
+                </div>
+              </div>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
         <SidebarContent>
           {navigationItems.map((group) => (
             <SidebarGroup key={group.title}>
@@ -129,6 +159,8 @@ export function AdminLayout({ children, currentPage, onPageChange }: AdminLayout
                 .find((item) => item.url === currentPage)?.title || 'Dashboard'}
             </h1>
           </div>
+          <ThemeToggle />
+          <UserDropdown onLogout={handleLogout} />
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>

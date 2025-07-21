@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
@@ -48,34 +49,42 @@ const getStatusBadge = (status: string) => {
 
 const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
   const { role, id: userId, avatarUrl, name } = useSelector((state: RootState) => state.auth);
-  const [confirmInvitation, { isSuccess }] = useConfirmInvitationMutation();
+  const [confirmInvitation, { isSuccess, isLoading }] = useConfirmInvitationMutation();
+  const [loadingType, setLoadingType] = useState<'ACCEPT' | 'REJECT' | null>(null);
   const sendNotification = useSendNotification();
   const handleConfirmInvitation = async (accepted: boolean) => {
     try {
+      setLoadingType(accepted ? 'ACCEPT' : 'REJECT');
       await confirmInvitation({
         invitationId: invitation.invitationId,
         accepted,
         campaignId: invitation.campaign.campaignId,
       });
-      if (isSuccess) {
-        sendNotification({
-          userId: userId!,
-          content: `Bạn đã chấp nhận lời mời của ${invitation.campaign.brandName}\n${invitation.campaign.campaignName}`,
-          avatarUrl: avatarUrl!,
-          name: name!,
-        });
-        sendNotification({
-          userId: invitation.campaign.brandId,
-          content: `Đã chấp nhận lời mời của bạn\n${invitation.campaign.campaignName}`,
-          avatarUrl: avatarUrl!,
-          name: name!,
-        });
-      }
     } catch (error) {
       if (isApiResponseError(error)) toast.error(error.data.error);
-      else toast.error('Xác nhận đơn thất bại. Vui lòng thử lại!');
+      else toast.error('Xác nhận lời mời thất bại. Vui lòng thử lại!');
+    } finally {
+      setLoadingType(null);
     }
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      sendNotification({
+        userId: userId!,
+        content: `Bạn đã chấp nhận lời mời của ${invitation.campaign.brandName}\n${invitation.campaign.campaignName}`,
+        avatarUrl: avatarUrl!,
+        name: name!,
+      });
+      sendNotification({
+        userId: invitation.campaign.brandId,
+        content: `Đã chấp nhận lời mời của bạn\n${invitation.campaign.campaignName}`,
+        avatarUrl: avatarUrl!,
+        name: name!,
+      });
+    }
+  }, [isSuccess, avatarUrl, invitation.campaign, name, userId, sendNotification]);
+
   return (
     <Card className="hover:shadow-md transition-shadow ">
       <CardContent className="flex flex-col gap-2">
@@ -85,16 +94,20 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
               <AvatarImage
                 src={
                   role === 'INFLUENCER'
-                    ? invitation.campaign.brandAvartar
-                    : (invitation.user.avatarUrl ?? '/placeholder.svg')
+                    ? (invitation.campaign.brandAvartar ?? invitation.campaign.brandName[0])
+                    : (invitation.user?.avatarUrl ?? invitation.campaign.brandName[0])
                 }
               />
               <AvatarFallback>
-                {role === 'INFLUENCER' ? invitation.campaign.brandName[0] : invitation.user.name[0]}
+                {role === 'INFLUENCER'
+                  ? invitation.campaign.brandName[0]
+                  : (invitation.user?.name?.[0] ?? '')}
               </AvatarFallback>
             </Avatar>
             <h4 className="font-semibold text-lg">
-              {role === 'INFLUENCER' ? invitation.campaign.brandName : invitation.user.name}
+              {role === 'INFLUENCER'
+                ? invitation.campaign.brandName
+                : (invitation.user?.name ?? '')}
             </h4>
           </div>
           {getStatusBadge(invitation.status)}
@@ -120,7 +133,11 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
               size="sm"
               className="w-24"
               onClick={() => handleConfirmInvitation(false)}
+              disabled={isLoading}
             >
+              {isLoading && loadingType === 'REJECT' && (
+                <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Từ chối
             </Button>
             <Button
@@ -128,7 +145,11 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
               size="sm"
               className="w-24"
               onClick={() => handleConfirmInvitation(true)}
+              disabled={isLoading}
             >
+              {isLoading && loadingType === 'ACCEPT' && (
+                <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Chấp nhận
             </Button>
           </div>
