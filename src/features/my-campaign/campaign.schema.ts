@@ -20,7 +20,7 @@ export const processUploadSchema = z.object({
         .object({
           platform: z
             .string()
-            .min(0, { message: 'Không hỗ trợ nền tảng nàt' })
+            .min(0, { message: 'Không hỗ trợ nền tảng này' })
             .refine(
               (platform) => {
                 return platform.toLowerCase() as keyof ISupportedPlatforms;
@@ -38,6 +38,10 @@ export const processUploadSchema = z.object({
                 .url({ message: 'Phải là định dạng đường dẫn liên kết' })
                 .or(z.literal(''))
                 .optional(),
+              like: z.number().readonly().optional(),
+              comment: z.number().readonly().optional(),
+              share: z.number().readonly().optional(),
+              view: z.number().readonly().optional(),
             }),
           ),
         })

@@ -1,4 +1,4 @@
-import type { ApiReponseSuccess, Campaign, ISupportedPlatforms } from '../common/common.type';
+import type { ApiReponseSuccess, Campaign } from '../common/common.type';
 
 export interface CampaignState {
   campaigns: Campaign[];
@@ -41,6 +41,7 @@ export interface PlatformRequirementDetailTracking {
   like: number;
   comment: number;
   share: number;
+  view: number;
 }
 
 export interface CampaignTrackingResponse extends ApiReponseSuccess<CampaignTracking> {
@@ -52,6 +53,8 @@ export interface PostDetail {
   post_type: string;
   index: number;
   postUrl?: string;
+  like: number;
+  comment: number;
 }
 
 export interface PostDetailsSubmitData {
@@ -61,6 +64,25 @@ export interface PostDetailsSubmitData {
 }
 
 export interface StatsRequest {
-  platform: ISupportedPlatforms;
+  platform: string;
   postId: string;
+  reqIndex: number;
+  contentIndex: number;
+  post_type: string;
+  postUrl?: string;
+}
+
+export interface PostDetailStats {
+  comment_count: number;
+  share_count: number;
+  view_count: number;
+  play_count: number;
+  like_count: number;
+  created_at_utc: string;
+  thumbnail_url: string;
+  video_url: string;
+}
+
+export interface PostDetailStatsResponse extends ApiReponseSuccess<PostDetailStats> {
+  data: PostDetailStats;
 }

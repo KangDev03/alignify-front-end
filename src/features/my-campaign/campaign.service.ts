@@ -7,6 +7,7 @@ import type {
   ContractSubmitData,
   OneCampaignResponse,
   PostDetailsSubmitData,
+  PostDetailStatsResponse,
   StatsRequest,
 } from './campaign.type';
 import type { ApplicationSubmitData } from '../application/application.type';
@@ -105,17 +106,17 @@ export const campaignApi = baseApi.injectEndpoints({
         body: { postDetailsTrackings: data.postDetails },
       }),
     }),
-    getStatsFromPost: builder.query<void, StatsRequest>({
+    getStatsFromPost: builder.query<PostDetailStatsResponse, StatsRequest>({
       query: (data) => {
         let platformEndpoint = '';
         if (data.platform === 'tiktok') {
-          platformEndpoint = `tiktok/video/${data.postId}/statsV2"`;
+          platformEndpoint = `tiktok/video/${data.postId}/statsV2`;
         } else if (data.platform === 'youtube') {
-          platformEndpoint = `youtube/${data.postId}"`;
+          platformEndpoint = `youtube/${data.postId}`;
         } else if (data.platform === 'facebook') {
-          platformEndpoint = `facebook/post${data.postId}"`;
+          platformEndpoint = `facebook/post/${data.postId}`;
         } else if (data.platform === 'instagram') {
-          platformEndpoint = `instagram/post_or_reel_or_stories_or_TV_post/${data.postId}"`;
+          platformEndpoint = `instagram/post_or_reel_or_stories_or_TV_post/${data.postId}`;
         }
         return {
           url: `/rapidapi/${platformEndpoint}`,
@@ -139,4 +140,5 @@ export const {
   useGetCampaignByIdQuery,
   useGetCampaignTrackingByIdQuery,
   useUploadPostDetailsMutation,
+  useGetStatsFromPostQuery,
 } = campaignApi;

@@ -1,6 +1,11 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import type { CampaignResponse, CampaignState } from './campaign.type';
+import type {
+  CampaignResponse,
+  CampaignState,
+  CampaignTracking,
+  CampaignTrackingResponse,
+} from './campaign.type';
 import type { Campaign } from '../common/common.type';
 
 const initialState: CampaignState = {
@@ -69,3 +74,38 @@ export const {
   updateContractSlice,
 } = campaignSlice.actions;
 export default campaignSlice.reducer;
+
+interface CampaignTrackingState {
+  campaignTrackings: CampaignTracking[] | [];
+}
+
+const intitialCampaignTrackingState: CampaignTrackingState = {
+  campaignTrackings: [],
+};
+
+export const campaignTrackingSlice = createSlice({
+  name: 'campaignTracking',
+  initialState: intitialCampaignTrackingState,
+  reducers: {
+    addCampaignTracking: (state, action: PayloadAction<CampaignTrackingResponse>) => {
+      if (
+        state.campaignTrackings.findIndex(
+          (tracking) => tracking.campaignTrackingId === action.payload.data.campaignTrackingId,
+        ) === -1
+      )
+        state.campaignTrackings = [action.payload.data, ...state.campaignTrackings];
+    },
+    // setPostUrl: (
+    //   state,
+    //   action: PayloadAction<{
+    //     campaignTrackingId: string;
+    //     platform: string;
+    //     post_type: string;
+    //     index: number;
+    //     postUrl: string;
+    //   }>,
+    // ) => {},
+  },
+});
+
+export const { addCampaignTracking } = campaignTrackingSlice.actions;

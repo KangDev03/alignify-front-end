@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,14 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
 import { Icons } from '@/components/icons/icons';
@@ -33,6 +27,7 @@ import {
   useUploadPostDetailsMutation,
 } from '../../campaign.service';
 import type { PostDetail } from '../../campaign.type';
+import PostDetailStats from '../post-detail-stats';
 
 interface ProgressUpdateDialogProps {
   campaign: Campaign;
@@ -42,9 +37,9 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
   const [uploadPostDetails, { isLoading }] = useUploadPostDetailsMutation();
   const tracking = trackingRaw?.data;
   console.log(tracking);
-
+  const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const form = useForm<ProcessUploadValues>({
-    mode: 'onSubmit',
+    mode: 'all',
     resolver: zodResolver(processUploadSchema),
     defaultValues: {
       platformRequirement: tracking?.platformRequirementTracking.map((require) => ({
@@ -53,6 +48,9 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
         details: Array.from({ length: require.quantity }, (_, idx) => ({
           index: idx,
           postUrl: require.details[idx]?.postUrl ?? undefined,
+          like: require.details[idx]?.like ?? 0,
+          comment: require.details[idx]?.comment ?? 0,
+          share: require.details[idx]?.share ?? 0,
         })),
       })),
     },
@@ -67,6 +65,10 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
           details: Array.from({ length: require.quantity }, (_, idx) => ({
             index: idx,
             postUrl: require.details[idx]?.postUrl ?? undefined,
+            like: require.details[idx]?.like ?? 0,
+            comment: require.details[idx]?.comment ?? 0,
+            share: require.details[idx]?.share ?? 0,
+            view: require.details[idx]?.view ?? 0,
           })),
         })),
       });
@@ -74,23 +76,27 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
   }, [isSuccess, tracking, form]);
 
   const handleUpload = async (values: ProcessUploadValues) => {
-    console.log(values.platformRequirement);
     const postDetails: PostDetail[] = values.platformRequirement.flatMap((require) =>
-      require.details
-        .filter((detail) => !!detail.postUrl)
-        .map((detail) => ({
-          platform: require.platform,
-          index: detail.index,
-          post_type: require.post_type,
-          postUrl: detail.postUrl!,
-        })),
+      require.details.map((detail) => ({
+        platform: require.platform,
+        index: detail.index,
+        post_type: require.post_type,
+        postUrl: detail.postUrl!,
+        like: require.details[detail.index]?.like ?? 0,
+        comment: require.details[detail.index]?.comment ?? 0,
+        share: require.details[detail.index]?.share ?? 0,
+        view: require.details[detail.index]?.view ?? 0,
+      })),
     );
+    console.log(postDetails);
     try {
       await uploadPostDetails({
         campaignId: tracking!.campaignId,
         trackingId: tracking!.campaignTrackingId,
         postDetails: postDetails,
       });
+      dialogCloseRef.current?.click();
+      toast.success('Gửi bài thành công!');
     } catch (error) {
       console.log(error);
     }
@@ -103,7 +109,7 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
           Cập nhật tiến độ
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] h-[85%] pr-3">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Icons.upload className="h-5 w-5" />
@@ -113,7 +119,10 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
         </DialogHeader>
 
         <Form {...form}>
-          <form className="space-y-6 scrollbar-thin" onSubmit={form.handleSubmit(handleUpload)}>
+          <form
+            className="space-y-6 overflow-auto scrollbar-thin pr-3"
+            onSubmit={form.handleSubmit(handleUpload)}
+          >
             {tracking?.platformRequirementTracking?.map((req, reqIndex) => {
               let style = '';
               const platform = req.platform.toLowerCase();
@@ -174,21 +183,12 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
                               <Input type="hidden" {...field} value={contentIndex} />
                             )}
                           />
-                          <FormField
-                            control={form.control}
-                            name={`platformRequirement.${reqIndex}.details.${contentIndex}.postUrl`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Liên kết *</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder={`https://www.${req.platform.toLowerCase()}.com/${req.post_type}/..`}
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                          <PostDetailStats
+                            form={form}
+                            req={req}
+                            reqIndex={reqIndex}
+                            contentIndex={contentIndex}
+                            key={`${req.platform}.${req.post_type}.${reqIndex}.details.${contentIndex}.index`}
                           />
                         </div>
                       </div>
@@ -197,9 +197,11 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
                 </div>
               );
             })}
-            <div className="flex justify-end gap-2 pt-4">
-              <DialogClose asChild>
-                <Button variant="outline">Hủy</Button>
+            <div className="flex justify-end gap-2 ">
+              <DialogClose ref={dialogCloseRef}>
+                <Button variant="outline" type="button">
+                  Hủy
+                </Button>
               </DialogClose>
               <Button type="submit">
                 {isLoading ? (
