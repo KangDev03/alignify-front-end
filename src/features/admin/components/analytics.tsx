@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
 import {
   Area,
   AreaChart,
@@ -24,9 +25,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { Icons } from "@/components/icons/icons"
+import { getStompClient } from "@/lib/stom-client"
+import type { RootState } from "@/redux/store"
 
 export function Analytics() {
+  const { token } = useSelector((state: RootState) => state.auth)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString())
+  const [overview, setOverview] = useState<{
+    totalUsers: number
+    totalCampaigns: number
+    totalContentPostings: number
+  }>({
+    totalUsers: 0,
+    totalCampaigns: 0,
+    totalContentPostings: 0,
+  })
 
   // Mock data cho biểu đồ doanh thu theo tháng
   const revenueData = [
@@ -206,8 +219,8 @@ export function Analytics() {
 
   const totalRevenue = revenueData.reduce((sum, item) => sum + item.revenue, 0)
   const totalUsers = subscriptionData.reduce((sum, item) => sum + item.value, 0)
-  const totalCampaigns = revenueData.reduce((sum, item) => sum + item.campaigns, 0)
-  const totalPosts = revenueData.reduce((sum, item) => sum + item.posts, 0)
+  // const totalCampaigns = revenueData.reduce((sum, item) => sum + item.campaigns, 0)
+  // const totalPosts = revenueData.reduce((sum, item) => sum + item.posts, 0)
 
   // Tính toán thống kê cho campaigns và forum posts
   const totalForumPosts = campaignForumData.reduce((sum, item) => sum + item.forumPosts, 0)
@@ -217,6 +230,49 @@ export function Analytics() {
   ).toFixed(1)
 
   const years = ["2023", "2024", "2025", "2026", "2027"]
+
+  useEffect(() => {
+    if (!token) return
+    let subscription: any
+    getStompClient(token).then((client) => {
+      console.log("STOMP client connected:", client.connected)
+      subscription = client.subscribe("/topic/admin/statistics/overview", (res: any) => {
+        console.log("Received message from backend:", res)
+        try {
+          const received = JSON.parse(res.body)
+          console.log("[STOMP] Admin statistics overview received:", received)
+          if (received) {
+            setOverview(received)
+          }
+        } catch (error) {
+          console.error("Error parsing STOMP message:", error)
+        }
+      })
+      client.send(
+        "/app/admin/statistics/overview",
+        { Authorization: `Bearer ${token}` },
+        ""
+      )
+      console.log("Sent request to backend for statistics overview")
+    })
+    return () => {
+      if (subscription) subscription.unsubscribe()
+    }
+  }, [token])
+
+  useEffect(() => {
+    if (token) {
+      getStompClient(token).then((client) => {
+        if (client.connected) {
+          client.send(
+            "/app/admin/statistics/overview",
+            { Authorization: `Bearer ${token}` },
+            ""
+          )
+        }
+      })
+    }
+  }, [token])
 
   return (
     <div className="space-y-6">
@@ -259,7 +315,7 @@ export function Analytics() {
             <Icons.users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalUsers.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{overview.totalUsers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
@@ -268,7 +324,7 @@ export function Analytics() {
             <Icons.layoutDashboard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalCampaigns}</div>
+            <div className="text-2xl font-bold">{overview.totalCampaigns.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
@@ -277,7 +333,7 @@ export function Analytics() {
             <Icons.fileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalPosts}</div>
+            <div className="text-2xl font-bold">{overview.totalContentPostings.toLocaleString()}</div>
           </CardContent>
         </Card>
       </div>
