@@ -1,7 +1,7 @@
 import type { CommonPageableRequest } from '@/features/common/common.type';
 import { baseApi } from '@/redux/baseApi';
 
-import type { CampaignResponse, ContractSubmitData } from './campaign.type';
+import type { CampaignResponse, ContractSubmitData, OneCampaignResponse } from './campaign.type';
 import type { ApplicationSubmitData } from '../application/application.type';
 import type { CampaignPostingResponse, PostingRequest } from '../posting/posting.type';
 
@@ -79,6 +79,12 @@ export const campaignApi = baseApi.injectEndpoints({
         body: data.contract,
       }),
     }),
+    getCampaignById: builder.query<OneCampaignResponse, string>({
+      query: (campaignId) => ({
+        url: `/campaigns/${campaignId}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 export const {
@@ -92,4 +98,5 @@ export const {
   useUpdateCampaignDataMutation,
   useUploadContractMutation,
   useUpdateContractMutation,
+  useGetCampaignByIdQuery,
 } = campaignApi;

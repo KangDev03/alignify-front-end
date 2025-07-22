@@ -173,7 +173,10 @@ export default function ChatBot() {
                           {JSON.parse(msg.content).map((campaign: CampaignRecommendation) => (
                             <div
                               key={campaign.campaignId}
-                              className="relative border rounded-lg shadow-sm flex gap-3 items-center overflow-hidden"
+                              className="relative border rounded-lg shadow-sm flex gap-3 items-center overflow-hidden cursor-pointer"
+                              onClick={() =>
+                                window.open(`/campaign-details/${campaign.campaignId}`, '_blank')
+                              }
                             >
                               <div className="flex-1 relative z-10 p-3">
                                 <div className="font-semibold text-primary text-sm mb-1 break-words">

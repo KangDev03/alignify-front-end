@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router';
 
 import AppLayout from '@/components/layouts/app/app-layout';
-import AdminCampaignDetail from '@/features/admin/components/campaign-detail';
 import { RequireAuth } from '@/features/auth/components/require-auth';
+import CampaignDetailPage from '@/features/my-campaign/components/campaign-detail-pageOnly';
 import AdminPage from '@/pages/admin';
 import { Applicants } from '@/pages/applicants';
 import { ApplicationsPage } from '@/pages/applications';
@@ -71,9 +71,7 @@ function Router() {
           <Route path="/brand/:userId" element={<BrandProfilePage />} />
         </Route>
         {roleName === 'ADMIN' && <Route path="/dashboard" element={<AdminPage />} />}
-        {roleName === 'ADMIN' && (
-          <Route path="/dashboard/campaign/:campaignId" element={<AdminCampaignDetail />} />
-        )}
+        <Route path="/campaign-details/:campaignId" element={<CampaignDetailPage />} />
       </Routes>
     </>
   );

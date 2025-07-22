@@ -11,3 +11,7 @@ export interface ContractSubmitData {
   campaignId: string;
   contract: FormData;
 }
+
+export interface OneCampaignResponse extends ApiReponseSuccess<Campaign> {
+  data: Campaign;
+}
