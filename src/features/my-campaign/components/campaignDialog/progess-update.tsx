@@ -23,7 +23,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { processUploadSchema, type ProcessUploadValues } from '../../campaign.schema';
 import {
-  useGetCampaignTrackingByIdQuery,
+  useGetCampaignTrackingByInfluencerQuery,
   useUploadPostDetailsMutation,
 } from '../../campaign.service';
 import type { PostDetail } from '../../campaign.type';
@@ -33,7 +33,9 @@ interface ProgressUpdateDialogProps {
   campaign: Campaign;
 }
 const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
-  const { data: trackingRaw, isSuccess } = useGetCampaignTrackingByIdQuery(campaign.campaignId);
+  const { data: trackingRaw, isSuccess } = useGetCampaignTrackingByInfluencerQuery(
+    campaign.campaignId,
+  );
   const [uploadPostDetails, { isLoading }] = useUploadPostDetailsMutation();
   const tracking = trackingRaw?.data;
   console.log(tracking);

@@ -4,8 +4,10 @@ import { baseApi } from '@/redux/baseApi';
 import type {
   CampaignResponse,
   CampaignTrackingResponse,
+  CampaignTrackingsResponse,
   ContractSubmitData,
   OneCampaignResponse,
+  PostDetailConfirmSubmitData,
   PostDetailsSubmitData,
   PostDetailStatsResponse,
   StatsRequest,
@@ -93,9 +95,15 @@ export const campaignApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
     }),
-    getCampaignTrackingById: builder.query<CampaignTrackingResponse, string>({
+    getCampaignTrackingByInfluencer: builder.query<CampaignTrackingResponse, string>({
       query: (campaignId) => ({
-        url: `/campaigns/${campaignId}/trackings`,
+        url: `/campaigns/${campaignId}/trackings/influencer`,
+        method: 'GET',
+      }),
+    }),
+    getCampaignTrackingByBrand: builder.query<CampaignTrackingsResponse, string>({
+      query: (campaignId) => ({
+        url: `/campaigns/${campaignId}/trackings/brand`,
         method: 'GET',
       }),
     }),
@@ -124,6 +132,21 @@ export const campaignApi = baseApi.injectEndpoints({
         };
       },
     }),
+    confirmPostDetail: builder.mutation<void, PostDetailConfirmSubmitData>({
+      query: (data) => ({
+        url: `/campaigns/${data.campaignId}/trackings/${data.campaignTrackingId}/posts/confirm`,
+        method: 'POST',
+        params: {
+          accepted: data.accepted,
+        },
+        body: {
+          platform: data.platform,
+          post_type: data.post_type,
+          index: data.index,
+          postUrl: data.postUrl,
+        },
+      }),
+    }),
   }),
 });
 export const {
@@ -138,7 +161,8 @@ export const {
   useUploadContractMutation,
   useUpdateContractMutation,
   useGetCampaignByIdQuery,
-  useGetCampaignTrackingByIdQuery,
+  useGetCampaignTrackingByInfluencerQuery,
+  useGetCampaignTrackingByBrandQuery,
   useUploadPostDetailsMutation,
   useGetStatsFromPostQuery,
 } = campaignApi;

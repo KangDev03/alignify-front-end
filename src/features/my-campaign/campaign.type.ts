@@ -48,6 +48,10 @@ export interface CampaignTrackingResponse extends ApiReponseSuccess<CampaignTrac
   data: CampaignTracking;
 }
 
+export interface CampaignTrackingsResponse extends ApiReponseSuccess<CampaignTracking[]> {
+  data: CampaignTracking[];
+}
+
 export interface PostDetail {
   platform: string;
   post_type: string;
@@ -85,4 +89,14 @@ export interface PostDetailStats {
 
 export interface PostDetailStatsResponse extends ApiReponseSuccess<PostDetailStats> {
   data: PostDetailStats;
+}
+
+export interface PostDetailConfirmSubmitData {
+  campaignId: string;
+  campaignTrackingId: string;
+  platform: string;
+  post_type: string;
+  index: number;
+  postUrl?: string;
+  accepted: boolean;
 }

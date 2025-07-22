@@ -16,11 +16,11 @@ import type { NotificationSending } from '@/features/notification/notification.t
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
+import ProgressUpdateDialog from './progess-update';
 import { useChangeStatusMutation } from '../../campaign.service';
 import { changeCampaignStatus } from '../../campaign.slice';
 import { sendNotificationForAll } from '../campaign-card';
 import CampaignDetail from '../campaign-detail';
-import ProgressUpdateDialog from './progess-update';
 import ViewProgressDialog from '../view-progress';
 
 interface ParticipatingCampaignDialogProps {
