@@ -96,8 +96,8 @@ export default function PostDetailStats({ form, req, reqIndex, contentIndex }: P
                     field.onChange(e.target.value);
                   }}
                 />
-                {hasError ||
-                  !field.value ||
+                {!hasError &&
+                  (!field.value ||
                   (isChecked ? (
                     <Button
                       type="button"
