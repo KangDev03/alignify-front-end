@@ -1,9 +1,7 @@
 export interface payOSRequest {
-  productName?: string;
-  description?: string;
+  planId: string;
   returnUrl: string;
   cancelUrl: string;
-  price?: number;
 }
 export interface payOSResponse {
   error: number;

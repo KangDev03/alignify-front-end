@@ -51,6 +51,7 @@ export interface PlanRequest {
 }
 
 export interface PlanPermissionSubmitData {
+  planPermissionId?: string;
   planPermissionName: string;
   limited: number | undefined;
 }

@@ -12,7 +12,6 @@ import PlanCard from './plan-management/plan-card';
 import { PlanModal } from './plan-management/plan-modal';
 
 export function SubscriptionPlans() {
-  // const [_editingPlan, setEditingPlan] = useState<any>(null);
   const [selectedRole, setSelectedRole] = useState<'BRAND' | 'INFLUENCER'>('BRAND');
   const [isAnnual, setIsAnnual] = useState(false);
 
@@ -21,20 +20,6 @@ export function SubscriptionPlans() {
   const influencerPlans = fetchedInfluencerPlans?.data;
 
   const brandPlans = fetchedBrandPlans?.data;
-
-  // const handleEditPlan = (plan: any) => {
-  //   setEditingPlan(plan);
-  // };
-
-  // const handleDeletePlan = (planId: string) => {
-  //   console.log('Deleting plan:', planId);
-  //   // Logic xóa gói
-  // };
-
-  // const handleTogglePlan = (planId: string, isActive: boolean) => {
-  //   console.log('Toggling plan:', planId, isActive);
-  //   // Logic bật/tắt gói
-  // };
 
   return (
     <div className="space-y-6">
@@ -64,35 +49,52 @@ export function SubscriptionPlans() {
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="BRAND" className="flex items-center space-x-2">
             <Icons.crown className="h-4 w-4" />
-            <span>Gói Brand ({brandPlans!.length})</span>
+            <span>
+              Gói Brand (
+              {brandPlans?.filter((plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'))
+                .length || 0}
+              )
+            </span>{' '}
           </TabsTrigger>
           <TabsTrigger value="INFLUENCER" className="flex items-center space-x-2">
             <Icons.camera className="h-4 w-4" />
-            <span>Gói Influencer ({influencerPlans!.length})</span>
+            <span>
+              Gói Influencer (
+              {influencerPlans?.filter(
+                (plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'),
+              ).length || 0}
+              )
+            </span>{' '}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="BRAND" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {brandPlans!.map((plan) => (
-              <PlanCard
-                key={plan.planId}
-                plan={plan}
-                currentPlan={selectedRole === 'BRAND' ? 'creator' : 'starter'}
-              />
-            ))}
+            {brandPlans &&
+              brandPlans
+                .filter((plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'))
+                .map((plan) => (
+                  <PlanCard
+                    key={plan.planId}
+                    plan={plan}
+                    currentPlan={selectedRole === 'BRAND' ? 'creator' : 'starter'}
+                  />
+                ))}
           </div>
         </TabsContent>
 
         <TabsContent value="INFLUENCER" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {influencerPlans!.map((plan) => (
-              <PlanCard
-                key={plan.planId}
-                plan={plan}
-                currentPlan={selectedRole === 'INFLUENCER' ? 'creator' : 'starter'}
-              />
-            ))}
+            {influencerPlans &&
+              influencerPlans
+                .filter((plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'))
+                .map((plan) => (
+                  <PlanCard
+                    key={plan.planId}
+                    plan={plan}
+                    currentPlan={selectedRole === 'INFLUENCER' ? 'creator' : 'starter'}
+                  />
+                ))}
           </div>
         </TabsContent>
       </Tabs>

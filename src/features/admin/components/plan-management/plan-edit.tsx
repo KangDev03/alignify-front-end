@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -42,7 +43,7 @@ export function EditPlanModal({ plan }: { plan: Plan }) {
   const { data: rolesRaw } = useGetRolesQuery();
   const { data: permissionData } = useGetPermissionQuery();
   const [updatePlan] = useEditPlanMutation();
-
+  const [open, setOpen] = useState(false);
   const roles = rolesRaw?.data;
 
   const form = useForm<PlanValues>({
@@ -51,12 +52,14 @@ export function EditPlanModal({ plan }: { plan: Plan }) {
     defaultValues: {
       planName: plan.planName,
       description: plan.description,
-      roleId: plan.roleId,
+      roleId: roles?.find((r) => r.roleId === plan.roleId)?.roleName ?? 'BRAND',
       permissionIds: plan.permissions.map((p) => p.permissionId) ?? [],
-      planPermissions: plan.planPermissions.reduce((acc, curr) => {
-        acc[curr.planPermissionName] = curr.limited;
-        return acc;
-      }, {} as any),
+      planPermissions: {
+        ...plan.planPermissions.reduce((acc, curr) => {
+          acc[curr.planPermissionName] = curr.limited;
+          return acc;
+        }, {} as any),
+      },
       price: plan.price,
       discount: plan.discount,
       planType: plan.planType,
@@ -70,14 +73,20 @@ export function EditPlanModal({ plan }: { plan: Plan }) {
       const planPermissionsArray: PlanPermissionSubmitData[] = Object.entries(
         values.planPermissions,
       )
-        .map(([planPermissionName, limited]) => {
-          if (typeof limited === 'number' && limited >= 0)
-            return {
+        .reduce((acc: PlanPermissionSubmitData[], [planPermissionName, limited]) => {
+          if (typeof limited === 'number' && limited >= 0) {
+            const matched = plan.planPermissions.find(
+              (p) => p.planPermissionName === planPermissionName,
+            );
+            acc.push({
+              planPermissionId: matched?.planPermissionId,
               planPermissionName,
               limited,
-            } as PlanPermissionSubmitData;
-          return undefined;
-        })
+            });
+          }
+          return acc;
+        }, [])
+
         .filter((item): item is PlanPermissionSubmitData => item !== undefined);
 
       const planSubmitData: PlanSubmitData = {
@@ -88,9 +97,10 @@ export function EditPlanModal({ plan }: { plan: Plan }) {
         isPopular: values.isPopular ?? false,
       };
 
-      await updatePlan(planSubmitData).unwrap();
+      await updatePlan({ planId: plan.planId, ...planSubmitData }).unwrap();
 
       toast.success('Cập nhật gói thành công!');
+      setOpen(false);
     } catch (err) {
       if (isApiResponseError(err)) {
         toast.error('Cập nhật thất bại. Vui lòng thử lại!');
@@ -101,7 +111,7 @@ export function EditPlanModal({ plan }: { plan: Plan }) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
           <Icons.edit className=" h-4 w-4" />

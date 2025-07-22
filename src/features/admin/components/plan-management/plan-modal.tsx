@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -45,6 +46,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { planSchema, type PlanValues } from '../../admin.schema';
 
 export function PlanModal() {
+  const [open, setOpen] = useState(false);
   const { data: rolesRaw } = useGetRolesQuery();
   const roles = rolesRaw?.data;
   const { data: permissionData } = useGetPermissionQuery();
@@ -98,6 +100,7 @@ export function PlanModal() {
 
       toast.success('Tạo gói đăng ký thành công!');
       form.reset();
+      setOpen(false);
     } catch (err) {
       if (isApiResponseError(err)) {
         toast.error('Tạo gói thất bại!');
@@ -108,7 +111,7 @@ export function PlanModal() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
           <Icons.plus className="mr-2 h-4 w-4" />

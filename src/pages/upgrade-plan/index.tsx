@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Check,
   Crown,
@@ -113,14 +113,9 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
   const [selectedPlanId, setSelectedPlanId] = useState<string>();
 
   const currentPlan = userRole === 'INFLUENCER' ? 'creator' : 'starter';
-  const { data: fetchedPlans, isLoading } = useGetPlansByRoleQuery(userRole.toLowerCase() ?? '');
+  const { data: fetchedPlans } = useGetPlansByRoleQuery(userRole.toLowerCase() ?? '');
   const [createPayOS] = useCreatePayOSMutation();
   const [createPaypal] = useCreatePaypalMutation();
-  useEffect(() => {
-    if (!isLoading && fetchedPlans) {
-      console.log('dataa: ', fetchedPlans);
-    }
-  }, [isLoading, fetchedPlans]);
 
   const handleUpgrade = (planId: string) => {
     if (planId === currentPlanId) return;
@@ -180,13 +175,11 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
         }
       } else {
         const res = await createPayOS({
-          productName: selectedPlanData.planName,
-          description: `Thanh toán gói ${selectedPlanData.planName}`,
+          planId: selectedPlanData.planId,
           returnUrl: 'http://localhost:3000/upgrade-plan',
           cancelUrl: 'http://localhost:3000/upgrade-plan',
-          price: selectedPlanData.price,
         }).unwrap();
-
+        console.log(selectedPlanData.planId);
         if (res.error === 0 && res.data?.checkoutUrl) {
           setCurrentPlanId(selectedPlanData.planId);
           window.location.href = res.data.checkoutUrl;

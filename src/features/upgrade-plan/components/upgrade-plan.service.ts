@@ -19,11 +19,11 @@ export const planApi = baseApi.injectEndpoints({
       invalidatesTags: ['Plan'],
     }),
 
-    editPlan: builder.mutation<PlanResponse, PlanSubmitData>({
-      query: (data) => ({
-        url: `/plans/${data.planId}`,
+    editPlan: builder.mutation<PlanResponse, { planId: string } & Omit<PlanSubmitData, 'planId'>>({
+      query: ({ planId, ...body }) => ({
+        url: `/plans/${planId}`,
         method: 'PUT',
-        body: data,
+        body,
       }),
       invalidatesTags: ['Plan'],
     }),
