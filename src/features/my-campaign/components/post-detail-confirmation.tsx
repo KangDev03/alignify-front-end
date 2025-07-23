@@ -65,10 +65,10 @@ export default function PostDetailConfirmation({
     const required = req.details[index];
     const isStatified =
       requiredDetails &&
-      required.comment >= requiredDetails?.comment &&
-      required.like >= requiredDetails?.like &&
-      required.view >= requiredDetails?.view &&
-      required.share >= requiredDetails?.share;
+      (required.comment ?? 0) >= (requiredDetails?.comment ?? 0) &&
+      (required.like ?? 0) >= (requiredDetails?.like ?? 0) &&
+      (required.view ?? 0) >= (requiredDetails?.view ?? 0) &&
+      (required.share ?? 0) >= (requiredDetails?.share ?? 0);
     if (!isStatified && accepted) {
       toast.error('Chưa đủ điều kiện!');
       return;

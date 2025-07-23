@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -52,7 +53,7 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
     campaignProgress.length;
   const completedCount =
     (campaignProgress &&
-      campaignProgress.filter((p) => p.campaignTracking.status === 'ACCEPTED').length) ??
+      campaignProgress.filter((p) => p.campaignTracking.status === 'COMPLETED').length) ??
     0;
   const completedPostByCampaignTracking = campaignProgress.reduce(
     (sum, req) =>
@@ -87,7 +88,7 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-medium">Tiến độ tổng quan</h3>
               <span className="text-sm text-muted-foreground">
-                {completedCount}/{totalRequirements} nội dung
+                {completedCount}/{campaignProgress.length} theo dõi
               </span>
             </div>
             <Progress value={progressPercentage} className="h-2" />
@@ -112,6 +113,13 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
                       key={progress.campaignTracking.campaignTrackingId}
                       className="basis-full space-y-4"
                     >
+                      <div className="flex items-center gap-2">
+                        <Avatar>
+                          <AvatarImage src={progress.user.avatarUrl} />
+                          <AvatarFallback>{progress.user.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <p>{progress.user.name}</p>
+                      </div>
                       {progress.campaignTracking.platformRequirementTracking.map(
                         (req, reqIndex) => {
                           let style = '';
