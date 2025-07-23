@@ -30,5 +30,6 @@ export const baseApi = createApi({
     'Application',
     'Profile',
     'Notification',
+    'Plan',
   ],
 });
