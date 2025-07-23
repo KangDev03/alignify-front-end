@@ -1,4 +1,4 @@
-import type { ApiReponseSuccess, Campaign } from '../common/common.type';
+import type { ApiReponseSuccess, Campaign, UserDTO } from '../common/common.type';
 
 export interface CampaignState {
   campaigns: Campaign[];
@@ -48,8 +48,13 @@ export interface CampaignTrackingResponse extends ApiReponseSuccess<CampaignTrac
   data: CampaignTracking;
 }
 
-export interface CampaignTrackingsResponse extends ApiReponseSuccess<CampaignTracking[]> {
-  data: CampaignTracking[];
+export interface CampaignTrackingByBrand {
+  campaignTracking: CampaignTracking;
+  user: UserDTO;
+}
+
+export interface CampaignTrackingsResponse extends ApiReponseSuccess<CampaignTrackingByBrand[]> {
+  data: CampaignTrackingByBrand[];
 }
 
 export interface PostDetail {

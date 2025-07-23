@@ -36,10 +36,7 @@ interface ViewProgressDialogProps {
 const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
   const dispatch = useDispatch();
   const { data: trackingRaw } = useGetCampaignTrackingByBrandQuery(campaign.campaignId);
-  const { campaignTrackings } = useSelector((state: RootState) => state.campaignTracking);
-  console.log(
-    trackingRaw?.data.find((item) => item.campaignTrackingId === '6880a29a82c38d7891ea6867'),
-  );
+  const { campaignTrackingsBrand } = useSelector((state: RootState) => state.camapignTrackingBrand);
 
   useEffect(() => {
     if (trackingRaw) {
@@ -47,18 +44,20 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
     }
   });
 
-  const campaignProgress = campaignTrackings.filter(
-    (tracking) => tracking.campaignId === campaign.campaignId,
+  const campaignProgress = campaignTrackingsBrand.filter(
+    (tracking) => tracking.campaignTracking.campaignId === campaign.campaignId,
   );
   const totalRequirements =
     (campaign.campaignRequirements?.reduce((sum, req) => sum + req.quantity, 0) || 0) *
     campaignProgress.length;
   const completedCount =
-    (campaignProgress && campaignProgress.filter((p) => p.status === 'ACCEPTED').length) ?? 0;
+    (campaignProgress &&
+      campaignProgress.filter((p) => p.campaignTracking.status === 'ACCEPTED').length) ??
+    0;
   const completedPostByCampaignTracking = campaignProgress.reduce(
     (sum, req) =>
       sum +
-      req.platformRequirementTracking.reduce(
+      req.campaignTracking.platformRequirementTracking.reduce(
         (_sum, post) => _sum + post.details.filter((detail) => detail.status === 'ACCEPTED').length,
         0,
       ),
@@ -109,72 +108,82 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
               <Carousel opts={{ loop: true }} className="mx-12">
                 <CarouselContent>
                   {campaignProgress.map((progress) => (
-                    <CarouselItem key={progress.campaignTrackingId} className="basis-full">
-                      {progress.platformRequirementTracking.map((req, reqIndex) => {
-                        let style = '';
-                        const platform = req.platform.toLowerCase();
-                        switch (platform) {
-                          case 'facebook': {
-                            style = 'bg-blue-500';
-                            break;
+                    <CarouselItem
+                      key={progress.campaignTracking.campaignTrackingId}
+                      className="basis-full space-y-4"
+                    >
+                      {progress.campaignTracking.platformRequirementTracking.map(
+                        (req, reqIndex) => {
+                          let style = '';
+                          const platform = req.platform.toLowerCase();
+                          switch (platform) {
+                            case 'facebook': {
+                              style = 'bg-blue-500';
+                              break;
+                            }
+                            case 'youtube': {
+                              style = 'bg-red-500';
+                              break;
+                            }
+                            case 'instagram': {
+                              style =
+                                'bg-gradient-to-br from-purple-700 via-pink-500 to-yellow-400';
+                              break;
+                            }
+                            case 'tiktok': {
+                              style = 'bg-black';
+                              break;
+                            }
+                            default:
+                              break;
                           }
-                          case 'youtube': {
-                            style = 'bg-red-500';
-                            break;
-                          }
-                          case 'instagram': {
-                            style = 'bg-gradient-to-br from-purple-700 via-pink-500 to-yellow-400';
-                            break;
-                          }
-                          case 'tiktok': {
-                            style = 'bg-black';
-                            break;
-                          }
-                          default:
-                            break;
-                        }
-                        const Icon = Icons[req.platform.toLowerCase() as keyof typeof Icons];
-                        return (
-                          <div
-                            key={req.platform + req.post_type + reqIndex}
-                            className="border rounded-lg p-4 space-y-4"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant="outline"
-                                className={cn('lowercase text-white', style)}
-                              >
-                                <Icon className={cn(platform === 'tiktok' && 'stroke-3')} />
-                                <span className="first-letter:capitalize text-white">
-                                  {req.platform}
+                          const Icon = Icons[req.platform.toLowerCase() as keyof typeof Icons];
+                          return (
+                            <div
+                              key={req.platform + req.post_type + reqIndex}
+                              className="border rounded-lg p-4 space-y-4"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant="outline"
+                                  className={cn('lowercase text-white', style)}
+                                >
+                                  <Icon className={cn(platform === 'tiktok' && 'stroke-3')} />
+                                  <span className="first-letter:capitalize text-white">
+                                    {req.platform}
+                                  </span>
+                                </Badge>
+                                <Badge variant="secondary" className="capitalize">
+                                  {req.post_type}
+                                </Badge>
+                                <span>•</span>
+                                <span className="text-sm text-muted-foreground">
+                                  {req.quantity} nội dung
                                 </span>
-                              </Badge>
-                              <Badge variant="secondary" className="capitalize">
-                                {req.post_type}
-                              </Badge>
-                              <span>•</span>
-                              <span className="text-sm text-muted-foreground">
-                                {req.quantity} nội dung
-                              </span>
-                            </div>
+                              </div>
 
-                            {req.details.map((content, contentIndex) => {
-                              return (
-                                <PostDetailConfirmation
-                                  key={req.platform + req.post_type + reqIndex + '_' + contentIndex}
-                                  campaignId={campaign.campaignId}
-                                  campaignTrackingId={progress.campaignTrackingId}
-                                  content={content}
-                                  contentIndex={contentIndex}
-                                  reqIndex={reqIndex}
-                                  req={req}
-                                  campaign={campaign}
-                                />
-                              );
-                            })}
-                          </div>
-                        );
-                      })}
+                              {req.details.map((content, contentIndex) => {
+                                return (
+                                  <PostDetailConfirmation
+                                    key={
+                                      req.platform + req.post_type + reqIndex + '_' + contentIndex
+                                    }
+                                    campaignId={campaign.campaignId}
+                                    campaignTrackingId={
+                                      progress.campaignTracking.campaignTrackingId
+                                    }
+                                    content={content}
+                                    contentIndex={contentIndex}
+                                    reqIndex={reqIndex}
+                                    req={req}
+                                    campaign={campaign}
+                                  />
+                                );
+                              })}
+                            </div>
+                          );
+                        },
+                      )}
                     </CarouselItem>
                   ))}
                 </CarouselContent>
