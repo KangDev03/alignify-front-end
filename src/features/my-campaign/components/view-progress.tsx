@@ -4,6 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import {
   Dialog,
   DialogClose,
   DialogContent,
@@ -30,6 +37,10 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
   const dispatch = useDispatch();
   const { data: trackingRaw } = useGetCampaignTrackingByBrandQuery(campaign.campaignId);
   const { campaignTrackings } = useSelector((state: RootState) => state.campaignTracking);
+  console.log(
+    trackingRaw?.data.find((item) => item.campaignTrackingId === '6880a29a82c38d7891ea6867'),
+  );
+
   useEffect(() => {
     if (trackingRaw) {
       dispatch(setCampaignTrackings(trackingRaw));
@@ -95,72 +106,85 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
                 <p>Chưa có cập nhật tiến độ nào</p>
               </div>
             ) : (
-              campaignProgress.map((progress) => (
-                <div key={progress.campaignTrackingId} className="space-y-4">
-                  {progress.platformRequirementTracking.map((req, reqIndex) => {
-                    let style = '';
-                    const platform = req.platform.toLowerCase();
-                    switch (platform) {
-                      case 'facebook': {
-                        style = 'bg-blue-500';
-                        break;
-                      }
-                      case 'youtube': {
-                        style = 'bg-red-500';
-                        break;
-                      }
-                      case 'instagram': {
-                        style = 'bg-gradient-to-br from-purple-700 via-pink-500 to-yellow-400';
-                        break;
-                      }
-                      case 'tiktok': {
-                        style = 'bg-black';
-                        break;
-                      }
-                      default:
-                        break;
-                    }
-                    const Icon = Icons[req.platform.toLowerCase() as keyof typeof Icons];
-                    return (
-                      <div
-                        key={req.platform + req.post_type + reqIndex}
-                        className="border rounded-lg p-4 space-y-4"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className={cn('lowercase text-white', style)}>
-                            <Icon className={cn(platform === 'tiktok' && 'stroke-3')} />
-                            <span className="first-letter:capitalize text-white">
-                              {req.platform}
-                            </span>
-                          </Badge>
-                          <Badge variant="secondary" className="capitalize">
-                            {req.post_type}
-                          </Badge>
-                          <span>•</span>
-                          <span className="text-sm text-muted-foreground">
-                            {req.quantity} nội dung
-                          </span>
-                        </div>
+              <Carousel opts={{ loop: true }} className="mx-12">
+                <CarouselContent>
+                  {campaignProgress.map((progress) => (
+                    <CarouselItem key={progress.campaignTrackingId} className="basis-full">
+                      {progress.platformRequirementTracking.map((req, reqIndex) => {
+                        let style = '';
+                        const platform = req.platform.toLowerCase();
+                        switch (platform) {
+                          case 'facebook': {
+                            style = 'bg-blue-500';
+                            break;
+                          }
+                          case 'youtube': {
+                            style = 'bg-red-500';
+                            break;
+                          }
+                          case 'instagram': {
+                            style = 'bg-gradient-to-br from-purple-700 via-pink-500 to-yellow-400';
+                            break;
+                          }
+                          case 'tiktok': {
+                            style = 'bg-black';
+                            break;
+                          }
+                          default:
+                            break;
+                        }
+                        const Icon = Icons[req.platform.toLowerCase() as keyof typeof Icons];
+                        return (
+                          <div
+                            key={req.platform + req.post_type + reqIndex}
+                            className="border rounded-lg p-4 space-y-4"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant="outline"
+                                className={cn('lowercase text-white', style)}
+                              >
+                                <Icon className={cn(platform === 'tiktok' && 'stroke-3')} />
+                                <span className="first-letter:capitalize text-white">
+                                  {req.platform}
+                                </span>
+                              </Badge>
+                              <Badge variant="secondary" className="capitalize">
+                                {req.post_type}
+                              </Badge>
+                              <span>•</span>
+                              <span className="text-sm text-muted-foreground">
+                                {req.quantity} nội dung
+                              </span>
+                            </div>
 
-                        {req.details.map((content, contentIndex) => {
-                          return (
-                            <PostDetailConfirmation
-                              key={req.platform + req.post_type + reqIndex + '_' + contentIndex}
-                              campaignId={campaign.campaignId}
-                              campaignTrackingId={progress.campaignTrackingId}
-                              content={content}
-                              contentIndex={contentIndex}
-                              reqIndex={reqIndex}
-                              req={req}
-                              campaign={campaign}
-                            />
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))
+                            {req.details.map((content, contentIndex) => {
+                              return (
+                                <PostDetailConfirmation
+                                  key={req.platform + req.post_type + reqIndex + '_' + contentIndex}
+                                  campaignId={campaign.campaignId}
+                                  campaignTrackingId={progress.campaignTrackingId}
+                                  content={content}
+                                  contentIndex={contentIndex}
+                                  reqIndex={reqIndex}
+                                  req={req}
+                                  campaign={campaign}
+                                />
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {campaignProgress.length > 1 && (
+                  <>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </>
+                )}
+              </Carousel>
             )}
           </div>
         </div>
