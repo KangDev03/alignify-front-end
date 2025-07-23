@@ -174,7 +174,7 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
                         <div className="flex items-center justify-between">
                           <h4 className="font-medium capitalize flex items-center gap-2">
                             {req.post_type} {contentIndex + 1}
-                            {req.details[contentIndex].status && (
+                            {req.details[contentIndex] && req.details[contentIndex].status && (
                               <Badge
                                 className="text-xs font-semibold"
                                 variant={`${req.details[contentIndex].status.toLowerCase() as keyof typeof badgeVariants}`}
