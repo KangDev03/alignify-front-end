@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,38 +12,49 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 
 import { Icons } from '@/components/icons/icons';
-import { type Campaign, SupportedPostTypeByPlatform } from '@/features/common/common.type';
+import { type Campaign } from '@/features/common/common.type';
 import { cn } from '@/lib/utils';
+import type { RootState } from '@/redux/store';
 
+import PostDetailConfirmation from './post-detail-confirmation';
 import { useGetCampaignTrackingByBrandQuery } from '../campaign.service';
-import type { PostDetailConfirmSubmitData } from '../campaign.type';
+import { setCampaignTrackings } from '../campaign.slice';
 
 interface ViewProgressDialogProps {
   campaign: Campaign;
 }
 const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
+  const dispatch = useDispatch();
   const { data: trackingRaw } = useGetCampaignTrackingByBrandQuery(campaign.campaignId);
+  const { campaignTrackings } = useSelector((state: RootState) => state.campaignTracking);
+  useEffect(() => {
+    if (trackingRaw) {
+      dispatch(setCampaignTrackings(trackingRaw));
+    }
+  });
 
-  const campaignProgress = trackingRaw?.data ?? [];
+  const campaignProgress = campaignTrackings.filter(
+    (tracking) => tracking.campaignId === campaign.campaignId,
+  );
   const totalRequirements =
-    campaign.campaignRequirements?.reduce((sum, req) => sum + req.quantity, 0) || 0;
+    (campaign.campaignRequirements?.reduce((sum, req) => sum + req.quantity, 0) || 0) *
+    campaignProgress.length;
   const completedCount =
     (campaignProgress && campaignProgress.filter((p) => p.status === 'ACCEPTED').length) ?? 0;
-  const progressPercentage = totalRequirements > 0 ? (completedCount / totalRequirements) * 100 : 0;
-
-  const handleConfirmPostDetail = ({
-    accepted,
-    campaignId,
-    campaignTrackingId,
-    index,
-    platform,
-    post_type,
-    postUrl,
-  }: PostDetailConfirmSubmitData) => {};
+  const completedPostByCampaignTracking = campaignProgress.reduce(
+    (sum, req) =>
+      sum +
+      req.platformRequirementTracking.reduce(
+        (_sum, post) => _sum + post.details.filter((detail) => detail.status === 'ACCEPTED').length,
+        0,
+      ),
+    0,
+  );
+  const progressPercentage =
+    totalRequirements > 0 ? (completedPostByCampaignTracking / totalRequirements) * 100 : 0;
 
   return (
     <Dialog>
@@ -50,7 +64,7 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
           Xem tiến độ
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[800px] h-[85%] pr-3">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Icons.users className="h-5 w-5" />
@@ -58,8 +72,7 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
           </DialogTitle>
           <DialogDescription>{campaign.campaignName}</DialogDescription>
         </DialogHeader>
-
-        <div className="space-y-6">
+        <div className="space-y-6 overflow-y-auto scrollbar-thin pr-3">
           <div className="bg-muted/30 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-medium">Tiến độ tổng quan</h3>
@@ -130,94 +143,17 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
                         </div>
 
                         {req.details.map((content, contentIndex) => {
-                          const platformKey =
-                            req.platform.toLowerCase() as keyof typeof SupportedPostTypeByPlatform;
-                          const postTypes = SupportedPostTypeByPlatform[platformKey];
-
-                          const postObj = postTypes.find((obj) => {
-                            return Object.keys(obj)[0] === req.post_type;
-                          });
-
-                          const posts = postObj
-                            ? postObj[req.post_type as keyof typeof postObj]
-                            : [];
                           return (
-                            <div
+                            <PostDetailConfirmation
                               key={req.platform + req.post_type + reqIndex + '_' + contentIndex}
-                              className="bg-muted/30 rounded-lg px-3 py-1 space-y-3"
-                            >
-                              <div className="flex items-center justify-between">
-                                <h4 className="font-medium capitalize">
-                                  {req.post_type} {contentIndex + 1}
-                                </h4>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => window.open(content.postUrl, '_blank')}
-                                >
-                                  <Icons.externalLink className="h-4 w-4" />
-                                </Button>
-                              </div>
-                              <div className="space-y-2">
-                                <div
-                                  className="flex-1 items-start border rounded-md justify-between px-3 py-2 text-sm font-semibold space-y-4"
-                                  key={`${req.platform}.${req.post_type}.${reqIndex}.details.${contentIndex}.index`}
-                                >
-                                  <div className="grid grid-cols-3 gap-4">
-                                    {posts?.map((contentType, idx) => {
-                                      let label = '';
-                                      switch (contentType) {
-                                        case 'view':
-                                          label = 'Lượt xem ';
-                                          break;
-                                        case 'like':
-                                          label = 'Lượt thích ';
-                                          break;
-                                        case 'comment':
-                                          label = 'Lượt bình luận ';
-                                          break;
-                                        case 'share':
-                                          label = 'Lượt chia sẻ ';
-                                          break;
-                                      }
-                                      return (
-                                        <div key={contentType + idx}>
-                                          <p>{label}</p>
-                                          <Input
-                                            value={content[contentType]}
-                                            className="text-primary"
-                                          />
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                  {content.status === 'PENDING' && (
-                                    <div className="flex justify-end gap-4">
-                                      <Button
-                                        variant={'destructive'}
-                                        size={'sm'}
-                                        onClick={() =>
-                                          handleConfirmPostDetail({
-                                            accepted: false,
-                                            campaignId: campaign.campaignId,
-                                            campaignTrackingId: progress.campaignTrackingId,
-                                            platform: req.platform,
-                                            post_type: content.post_type,
-                                            index: contentIndex,
-                                            postUrl: content.postUrl,
-                                          })
-                                        }
-                                      >
-                                        Từ chối
-                                      </Button>
-                                      <Button variant={'default'} size={'sm'}>
-                                        Chấp nhận
-                                      </Button>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
+                              campaignId={campaign.campaignId}
+                              campaignTrackingId={progress.campaignTrackingId}
+                              content={content}
+                              contentIndex={contentIndex}
+                              reqIndex={reqIndex}
+                              req={req}
+                              campaign={campaign}
+                            />
                           );
                         })}
                       </div>

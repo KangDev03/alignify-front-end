@@ -5,6 +5,8 @@ import type {
   CampaignState,
   CampaignTracking,
   CampaignTrackingResponse,
+  CampaignTrackingsResponse,
+  PostDetailConfirmSubmitData,
 } from './campaign.type';
 import type { Campaign } from '../common/common.type';
 
@@ -87,6 +89,14 @@ export const campaignTrackingSlice = createSlice({
   name: 'campaignTracking',
   initialState: intitialCampaignTrackingState,
   reducers: {
+    setCampaignTrackings: (state, action: PayloadAction<CampaignTrackingsResponse>) => {
+      if (
+        state.campaignTrackings.findIndex(
+          (tracking) => tracking.campaignId === action.payload.data[0].campaignId,
+        ) === -1
+      )
+        state.campaignTrackings = [...action.payload.data, ...state.campaignTrackings];
+    },
     addCampaignTracking: (state, action: PayloadAction<CampaignTrackingResponse>) => {
       if (
         state.campaignTrackings.findIndex(
@@ -95,17 +105,31 @@ export const campaignTrackingSlice = createSlice({
       )
         state.campaignTrackings = [action.payload.data, ...state.campaignTrackings];
     },
-    // setPostUrl: (
-    //   state,
-    //   action: PayloadAction<{
-    //     campaignTrackingId: string;
-    //     platform: string;
-    //     post_type: string;
-    //     index: number;
-    //     postUrl: string;
-    //   }>,
-    // ) => {},
+    confirmPostDetailSlice: (state, action: PayloadAction<PostDetailConfirmSubmitData>) => {
+      const { accepted, campaignId, campaignTrackingId, index, platform, post_type, postUrl } =
+        action.payload;
+      const idx = state.campaignTrackings.findIndex(
+        (tracking) =>
+          tracking.campaignId === campaignId && tracking.campaignTrackingId === campaignTrackingId,
+      );
+      if (idx !== -1 && idx >= 0) {
+        const platformIdx = state.campaignTrackings[idx].platformRequirementTracking.findIndex(
+          (platReq) => platReq.platform === platform && platReq.post_type === post_type,
+        );
+        if (
+          platformIdx !== -1 &&
+          platformIdx >= 0 &&
+          state.campaignTrackings[idx].platformRequirementTracking[platformIdx].details[index]
+            .postUrl === postUrl
+        ) {
+          state.campaignTrackings[idx].platformRequirementTracking[platformIdx].details[
+            index
+          ].status = accepted ? 'ACCEPTED' : 'REJECTED';
+        }
+      }
+    },
   },
 });
 
-export const { addCampaignTracking } = campaignTrackingSlice.actions;
+export const { addCampaignTracking, confirmPostDetailSlice, setCampaignTrackings } =
+  campaignTrackingSlice.actions;

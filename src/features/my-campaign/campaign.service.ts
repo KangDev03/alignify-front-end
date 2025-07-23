@@ -135,7 +135,7 @@ export const campaignApi = baseApi.injectEndpoints({
     confirmPostDetail: builder.mutation<void, PostDetailConfirmSubmitData>({
       query: (data) => ({
         url: `/campaigns/${data.campaignId}/trackings/${data.campaignTrackingId}/posts/confirm`,
-        method: 'POST',
+        method: 'PUT',
         params: {
           accepted: data.accepted,
         },
@@ -165,4 +165,5 @@ export const {
   useGetCampaignTrackingByBrandQuery,
   useUploadPostDetailsMutation,
   useGetStatsFromPostQuery,
+  useConfirmPostDetailMutation,
 } = campaignApi;

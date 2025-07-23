@@ -88,6 +88,16 @@ export default function PostDetailStats({ form, req, reqIndex, contentIndex }: P
             <FormControl>
               <div className="flex gap-2 items-center">
                 <Input
+                  readOnly={
+                    req.details[contentIndex].status !== undefined &&
+                    req.details[contentIndex].status !== null &&
+                    req.details[contentIndex].status !== 'REJECTED'
+                  }
+                  disabled={
+                    req.details[contentIndex].status !== undefined &&
+                    req.details[contentIndex].status !== null &&
+                    req.details[contentIndex].status !== 'REJECTED'
+                  }
                   className="flex-1"
                   placeholder={`https://www.${platform.toLowerCase()}.com/${req.post_type}/..`}
                   {...field}
@@ -96,8 +106,9 @@ export default function PostDetailStats({ form, req, reqIndex, contentIndex }: P
                     field.onChange(e.target.value);
                   }}
                 />
-                {(!hasError && !field.value) ||
-                  (isChecked ? (
+                {(!req.details[contentIndex].status ||
+                  req.details[contentIndex].status === 'REJECTED') &&
+                  (!hasError && !field.value ? null : isChecked ? (
                     <Button
                       type="button"
                       variant={'destructive'}

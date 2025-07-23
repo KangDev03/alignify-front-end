@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -38,7 +38,6 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
   );
   const [uploadPostDetails, { isLoading }] = useUploadPostDetailsMutation();
   const tracking = trackingRaw?.data;
-  console.log(tracking);
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
   const form = useForm<ProcessUploadValues>({
     mode: 'all',
@@ -111,7 +110,7 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
           Cập nhật tiến độ
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] h-[85%] pr-3">
+      <DialogContent className="sm:max-w-[700px] h-[85%] pr-3 flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Icons.upload className="h-5 w-5" />
@@ -122,7 +121,7 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
 
         <Form {...form}>
           <form
-            className="space-y-6 overflow-auto scrollbar-thin pr-3"
+            className="space-y-6 overflow-auto scrollbar-thin pr-3 flex flex-col justify-between h-full"
             onSubmit={form.handleSubmit(handleUpload)}
           >
             {tracking?.platformRequirementTracking?.map((req, reqIndex) => {
@@ -173,8 +172,16 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
                         className="bg-muted/30 rounded-lg px-3 py-1 space-y-3"
                       >
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium capitalize">
+                          <h4 className="font-medium capitalize flex items-center gap-2">
                             {req.post_type} {contentIndex + 1}
+                            {req.details[contentIndex].status && (
+                              <Badge
+                                className="text-xs font-semibold"
+                                variant={`${req.details[contentIndex].status.toLowerCase() as keyof typeof badgeVariants}`}
+                              >
+                                {req.details[contentIndex].status}
+                              </Badge>
+                            )}
                           </h4>
                         </div>
                         <div className="space-y-2">
@@ -205,7 +212,7 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
                   Hủy
                 </Button>
               </DialogClose>
-              <Button type="submit">
+              <Button type="submit" disabled={!form.formState.isDirty || isLoading}>
                 {isLoading ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
