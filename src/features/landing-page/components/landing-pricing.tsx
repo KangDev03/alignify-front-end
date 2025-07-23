@@ -1,27 +1,22 @@
-import type { PlanFeature } from "@/components/ui/plan-card";
-import { PlanCard } from "@/components/ui/plan-card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+'use client';
+import { useState } from 'react';
 
-interface Plan {
-  name: string;
-  price: string | number;
-  description: string;
-  features: (string | PlanFeature)[];
-  popular?: boolean;
-  badge?: string;
-  badgeColor?: string;
-  buttonText?: string;
-  buttonVariant?: "default" | "outline" | "secondary";
-}
-interface LandingPricingProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-  brandPlans: Plan[];
-  influencerPlans: Plan[];
-}
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencerPlans }: LandingPricingProps) {
+import { Icons } from '@/components/icons/icons';
+import PlanCard from '@/features/admin/components/plan-management/plan-card';
+import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
 
+export function LandingPricing() {
+  const [isAnnual, setIsAnnual] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'BRAND' | 'INFLUENCER'>('BRAND');
+
+  const { data: fetchedBrandPlans } = useGetPlansByRoleQuery('brand');
+  const { data: fetchedInfluencerPlans } = useGetPlansByRoleQuery('influencer');
+  const influencerPlans = fetchedInfluencerPlans?.data;
+  const brandPlans = fetchedBrandPlans?.data;
+  console.log(influencerPlans);
   return (
     <section id="pricing" className="py-20 px-4">
       <div className="container mx-auto">
@@ -31,53 +26,69 @@ export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencer
             Chọn gói phù hợp với nhu cầu và ngân sách của bạn
           </p>
         </div>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-6xl mx-auto">
-          <TabsList className="grid w-full grid-cols-2 mb-12 max-w-md mx-auto">
-            <TabsTrigger value="brands">Brands</TabsTrigger>
-            <TabsTrigger value="influencers">Influencers</TabsTrigger>
+        <div className="flex items-center justify-center space-x-4 mb-8">
+          <span className={`text-sm ${isAnnual ? 'text-muted-foreground' : 'font-semibold'}`}>
+            Hàng tháng
+          </span>
+          <Switch checked={isAnnual} onCheckedChange={setIsAnnual} />
+          <span className={`text-sm ${isAnnual ? 'font-semibold' : 'text-muted-foreground'}`}>
+            Hàng năm
+          </span>
+        </div>
+        <Tabs
+          value={selectedRole}
+          onValueChange={(value) => setSelectedRole(value as 'BRAND' | 'INFLUENCER')}
+        >
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="BRAND" className="flex items-center space-x-2">
+              <Icons.crown className="h-4 w-4" />
+              <span>
+                Gói Brand (
+                {brandPlans?.filter(
+                  (plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'),
+                ).length || 0}
+                )
+              </span>{' '}
+            </TabsTrigger>
+            <TabsTrigger value="INFLUENCER" className="flex items-center space-x-2">
+              <Icons.camera className="h-4 w-4" />
+              <span>
+                Gói Influencer (
+                {influencerPlans?.filter(
+                  (plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'),
+                ).length || 0}
+                )
+              </span>{' '}
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="brands">
-            <div className="grid md:grid-cols-3 gap-8">
-              {brandPlans.map((plan, index) => (
-                <PlanCard
-                  key={index}
-                  name={plan.name}
-                  price={plan.price}
-                  description={plan.description}
-                  badge={plan.badge}
-                  badgeColor={plan.badgeColor || "bg-blue-500"}
-                  popular={plan.popular}
-                  features={Array.isArray(plan.features) && typeof plan.features[0] === "string"
-                    ? (plan.features as string[]).map(f => ({ name: f, included: true }))
-                    : (plan.features as PlanFeature[])
-                  }
-                  buttonText={plan.buttonText || "Bắt đầu ngay"}
-                  buttonVariant={plan.buttonVariant || (plan.popular ? "default" : "outline")}
-                  highlightColor="ring-2 ring-blue-500"
-                />
-              ))}
+
+          <TabsContent value="BRAND" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {brandPlans &&
+                brandPlans
+                  .filter((plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'))
+                  .map((plan) => (
+                    <PlanCard
+                      key={plan.planId}
+                      plan={plan}
+                      currentPlan={selectedRole === 'BRAND' ? 'creator' : 'starter'}
+                    />
+                  ))}
             </div>
           </TabsContent>
-          <TabsContent value="influencers">
-            <div className="grid md:grid-cols-3 gap-8">
-              {influencerPlans.map((plan, index) => (
-                <PlanCard
-                  key={index}
-                  name={plan.name}
-                  price={plan.price}
-                  description={plan.description}
-                  badge={plan.badge}
-                  badgeColor={plan.badgeColor || "bg-purple-500"}
-                  popular={plan.popular}
-                  features={Array.isArray(plan.features) && typeof plan.features[0] === "string"
-                    ? (plan.features as string[]).map(f => ({ name: f, included: true }))
-                    : (plan.features as PlanFeature[])
-                  }
-                  buttonText={plan.buttonText || "Bắt đầu ngay"}
-                  buttonVariant={plan.buttonVariant || (plan.popular ? "default" : "outline")}
-                  highlightColor="ring-2 ring-purple-500"
-                />
-              ))}
+
+          <TabsContent value="INFLUENCER" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {influencerPlans &&
+                influencerPlans
+                  .filter((plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'))
+                  .map((plan) => (
+                    <PlanCard
+                      key={plan.planId}
+                      plan={plan}
+                      currentPlan={selectedRole === 'INFLUENCER' ? 'creator' : 'starter'}
+                    />
+                  ))}
             </div>
           </TabsContent>
         </Tabs>

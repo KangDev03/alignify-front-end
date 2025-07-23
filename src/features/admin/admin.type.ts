@@ -25,3 +25,9 @@ export interface Reason {
 export interface ReasonResponse extends ApiReponseSuccess<Reason[]> {
   data: Reason[];
 }
+
+export type PlanPermisionType =
+  | 'search_result'
+  | 'campaign_members'
+  | 'campaign_invitation'
+  | 'campaign_apply';
