@@ -33,8 +33,7 @@ const persistProfileConfig = {
     {
       in: (state: any, key: string) => {
         if (key === 'profile') {
-          const authState = store.getState().auth;
-          const role = authState.role;
+          const role = state.role; // Use role from the persisted state
 
           return {
             ...state,
