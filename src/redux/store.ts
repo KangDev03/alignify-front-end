@@ -19,13 +19,39 @@ import { profileSlice } from '@/features/profile/profile.slice';
 
 import { baseApi } from './baseApi';
 
-const persistConfig = {
+const persistAuthConfig = {
   key: 'auth',
   storage,
-  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name'],
+  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name', 'twoFA'],
 };
 
-const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const persistProfileConfig = {
+  key: 'profile',
+  storage,
+  whitelist: ['contents', 'influencerProfile', 'brandProfile'],
+  transforms: [
+    {
+      in: (state: any, key: string) => {
+        if (key === 'profile') {
+          const role = state.role;
+
+          return {
+            ...state,
+            influencerProfile: role === 'INFLUENCER' ? state.influencerProfile : undefined,
+            brandProfile: role === 'BRAND' ? state.brandProfile : undefined,
+            contents: role === 'INFLUENCER' ? state.contents : [],
+          };
+        }
+        return state;
+      },
+      out: (state: any) => state,
+    },
+  ],
+};
+
+const persistedAuthReducer = persistReducer(persistAuthConfig, authReducer);
+
+const persistedProfileReducer = persistReducer(persistProfileConfig, profileSlice.reducer);
 
 export const store = configureStore({
   reducer: {
@@ -39,7 +65,7 @@ export const store = configureStore({
     campaign: campaignSlice.reducer,
     campaignTracking: campaignTrackingSlice.reducer,
     camapignTrackingBrand: campaignTrackingBrandSlice.reducer,
-    profile: profileSlice.reducer,
+    profile: persistedProfileReducer,
     usersManagment: usersSlice.reducer,
     invitation: invitationSlice.reducer,
     chatSheet: chatSheetSlice.reducer,

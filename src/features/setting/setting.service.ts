@@ -62,6 +62,13 @@ export const settingApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
     }),
+    change2FA: builder.mutation<void, boolean>({
+      query: (turn) => ({
+        url: `/auth/2fa`,
+        method: 'PUT',
+        params: { turn: turn },
+      }),
+    }),
   }),
 });
 
@@ -72,4 +79,5 @@ export const {
   useGetSubcriberCountFromYoutubeQuery,
   useGetFollowerCountFromFacebookQuery,
   useGetFollowerCountFromInstagramQuery,
+  useChange2FAMutation,
 } = settingApi;

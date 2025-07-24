@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { Eye, EyeOff, Key, Monitor, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -19,12 +20,17 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
 import { Icons } from '@/components/icons/icons';
+import { changeTwoFA } from '@/features/auth/auth.slice';
+import type { RootState } from '@/redux/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { type ChangepasswordFormValues, changepasswordSchema } from '../setting.schema';
-import { useChangePasswordMutation } from '../setting.service';
+import { useChange2FAMutation, useChangePasswordMutation } from '../setting.service';
 
 export default function SecuritySection() {
+  const dispatch = useDispatch();
+  const { twoFA } = useSelector((state: RootState) => state.auth);
+  const [change2FA] = useChange2FAMutation();
   const [showPassword, setShowPassword] = useState(false);
   const [changePassword, { isLoading }] = useChangePasswordMutation();
   const form = useForm<ChangepasswordFormValues>({
@@ -162,12 +168,14 @@ export default function SecuritySection() {
 
               <Button className="w-full" disabled={isLoading === true}>
                 <Key className="h-4 w-4 mr-2" />
-                {isLoading ?
+                {isLoading ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Đang cập nhật mật khẩu...
                   </>
-                  : 'Cập nhật mật khẩu'}
+                ) : (
+                  'Cập nhật mật khẩu'
+                )}
               </Button>
             </form>
           </Form>
@@ -182,10 +190,18 @@ export default function SecuritySection() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Xác thực qua SMS</Label>
-              <p className="text-sm text-muted-foreground">Nhận mã xác thực qua tin nhắn SMS</p>
+              <Label htmlFor="2fa-email">Xác thực qua email</Label>
+              <p className="text-sm text-muted-foreground">Nhận mã xác thực qua email</p>
             </div>
-            <Switch />
+            <Switch
+              id="2fa-email"
+              checked={twoFA ?? false}
+              onClick={async () => {
+                const newTwoFAState = !(twoFA ?? false);
+                dispatch(changeTwoFA({ turn: newTwoFAState }));
+                await change2FA(newTwoFAState);
+              }}
+            />
           </div>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">

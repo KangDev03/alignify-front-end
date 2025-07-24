@@ -1,13 +1,23 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { ContentPosting, ContentPostingResponse } from './../home/home.type';
+import type {
+  BrandData,
+  BrandProfileResponse,
+  InfluencerData,
+  InfluencerProfileResponse,
+} from './profile.type';
 
 interface ProfileSlice {
   contents: ContentPosting[] | [];
+  influencerProfile: InfluencerData | null;
+  brandProfile: BrandData | null;
 }
 
 const initialState: ProfileSlice = {
   contents: [],
+  influencerProfile: null,
+  brandProfile: null,
 };
 
 export const profileSlice = createSlice({
@@ -28,8 +38,19 @@ export const profileSlice = createSlice({
         state.contents[idx] = contentPosting;
       }
     },
+    setInfluencerProfileSlice: (state, action: PayloadAction<InfluencerProfileResponse>) => {
+      if (action.payload.data) {
+        state.influencerProfile = action.payload.data;
+      }
+    },
+    setBrandProfileSlice: (state, action: PayloadAction<BrandProfileResponse>) => {
+      if (action.payload.data) {
+        state.brandProfile = action.payload.data;
+      }
+    },
   },
 });
 
-export const { setContents, updateContentSlice } = profileSlice.actions;
+export const { setContents, updateContentSlice, setBrandProfileSlice, setInfluencerProfileSlice } =
+  profileSlice.actions;
 export default profileSlice.reducer;

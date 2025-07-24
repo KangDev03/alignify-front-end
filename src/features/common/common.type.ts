@@ -99,6 +99,8 @@ export interface UserDTO {
   avatarUrl?: string;
   createdAt?: string;
   permissions?: Permission[];
+  twoFA?: boolean;
+  email?: string;
 }
 
 export const SupportedPlatforms: ISupportedPlatforms[] = [
