@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage';
 import { usersSlice } from '@/features/admin/admin.slice';
 import applicantReducer from '@/features/applicants/applicant.slice';
 import authReducer from '@/features/auth/auth.slice';
+import { chatSheetSlice } from '@/features/chatting/chat-sheet.slice';
 import commonReducer from '@/features/common/common.slice';
 import { homeReducer, refetchReducer } from '@/features/home/home.slice';
 import { invitationSlice } from '@/features/invitation/invitation.slice';
@@ -41,6 +42,7 @@ export const store = configureStore({
     profile: profileSlice.reducer,
     usersManagment: usersSlice.reducer,
     invitation: invitationSlice.reducer,
+    chatSheet: chatSheetSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
