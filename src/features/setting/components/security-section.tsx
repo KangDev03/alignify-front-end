@@ -197,8 +197,9 @@ export default function SecuritySection() {
               id="2fa-email"
               checked={twoFA ?? false}
               onClick={async () => {
-                dispatch(changeTwoFA({ turn: !(twoFA ?? false) }));
-                await change2FA(twoFA!);
+                const newTwoFAState = !(twoFA ?? false);
+                dispatch(changeTwoFA({ turn: newTwoFAState }));
+                await change2FA(newTwoFAState);
               }}
             />
           </div>
