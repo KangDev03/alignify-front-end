@@ -220,7 +220,9 @@ export default function RecruitingCampaignDialog({
           </DialogContent>
         </Dialog>
       )}
-      <ConfirmMoveDraftDialog campaign={campaign} handleMoveToDraft={handleMoveToDraft} />
+      {userRole === 'BRAND' && (
+        <ConfirmMoveDraftDialog campaign={campaign} handleMoveToDraft={handleMoveToDraft} />
+      )}
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="flex items-center w-full bg-transparent">
