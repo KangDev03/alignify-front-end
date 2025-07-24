@@ -31,9 +31,13 @@
     "pricing": {
       "title": "Bảng giá linh hoạt",
       "description": "Chọn gói phù hợp với nhu cầu và ngân sách của bạn",
-      "tabs": {
-        "brands": "Dành cho Thương hiệu",
-        "influencers": "Dành cho Influencer"
+      "switch": {
+        "monthly": "Hàng tháng",
+        "yearly": "Hàng năm"
+      },
+      "plans": {
+        "brands": "Gói Brands",
+        "influencers": "Gói Influencers"
       },
       "button": "Bắt đầu ngay",
       "brand": {
@@ -134,7 +138,9 @@
 
   "plan": {
     "recommended": "Được đề xuất",
-    "buttonText": "Bắt đầu ngay"
+    "buttonText": "Bắt đầu ngay",
+    "features": "Tính năng",
+    "otherFeatures": "tính năng khác"
   },
 
   "landingTestimonials": {

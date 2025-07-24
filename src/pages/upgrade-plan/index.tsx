@@ -194,7 +194,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      {}
+      { }
       <div className="text-center mb-12">
         <div className="flex items-center justify-center mb-4">
           <Crown className="h-8 w-8 text-amber-500 mr-2" />
@@ -228,10 +228,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
               {location.pathname !== '/dashboard' && (
                 <Button
                   className={
-                    'w-full mt-4 py-2 text-base font-semibold rounded-xl ' +
-                    (plan.planId === currentPlanId
-                      ? 'bg-blue-500 text-white cursor-default'
-                      : 'bg-blue-500 text-white hover:bg-blue-600')
+                    'w-full text-base font-semibold'
                   }
                   onClick={() => plan.planId !== currentPlanId && handleUpgrade(plan.planId)}
                   disabled={plan.planId === currentPlanId}
@@ -276,7 +273,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                           return (
                             <td key={plan.planId} className="text-center p-4">
                               {permission &&
-                              (permission.limited === undefined || permission.limited > 0) ? (
+                                (permission.limited === undefined || permission.limited > 0) ? (
                                 <div className="flex flex-col items-center">
                                   <Check className="h-5 w-5 text-green-500" />
                                   {permission.limited !== undefined && (

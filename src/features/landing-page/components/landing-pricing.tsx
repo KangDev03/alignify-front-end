@@ -1,7 +1,6 @@
 'use client';
-import { useTranslation } from "react-i18next";
-
 import { useState } from 'react';
+import { useTranslation } from "react-i18next";
 
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -32,11 +31,11 @@ export function LandingPricing() {
         </div>
         <div className="flex items-center justify-center space-x-4 mb-8">
           <span className={`text-sm ${isAnnual ? 'text-muted-foreground' : 'font-semibold'}`}>
-            Hàng tháng
+            {t("landing.pricing.switch.monthly")}
           </span>
           <Switch checked={isAnnual} onCheckedChange={setIsAnnual} />
           <span className={`text-sm ${isAnnual ? 'font-semibold' : 'text-muted-foreground'}`}>
-            Hàng năm
+            {t("landing.pricing.switch.yearly")}
           </span>
         </div>
         <Tabs
@@ -47,7 +46,7 @@ export function LandingPricing() {
             <TabsTrigger value="BRAND" className="flex items-center space-x-2">
               <Icons.crown className="h-4 w-4" />
               <span>
-                Gói Brand (
+                {t("landing.pricing.plans.brands")} (
                 {brandPlans?.filter(
                   (plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'),
                 ).length || 0}
@@ -57,7 +56,7 @@ export function LandingPricing() {
             <TabsTrigger value="INFLUENCER" className="flex items-center space-x-2">
               <Icons.camera className="h-4 w-4" />
               <span>
-                Gói Influencer (
+                {t("landing.pricing.plans.influencers")} (
                 {influencerPlans?.filter(
                   (plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'),
                 ).length || 0}

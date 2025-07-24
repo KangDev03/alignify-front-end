@@ -31,9 +31,13 @@
     "pricing": {
       "title": "Flexible Pricing",
       "description": "Choose a plan that fits your needs and budget",
-      "tabs": {
-        "brands": "Brands",
-        "influencers": "Influencers"
+      "switch": {
+        "monthly": "Monthly",
+        "yearly": "Yearly"
+      },
+      "plans": {
+        "brands": "For Brands",
+        "influencers": "For Influencers"
       },
       "button": "Get Started",
       "brand": {
@@ -134,7 +138,9 @@
 
   "plan": {
     "recommended": "Recommended",
-    "buttonText": "Get started"
+    "buttonText": "Get started",
+    "features": "Features",
+    "otherFeatures": "Other features"
   },
 
   "landingTestimonials": {
