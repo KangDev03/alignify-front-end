@@ -372,5 +372,48 @@
     "uploadPost": "Upload post",
     "uploadPostSuccess": "Post uploaded successfully!",
     "uploadingPost": "Uploading post..."
+  },
+
+  "applications": {
+    "tabs": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "sectionTitle": "My Applications",
+    "searchPlaceholder": "Search...",
+    "noApplications": {
+      "pending": {
+        "title": "You have no applications in pending status",
+        "description": "You can come back here after applying to new campaigns."
+      },
+      "accepted": {
+        "title": "You have no applications in accepted status",
+        "description": "You can come back here after recruiters accept your applications."
+      },
+      "rejected": {
+        "title": "You have no applications in rejected status",
+        "description": "You can come back here after recruiters reject your applications."
+      }
+    },
+    "applied": "Applied",
+    "ago": "ago",
+    "appliedOn": "Applied on",
+    "viewApplication": "View application",
+    "campaignPostBy": "Campaign by",
+    "applicationInformation": "Application Information",
+    "expectedResponse": "Expected response time",
+    "applicationDetail": {
+      "buttonText": {
+        "cancelApply": "Cancel apply",
+        "goToCampaign": "Go to campaign",
+        "reapply": "Reapply"
+      }
+    }
   }
 }

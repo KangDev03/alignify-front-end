@@ -372,5 +372,48 @@
     "uploadPost": "Gửi bài",
     "uploadPostSuccess": "Gửi bài thành công!",
     "uploadingPost": "Đang gửi bài..."
+  },
+
+  "applications": {
+    "tabs": {
+      "pending": "Đang chờ duyệt",
+      "accepted": "Đã chấp nhận",
+      "rejected": "Bị từ chối"
+    },
+    "status": {
+      "pending": "Chờ duyệt",
+      "accepted": "Đã chấp nhận",
+      "rejected": "Bị từ chối"
+    },
+    "sectionTitle": "Đơn ứng tuyển của tôi",
+    "searchPlaceholder": "Tìm kiếm...",
+    "noApplications": {
+      "pending": {
+        "title": "Bạn không có đơn ứng tuyển nào ở trạng thái đang chờ duyệt",
+        "description": "Bạn có thể quay lại đây sau khi ứng tuyển vào các chiến dịch mới."
+      },
+      "accepted": {
+        "title": "Bạn không có đơn ứng tuyển nào ở trạng thái đã chấp nhận",
+        "description": "Bạn có thể quay lại đây sau khi các nhà tuyển dụng xác nhận đơn ứng tuyển của bạn."
+      },
+      "rejected": {
+        "title": "Bạn không có đơn ứng tuyển nào ở trạng thái bị từ chối",
+        "description": "Bạn có thể quay lại đây sau khi các nhà tuyển dụng từ chối đơn ứng tuyển của bạn."
+      }
+    },
+    "applied": "Ứng tuyển",
+    "ago": "trước",
+    "appliedOn": "Ngày ứng tuyển",
+    "viewApplication": "Xem chi tiết",
+    "campaignPostBy": "Chiến dịch của",
+    "applicationInformation": "Thông tin ứng tuyển",
+    "expectedResponse": "Thời gian phản hồi dự kiến",
+    "applicationDetail": {
+      "buttonText": {
+        "cancelApply": "Hủy ứng tuyển",
+        "goToCampaign": "Đi đến chiến dịch",
+        "reapply": "Ứng tuyển lại"
+      }
+    }
   }
 }
