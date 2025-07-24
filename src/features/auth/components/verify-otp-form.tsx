@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -27,10 +28,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { type VerifyOTPFormValues, verifyOTPSchema } from '../auth.schema';
 import { useRegisterMutation, useRequestOTPMutation, useVerifyOTPMutation } from '../auth.service';
+import { setCredentials } from '../auth.slice';
 
 export default function VerifyOTPForm() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state, pathname } = useLocation();
   const [verifyOTP, { isLoading: isVerifyingOTP }] = useVerifyOTPMutation();
   const [register, { isLoading: isRegistering }] = useRegisterMutation();
   const [requestOTP, { isLoading: isRequestingOTP }] = useRequestOTPMutation();
@@ -38,6 +41,15 @@ export default function VerifyOTPForm() {
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { email, password, passwordConfirm, roleId, name } = state || {};
+  const { user } = state || {};
+
+  const isLogin = pathname.endsWith('/auth/login-verify');
+
+  useEffect(() => {
+    if (isLogin && !user?.email) {
+      navigate('/auth/login');
+    }
+  }, [user, navigate, isLogin]);
 
   const form = useForm<VerifyOTPFormValues>({
     resolver: zodResolver(verifyOTPSchema),
@@ -51,13 +63,15 @@ export default function VerifyOTPForm() {
   }, [otpDigits.length]);
 
   useEffect(() => {
-    if (!email || !password || !roleId || !name || !passwordConfirm) {
-      toast.error('Dữ liệu đăng ký không hợp lệ. Vui lòng thử lại!');
-      navigate('/auth/login');
-    } else {
-      inputRefs.current[0]?.focus();
+    if (!isLogin) {
+      if (!email || !password || !roleId || !name || !passwordConfirm) {
+        toast.error('Dữ liệu đăng ký không hợp lệ. Vui lòng thử lại!');
+        navigate('/auth/login');
+      } else {
+        inputRefs.current[0]?.focus();
+      }
     }
-  }, [email, password, roleId, name, passwordConfirm, navigate]);
+  }, [email, password, roleId, name, passwordConfirm, navigate, isLogin]);
 
   const handleInputChange = (index: number, value: string) => {
     if (!/^[0-9a-zA-Z]?$/.test(value)) return;
@@ -74,6 +88,7 @@ export default function VerifyOTPForm() {
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const pastedData = e.clipboardData.getData('text').trim().toUpperCase();
     if (/^[0-9a-zA-Z]{6}$/.test(pastedData)) {
       const newOtpDigits = pastedData.split('');
@@ -81,10 +96,13 @@ export default function VerifyOTPForm() {
       form.setValue('otp', pastedData);
       inputRefs.current[5]?.focus();
     }
-    e.preventDefault();
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') {
+      return;
+    }
+
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
       setIsSelectAll(true);
       return;
@@ -141,20 +159,37 @@ export default function VerifyOTPForm() {
 
   const onSubmit = async (values: VerifyOTPFormValues) => {
     try {
-      const verifyResponse = await verifyOTP({ email, otp: values.otp }).unwrap();
-      if (verifyResponse.message) {
-        toast.success(verifyResponse.message);
-        const registerData = { email, password, passwordConfirm, name, roleId };
-        const registerResponse = await register(registerData).unwrap();
-        if (registerResponse.message) {
-          toast.success(registerResponse.message);
-          localStorage.removeItem('registrationData');
+      if (isLogin) {
+        const verifyResponse = await verifyOTP({
+          email: user!.email!,
+          otp: values.otp,
+          login: isLogin,
+        }).unwrap();
+        if (!verifyResponse.data?.role) {
           navigate('/auth/login');
+          return;
         }
+        if (verifyResponse.data?.role === 'ADMIN') {
+          navigate('/dashboard');
+        } else {
+          navigate('/home');
+        }
+        dispatch(setCredentials(verifyResponse));
+        toast.success('Đăng nhập thành công!');
+      } else {
+        await verifyOTP({ email, otp: values.otp, login: isLogin }).unwrap();
+        const registerData = { email, password, passwordConfirm, name, roleId };
+        await register(registerData).unwrap();
+        toast.success('Đăng ký thành công!');
+        localStorage.removeItem('registrationData');
+        navigate('/auth/login');
       }
-    } catch (err) {
-      console.log(err);
-      toast.error('Xác thực OTP hoặc đăng ký thất bại. Vui lòng thử lại!');
+    } catch (_err) {
+      if (isLogin) {
+        toast.error('Xác thực OTP thất bại. Vui lòng thử lại!');
+      } else {
+        toast.error('Xác thực OTP hoặc đăng ký thất bại. Vui lòng thử lại!');
+      }
       setOtpDigits(['', '', '', '', '', '']);
       form.setValue('otp', '');
       inputRefs.current[0]?.focus();
@@ -205,7 +240,7 @@ export default function VerifyOTPForm() {
                             inputRefs.current[index]?.focus();
                           }}
                           onChange={(e) => handleInputChange(index, e.target.value.toUpperCase())}
-                          onPaste={index === 0 ? handlePaste : undefined}
+                          onPaste={handlePaste}
                           onKeyDown={(e) => handleKeyDown(index, e)}
                           ref={(el) => {
                             inputRefs.current[index] = el;
@@ -224,12 +259,14 @@ export default function VerifyOTPForm() {
               className="w-full bg-primary hover:bg-primary/90"
               disabled={isLoading}
             >
-              {isLoading ?
+              {isLoading ? (
                 <>
                   <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Đang xử lý...
                 </>
-                : 'Xác nhận'}
+              ) : (
+                'Xác nhận'
+              )}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               Không nhận được mã?{' '}

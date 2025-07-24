@@ -48,7 +48,14 @@ export default function SignInForm() {
   async function onSubmit(values: { email: string; password: string }) {
     try {
       const response = await login(values).unwrap();
-      if (!response.data?.role) navigate('/auth/login');
+      if (response.data?.user.twoFA) {
+        navigate('/auth/login-verify', { state: response.data });
+        return;
+      }
+      if (!response.data?.role) {
+        navigate('/auth/login');
+        return;
+      }
       if (response.data?.role === 'ADMIN') {
         navigate('/dashboard');
       } else {
