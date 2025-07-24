@@ -33,7 +33,7 @@ const persistProfileConfig = {
     {
       in: (state: any, key: string) => {
         if (key === 'profile') {
-          const role = state.role; // Use role from the persisted state
+          const role = state.role;
 
           return {
             ...state,
