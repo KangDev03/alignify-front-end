@@ -22,64 +22,6 @@ export interface ApiResponseError {
   data: ErrorData;
 }
 
-export interface PageableResponse<T> {
-  content?: T[];
-  pageable?: {
-    pageNumber?: number;
-    pageSize?: number;
-    sort?: {
-      empty?: boolean;
-      sorted?: boolean;
-      unsorted?: boolean;
-    };
-    offset?: number;
-    paged?: boolean;
-    unpaged?: boolean;
-  };
-  totalPages?: number;
-  totalElements?: number;
-  last?: boolean;
-  numberOfElements?: number;
-  size?: number;
-  number?: number;
-  sort?: {
-    empty?: boolean;
-    sorted?: boolean;
-    unsorted?: boolean;
-  };
-  first?: boolean;
-  empty?: boolean;
-}
-
-// export interface PageableResponse<T> {
-//   content: T[];
-//   pageable: {
-//     pageNumber: number;
-//     pageSize: number;
-//     sort: {
-//       empty: boolean;
-//       sorted: boolean;
-//       unsorted: boolean;
-//     };
-//     offset: number;
-//     paged: boolean;
-//     unpaged: boolean;
-//   };
-//   totalPages: number;
-//   totalElements: number;
-//   last: boolean;
-//   numberOfElements: number;
-//   size: number;
-//   number: number;
-//   sort: {
-//     empty: boolean;
-//     sorted: boolean;
-//     unsorted: boolean;
-//   };
-//   first: boolean;
-//   empty: boolean;
-// }
-
 export interface User {
   userId: string;
   name: string;
@@ -130,6 +72,7 @@ export interface Campaign {
       like: number;
       comment: number;
       share: number;
+      view: number;
     }[];
   }[];
   influencerRequirements: {
@@ -169,13 +112,13 @@ export type ISupportedPlatforms = 'tiktok' | 'youtube' | 'facebook' | 'instagram
 
 export type PostType = 'video' | 'post' | 'reel' | 'story';
 
-type PostDetail = 'like' | 'comment' | 'share';
+export type PostDetail = 'like' | 'comment' | 'share' | 'view';
 
-type RequiredPost = {
+export type RequiredPost = {
   [post in PostType]?: PostDetail[];
 };
 
-type PostTypeByPlatform = {
+export type PostTypeByPlatform = {
   [platform in ISupportedPlatforms]: RequiredPost[];
 };
 
@@ -187,7 +130,7 @@ export const SupportedPostTypeByPlatform: PostTypeByPlatform = {
   ],
   facebook: [
     {
-      post: ['like', 'comment'],
+      post: ['like', 'comment', 'share'],
     },
   ],
   instagram: [
@@ -203,7 +146,7 @@ export const SupportedPostTypeByPlatform: PostTypeByPlatform = {
   ],
   youtube: [
     {
-      video: ['like', 'comment'],
+      video: ['view'],
     },
   ],
 };

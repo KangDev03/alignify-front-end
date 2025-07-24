@@ -101,31 +101,34 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
         ? campaignData.influencerRequirements
         : [{ platform: '', followers: undefined }],
       campaignRequirements: campaignData?.campaignRequirements?.length
-        ? campaignData.campaignRequirements.map((req) => ({
-            platform: req.platform,
-            post_type: req.post_type,
-            quantity: req.quantity,
-            postDetails: req.details.map((item) => {
-              const postType = item.post_type?.toLowerCase() as PostType;
-              return {
-                [postType]: {
-                  like: item.like,
-                  comment: item.comment,
-                  share: item.share,
-                },
-              };
-            }),
-          }))
+        ? campaignData.campaignRequirements.map((req) => {
+            return {
+              platform: req.platform,
+              post_type: req.post_type,
+              quantity: req.quantity,
+              postDetails: req.details.map((item) => {
+                const postType = item.post_type?.toLowerCase() as PostType;
+                return {
+                  [postType]: {
+                    like: item.like,
+                    comment: item.comment,
+                    share: item.share,
+                    view: item.view,
+                  },
+                };
+              }),
+            };
+          })
         : [
             {
               platform: '',
               post_type: '',
               quantity: undefined,
               postDetails: [
-                { post: { like: 0, comment: 0, share: 0 } },
-                { video: { like: 0, comment: 0, share: 0 } },
-                { story: { like: 0, comment: 0, share: 0 } },
-                { reel: { like: 0, comment: 0, share: 0 } },
+                { post: { like: 0, comment: 0, share: 0, view: 0 } },
+                { video: { like: 0, comment: 0, share: 0, view: 0 } },
+                { story: { like: 0, comment: 0, share: 0, view: 0 } },
+                { reel: { like: 0, comment: 0, share: 0, view: 0 } },
               ],
             },
           ],
@@ -157,10 +160,9 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
       const quantity = Number(form.watch(`campaignRequirements.${idx}.quantity`) || 0);
       const currentPostDetails = form.watch(`campaignRequirements.${idx}.postDetails`) || [];
       if (currentPostDetails.length < quantity) {
-        const postType =
-          form.watch(`campaignRequirements.${idx}.post_type`)?.toLowerCase() || 'video';
+        const postType = form.watch(`campaignRequirements.${idx}.post_type`)?.toLowerCase();
         const newDetails = Array.from({ length: quantity - currentPostDetails.length }, () => ({
-          [postType]: { like: 0, comment: 0, share: 0 },
+          [postType]: { like: 0, comment: 0, share: 0, view: 0 },
         }));
         form.setValue(`campaignRequirements.${idx}.postDetails`, [
           ...currentPostDetails,
@@ -173,7 +175,7 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
         );
       }
     });
-  }, [contentFields, form.watch('campaignRequirements')]);
+  }, [contentFields, form]);
 
   const socialPlatformOptions = [
     { value: 'TIKTOK', label: 'TikTok' },
@@ -207,7 +209,8 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
               post_type: item.post_type,
               like: postTypeData?.like ?? 0,
               comment: postTypeData?.comment ?? 0,
-              share: 0,
+              share: postTypeData?.share ?? 0,
+              view: postTypeData?.view ?? 0,
             };
           }),
         })),
@@ -718,10 +721,8 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                       </Button>
                     </div>
 
-                    {/* Content Section: chỉ render khi isExpanded true */}
                     {isExpanded && (
                       <div className="p-4 space-y-4">
-                        {/* Platform Selection */}
                         <FormField
                           control={form.control}
                           name={`campaignRequirements.${idx}.platform`}
@@ -763,7 +764,6 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                           )}
                         />
 
-                        {/* Post Type and Quantity */}
                         {platform && (
                           <div className="space-y-4 pt-2 border-t border-border/50">
                             <div className="grid grid-cols-2 gap-4">
@@ -830,7 +830,6 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                               />
                             </div>
 
-                            {/* Engagement Requirements */}
                             {postType && quantity && quantity > 0 && (
                               <div>
                                 <div className="flex items-center space-x-2">
@@ -889,6 +888,9 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
                                                     )}
                                                     {require === 'share' && (
                                                       <Icons.share2 className="w-3 h-3" />
+                                                    )}
+                                                    {require === 'view' && (
+                                                      <Icons.eye className="w-3 h-3" />
                                                     )}
                                                     <span>{require}</span>
                                                   </FormLabel>
