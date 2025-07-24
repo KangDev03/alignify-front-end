@@ -1,11 +1,13 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 
 import { Icons } from '@/components/icons/icons';
+import { LanguageSelect } from '@/components/language-select';
 import { UserDropdown } from '@/components/layouts/app/user-dropdown';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import ChatSheet from '@/features/chatting/components/chat-sheet';
@@ -34,6 +36,7 @@ interface HeaderProps {
 
 export function AppHeader({ onLogout }: HeaderProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const location = useLocation();
   const userRole = useSelector((state: RootState) => state.auth.role);
 
@@ -87,19 +90,19 @@ export function AppHeader({ onLogout }: HeaderProps) {
   const navigationItems =
     userRole === 'INFLUENCER'
       ? [
-        { id: 'home', label: 'Trang chủ', icon: Icons.home },
-        { id: 'my-campaign', label: 'Chiến dịch của tôi', icon: Icons.megaphone },
-        { id: 'applications', label: 'Đơn ứng tuyển', icon: Icons.fileText },
-        { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
-        { id: 'statistics', label: 'Thống kê', icon: Icons.barChart3 },
+        { id: 'home', label: t('header.nav.home'), icon: Icons.home },
+        { id: 'my-campaign', label: t('header.nav.myCampaign'), icon: Icons.megaphone },
+        { id: 'applications', label: t('header.nav.applications'), icon: Icons.fileText },
+        { id: 'invitations', label: t('header.nav.invitations'), icon: Icons.mail },
+        { id: 'statistics', label: t('header.nav.statistics'), icon: Icons.barChart3 },
       ]
       : [
-        { id: 'home', label: 'Trang chủ', icon: Icons.home },
-        { id: 'campaign-management', label: 'Quản lí chiến dịch', icon: Icons.megaphone },
-        { id: 'applicants', label: 'Ứng viên', icon: Icons.fileText },
-        { id: 'invitations', label: 'Lời mời', icon: Icons.mail },
-        { id: 'statistics', label: 'Báo cáo', icon: Icons.barChart3 },
-      ]
+        { id: 'home', label: t('header.nav.home'), icon: Icons.home },
+        { id: 'campaign-management', label: t('header.nav.campaignManagement'), icon: Icons.megaphone },
+        { id: 'applicants', label: t('header.nav.applicants'), icon: Icons.fileText },
+        { id: 'invitations', label: t('header.nav.invitations'), icon: Icons.mail },
+        { id: 'statistics', label: t('header.nav.reports'), icon: Icons.barChart3 },
+      ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -131,6 +134,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
           </nav>
 
           <div className="flex items-center space-x-2">
+            <LanguageSelect variant="minimal" />
             <Button
               variant="ghost"
               size="sm"
@@ -138,7 +142,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
               className="flex items-center space-x-2 text-white dark:text-black bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700 border-0 shadow-md hover:text-none transition duration-200"
             >
               <Icons.crown className="h-4 w-4" />
-              <span className="hidden md:inline">Nâng cấp</span>
+              <span className="hidden md:inline">{t('header.nav.upgrade')}</span>
             </Button>
             <NotificationTrigger />
             <ChatSheet />

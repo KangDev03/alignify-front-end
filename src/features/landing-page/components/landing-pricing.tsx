@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import type { PlanFeature } from "@/components/ui/plan-card";
 import { PlanCard } from "@/components/ui/plan-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,20 +23,21 @@ interface LandingPricingProps {
 }
 
 export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencerPlans }: LandingPricingProps) {
+  const { t } = useTranslation();
 
   return (
     <section id="pricing" className="py-20 px-4">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Bảng giá linh hoạt</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("landing.pricing.title")}</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Chọn gói phù hợp với nhu cầu và ngân sách của bạn
+            {t("landing.pricing.description")}
           </p>
         </div>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-6xl mx-auto">
           <TabsList className="grid w-full grid-cols-2 mb-12 max-w-md mx-auto">
-            <TabsTrigger value="brands">Brands</TabsTrigger>
-            <TabsTrigger value="influencers">Influencers</TabsTrigger>
+            <TabsTrigger value="brands">{t("landing.pricing.tabs.brands")}</TabsTrigger>
+            <TabsTrigger value="influencers">{t("landing.pricing.tabs.influencers")}</TabsTrigger>
           </TabsList>
           <TabsContent value="brands">
             <div className="grid md:grid-cols-3 gap-8">
@@ -51,7 +54,7 @@ export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencer
                     ? (plan.features as string[]).map(f => ({ name: f, included: true }))
                     : (plan.features as PlanFeature[])
                   }
-                  buttonText={plan.buttonText || "Bắt đầu ngay"}
+                  buttonText={plan.buttonText || t("landing.pricing.button")}
                   buttonVariant={plan.buttonVariant || (plan.popular ? "default" : "outline")}
                   highlightColor="ring-2 ring-blue-500"
                 />
@@ -73,7 +76,7 @@ export function LandingPricing({ activeTab, setActiveTab, brandPlans, influencer
                     ? (plan.features as string[]).map(f => ({ name: f, included: true }))
                     : (plan.features as PlanFeature[])
                   }
-                  buttonText={plan.buttonText || "Bắt đầu ngay"}
+                  buttonText={plan.buttonText || t("landing.pricing.button")}
                   buttonVariant={plan.buttonVariant || (plan.popular ? "default" : "outline")}
                   highlightColor="ring-2 ring-purple-500"
                 />

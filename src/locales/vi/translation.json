@@ -1,0 +1,343 @@
+{
+  "features": "Tính năng",
+  "pricing": "Bảng giá",
+  "testimonials": "Đánh giá",
+  "login": "Đăng nhập",
+  "register": "Đăng ký",
+
+  "landing": {
+    "features": {
+      "brand": {
+        "title1": "Tìm kiếm Influencer thông minh",
+        "description1": "AI-powered matching giúp tìm đúng influencer phù hợp với thương hiệu",
+        "title2": "Quản lý chiến dịch toàn diện",
+        "description2": "Theo dõi hiệu suất, ROI và engagement từ một dashboard duy nhất",
+        "title3": "Công cụ cộng tác",
+        "description3": "Chat trực tiếp, chia sẻ brief và feedback với influencer",
+        "title4": "Thanh toán an toàn",
+        "description4": "Hệ thống escrow bảo vệ cả brand và influencer"
+      },
+      "influencer": {
+        "title1": "Portfolio chuyên nghiệp",
+        "description1": "Showcase work của bạn với media kit tự động tạo",
+        "title2": "Analytics chi tiết",
+        "description2": "Theo dõi engagement, reach và thu nhập từ các chiến dịch",
+        "title3": "Cộng đồng kết nối",
+        "description3": "Kết nối với influencer khác và chia sẻ kinh nghiệm",
+        "title4": "Cơ hội phù hợp",
+        "description4": "Nhận thông báo về các cơ hội phù hợp với niche của bạn"
+      }
+    },
+    "pricing": {
+      "title": "Bảng giá linh hoạt",
+      "description": "Chọn gói phù hợp với nhu cầu và ngân sách của bạn",
+      "tabs": {
+        "brands": "Dành cho Thương hiệu",
+        "influencers": "Dành cho Influencer"
+      },
+      "button": "Bắt đầu ngay",
+      "brand": {
+        "starter": {
+          "name": "Starter",
+          "price": "Miễn phí",
+          "description": "Dành cho startup và doanh nghiệp nhỏ",
+          "features": [
+            "Tạo tối đa 3 chiến dịch/tháng",
+            "Tìm kiếm 100 influencers",
+            "5 influencers/chiến dịch"
+          ]
+        },
+        "pro": {
+          "name": "Professional",
+          "price": "499.000đ/tháng",
+          "description": "Dành cho doanh nghiệp vừa",
+          "features": [
+            "Tạo tối đa 25 chiến dịch/tháng",
+            "Tìm kiếm không giới hạn",
+            "Kết nối 100 influencers"
+          ]
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "price": "1.499.000đ/tháng",
+          "description": "Dành cho doanh nghiệp lớn",
+          "features": [
+            "Chiến dịch không giới hạn",
+            "Tìm kiếm không giới hạn influencers",
+            "Influencers không giới hạn"
+          ]
+        }
+      },
+      "influencer": {
+        "creator": {
+          "name": "Creator",
+          "price": "Miễn phí",
+          "description": "Dành cho creator mới bắt đầu",
+          "features": ["Ứng tuyển 5 chiến dịch/tháng", "Tìm kiếm 10 chiến dịch"]
+        },
+        "pro": {
+          "name": "Pro Creator",
+          "price": "199.000đ/tháng",
+          "description": "Dành cho influencer chuyên nghiệp",
+          "features": [
+            "Ứng tuyển 10 chiến dịch/tháng",
+            "Tìm kiếm 20 chiến dịch"
+          ]
+        },
+        "agency": {
+          "name": "Agency",
+          "price": "799.000đ/tháng",
+          "description": "Dành cho agency và MCN",
+          "features": [
+            "Không giới hạn ứng tuyển",
+            "Tìm kiếm không giới hạn chiến dịch"
+          ]
+        }
+      }
+    },
+    "testimonials": {
+      "0": "Platform này đã giúp chúng tôi tìm được những influencer phù hợp và tăng ROI lên 300%. Quá tuyệt vời!",
+      "1": "Tôi đã tìm được nhiều brand uy tín và tăng thu nhập gấp đôi nhờ platform này. Highly recommended!",
+      "2": "Dashboard analytics rất chi tiết, giúp chúng tôi track performance và optimize campaign hiệu quả."
+    },
+    "stats": {
+      "influencers": "Influencers",
+      "brands": "Brands",
+      "campaigns": "Chiến dịch",
+      "posts": "Bài viết"
+    },
+    "cta": {
+      "title": "Sẵn sàng bắt đầu?",
+      "description": "Tham gia cộng đồng hàng nghìn brands và influencers đang phát triển mạnh mẽ",
+      "button": "Bắt đầu ngay hôm nay"
+    }
+  },
+
+  "landingHero": {
+    "titleLine1": "Kết nối Brands & Influencers",
+    "titleLine2": "Hiệu quả hơn bao giờ hết",
+    "description": "Nền tảng toàn diện giúp brands tìm kiếm influencer phù hợp và influencer kết nối với các cơ hội hợp tác tuyệt vời",
+    "stats": {
+      "0": "Người dùng hoạt động",
+      "1": "Chiến dịch thành công",
+      "2": "Influencers tham gia",
+      "3": "Thương hiệu hợp tác"
+    }
+  },
+
+  "landingFeatures": {
+    "title": "Tính năng nổi bật",
+    "description": "Được thiết kế riêng cho nhu cầu của từng đối tượng",
+    "tabBrands": "Dành cho Brands",
+    "tabInfluencers": "Dành cho Influencers"
+  },
+
+  "plan": {
+    "recommended": "Được đề xuất",
+    "buttonText": "Bắt đầu ngay"
+  },
+
+  "landingTestimonials": {
+    "title": "Khách hàng nói gì về chúng tôi",
+    "description": "Hàng nghìn brands và influencers đã tin tưởng sử dụng"
+  },
+
+  "landingFooter": {
+    "description": "Nền tảng kết nối brands và influencers hàng đầu Việt Nam",
+    "product": "Sản phẩm",
+    "forBrands": "Dành cho Brands",
+    "forInfluencers": "Dành cho Influencers",
+    "analytics": "Thống kê",
+    "api": "API",
+    "support": "Hỗ trợ",
+    "helpCenter": "Trung tâm trợ giúp",
+    "contact": "Liên hệ",
+    "blog": "Blog",
+    "community": "Community",
+    "company": "Công ty",
+    "aboutUs": "Về chúng tôi",
+    "careers": "Sự nghiệp",
+    "privacy": "Riêng tư",
+    "terms": "Điều khoản",
+    "copyright": "© 2024 Alignify. Tất cả quyền được bảo lưu."
+  },
+
+  "header": {
+    "nav": {
+      "home": "Trang chủ",
+      "myCampaign": "Chiến dịch của tôi",
+      "applications": "Đơn ứng tuyển",
+      "invitations": "Lời mời",
+      "statistics": "Thống kê",
+      "campaignManagement": "Quản lí chiến dịch",
+      "applicants": "Ứng viên",
+      "reports": "Báo cáo",
+      "upgrade": "Nâng cấp"
+    }
+  },
+
+  "home": {
+    "title": "Khám phá",
+    "searchPlaceholder": "Tìm kiếm...",
+    "selectCategory": "Chọn danh mục",
+    "all": "Tất cả",
+    "tabs": {
+      "campaign": "Chiến dịch",
+      "brand": "Brands",
+      "influencer": "Influencers",
+      "forum": "Diễn đàn"
+    },
+    "campaigns": {
+      "trending": "Chiến dịch hot",
+      "updating": "Đang cập nhật"
+    },
+    "influencers": {
+      "top": "Influencers hàng đầu",
+      "followers": "người theo dõi"
+    }
+  },
+
+  "campaign": {
+    "notFound": "Không tìm thấy chiến dịch nào",
+    "noCampaign": "Không có chiến dịch nào được đăng",
+    "noNewCampaign": "Không có bài đăng chiến dịch mới nào",
+    "tryLater": "Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.",
+    "tryLaterNew": "Bạn có thể quay lại đây sau khi các chiến dịch mới xuất hiện."
+  },
+
+  "brand": {
+    "notFound": "Không tìm thấy tài khoản Brand nào",
+    "empty": "Không có tài khoản Brand nào",
+    "emptyDesc": "Bạn có thể quay lại đây sau khi các tài khoản Brand xuất hiện.",
+    "noMore": "Không còn tài khoản Brand nào",
+    "noMoreDesc": "Bạn có thể quay lại đây sau khi các tài khoản Brand mới xuất hiện.",
+    "viewProfile": "Xem hồ sơ",
+    "campaignCount": "chiến dịch"
+  },
+
+  "influencer": {
+    "notFound": "Không tìm thấy tài khoản Influencer nào",
+    "empty": "Không có tài khoản Influencer nào",
+    "emptyDesc": "Bạn có thể quay lại đây sau khi các tài khoản Influencer xuất hiện.",
+    "noMore": "Không còn tài khoản Influencer nào",
+    "noMoreDesc": "Bạn có thể quay lại đây sau khi các tài khoản Influencer mới xuất hiện.",
+    "followers": "người theo dõi",
+    "viewProfile": "Xem hồ sơ"
+  },
+
+  "forum": {
+    "notFound": "Không tìm thấy bài đăng nào",
+    "empty": "Không có bài đăng nào trong Forum",
+    "emptyDesc": "Bạn có thể quay lại đây sau khi các bài đăng trong Forum xuất hiện.",
+    "noMore": "Không còn bài đăng nào trong Forum",
+    "noMoreDesc": "Bạn có thể quay lại đây sau khi các bài đăng mới xuất hiện.",
+    "private": "Riêng tư",
+    "edit": "Chỉnh sửa bài viết",
+    "delete": "Xóa bài viết",
+    "confirmDelete": "Xác nhận xóa bài viết",
+    "confirmDeleteDescription": "Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.",
+    "cancel": "Hủy",
+    "deleting": "Đang xóa...",
+    "deleteSuccess": "Đã xóa bài viết thành công",
+    "deleteError": "Xóa bài viết thất bại. Vui lòng thử lại!",
+    "readMore": "Đọc thêm",
+    "readLess": "Thu gọn",
+    "postBy": "Bài đăng bởi",
+    "loadingMore": "Đang tải thêm...",
+    "firstComment": "Hãy là người bình luận đầu tiên",
+    "enterComment": "Nhập bình luận",
+    "MyComments": "Bạn"
+  },
+
+  "myCampaigns": {
+    "title": "Chiến dịch của tôi",
+    "tabs": {
+      "pending": "Chưa bắt đầu",
+      "participating": "Đang diễn ra",
+      "completed": "Đã kết thúc"
+    },
+    "searchPlaceholder": "Tìm kiếm...",
+    "noCampaigns": {
+      "pending": "Bạn chưa có chiến dịch nào đang chờ bắt đầu hoặc đang tuyển",
+      "participating": "Bạn chưa có chiến dịch nào đang diễn ra",
+      "completed": "Bạn chưa có chiến dịch nào đã kết thúc"
+    }
+  },
+
+  "campaignCard": {
+    "apply": "Ứng tuyển",
+    "applied": "đã ứng tuyển",
+    "applySuccess": "Ứng tuyển thành công",
+    "applyError": "Ứng tuyển thất bại. Vui lòng thử lại!",
+    "startRecruitment": "bắt đầu tuyển dụng",
+    "campaignStartRecruitment": "Chiến dịch bắt đầu tuyển!",
+    "failedPhaseChange": "Chuyển giai đoạn thất bại!",
+    "updateSuccess": "Tải lên thành công!",
+    "deletedCampaign": "Đã xóa chiến dịch",
+    "draftCamapaign": "Chiến dịch đã về dạng nháp",
+    "endRecruitment": "Đã kết thúc tuyển chiến dịch",
+    "youEndRecruitment": "Bạn đã kết thúc tuyển chiến dịch",
+    "endRecruitmentSuccess": "Kết thúc tuyển chiến dịch thành công",
+    "startedCampaign": "Đã bắt đầu chiến dịch",
+    "youEndStart": "Bạn đã bắt đầu chiến dịch",
+    "startCampaign": "Chiến dịch đã bắt đầu!",
+    "completedCampaign": "Đã hoàn thành chiến dịch",
+    "endCampaign": "Bạn đã kết thúc chiến dịch",
+    "endedCampaign": "Chiến dịch đã kết thúc!",
+    "submitedProgress": "đã cập nhật tiến độ cho chiến dịch",
+    "submitProgressSuccess": "Cập nhật tiến độ thành công!",
+    "approveProgress": "Đã duyệt nội dung!",
+    "rejectProgress": "Đã từ chối nội dung!",
+    "approved": "Đã duyệt",
+    "pending": "Chờ duyệt",
+    "rejected": "Từ chối",
+    "unknown": "Chưa xác định",
+    "updateProgressButton": "Cập nhật tiến độ",
+    "updateProgressDialogTitle": "Cập nhật tiến độ chiến dịch",
+    "contentCount": "nội dung",
+    "contentTitle": "Nội dung",
+    "contentLinkLabel": "Liên kết nội dung",
+    "cancelButton": "Hủy",
+    "submitButton": "Gửi cập nhật",
+    "viewProgress": "Xem tiến độ",
+    "viewProgressDialogTitle": "tiến độ chiến dịch",
+    "overvewProgress": "Tiến độ tổng quan",
+    "progressPercentageText": "hoàn thành",
+    "progressDetails": "Chi tiết tiến độ",
+    "noUpdateProgress": "Chưa có cập nhật tiến độ",
+    "submitAt": "Gửi lúc",
+    "approve": "Duyệt",
+    "reject": "Từ chối",
+    "closeButton": "Đóng",
+    "editButton": "Chỉnh sửa",
+    "recruitButton": "Đăng tuyển",
+    "sureApply": "Bạn có chắc chắn muốn ứng tuyển chiến dịch này không?",
+    "uploadContract": "Tải lên hợp đồng của bạn",
+    "choseContractButton": "Chọn hợp đồng",
+    "viewContract": "Xem trước",
+    "deleteContract": "Xóa hợp đồng",
+    "uploadingCampaign": "Đang đăng chiến dịch",
+    "viewCampaignDetails": "Xem chi tiết",
+    "campaignPostBy": "Chiến dịch của",
+    "appliedButton": "Đã ứng tuyển",
+    "uploadPortfolioOrCV": "Tải lên CV hoặc Portfolio của bạn",
+    "choseImgButton": "Chọn ảnh",
+    "orText": "hoặc",
+    "useByYou": "Sử dụng của bạn",
+    "deleteImg": "Xóa ảnh",
+    "applying": "Đang ứng tuyển",
+    "contract": "Hợp đồng",
+    "uploading": "Đang tải",
+    "upload": "Tải lên",
+    "editDialogDesc": "Bạn có chắc chắn muốn chỉnh sửa chiến dịch không? Hành động này sẽ đưa chiến dịch của bạn về trạng thái nháp. Mọi đơn ứng tuyển và lời mời sẽ bị xóa. Hãy đảm bảo rằng chính bạn là người thực hiện!",
+    "confirmButton": "Xác nhận",
+    "endRecruitmentButton": "Kết thúc tuyển",
+    "startCampaignButton": "Bắt đầu",
+    "trackCampaignButton": "Theo dõi chiến dịch",
+    "endButton": "Kết thúc",
+    "viewReport": "Xem báo cáo",
+    "categories": "Danh mục",
+    "applicants": "Ứng viên",
+    "popular": "Phổ biến"
+  }
+}

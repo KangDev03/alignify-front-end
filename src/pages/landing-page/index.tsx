@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 
@@ -15,119 +16,99 @@ import { LandingTestimonials } from "@/features/landing-page/components/landing-
 
 export function LandingPage() {
   const { theme } = useTheme();
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState("brands")
 
   const brandFeatures = [
     {
       icon: <Icons.target className="h-6 w-6" />,
-      title: "Tìm kiếm Influencer thông minh",
-      description: "AI-powered matching giúp tìm đúng influencer phù hợp với thương hiệu",
+      title: t("landing.features.brand.title1"),
+      description: t("landing.features.brand.description1"),
     },
     {
       icon: <Icons.barChart3 className="h-6 w-6" />,
-      title: "Quản lý chiến dịch toàn diện",
-      description: "Theo dõi hiệu suất, ROI và engagement từ một dashboard duy nhất",
+      title: t("landing.features.brand.title2"),
+      description: t("landing.features.brand.description2"),
     },
     {
       icon: <Icons.users className="h-6 w-6" />,
-      title: "Collaboration tools",
-      description: "Chat trực tiếp, chia sẻ brief và feedback với influencer",
+      title: t("landing.features.brand.title3"),
+      description: t("landing.features.brand.description3"),
     },
     {
       icon: <Icons.shield className="h-6 w-6" />,
-      title: "Thanh toán an toàn",
-      description: "Hệ thống escrow bảo vệ cả brand và influencer",
+      title: t("landing.features.brand.title4"),
+      description: t("landing.features.brand.description4"),
     },
   ]
 
   const influencerFeatures = [
     {
       icon: <Icons.camera className="h-6 w-6" />,
-      title: "Portfolio chuyên nghiệp",
-      description: "Showcase work của bạn với media kit tự động tạo",
+      title: t("landing.features.influencer.title1"),
+      description: t("landing.features.influencer.description1"),
     },
     {
       icon: <Icons.trendingUp className="h-6 w-6" />,
-      title: "Analytics chi tiết",
-      description: "Theo dõi engagement, reach và thu nhập từ các chiến dịch",
+      title: t("landing.features.influencer.title2"),
+      description: t("landing.features.influencer.description2"),
     },
     {
       icon: <Icons.messageSquare className="h-6 w-6" />,
-      title: "Networking community",
-      description: "Kết nối với influencer khác và chia sẻ kinh nghiệm",
+      title: t("landing.features.influencer.title3"),
+      description: t("landing.features.influencer.description3"),
     },
     {
       icon: <Icons.zap className="h-6 w-6" />,
-      title: "Opportunities matching",
-      description: "Nhận thông báo về các cơ hội phù hợp với niche của bạn",
+      title: t("landing.features.influencer.title4s"),
+      description: t("landing.features.influencer.description4"),
     },
   ]
 
   const brandPlans = [
     {
-      name: "Starter",
-      price: "Miễn phí",
-      description: "Dành cho startup và doanh nghiệp nhỏ",
-      features: [
-        "Tạo tối đa 3 chiến dịch/tháng",
-        "Tìm kiếm 100 influencers",
-        "5 influencers/chiến dịch",
-      ],
+      name: t("landing.pricing.brand.starter.name"),
+      price: t("landing.pricing.brand.starter.price"),
+      description: t("landing.pricing.brand.starter.description"),
+      features: t("landing.pricing.brand.starter.features", { returnObjects: true }) as string[],
       popular: false,
     },
     {
-      name: "Professional",
-      price: "499.000đ/tháng",
-      description: "Dành cho doanh nghiệp vừa",
-      features: [
-        "Tạo tối đa 25 chiến dịch/tháng",
-        "Tìm kiếm không giới hạn",
-        "Kết nối 100 influencers",
-      ],
+      name: t("landing.pricing.brand.pro.name"),
+      price: t("landing.pricing.brand.pro.price"),
+      description: t("landing.pricing.brand.pro.description"),
+      features: t("landing.pricing.brand.pro.features", { returnObjects: true }) as string[],
       popular: true,
     },
     {
-      name: "Enterprise",
-      price: "1.499.000đ/tháng",
-      description: "Dành cho doanh nghiệp lớn",
-      features: [
-        "Chiến dịch không giới hạn",
-        "Tìm kiếm không giới hạn influencers",
-        "Influencers không giới hạn",
-      ],
+      name: t("landing.pricing.brand.enterprise.name"),
+      price: t("landing.pricing.brand.enterprise.price"),
+      description: t("landing.pricing.brand.enterprise.description"),
+      features: t("landing.pricing.brand.enterprise.features", { returnObjects: true }) as string[],
       popular: false,
     },
   ]
 
   const influencerPlans = [
     {
-      name: "Creator",
-      price: "Miễn phí",
-      description: "Dành cho creator mới bắt đầu",
-      features: [
-        "Ứng tuyển 5 chiến dịch/tháng",
-        "Tìm kiếm 10 chiến dịch",
-      ],
+      name: t("landing.pricing.influencer.creator.name"),
+      price: t("landing.pricing.influencer.creator.price"),
+      description: t("landing.pricing.influencer.creator.description"),
+      features: t("landing.pricing.influencer.creator.features", { returnObjects: true }) as string[],
       popular: false,
     },
     {
-      name: "Pro Creator",
-      price: "199.000đ/tháng",
-      description: "Dành cho influencer chuyên nghiệp",
-      features: [
-        "Ứng tuyển 10 chiến dịch/tháng",
-        "Tìm kiếm 20 chiến dịch",
-      ],
+      name: t("landing.pricing.influencer.pro.name"),
+      price: t("landing.pricing.influencer.pro.price"),
+      description: t("landing.pricing.influencer.pro.description"),
+      features: t("landing.pricing.influencer.pro.features", { returnObjects: true }) as string[],
       popular: true,
     },
     {
-      name: "Agency",
-      price: "799.000đ/tháng",
-      description: "Dành cho agency và MCN",
-      features: [
-        "Không giới hạn ứng tuyển",
-        "Tìm kiếm không giới hạn chiến dịch",
-      ],
+      name: t("landing.pricing.influencer.agency.name"),
+      price: t("landing.pricing.influencer.agency.price"),
+      description: t("landing.pricing.influencer.agency.description"),
+      features: t("landing.pricing.influencer.agency.features", { returnObjects: true }) as string[],
       popular: false,
     },
   ]
@@ -137,30 +118,30 @@ export function LandingPage() {
       name: "Nguyễn Minh Anh",
       role: "Marketing Director, Fashion Brand",
       avatar: "/placeholder.svg?height=40&width=40",
-      content: "Platform này đã giúp chúng tôi tìm được những influencer phù hợp và tăng ROI lên 300%. Quá tuyệt vời!",
+      content: t("landing.testimonials.0"),
       rating: 5,
     },
     {
       name: "Trần Thị Hương",
       role: "Beauty Influencer, 500K followers",
       avatar: "/placeholder.svg?height=40&width=40",
-      content: "Tôi đã tìm được nhiều brand uy tín và tăng thu nhập gấp đôi nhờ platform này. Highly recommended!",
+      content: t("landing.testimonials.1"),
       rating: 5,
     },
     {
       name: "Lê Văn Đức",
       role: "CEO, Tech Startup",
       avatar: "/placeholder.svg?height=40&width=40",
-      content: "Dashboard analytics rất chi tiết, giúp chúng tôi track performance và optimize campaign hiệu quả.",
+      content: t("landing.testimonials.2"),
       rating: 5,
     },
   ]
 
   const stats = [
-    { number: "10,000+", label: "Influencers" },
-    { number: "5,000+", label: "Brands" },
-    { number: "50,000+", label: "Campaigns" },
-    { number: "20,000+", label: "Post" },
+    { number: "10,000+", label: t("landing.stats.influencers") },
+    { number: "5,000+", label: t("landing.stats.brands") },
+    { number: "50,000+", label: t("landing.stats.campaigns") },
+    { number: "20,000+", label: t("landing.stats.posts") },
   ]
 
   const backgroundImage =
@@ -197,15 +178,15 @@ export function LandingPage() {
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Sẵn sàng bắt đầu?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("landing.cta.title")}</h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Tham gia cộng đồng hàng nghìn brands và influencers đang phát triển mạnh mẽ
+            {t("landing.cta.description")}
           </p>
           <Button
             size="lg"
             className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
           >
-            Bắt đầu ngay hôm nay
+            {t("landing.cta.button")}
             <Icons.arrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>

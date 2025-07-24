@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { AlertCircleIcon } from 'lucide-react';
 
@@ -29,6 +30,7 @@ interface ForumProps {
 }
 
 export default function Forum({ selectedCategoryId, searchTerm }: ForumProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { forum } = useAppSelector((state: RootState) => state.homeRefetch);
   const { contentPosting }: { contentPosting: ContentPosting[] } = useAppSelector(
@@ -185,7 +187,7 @@ export default function Forum({ selectedCategoryId, searchTerm }: ForumProps) {
     return (
       <Alert variant="default">
         <AlertCircleIcon />
-        <AlertTitle>Không tìm thấy bài đăng nào</AlertTitle>
+        <AlertTitle>{t('forum.notFound')}</AlertTitle>
       </Alert>
     );
   }
@@ -202,20 +204,20 @@ export default function Forum({ selectedCategoryId, searchTerm }: ForumProps) {
           {contentPosting.length > 0
             ? contentPosting.map((post) => <ForumPost key={post.contentId} contentPosting={post} />)
             : isLoading == null && (
-                <Alert variant="default">
-                  <AlertCircleIcon />
-                  <AlertTitle>Không có bài đăng nào trong Forum</AlertTitle>
-                  <AlertDescription>
-                    Bạn có thể quay lại đây sau khi các bài đăng trong Forum xuất hiện.
-                  </AlertDescription>
-                </Alert>
-              )}
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>{t('forum.empty')}</AlertTitle>
+                <AlertDescription>
+                  {t('forum.emptyDesc')}
+                </AlertDescription>
+              </Alert>
+            )}
           {!hasMore && contentPosting.length > 0 && (
             <Alert variant="default">
               <AlertCircleIcon />
-              <AlertTitle>Không còn bài đăng nào trong Forum</AlertTitle>
+              <AlertTitle>{t('forum.noMore')}</AlertTitle>
               <AlertDescription>
-                Bạn có thể quay lại đây sau khi các bài đăng mới xuất hiện.
+                {t('forum.noMoreDesc')}
               </AlertDescription>
             </Alert>
           )}

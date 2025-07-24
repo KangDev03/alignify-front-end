@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useNavigate } from 'react-router';
 import { AlertCircleIcon } from 'lucide-react';
@@ -35,6 +36,7 @@ interface InfluencersProps {
 }
 
 export default function Influencers({ selectedCategoryId, searchTerm }: InfluencersProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { role } = useAppSelector((state: RootState) => state.common);
@@ -199,7 +201,7 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
     return (
       <Alert variant="default">
         <AlertCircleIcon />
-        <AlertTitle>Không tìm thấy tài khoản Influencer nào</AlertTitle>
+        <AlertTitle>{t('influencer.notFound')}</AlertTitle>
       </Alert>
     );
   }
@@ -215,83 +217,83 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
         <div className="space-y-6">
           {influencerProfile.length > 0
             ? influencerProfile.map((influencer) => (
-                <Card
-                  key={influencer.id}
-                  className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
-                >
-                  <CardContent>
-                    <div className="flex items-center space-x-4">
-                      <Avatar className="h-16 w-16">
-                        <AvatarImage
-                          src={influencer.avatarUrl || '/placeholder.svg'}
-                          alt={influencer.name}
-                          className="object-cover"
-                        />
-                        <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{influencer.name}</h3>
-                        {influencer?.category && (
-                          <div className="flex gap-1 text-sm text-muted-foreground capitalize">
-                            {influencer?.category.map((cat: Category, i) => (
-                              <Badge key={cat.categoryId ?? i} variant="outline">
-                                {cat.categoryName ?? cat}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-                        <div className="flex items-center space-x-4 mt-2 text-sm">
-                          <div className="flex items-center space-x-1">
-                            <Icons.users className="h-4 w-4" />
-                            <p className="flex gap-1">
-                              <span className="font-semibold">
-                                {formatNumber(influencer.follower ?? 0)}
-                              </span>
-                              người theo dõi
-                            </p>
-                          </div>
-                          <div className="flex items-center space-x-1 font-semibold">
-                            <Icons.star
-                              className={cn(
-                                'h-4 w-4 ',
-                                influencer.rating && influencer.rating > 0
-                                  ? 'stroke-yellow-400 fill-yellow-400'
-                                  : '',
-                              )}
-                            />
-                            <span>{influencer.rating ?? 0}</span>
-                          </div>
+              <Card
+                key={influencer.id}
+                className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
+              >
+                <CardContent>
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage
+                        src={influencer.avatarUrl || '/placeholder.svg'}
+                        alt={influencer.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback>{influencer.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="font-semibold">{influencer.name}</h3>
+                      {influencer?.category && (
+                        <div className="flex gap-1 text-sm text-muted-foreground capitalize">
+                          {influencer?.category.map((cat: Category, i) => (
+                            <Badge key={cat.categoryId ?? i} variant="outline">
+                              {cat.categoryName ?? cat}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-4 mt-2 text-sm">
+                        <div className="flex items-center space-x-1">
+                          <Icons.users className="h-4 w-4" />
+                          <p className="flex gap-1">
+                            <span className="font-semibold">
+                              {formatNumber(influencer.follower ?? 0)}
+                            </span>
+                            {t('influencer.followers')}
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-1 font-semibold">
+                          <Icons.star
+                            className={cn(
+                              'h-4 w-4 ',
+                              influencer.rating && influencer.rating > 0
+                                ? 'stroke-yellow-400 fill-yellow-400'
+                                : '',
+                            )}
+                          />
+                          <span>{influencer.rating ?? 0}</span>
                         </div>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          navigate(`/influencer/${influencer.id}`);
-                        }}
-                      >
-                        Xem hồ sơ
-                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigate(`/influencer/${influencer.id}`);
+                      }}
+                    >
+                      {t('influencer.viewProfile')}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
             : influencerProfile.length === 0 &&
-              isLoading == null && (
-                <Alert variant="default">
-                  <AlertCircleIcon />
-                  <AlertTitle>Không có tài khoản Influencer nào</AlertTitle>
-                  <AlertDescription>
-                    Bạn có thể quay lại đây sau khi các tài khoản Influencer xuất hiện.
-                  </AlertDescription>
-                </Alert>
-              )}
+            isLoading == null && (
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>{t('influencer.empty')}</AlertTitle>
+                <AlertDescription>
+                  {t('influencer.emptyDesc')}
+                </AlertDescription>
+              </Alert>
+            )}
           {!hasMore && influencerProfile.length > 0 && (
             <Alert variant="default">
               <AlertCircleIcon />
-              <AlertTitle>Không còn tài khoản Influencer nào</AlertTitle>
+              <AlertTitle>{t('influencer.noMore')}</AlertTitle>
               <AlertDescription>
-                Bạn có thể quay lại đây sau khi các tài khoản Influencer mới xuất hiện.
+                {t('influencer.noMoreDesc')}
               </AlertDescription>
             </Alert>
           )}
@@ -300,9 +302,9 @@ export default function Influencers({ selectedCategoryId, searchTerm }: Influenc
       {influencerProfile.length === 0 && !isLoading && (
         <Alert variant="default">
           <AlertCircleIcon />
-          <AlertTitle>Không có tài khoản Influencer nào</AlertTitle>
+          <AlertTitle>{t('influencer.empty')}</AlertTitle>
           <AlertDescription>
-            Bạn có thể quay lại đây sau khi các tài khoản Influencer xuất hiện.
+            {t('influencer.emptyDesc')}
           </AlertDescription>
         </Alert>
       )}

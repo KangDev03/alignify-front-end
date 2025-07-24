@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { DateTime } from 'luxon';
 
@@ -46,6 +47,7 @@ interface ForumCommentProps {
 }
 
 export default function ForumCommentDialog({ contentPosting, resetTrigger }: ForumCommentProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { token, id: userId, avatarUrl } = useAppSelector((state: RootState) => state.auth);
   const [valueChange, setValueChange] = useState<string>('');
@@ -295,7 +297,7 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
         <div className="w-full h-80 relative rounded-md mt-3">
           <img
             src={contentPosting.imageUrl || 'background-16x9.jpg'}
-            alt="Chiến dịch quảng cáo sản phẩm làm đẹp mùa hè"
+            alt={contentPosting.imageUrl}
             className="w-full h-full object-cover rounded-md"
           />
         </div>
@@ -336,14 +338,14 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
           dataLength={contentPosting && contentPosting.comment ? contentPosting.comment.length : 0}
           next={fetchMoreData}
           hasMore={hasMore}
-          loader={hasMore && <p>Loading more...</p>}
+          loader={hasMore && <p>{t('forum.loadingMore')}</p>}
           className="mt-4 flex flex-col gap-4"
         >
           {contentPosting.comment && contentPosting.comment.length > 0 ? (
             contentPosting.comment.map((cmt) => <CommentCard key={cmt.commentId} comment={cmt} />)
           ) : (
             <p className="text-center text-sm text-muted-foreground">
-              Hãy là người bình luận đầu tiên
+              {t('forum.firstComment')}
             </p>
           )}
         </InfiniteScroll>
@@ -359,7 +361,7 @@ export default function ForumCommentDialog({ contentPosting, resetTrigger }: For
           <div className="flex-1 relative">
             <Input
               type="text"
-              placeholder="Nhập bình luận"
+              placeholder={t('forum.enterComment')}
               className="rounded-full text-sm"
               onChange={(e) => setValueChange(e.target.value)}
               value={valueChange}

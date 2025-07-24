@@ -4,13 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
+import { LanguageSelect } from '@/components/language-select';
 
 export default function AccountSection() {
   return (
@@ -46,27 +41,7 @@ export default function AccountSection() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="language">Ngôn ngữ</Label>
-              <Select defaultValue="vi">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="vi">Tiếng Việt</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="timezone">Múi giờ</Label>
-              <Select defaultValue="asia/ho_chi_minh">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asia/ho_chi_minh">GMT+7 (Hồ Chí Minh)</SelectItem>
-                  <SelectItem value="asia/bangkok">GMT+7 (Bangkok)</SelectItem>
-                </SelectContent>
-              </Select>
+              <LanguageSelect variant="default" />
             </div>
           </div>
         </CardContent>

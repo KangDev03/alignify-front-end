@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
@@ -16,13 +18,15 @@ interface LandingTestimonialsProps {
 }
 
 export function LandingTestimonials({ testimonials }: LandingTestimonialsProps) {
+  const { t } = useTranslation()
+
   return (
     <section id="testimonials" className="py-20 px-4 bg-muted/50">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Khách hàng nói gì về chúng tôi</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("landingTestimonials.title")}</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Hàng nghìn brands và influencers đã tin tưởng sử dụng
+            {t("landingTestimonials.description")}
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
