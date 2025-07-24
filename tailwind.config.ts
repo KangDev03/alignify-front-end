@@ -55,13 +55,13 @@ export default {
           foreground: 'hsl(var(--card-foreground))',
         },
         pending: {
-          DEFAULT: "hsl(var(--pending))",
-          foreground: "hsl(var(--pending))",
+          DEFAULT: 'hsl(var(--pending))',
+          foreground: 'hsl(var(--pending))',
         },
         accepted: {
-          DEFAULT: "hsl(var(--accepted))",
-          foreground: "hsl(var(--accepted))"
-        }
+          DEFAULT: 'hsl(var(--accepted))',
+          foreground: 'hsl(var(--accepted))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

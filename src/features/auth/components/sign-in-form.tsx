@@ -23,8 +23,7 @@ import { Input } from '@/components/ui/input';
 
 import { Icons } from '@/components/icons/icons';
 import { type SignInFormValues, signInSchema } from '@/features/auth/auth.schema';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import type { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks/redux';
 import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -37,7 +36,6 @@ export default function SignInForm() {
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
   const [loginViaGoogle] = useGoogleLoginMutation();
-  const { role: roleName } = useAppSelector((state: RootState) => state.auth);
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -50,12 +48,13 @@ export default function SignInForm() {
   async function onSubmit(values: { email: string; password: string }) {
     try {
       const response = await login(values).unwrap();
-      dispatch(setCredentials(response));
-      if (roleName === 'ADMIN') {
+      if (!response.data?.role) navigate('/auth/login');
+      if (response.data?.role === 'ADMIN') {
         navigate('/dashboard');
       } else {
         navigate('/home');
       }
+      dispatch(setCredentials(response));
       toast.success('Đăng nhập thành công!');
     } catch (err: unknown) {
       if (isApiResponseError(err)) {
@@ -74,12 +73,12 @@ export default function SignInForm() {
       const code = credentialResponse.code;
       try {
         const response = await loginViaGoogle({ code }).unwrap();
-        dispatch(setCredentials(response));
-        if (roleName === 'ADMIN') {
+        if (response.data?.role === 'ADMIN') {
           navigate('/dashboard');
         } else {
           navigate('/home');
         }
+        dispatch(setCredentials(response));
         toast.success('Đăng nhập thành công!');
       } catch (err: unknown) {
         if (isApiResponseError(err)) {
@@ -153,12 +152,14 @@ export default function SignInForm() {
               className="w-full bg-primary hover:bg-primary/90"
               disabled={isLoading}
             >
-              {isLoading ?
+              {isLoading ? (
                 <>
                   <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Đang đăng nhập...
                 </>
-                : 'Đăng nhập'}
+              ) : (
+                'Đăng nhập'
+              )}
             </Button>
           </form>
         </Form>
