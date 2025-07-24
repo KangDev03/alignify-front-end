@@ -66,7 +66,7 @@ export const store = configureStore({
     campaign: campaignSlice.reducer,
     campaignTracking: campaignTrackingSlice.reducer,
     camapignTrackingBrand: campaignTrackingBrandSlice.reducer,
-    profile: persitstedProfileReducer,
+    profile: persistedProfileReducer,
     usersManagment: usersSlice.reducer,
     invitation: invitationSlice.reducer,
     chatSheet: chatSheetSlice.reducer,
