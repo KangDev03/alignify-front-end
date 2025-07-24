@@ -24,11 +24,12 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { Icons } from '@/components/icons/icons';
+import { useCloseAccountMutation } from '@/features/setting/setting.service';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { type VerifyOTPFormValues, verifyOTPSchema } from '../auth.schema';
 import { useRegisterMutation, useRequestOTPMutation, useVerifyOTPMutation } from '../auth.service';
-import { setCredentials } from '../auth.slice';
+import { changeActiveAcc, setCredentials } from '../auth.slice';
 
 export default function VerifyOTPForm() {
   const dispatch = useDispatch();
@@ -42,6 +43,7 @@ export default function VerifyOTPForm() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { email, password, passwordConfirm, roleId, name } = state || {};
   const { user } = state || {};
+  const [closeAccount] = useCloseAccountMutation();
 
   const isLogin = pathname.endsWith('/auth/login-verify');
 
@@ -175,6 +177,8 @@ export default function VerifyOTPForm() {
           navigate('/home');
         }
         dispatch(setCredentials(verifyResponse));
+        await closeAccount(true);
+        dispatch(changeActiveAcc({ turn: true }));
         toast.success('Đăng nhập thành công!');
       } else {
         await verifyOTP({ email, otp: values.otp, login: isLogin }).unwrap();

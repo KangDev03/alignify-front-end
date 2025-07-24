@@ -33,7 +33,12 @@ function AppLayout() {
     persistor.purge();
     navigate('/');
   }, [dispatch, navigate]);
-  const { id: userId, token, role: roleName } = useAppSelector((state: RootState) => state.auth);
+  const {
+    id: userId,
+    token,
+    role: roleName,
+    sound,
+  } = useAppSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (!token || !userId) return;
@@ -72,7 +77,7 @@ function AppLayout() {
             const { name: title, content: description } = received;
             toast.success(title, { description });
           }
-          playSound();
+          if (sound) playSound();
           dispatch(addReceivedNotification(received));
         } catch (error) {
           console.error('Error parsing STOMP message:', error);
@@ -82,7 +87,7 @@ function AppLayout() {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [token, userId, dispatch, playSound]);
+  }, [token, userId, dispatch, playSound, sound]);
 
   useEffect(() => {
     if (token && userId) {
