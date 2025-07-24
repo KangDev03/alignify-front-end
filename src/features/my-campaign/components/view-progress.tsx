@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -35,6 +36,7 @@ interface ViewProgressDialogProps {
   campaign: Campaign;
 }
 const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { data: trackingRaw } = useGetCampaignTrackingByBrandQuery(campaign.campaignId);
   const { campaignTrackingsBrand } = useSelector((state: RootState) => state.camapignTrackingBrand);
@@ -72,38 +74,38 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Icons.users className="h-4 w-4 mr-2" />
-          Xem tiến độ
+          {t('campaignCard.viewProgress')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] h-[85%] pr-3">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Icons.users className="h-5 w-5" />
-            Tiến độ chiến dịch
+            {t('campaignCard.viewProgressDialogTitle')}
           </DialogTitle>
           <DialogDescription>{campaign.campaignName}</DialogDescription>
         </DialogHeader>
         <div className="space-y-6 overflow-y-auto scrollbar-thin pr-3">
           <div className="bg-muted/30 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medium">Tiến độ tổng quan</h3>
+              <h3 className="font-medium">{t('campaignCard.overviewProgress')}</h3>
               <span className="text-sm text-muted-foreground">
-                {completedCount}/{campaignProgress.length} theo dõi
+                {completedCount}/{campaignProgress.length} {t('campaignCard.followers')}
               </span>
             </div>
             <Progress value={progressPercentage} className="h-2" />
             <p className="text-sm text-muted-foreground mt-1">
-              {progressPercentage.toFixed(1)}% hoàn thành
+              {progressPercentage.toFixed(1)}% {t('campaignCard.progressPercentageText')}
             </p>
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-medium">Chi tiết tiến độ</h3>
+            <h3 className="font-medium">{t('campaignCard.progressDetails')}</h3>
 
             {!campaignProgress || !campaignProgress.length || campaignProgress.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Icons.inbox className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p>Chưa có cập nhật tiến độ nào</p>
+                <p>{t('campaignCard.noUpdateProgress')}</p>
               </div>
             ) : (
               <Carousel opts={{ loop: true }} className="mx-12">
@@ -166,7 +168,7 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
                                 </Badge>
                                 <span>•</span>
                                 <span className="text-sm text-muted-foreground">
-                                  {req.quantity} nội dung
+                                  {req.quantity} {t('campaignCard.contentCount')}
                                 </span>
                               </div>
 
@@ -208,7 +210,7 @@ const ViewProgressDialog = ({ campaign }: ViewProgressDialogProps) => {
 
         <div className="flex justify-end pt-4">
           <DialogClose asChild>
-            <Button variant="outline">Đóng</Button>
+            <Button variant="outline">{t("campaignCard.closeButton")}</Button>
           </DialogClose>
         </div>
       </DialogContent>

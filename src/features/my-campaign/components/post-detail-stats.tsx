@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { skipToken } from '@reduxjs/toolkit/query';
 
 import { Button } from '@/components/ui/button';
@@ -67,9 +68,10 @@ function getPostIdFromUrl(platform: string, url: string): string {
 }
 
 export default function PostDetailStats({ form, req, reqIndex, contentIndex }: PostDetailProps) {
+  const { t } = useTranslation();
   const [isChecked, setChecked] = useState<boolean>(
     req.details[contentIndex]?.postUrl !== undefined &&
-      req.details[contentIndex]?.postUrl?.length > 0,
+    req.details[contentIndex]?.postUrl?.length > 0,
   );
   const platform = req.platform;
   const hasError =
@@ -84,7 +86,7 @@ export default function PostDetailStats({ form, req, reqIndex, contentIndex }: P
         name={`platformRequirement.${reqIndex}.details.${contentIndex}.postUrl`}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Liên kết *</FormLabel>
+            <FormLabel>{t("campaignCard.link")} *</FormLabel>
             <FormControl>
               <div className="flex gap-2 items-center">
                 <Input
@@ -162,9 +164,10 @@ interface DetailProps {
 }
 
 const Detail = ({ platform, postId, req, contentIndex, reqIndex, form, postUrl }: DetailProps) => {
+  const { t } = useTranslation();
   const [isSkipped, setSkipped] = useState<boolean>(
     req.details[contentIndex]?.postUrl !== undefined &&
-      req.details[contentIndex]?.postUrl?.length > 0,
+    req.details[contentIndex]?.postUrl?.length > 0,
   );
   const {
     data: dataRaw,
@@ -177,13 +180,13 @@ const Detail = ({ platform, postId, req, contentIndex, reqIndex, form, postUrl }
     isSkipped
       ? skipToken
       : {
-          platform: platform.toLowerCase() as ISupportedPlatforms,
-          postId: postId,
-          contentIndex: contentIndex,
-          reqIndex: reqIndex,
-          post_type: req.post_type,
-          postUrl: postUrl,
-        },
+        platform: platform.toLowerCase() as ISupportedPlatforms,
+        postId: postId,
+        contentIndex: contentIndex,
+        reqIndex: reqIndex,
+        post_type: req.post_type,
+        postUrl: postUrl,
+      },
     { refetchOnMountOrArgChange: true },
   );
   const loadingAnimate = isLoading || isFetching;
@@ -206,7 +209,7 @@ const Detail = ({ platform, postId, req, contentIndex, reqIndex, form, postUrl }
           </div>
         </Skeleton>
       ) : isError ? (
-        <p className="text-destructive">Không tìm thấy bài đăng</p>
+        <p className="text-destructive">{t("forum.notFound")}</p>
       ) : (
         <div className="grid grid-cols-2 gap-4">
           <PostDetailsStatsFormField
@@ -260,6 +263,7 @@ const PostDetailsStatsFormField = ({
   isSuccess,
   data,
 }: PostDetailsStatsFormFieldProps) => {
+  const { t } = useTranslation();
   const platformKey = req.platform.toLowerCase() as keyof typeof SupportedPostTypeByPlatform;
   const postTypes = SupportedPostTypeByPlatform[platformKey];
 
@@ -297,16 +301,16 @@ const PostDetailsStatsFormField = ({
     let label = '';
     switch (contentType) {
       case 'view':
-        label = 'Lượt xem ';
+        label = t("campaignCard.viewCount") + ' ';
         break;
       case 'like':
-        label = 'Lượt thích ';
+        label = t("campaignCard.likeCount") + ' ';
         break;
       case 'comment':
-        label = 'Lượt bình luận ';
+        label = t("campaignCard.commentCount") + ' ';
         break;
       case 'share':
-        label = 'Lượt chia sẻ ';
+        label = t("campaignCard.shareCount") + ' ';
         break;
     }
     return (

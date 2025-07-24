@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,7 @@ export default function RecruitingCampaignDialog({
   campaign,
   sendNotification,
 }: RecruitingCampaignDialogProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { role: userRole, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
   const [changeStatus] = useChangeStatusMutation();
@@ -64,11 +66,11 @@ export default function RecruitingCampaignDialog({
           contractUrl: URL.createObjectURL(values.contract),
         }),
       );
-      toast.success('Tải lên thành công!');
+      toast.success(t("campaignCard.updateSuccess"));
       contractForm.reset();
     } catch (error) {
       console.error(error);
-      toast.error('Chuyển giai đoạn thất bại!');
+      toast.error(t("campaignCard.failedPhaseChange"));
     }
   };
   const handleMoveToDraft = async () => {
@@ -76,14 +78,14 @@ export default function RecruitingCampaignDialog({
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'DRAFT' }).unwrap();
       sendNotificationForAll(
         campaign.appliedInfluencerIds ?? [],
-        `Đã xóa chiến dịch\n${campaign?.campaignName}`,
+        `${t("campaignCard.deletedCampaign")}\n${campaign?.campaignName}`,
         name!,
         avatarUrl!,
         sendNotification,
       );
       sendNotification({
         userId: id!,
-        content: `Chiến dịch đã về dạng nháp\n${campaign?.campaignName}`,
+        content: `${t("campaignCard.draftCampaign")}\n${campaign?.campaignName}`,
         name: name!,
         avatarUrl: avatarUrl!,
       });
@@ -91,7 +93,7 @@ export default function RecruitingCampaignDialog({
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'DRAFT' }));
     } catch (error) {
       console.error(error);
-      toast.error('Chuyển giai đoạn thất bại!');
+      toast.error(t("campaignCard.failedPhaseChange"));
     }
   };
   const handleEndRecuit = async () => {
@@ -99,23 +101,22 @@ export default function RecruitingCampaignDialog({
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PENDING' }).unwrap();
       sendNotificationForAll(
         campaign.appliedInfluencerIds ?? [],
-        `Đã kết thúc tuyển chiến dịch\n${campaign?.campaignName}`,
+        `${t("campaignCard.endRecruitment")}\n${campaign?.campaignName}`,
         name!,
         avatarUrl!,
         sendNotification,
       );
       sendNotification({
         userId: id!,
-        content: `Bạn đã kết thúc tuyển chiến dịch\n${campaign?.campaignName}`,
+        content: `${t("campaignCard.youEndRecruitment")}\n${campaign?.campaignName}`,
         name: name!,
         avatarUrl: avatarUrl!,
       });
 
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'PENDING' }));
-      toast.success('Kết thúc tuyển thành công!');
-    } catch (error) {
-      console.error(error);
-      toast.error('Chuyển giai đoạn thất bại!');
+      toast.success(t("campaignCard.endRecruitmentSuccess"));
+    } catch (_error) {
+      toast.error(t("campaignCard.failedPhaseChange"));
     }
   };
   return (
@@ -128,20 +129,20 @@ export default function RecruitingCampaignDialog({
           onClick={() => window.open(campaign.contractUrl, '_blank')}
         >
           <Icons.fileText className="h-4 w-4 mr-1" />
-          Hợp đồng
+          {t("campaignCard.contract")}
         </Button>
       ) : (
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
               <Icons.fileText className="h-4 w-4 mr-1" />
-              Hợp đồng
+              {t("campaignCard.contract")}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px] " showCloseButton={false}>
             <DialogHeader>
               <DialogTitle className="font-semibold text-xl text-center">
-                Chiến dịch của {campaign.brandName}
+                {t("campaignCard.campaignPostBy")} {campaign.brandName}
               </DialogTitle>
             </DialogHeader>
             <Form {...contractForm}>
@@ -151,7 +152,7 @@ export default function RecruitingCampaignDialog({
                   name="contract"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tải lên hợp đồng của bạn</FormLabel>
+                      <FormLabel> {t("campaignCard.uploadContract")}</FormLabel>
                       <FormControl>
                         <div>
                           <Input
@@ -173,7 +174,7 @@ export default function RecruitingCampaignDialog({
                                 size="sm"
                               >
                                 <Icons.fileImage />
-                                <span>Chọn hợp đồng</span>
+                                <span>{t("campaignCard.choseContractButton")}</span>
                               </Button>
                             </div>
                           </div>
@@ -189,7 +190,7 @@ export default function RecruitingCampaignDialog({
                             onClick={() => window.open(URL.createObjectURL(field.value), '_blank')}
                           >
                             <Icons.eye />
-                            <span>Xem trước</span>
+                            <span>{t("campaignCard.viewContract")}</span>
                           </Button>
                           <Button
                             type="button"
@@ -198,7 +199,7 @@ export default function RecruitingCampaignDialog({
                             onClick={() => field.onChange(undefined)}
                           >
                             <Icons.trash />
-                            <span>Xóa hợp đồng</span>
+                            <span>{t("campaignCard.deleteContract")}</span>
                           </Button>
                         </div>
                       )}
@@ -209,10 +210,10 @@ export default function RecruitingCampaignDialog({
                   {isContractUpdating ? (
                     <>
                       <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Đang tải
+                      {t("campaignCard.uploading")}
                     </>
                   ) : (
-                    'Tải lên'
+                    t("campaignCard.upload")
                   )}
                 </Button>
               </form>
@@ -225,13 +226,13 @@ export default function RecruitingCampaignDialog({
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="flex items-center w-full bg-transparent">
             <Icons.eye className="h-4 w-4 mr-2" />
-            Xem chi tiết
+            {t("campaignCard.viewCampaignDetails")}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
           <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
             <DialogTitle className="font-semibold text-xl text-center">
-              Chiến dịch của {campaign.brandName}
+              {t("campaignCard.campaignPostBy")} {campaign.brandName}
             </DialogTitle>
             <DialogDescription className="hidden"></DialogDescription>
           </DialogHeader>
@@ -241,7 +242,7 @@ export default function RecruitingCampaignDialog({
       {userRole === 'BRAND' && (
         <Button variant="default" size="sm" className="" onClick={handleEndRecuit}>
           <Icons.play className="h-4 w-4 mr-1" />
-          Kết thúc tuyển
+          {t("campaignCard.endRecruitmentButton")}
         </Button>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,6 +38,7 @@ export const sendNotificationForAll = (
 };
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
+  const { t } = useTranslation();
   const location = useLocation();
   const currentPath = location.pathname;
   const sendNotification = useSendNotification();
@@ -105,7 +107,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
         {campaign.categories.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            <h4 className="text-sm font-medium">Danh mục:</h4>
+            <h4 className="text-sm font-medium">{t("campaignCard.categories")}:</h4>
             {campaign.categories.map((cat: any, i: number) => (
               <Badge key={cat.categoryId ?? i} variant="outline">
                 {cat.categoryName ?? cat}
@@ -119,14 +121,14 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
             <div className="flex items-center gap-1 text-blue-600">
               <Icons.users className="h-4 w-4" />
               <span className="font-medium">
-                {campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0} ứng viên
+                {campaign.applicationTotal || campaign.appliedInfluencerIds?.length || 0} {t("campaignCard.applicants")}
               </span>
             </div>
             <Badge
               variant="secondary"
               className="bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200 dark:hover:bg-orange-200"
             >
-              Phổ biến
+              {t("campaignCard.popular")}
             </Badge>
           </div>
         )}

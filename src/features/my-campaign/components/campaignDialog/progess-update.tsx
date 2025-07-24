@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Badge, badgeVariants } from '@/components/ui/badge';
@@ -33,6 +34,7 @@ interface ProgressUpdateDialogProps {
   campaign: Campaign;
 }
 const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
+  const { t } = useTranslation();
   const { data: trackingRaw, isSuccess } = useGetCampaignTrackingByInfluencerQuery(
     campaign.campaignId,
   );
@@ -97,7 +99,7 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
         postDetails: postDetails,
       });
       dialogCloseRef.current?.click();
-      toast.success('Gửi bài thành công!');
+      toast.success(t("campaignCard.uploadPostSuccess"));
     } catch (error) {
       console.log(error);
     }
@@ -107,14 +109,14 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
       <DialogTrigger asChild>
         <Button variant="default" size="sm">
           <Icons.upload className="h-4 w-4 mr-2" />
-          Cập nhật tiến độ
+          {t("campaignCard.updateProgressButton")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px] h-[85%] pr-3 flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Icons.upload className="h-5 w-5" />
-            Cập nhật tiến độ chiến dịch
+            {t("campaignCard.updateProgressDialogTitle")}
           </DialogTitle>
           <DialogDescription>{campaign.campaignName}</DialogDescription>
         </DialogHeader>
@@ -162,7 +164,7 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
                       {req.post_type}
                     </Badge>
                     <span>•</span>
-                    <span className="text-sm text-muted-foreground">{req.quantity} nội dung</span>
+                    <span className="text-sm text-muted-foreground">{req.quantity} {t("campaignCard.contentCount")}</span>
                   </div>
 
                   {Array.from({ length: req.quantity }, (_, contentIndex) => {
@@ -209,17 +211,17 @@ const ProgressUpdateDialog = ({ campaign }: ProgressUpdateDialogProps) => {
             <div className="flex justify-end gap-2 ">
               <DialogClose ref={dialogCloseRef}>
                 <Button variant="outline" type="button">
-                  Hủy
+                  {t("campaignCard.cancelButton")}
                 </Button>
               </DialogClose>
               <Button type="submit" disabled={!form.formState.isDirty || isLoading}>
                 {isLoading ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang gửi bài
+                    {t("campaignCard.uploadingPost")}
                   </>
                 ) : (
-                  'Gửi bài'
+                  t("campaignCard.uploadPost")
                 )}
               </Button>
             </div>

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { AlertDialogHeader } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,31 +22,30 @@ export default function ConfirmMoveDraftDialog({
   campaign,
   handleMoveToDraft,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Icons.edit className="h-4 w-4 mr-1" />
-          Chỉnh sửa
+          {t('campaignCard.editButton')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] " showCloseButton={false}>
         <AlertDialogHeader className="border-b-2 border-border py-3">
           <DialogTitle className="font-semibold text-xl text-center">
-            Chiến dịch của {campaign.brandName}
+            {t("campaignCard.campaignPostBy")} {campaign.brandName}
           </DialogTitle>
           <DialogDescription>
-            Bạn có chắc chắn muốn chỉnh sửa chiến dịch không? Hành động này sẽ đưa chiến dịch của
-            bạn về trạng thái nháp. Mọi đơn ứng tuyển và lời mời sẽ bị xóa. Hãy đảm bảo rằng chính
-            bạn là người thực hiện!
+            {t('campaignCard.editDialogDesc')}
           </DialogDescription>
         </AlertDialogHeader>
         <div className="flex justify-between">
           <DialogClose>
-            <Button variant={'destructive'}>Hủy</Button>
+            <Button variant={'destructive'}>{t("campaignCard.cancelButton")}</Button>
           </DialogClose>
           <Button variant={'default'} onClick={handleMoveToDraft}>
-            Xác nhận
+            {t("campaignCard.confirmButton")}
           </Button>
         </div>
       </DialogContent>
