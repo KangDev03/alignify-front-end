@@ -101,6 +101,9 @@ export interface UserDTO {
   permissions?: Permission[];
   twoFA?: boolean;
   email?: string;
+  sound?: boolean;
+  publicAcc?: boolean;
+  active?: boolean;
 }
 
 export const SupportedPlatforms: ISupportedPlatforms[] = [

@@ -23,19 +23,21 @@ import { Input } from '@/components/ui/input';
 
 import { Icons } from '@/components/icons/icons';
 import { type SignInFormValues, signInSchema } from '@/features/auth/auth.schema';
+import { useCloseAccountMutation } from '@/features/setting/setting.service';
 import { useAppDispatch } from '@/hooks/redux';
 import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
 
 import { useGoogleLoginMutation, useLoginMutation } from '../auth.service';
-import { setCredentials } from '../auth.slice';
+import { changeActiveAcc, setCredentials } from '../auth.slice';
 
 export default function SignInForm() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
   const [loginViaGoogle] = useGoogleLoginMutation();
+  const [closeAccount] = useCloseAccountMutation();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -48,6 +50,8 @@ export default function SignInForm() {
   async function onSubmit(values: { email: string; password: string }) {
     try {
       const response = await login(values).unwrap();
+      console.log(response.data);
+
       if (response.data?.user.twoFA) {
         navigate('/auth/login-verify', { state: response.data });
         return;
@@ -62,6 +66,8 @@ export default function SignInForm() {
         navigate('/home');
       }
       dispatch(setCredentials(response));
+      await closeAccount(true);
+      dispatch(changeActiveAcc({ turn: true }));
       toast.success('Đăng nhập thành công!');
     } catch (err: unknown) {
       if (isApiResponseError(err)) {

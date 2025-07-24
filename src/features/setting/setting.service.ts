@@ -69,6 +69,27 @@ export const settingApi = baseApi.injectEndpoints({
         params: { turn: turn },
       }),
     }),
+    changeSoundMode: builder.mutation<void, boolean>({
+      query: (turn) => ({
+        url: `/profiles/sound`,
+        method: 'PUT',
+        params: { turn: turn },
+      }),
+    }),
+    changePublicMode: builder.mutation<void, boolean>({
+      query: (turn) => ({
+        url: `/profiles/public`,
+        method: 'PUT',
+        params: { turn: turn },
+      }),
+    }),
+    closeAccount: builder.mutation<void, boolean>({
+      query: (turn) => ({
+        url: `/profiles/active`,
+        method: 'PUT',
+        params: { turn: turn },
+      }),
+    }),
   }),
 });
 
@@ -80,4 +101,7 @@ export const {
   useGetFollowerCountFromFacebookQuery,
   useGetFollowerCountFromInstagramQuery,
   useChange2FAMutation,
+  useChangeSoundModeMutation,
+  useChangePublicModeMutation,
+  useCloseAccountMutation,
 } = settingApi;

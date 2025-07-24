@@ -203,7 +203,7 @@ export default function SecuritySection() {
               }}
             />
           </div>
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label>Ứng dụng xác thực</Label>
               <p className="text-sm text-muted-foreground">
@@ -211,7 +211,7 @@ export default function SecuritySection() {
               </p>
             </div>
             <Switch />
-          </div>
+          </div> */}
         </CardContent>
       </Card>
 

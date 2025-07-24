@@ -22,7 +22,23 @@ import { baseApi } from './baseApi';
 const persistAuthConfig = {
   key: 'auth',
   storage,
-  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name', 'twoFA'],
+  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name', 'twoFA', 'sound', 'publicAcc', 'active'],
+  transforms: [
+    {
+      in: (state: any, key: string) => {
+        if (key === 'profile') {
+          const role = state.role;
+
+          return {
+            ...state,
+            publicAcc: role === 'INFLUENCER' ? state.publicAcc : null,
+          };
+        }
+        return state;
+      },
+      out: (state: any) => state,
+    },
+  ],
 };
 
 const persistProfileConfig = {
