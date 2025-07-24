@@ -1,18 +1,18 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useState } from 'react';
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 
-import { Icons } from "@/components/icons/icons"
-import { useTheme } from "@/components/theme/theme-provider"
-import { LandingFeatures } from "@/features/landing-page/components/landing-features"
-import { LandingFooter } from "@/features/landing-page/components/landing-footer"
-import { LandingHeader } from "@/features/landing-page/components/landing-header"
-import { LandingHero } from "@/features/landing-page/components/landing-hero"
-import { LandingPricing } from "@/features/landing-page/components/landing-pricing"
-import { LandingTestimonials } from "@/features/landing-page/components/landing-testimonials"
+import { Icons } from '@/components/icons/icons';
+import { useTheme } from '@/components/theme/theme-provider';
+import { LandingFeatures } from '@/features/landing-page/components/landing-features';
+import { LandingFooter } from '@/features/landing-page/components/landing-footer';
+import { LandingHeader } from '@/features/landing-page/components/landing-header';
+import { LandingHero } from '@/features/landing-page/components/landing-hero';
+import { LandingPricing } from '@/features/landing-page/components/landing-pricing';
+import { LandingTestimonials } from '@/features/landing-page/components/landing-testimonials';
 
 export function LandingPage() {
   const { theme } = useTheme();
@@ -22,127 +22,82 @@ export function LandingPage() {
   const brandFeatures = [
     {
       icon: <Icons.target className="h-6 w-6" />,
-      title: t("landing.features.brand.title1"),
-      description: t("landing.features.brand.description1"),
+      title: 'Tìm kiếm Influencer thông minh',
+      description: 'AI-powered matching giúp tìm đúng influencer phù hợp với thương hiệu',
     },
     {
       icon: <Icons.barChart3 className="h-6 w-6" />,
-      title: t("landing.features.brand.title2"),
-      description: t("landing.features.brand.description2"),
+      title: 'Quản lý chiến dịch toàn diện',
+      description: 'Theo dõi hiệu suất, ROI và engagement từ một dashboard duy nhất',
     },
     {
       icon: <Icons.users className="h-6 w-6" />,
-      title: t("landing.features.brand.title3"),
-      description: t("landing.features.brand.description3"),
+      title: 'Collaboration tools',
+      description: 'Chat trực tiếp, chia sẻ brief và feedback với influencer',
     },
     {
       icon: <Icons.shield className="h-6 w-6" />,
-      title: t("landing.features.brand.title4"),
-      description: t("landing.features.brand.description4"),
+      title: 'Thanh toán an toàn',
+      description: 'Hệ thống escrow bảo vệ cả brand và influencer',
     },
-  ]
+  ];
 
   const influencerFeatures = [
     {
       icon: <Icons.camera className="h-6 w-6" />,
-      title: t("landing.features.influencer.title1"),
-      description: t("landing.features.influencer.description1"),
+      title: 'Portfolio chuyên nghiệp',
+      description: 'Showcase work của bạn với media kit tự động tạo',
     },
     {
       icon: <Icons.trendingUp className="h-6 w-6" />,
-      title: t("landing.features.influencer.title2"),
-      description: t("landing.features.influencer.description2"),
+      title: 'Analytics chi tiết',
+      description: 'Theo dõi engagement, reach và thu nhập từ các chiến dịch',
     },
     {
       icon: <Icons.messageSquare className="h-6 w-6" />,
-      title: t("landing.features.influencer.title3"),
-      description: t("landing.features.influencer.description3"),
+      title: 'Networking community',
+      description: 'Kết nối với influencer khác và chia sẻ kinh nghiệm',
     },
     {
       icon: <Icons.zap className="h-6 w-6" />,
-      title: t("landing.features.influencer.title4s"),
-      description: t("landing.features.influencer.description4"),
+      title: 'Opportunities matching',
+      description: 'Nhận thông báo về các cơ hội phù hợp với niche của bạn',
     },
-  ]
-
-  const brandPlans = [
-    {
-      name: t("landing.pricing.brand.starter.name"),
-      price: t("landing.pricing.brand.starter.price"),
-      description: t("landing.pricing.brand.starter.description"),
-      features: t("landing.pricing.brand.starter.features", { returnObjects: true }) as string[],
-      popular: false,
-    },
-    {
-      name: t("landing.pricing.brand.pro.name"),
-      price: t("landing.pricing.brand.pro.price"),
-      description: t("landing.pricing.brand.pro.description"),
-      features: t("landing.pricing.brand.pro.features", { returnObjects: true }) as string[],
-      popular: true,
-    },
-    {
-      name: t("landing.pricing.brand.enterprise.name"),
-      price: t("landing.pricing.brand.enterprise.price"),
-      description: t("landing.pricing.brand.enterprise.description"),
-      features: t("landing.pricing.brand.enterprise.features", { returnObjects: true }) as string[],
-      popular: false,
-    },
-  ]
-
-  const influencerPlans = [
-    {
-      name: t("landing.pricing.influencer.creator.name"),
-      price: t("landing.pricing.influencer.creator.price"),
-      description: t("landing.pricing.influencer.creator.description"),
-      features: t("landing.pricing.influencer.creator.features", { returnObjects: true }) as string[],
-      popular: false,
-    },
-    {
-      name: t("landing.pricing.influencer.pro.name"),
-      price: t("landing.pricing.influencer.pro.price"),
-      description: t("landing.pricing.influencer.pro.description"),
-      features: t("landing.pricing.influencer.pro.features", { returnObjects: true }) as string[],
-      popular: true,
-    },
-    {
-      name: t("landing.pricing.influencer.agency.name"),
-      price: t("landing.pricing.influencer.agency.price"),
-      description: t("landing.pricing.influencer.agency.description"),
-      features: t("landing.pricing.influencer.agency.features", { returnObjects: true }) as string[],
-      popular: false,
-    },
-  ]
+  ];
 
   const testimonials = [
     {
-      name: "Nguyễn Minh Anh",
-      role: "Marketing Director, Fashion Brand",
-      avatar: "/placeholder.svg?height=40&width=40",
-      content: t("landing.testimonials.0"),
+      name: 'Nguyễn Minh Anh',
+      role: 'Marketing Director, Fashion Brand',
+      avatar: '/placeholder.svg?height=40&width=40',
+      content:
+        'Platform này đã giúp chúng tôi tìm được những influencer phù hợp và tăng ROI lên 300%. Quá tuyệt vời!',
       rating: 5,
     },
     {
-      name: "Trần Thị Hương",
-      role: "Beauty Influencer, 500K followers",
-      avatar: "/placeholder.svg?height=40&width=40",
-      content: t("landing.testimonials.1"),
+      name: 'Trần Thị Hương',
+      role: 'Beauty Influencer, 500K followers',
+      avatar: '/placeholder.svg?height=40&width=40',
+      content:
+        'Tôi đã tìm được nhiều brand uy tín và tăng thu nhập gấp đôi nhờ platform này. Highly recommended!',
       rating: 5,
     },
     {
-      name: "Lê Văn Đức",
-      role: "CEO, Tech Startup",
-      avatar: "/placeholder.svg?height=40&width=40",
-      content: t("landing.testimonials.2"),
+      name: 'Lê Văn Đức',
+      role: 'CEO, Tech Startup',
+      avatar: '/placeholder.svg?height=40&width=40',
+      content:
+        'Dashboard analytics rất chi tiết, giúp chúng tôi track performance và optimize campaign hiệu quả.',
       rating: 5,
     },
-  ]
+  ];
 
   const stats = [
-    { number: "10,000+", label: t("landing.stats.influencers") },
-    { number: "5,000+", label: t("landing.stats.brands") },
-    { number: "50,000+", label: t("landing.stats.campaigns") },
-    { number: "20,000+", label: t("landing.stats.posts") },
-  ]
+    { number: '10,000+', label: 'Influencers' },
+    { number: '5,000+', label: 'Brands' },
+    { number: '50,000+', label: 'Campaigns' },
+    { number: '20,000+', label: 'Post' },
+  ];
 
   const backgroundImage =
     theme === 'dark' ||
@@ -166,12 +121,7 @@ export function LandingPage() {
         influencerFeatures={influencerFeatures}
       />
 
-      <LandingPricing
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        brandPlans={brandPlans}
-        influencerPlans={influencerPlans}
-      />
+      <LandingPricing />
 
       <LandingTestimonials testimonials={testimonials} />
 
@@ -194,5 +144,5 @@ export function LandingPage() {
 
       <LandingFooter />
     </div>
-  )
+  );
 }

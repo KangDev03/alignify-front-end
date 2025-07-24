@@ -2,9 +2,10 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
 import type { LoginResponse } from './auth.type';
+import type { RoleName } from '../common/common.type';
 
 interface AuthState {
-  role: 'INFLUENCER' | 'BRAND' | 'ADMIN' | null;
+  role: RoleName | null;
   token: string | null;
   id: string | null;
   avatarUrl?: string | null;
