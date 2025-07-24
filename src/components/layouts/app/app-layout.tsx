@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import Stomp from 'stompjs';
+import { useSound } from 'use-sound';
 
 import { AppHeader } from '@/components/layouts/app/header';
 import { useTheme } from '@/components/theme/theme-provider';
@@ -24,6 +25,7 @@ function AppLayout() {
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
   const location = useLocation();
+  const [playSound] = useSound('/sound.mp3');
 
   const handleLogout = useCallback(() => {
     dispatch(baseApi.util.resetApiState());
@@ -70,6 +72,7 @@ function AppLayout() {
             const { name: title, content: description } = received;
             toast.success(title, { description });
           }
+          playSound();
           dispatch(addReceivedNotification(received));
         } catch (error) {
           console.error('Error parsing STOMP message:', error);
@@ -79,7 +82,7 @@ function AppLayout() {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [token, userId, dispatch]);
+  }, [token, userId, dispatch, playSound]);
 
   useEffect(() => {
     if (token && userId) {
