@@ -52,7 +52,7 @@ const persistProfileConfig = {
 
 const persistedAuthReducer = persistReducer(persistAuthConfig, authReducer);
 
-const persitstedProfileReducer = persistReducer(persistProfileConfig, profileSlice.reducer);
+const persistedProfileReducer = persistReducer(persistProfileConfig, profileSlice.reducer);
 
 export const store = configureStore({
   reducer: {
