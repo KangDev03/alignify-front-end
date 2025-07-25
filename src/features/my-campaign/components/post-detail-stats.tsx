@@ -89,11 +89,13 @@ export default function PostDetailStats({ form, req, reqIndex, contentIndex }: P
               <div className="flex gap-2 items-center">
                 <Input
                   readOnly={
+                    req.details[contentIndex] &&
                     req.details[contentIndex].status !== undefined &&
                     req.details[contentIndex].status !== null &&
                     req.details[contentIndex].status !== 'REJECTED'
                   }
                   disabled={
+                    req.details[contentIndex] &&
                     req.details[contentIndex].status !== undefined &&
                     req.details[contentIndex].status !== null &&
                     req.details[contentIndex].status !== 'REJECTED'
