@@ -108,7 +108,8 @@ export default function PostDetailStats({ form, req, reqIndex, contentIndex }: P
                     field.onChange(e.target.value);
                   }}
                 />
-                {(!req.details[contentIndex].status ||
+                {(!req.details[contentIndex] ||
+                  !req.details[contentIndex].status ||
                   req.details[contentIndex].status === 'REJECTED') &&
                   (!hasError && !field.value ? null : isChecked ? (
                     <Button
