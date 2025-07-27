@@ -415,5 +415,49 @@
         "reapply": "Reapply"
       }
     }
+  },
+
+  "invitation": {
+    "sectionTitle": "Invitation Management",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "badge": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "toast": {
+      "acceptError": "Failed to accept the invitation. Please try again!"
+    },
+    "notification": {
+      "acceptForBrand": "You have accepted the invitation from",
+      "acceptForInfluenceer": "Your invitation has been accepted"
+    },
+    "card": {
+      "budget": "Budget",
+      "timeLimit": "Time Limit",
+      "rejectButton": "Reject",
+      "acceptButton": "Accept"
+    },
+    "influencer": {
+      "sectionDescription": "Respond to invitations from brands",
+      "cardTitle": {
+        "totalInvites": "Total Invitations",
+        "respondedInvites": "Responded",
+        "pendingInvites": "Pending"
+      }
+    },
+    "brand": {
+      "sectionDescription": "Manage invitations sent to influencers",
+      "cardTitle": {
+        "totalInvites": "Total Invitations",
+        "respondedInvites": "Pending Responses",
+        "acceptanceRate": "Acceptance Rate"
+      }
+    }
   }
 }

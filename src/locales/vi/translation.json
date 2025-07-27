@@ -415,5 +415,80 @@
         "reapply": "Ứng tuyển lại"
       }
     }
+  },
+
+  "invitation": {
+    "sectionTitle": "Quản lý lời mời",
+    "modal": {
+      "title": "Mời Influencer tham gia chiến dịch",
+      "description": "Chọn influencer phù hợp và gửi lời mời tham gia chiến dịch của bạn",
+      "categoryAll": "Tất cả",
+      "toast": {
+        "selectCampaign": "Vui lòng chọn chiến dịch trước!",
+        "sending": "Đang gửi lời mời!",
+        "sendSuccess": "Gửi lời mời thành công!",
+        "sendError": "Gửi lời mời thất bại. Vui lòng thử lại!"
+      },
+      "inviteButton": "Mời Influencer",
+      "inviteDialogTitle": "Mời Influencer tham gia chiến dịch",
+      "inviteDialogDescription": "Chọn influencer phù hợp và gửi lời mời tham gia chiến dịch của bạn.",
+      "inviteFormSection": "Lời mời",
+      "selectCampaign": "Chọn chiến dịch *",
+      "selectCampaignPlaceholder": "Chọn chiến dịch của bạn...",
+      "message": "Tin nhắn mời *",
+      "messagePlaceholder": "Xin chào! Chúng tôi rất mong muốn hợp tác với bạn trong chiến dịch này...",
+      "cancel": "Hủy",
+      "send": "Gửi lời mời",
+      "selectInfluencer": "Chọn Influencer",
+      "searchPlaceholder": "Tìm kiếm influencer...",
+
+      "pleaseSelectCampaign": "Vui lòng chọn chiến dịch của bạn!",
+      "maxInfluencers": "Tối đa",
+      "selected": "Đã chọn",
+      "people": "người",
+      "reset": "Đặt lại",
+      "recommend": "Đề xuất",
+      "selectCampaignFirst": "Vui lòng chọn chiến dịch trước!"
+    },
+    "tabs": {
+      "all": "Tất cả",
+      "pending": "Chờ phản hồi",
+      "accepted": "Đã chấp nhận",
+      "rejected": "Bị từ chối"
+    },
+    "badge": {
+      "pending": "Chờ phản hồi",
+      "accepted": "Đã chấp nhận",
+      "rejected": "Bị từ chối"
+    },
+    "toast": {
+      "acceptError": "Xác nhận lời mời thất bại, vui lòng thử lại!"
+    },
+    "notification": {
+      "acceptForBrand": "Bạn đã chấp nhận lời mời của",
+      "acceptForInfluenceer": "Đã chấp nhận lời mời của bạn"
+    },
+    "card": {
+      "budget": "Ngân sách",
+      "timeLimit": "Giới hạn",
+      "rejectButton": "Từ chối",
+      "acceptButton": "Chấp nhận"
+    },
+    "influencer": {
+      "sectionDescription": "Phản hồi lời mời từ các Brand",
+      "cardTitle": {
+        "totalInvites": "Tổng số lời mời",
+        "respondedInvites": "Đã phản hồi",
+        "pendingInvites": "Chờ phản hồi"
+      }
+    },
+    "brand": {
+      "sectionDescription": "Quản lý lời mời đã gửi đến Influencer",
+      "cardTitle": {
+        "totalInvites": "Tổng số lời mời",
+        "respondedInvites": "Chờ phản hồi",
+        "acceptanceRate": "Tỷ lệ chấp nhận"
+      }
+    }
   }
 }
