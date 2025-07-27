@@ -21,7 +21,7 @@ import { useGetCampaignByIdQuery } from '@/features/my-campaign/campaign.service
 import { cn } from '@/lib/utils';
 import { formatDate, formatNumber } from '@/utils/format';
 
-import HotCampaignBadge from './HotCampaignBadge';
+import HotCampaignBadge from './hot-campaign-badge';
 
 export interface SelectRequirement {
   platform: string;

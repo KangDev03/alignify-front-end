@@ -45,9 +45,10 @@ export interface RequestOTPRequest {
 export interface VerifyOTPRequest {
   email: string;
   otp: string;
+  login: boolean;
 }
 
-export type VerifyOTPResponse = ApiReponseSuccess<null>;
+export type VerifyOTPResponse = LoginResponse;
 
 export type ForgotPasswordRequest = {
   email: string;

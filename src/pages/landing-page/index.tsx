@@ -1,171 +1,105 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 
-import { Icons } from "@/components/icons/icons"
-import { useTheme } from "@/components/theme/theme-provider"
-import { LandingFeatures } from "@/features/landing-page/components/landing-features"
-import { LandingFooter } from "@/features/landing-page/components/landing-footer"
-import { LandingHeader } from "@/features/landing-page/components/landing-header"
-import { LandingHero } from "@/features/landing-page/components/landing-hero"
-import { LandingPricing } from "@/features/landing-page/components/landing-pricing"
-import { LandingTestimonials } from "@/features/landing-page/components/landing-testimonials"
+import { Icons } from '@/components/icons/icons';
+import { useTheme } from '@/components/theme/theme-provider';
+import { LandingFeatures } from '@/features/landing-page/components/landing-features';
+import { LandingFooter } from '@/features/landing-page/components/landing-footer';
+import { LandingHeader } from '@/features/landing-page/components/landing-header';
+import { LandingHero } from '@/features/landing-page/components/landing-hero';
+import { LandingPricing } from '@/features/landing-page/components/landing-pricing';
+import { LandingTestimonials } from '@/features/landing-page/components/landing-testimonials';
 
 export function LandingPage() {
   const { theme } = useTheme();
-  const [activeTab, setActiveTab] = useState("brands")
+  const [activeTab, setActiveTab] = useState('brands');
 
   const brandFeatures = [
     {
       icon: <Icons.target className="h-6 w-6" />,
-      title: "Tìm kiếm Influencer thông minh",
-      description: "AI-powered matching giúp tìm đúng influencer phù hợp với thương hiệu",
+      title: 'Tìm kiếm Influencer thông minh',
+      description: 'AI-powered matching giúp tìm đúng influencer phù hợp với thương hiệu',
     },
     {
       icon: <Icons.barChart3 className="h-6 w-6" />,
-      title: "Quản lý chiến dịch toàn diện",
-      description: "Theo dõi hiệu suất, ROI và engagement từ một dashboard duy nhất",
+      title: 'Quản lý chiến dịch toàn diện',
+      description: 'Theo dõi hiệu suất, ROI và engagement từ một dashboard duy nhất',
     },
     {
       icon: <Icons.users className="h-6 w-6" />,
-      title: "Collaboration tools",
-      description: "Chat trực tiếp, chia sẻ brief và feedback với influencer",
+      title: 'Collaboration tools',
+      description: 'Chat trực tiếp, chia sẻ brief và feedback với influencer',
     },
     {
       icon: <Icons.shield className="h-6 w-6" />,
-      title: "Thanh toán an toàn",
-      description: "Hệ thống escrow bảo vệ cả brand và influencer",
+      title: 'Thanh toán an toàn',
+      description: 'Hệ thống escrow bảo vệ cả brand và influencer',
     },
-  ]
+  ];
 
   const influencerFeatures = [
     {
       icon: <Icons.camera className="h-6 w-6" />,
-      title: "Portfolio chuyên nghiệp",
-      description: "Showcase work của bạn với media kit tự động tạo",
+      title: 'Portfolio chuyên nghiệp',
+      description: 'Showcase work của bạn với media kit tự động tạo',
     },
     {
       icon: <Icons.trendingUp className="h-6 w-6" />,
-      title: "Analytics chi tiết",
-      description: "Theo dõi engagement, reach và thu nhập từ các chiến dịch",
+      title: 'Analytics chi tiết',
+      description: 'Theo dõi engagement, reach và thu nhập từ các chiến dịch',
     },
     {
       icon: <Icons.messageSquare className="h-6 w-6" />,
-      title: "Networking community",
-      description: "Kết nối với influencer khác và chia sẻ kinh nghiệm",
+      title: 'Networking community',
+      description: 'Kết nối với influencer khác và chia sẻ kinh nghiệm',
     },
     {
       icon: <Icons.zap className="h-6 w-6" />,
-      title: "Opportunities matching",
-      description: "Nhận thông báo về các cơ hội phù hợp với niche của bạn",
+      title: 'Opportunities matching',
+      description: 'Nhận thông báo về các cơ hội phù hợp với niche của bạn',
     },
-  ]
-
-  const brandPlans = [
-    {
-      name: "Starter",
-      price: "Miễn phí",
-      description: "Dành cho startup và doanh nghiệp nhỏ",
-      features: [
-        "Tạo tối đa 3 chiến dịch/tháng",
-        "Tìm kiếm 100 influencers",
-        "5 influencers/chiến dịch",
-      ],
-      popular: false,
-    },
-    {
-      name: "Professional",
-      price: "499.000đ/tháng",
-      description: "Dành cho doanh nghiệp vừa",
-      features: [
-        "Tạo tối đa 25 chiến dịch/tháng",
-        "Tìm kiếm không giới hạn",
-        "Kết nối 100 influencers",
-      ],
-      popular: true,
-    },
-    {
-      name: "Enterprise",
-      price: "1.499.000đ/tháng",
-      description: "Dành cho doanh nghiệp lớn",
-      features: [
-        "Chiến dịch không giới hạn",
-        "Tìm kiếm không giới hạn influencers",
-        "Influencers không giới hạn",
-      ],
-      popular: false,
-    },
-  ]
-
-  const influencerPlans = [
-    {
-      name: "Creator",
-      price: "Miễn phí",
-      description: "Dành cho creator mới bắt đầu",
-      features: [
-        "Ứng tuyển 5 chiến dịch/tháng",
-        "Tìm kiếm 10 chiến dịch",
-      ],
-      popular: false,
-    },
-    {
-      name: "Pro Creator",
-      price: "199.000đ/tháng",
-      description: "Dành cho influencer chuyên nghiệp",
-      features: [
-        "Ứng tuyển 10 chiến dịch/tháng",
-        "Tìm kiếm 20 chiến dịch",
-      ],
-      popular: true,
-    },
-    {
-      name: "Agency",
-      price: "799.000đ/tháng",
-      description: "Dành cho agency và MCN",
-      features: [
-        "Không giới hạn ứng tuyển",
-        "Tìm kiếm không giới hạn chiến dịch",
-      ],
-      popular: false,
-    },
-  ]
+  ];
 
   const testimonials = [
     {
-      name: "Nguyễn Minh Anh",
-      role: "Marketing Director, Fashion Brand",
-      avatar: "/placeholder.svg?height=40&width=40",
-      content: "Platform này đã giúp chúng tôi tìm được những influencer phù hợp và tăng ROI lên 300%. Quá tuyệt vời!",
+      name: 'Nguyễn Minh Anh',
+      role: 'Marketing Director, Fashion Brand',
+      avatar: '/placeholder.svg?height=40&width=40',
+      content:
+        'Platform này đã giúp chúng tôi tìm được những influencer phù hợp và tăng ROI lên 300%. Quá tuyệt vời!',
       rating: 5,
     },
     {
-      name: "Trần Thị Hương",
-      role: "Beauty Influencer, 500K followers",
-      avatar: "/placeholder.svg?height=40&width=40",
-      content: "Tôi đã tìm được nhiều brand uy tín và tăng thu nhập gấp đôi nhờ platform này. Highly recommended!",
+      name: 'Trần Thị Hương',
+      role: 'Beauty Influencer, 500K followers',
+      avatar: '/placeholder.svg?height=40&width=40',
+      content:
+        'Tôi đã tìm được nhiều brand uy tín và tăng thu nhập gấp đôi nhờ platform này. Highly recommended!',
       rating: 5,
     },
     {
-      name: "Lê Văn Đức",
-      role: "CEO, Tech Startup",
-      avatar: "/placeholder.svg?height=40&width=40",
-      content: "Dashboard analytics rất chi tiết, giúp chúng tôi track performance và optimize campaign hiệu quả.",
+      name: 'Lê Văn Đức',
+      role: 'CEO, Tech Startup',
+      avatar: '/placeholder.svg?height=40&width=40',
+      content:
+        'Dashboard analytics rất chi tiết, giúp chúng tôi track performance và optimize campaign hiệu quả.',
       rating: 5,
     },
-  ]
+  ];
 
   const stats = [
-    { number: "10,000+", label: "Influencers" },
-    { number: "5,000+", label: "Brands" },
-    { number: "50,000+", label: "Campaigns" },
-    { number: "20,000+", label: "Post" },
-  ]
+    { number: '10,000+', label: 'Influencers' },
+    { number: '5,000+', label: 'Brands' },
+    { number: '50,000+', label: 'Campaigns' },
+    { number: '20,000+', label: 'Post' },
+  ];
 
   const backgroundImage =
     theme === 'dark' ||
-      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
       ? '/background-dark.png'
       : '/background-light.png';
 
@@ -185,12 +119,7 @@ export function LandingPage() {
         influencerFeatures={influencerFeatures}
       />
 
-      <LandingPricing
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        brandPlans={brandPlans}
-        influencerPlans={influencerPlans}
-      />
+      <LandingPricing />
 
       <LandingTestimonials testimonials={testimonials} />
 
@@ -213,5 +142,5 @@ export function LandingPage() {
 
       <LandingFooter />
     </div>
-  )
+  );
 }

@@ -1,29 +1,31 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
-import { Moon, Sun } from "lucide-react"
+import { useEffect, useState } from 'react';
+import { Moon, Sun } from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 
-import { useTheme } from "./theme-provider"
+import { useTheme } from './theme-provider';
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
-    return null
+    return null;
   }
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark")
-  }
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
 
-  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)
+  const isDark =
+    theme === 'dark' ||
+    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   return (
     <Button
@@ -33,7 +35,11 @@ export function ThemeToggle() {
       className="rounded-full border-2 border-primary/30 bg-background"
       aria-label="Chuyển đổi chế độ tối/sáng"
     >
-      {isDark ? <Sun className="h-5 w-5 text-yellow-300" /> : <Moon className="h-5 w-5 text-primary" />}
+      {isDark ? (
+        <Sun className="h-5 w-5 text-yellow-300" />
+      ) : (
+        <Moon className="h-5 w-5 text-primary" />
+      )}
     </Button>
-  )
+  );
 }

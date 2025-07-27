@@ -121,6 +121,7 @@ const InputWithRefetch = React.forwardRef<HTMLInputElement, InputProps>(
       data: youtubeData,
       refetch: youtubeRefetch,
       isLoading: isYoutubeLoading,
+      isFetching: isYoutubeFetching,
     } = useGetSubcriberCountFromYoutubeQuery(
       {
         channelName: identify,
@@ -131,6 +132,7 @@ const InputWithRefetch = React.forwardRef<HTMLInputElement, InputProps>(
       data: tiktokData,
       refetch: tiktokRefetch,
       isLoading: isTiktokLoading,
+      isFetching: isTiktokFetching,
     } = useGetFollowerCountFromTiktokQuery(
       {
         uniqueId: identify,
@@ -141,11 +143,13 @@ const InputWithRefetch = React.forwardRef<HTMLInputElement, InputProps>(
       data: facebookData,
       refetch: facebookRefetch,
       isLoading: isFacebookLoading,
+      isFetching: isFacebookFetching,
     } = useGetFollowerCountFromFacebookQuery({ pageName: identify }, { skip: !facebookMatch });
     const {
       data: instagramData,
       refetch: instagramRefetch,
       isLoading: isInstagramLoading,
+      isFetching: isInstagramFetching,
     } = useGetFollowerCountFromInstagramQuery(
       { code_or_id_or_url: identify },
       { skip: !instagramMatch },
@@ -189,7 +193,15 @@ const InputWithRefetch = React.forwardRef<HTMLInputElement, InputProps>(
     };
 
     const isLoading =
-      (isYoutubeLoading || isTiktokLoading || isFacebookLoading || isInstagramLoading) ?? false;
+      (isYoutubeLoading ||
+        isTiktokLoading ||
+        isFacebookLoading ||
+        isInstagramLoading ||
+        isYoutubeFetching ||
+        isTiktokFetching ||
+        isFacebookFetching ||
+        isInstagramFetching) ??
+      false;
     return (
       <div className="flex gap-2">
         <Input
@@ -198,7 +210,7 @@ const InputWithRefetch = React.forwardRef<HTMLInputElement, InputProps>(
           data-slot="input"
           type={type}
           readOnly={true}
-          value={isLoading ? 'Loading...' : (currentFollower ?? 0)}
+          value={isLoading ? 'Loading' : (currentFollower ?? 0)}
           ref={ref}
         />
         <Button
@@ -208,7 +220,7 @@ const InputWithRefetch = React.forwardRef<HTMLInputElement, InputProps>(
           size="icon"
           onClick={handleRefetch}
         >
-          <Icons.refreshCcw />
+          <Icons.refreshCcw className={cn(isLoading && 'animate-spin')} />
         </Button>
       </div>
     );

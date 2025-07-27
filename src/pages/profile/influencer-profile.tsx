@@ -24,7 +24,7 @@ import {
   useGetInfluencerProfileUserQuery,
   useGetPostMeQuery,
 } from '@/features/profile/profile.service';
-import { setContents } from '@/features/profile/profile.slice';
+import { setContents, setInfluencerProfileSlice } from '@/features/profile/profile.slice';
 import { useAppDispatch } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
@@ -40,15 +40,16 @@ export default function InfluencerProfilePage() {
     userId: userId,
   });
 
-  const { contents } = useSelector((state: RootState) => state.profile);
+  const { contents, influencerProfile } = useSelector((state: RootState) => state.profile);
 
-  const { data: profileRaw, isError } = useGetInfluencerProfileUserQuery(
-    userId ? userId : undefined,
-    {
-      refetchOnMountOrArgChange: true,
-      refetchOnReconnect: true,
-    },
-  );
+  const {
+    data: profileRaw,
+    isError,
+    isSuccess,
+  } = useGetInfluencerProfileUserQuery(userId ? userId : undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnReconnect: true,
+  });
 
   useEffect(() => {
     if (isError) {
@@ -61,13 +62,18 @@ export default function InfluencerProfilePage() {
   //   pageNumber: 0,
   //   pageSize: 10,
   // });
+
+  useEffect(() => {
+    if (isSuccess && profileRaw && !userId) dispatch(setInfluencerProfileSlice(profileRaw));
+  }, [dispatch, profileRaw, isSuccess, userId]);
+
   useEffect(() => {
     if (contentPosting && !userId) dispatch(setContents(contentPosting));
   }, [contentPosting, dispatch, userId]);
   if (!profileRaw?.data) {
     return <InfluencerProfileSkeletion />;
   }
-  const profile = profileRaw?.data;
+  const profile = userId ? profileRaw.data : influencerProfile!;
   // const campaigns: Campaign[] = Array.isArray(campaignsResponse?.data?.campaigns)
   //   ? campaignsResponse.data.campaigns
   //   : [];

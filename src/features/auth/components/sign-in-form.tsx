@@ -23,21 +23,21 @@ import { Input } from '@/components/ui/input';
 
 import { Icons } from '@/components/icons/icons';
 import { type SignInFormValues, signInSchema } from '@/features/auth/auth.schema';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import type { RootState } from '@/redux/store';
+import { useCloseAccountMutation } from '@/features/setting/setting.service';
+import { useAppDispatch } from '@/hooks/redux';
 import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
 
 import { useGoogleLoginMutation, useLoginMutation } from '../auth.service';
-import { setCredentials } from '../auth.slice';
+import { changeActiveAcc, setCredentials } from '../auth.slice';
 
 export default function SignInForm() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
   const [loginViaGoogle] = useGoogleLoginMutation();
-  const { role: roleName } = useAppSelector((state: RootState) => state.auth);
+  const [closeAccount] = useCloseAccountMutation();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -50,12 +50,24 @@ export default function SignInForm() {
   async function onSubmit(values: { email: string; password: string }) {
     try {
       const response = await login(values).unwrap();
-      dispatch(setCredentials(response));
-      if (roleName === 'ADMIN') {
+      console.log(response.data);
+
+      if (response.data?.user.twoFA) {
+        navigate('/auth/login-verify', { state: response.data });
+        return;
+      }
+      if (!response.data?.role) {
+        navigate('/auth/login');
+        return;
+      }
+      if (response.data?.role === 'ADMIN') {
         navigate('/dashboard');
       } else {
         navigate('/home');
       }
+      dispatch(setCredentials(response));
+      await closeAccount(true);
+      dispatch(changeActiveAcc({ turn: true }));
       toast.success('Đăng nhập thành công!');
     } catch (err: unknown) {
       if (isApiResponseError(err)) {
@@ -74,12 +86,12 @@ export default function SignInForm() {
       const code = credentialResponse.code;
       try {
         const response = await loginViaGoogle({ code }).unwrap();
-        dispatch(setCredentials(response));
-        if (roleName === 'ADMIN') {
+        if (response.data?.role === 'ADMIN') {
           navigate('/dashboard');
         } else {
           navigate('/home');
         }
+        dispatch(setCredentials(response));
         toast.success('Đăng nhập thành công!');
       } catch (err: unknown) {
         if (isApiResponseError(err)) {
@@ -153,12 +165,14 @@ export default function SignInForm() {
               className="w-full bg-primary hover:bg-primary/90"
               disabled={isLoading}
             >
-              {isLoading ?
+              {isLoading ? (
                 <>
                   <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Đang đăng nhập...
                 </>
-                : 'Đăng nhập'}
+              ) : (
+                'Đăng nhập'
+              )}
             </Button>
           </form>
         </Form>

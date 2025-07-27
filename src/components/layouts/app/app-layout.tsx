@@ -2,8 +2,8 @@ import { useCallback, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import Stomp from 'stompjs';
+import { useSound } from 'use-sound';
 
-// import AppFooter from '@/components/layouts/app/footer';
 import { AppHeader } from '@/components/layouts/app/header';
 import { useTheme } from '@/components/theme/theme-provider';
 import ChatBot from '@/features/assitant/components/chatbot';
@@ -17,6 +17,7 @@ import { getStompClient } from '@/lib/stom-client';
 import { cn } from '@/lib/utils';
 import { baseApi } from '@/redux/baseApi';
 import type { RootState } from '@/redux/store';
+import { persistor } from '@/redux/store';
 import { formatDate, formatTime, parseIsoToDateTime } from '@/utils/format';
 
 function AppLayout() {
@@ -24,13 +25,20 @@ function AppLayout() {
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
   const location = useLocation();
+  const [playSound] = useSound('/sound.mp3');
 
   const handleLogout = useCallback(() => {
     dispatch(baseApi.util.resetApiState());
     dispatch(logout());
+    persistor.purge();
     navigate('/');
   }, [dispatch, navigate]);
-  const { id: userId, token, role: roleName } = useAppSelector((state: RootState) => state.auth);
+  const {
+    id: userId,
+    token,
+    role: roleName,
+    sound,
+  } = useAppSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (!token || !userId) return;
@@ -42,9 +50,9 @@ function AppLayout() {
           if (received && received.userId && received.userId === userId) {
             toast.warning(
               'Tài khoản của bạn đã bị khóa vào lúc: ' +
-              formatTime(parseIsoToDateTime(received.createdAt)) +
-              ' ' +
-              formatDate(parseIsoToDateTime(received.createdAt)),
+                formatTime(parseIsoToDateTime(received.createdAt)) +
+                ' ' +
+                formatDate(parseIsoToDateTime(received.createdAt)),
             );
             handleLogout();
           }
@@ -69,6 +77,7 @@ function AppLayout() {
             const { name: title, content: description } = received;
             toast.success(title, { description });
           }
+          if (sound) playSound();
           dispatch(addReceivedNotification(received));
         } catch (error) {
           console.error('Error parsing STOMP message:', error);
@@ -78,7 +87,7 @@ function AppLayout() {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [token, userId, dispatch]);
+  }, [token, userId, dispatch, playSound, sound]);
 
   useEffect(() => {
     if (token && userId) {
@@ -94,7 +103,7 @@ function AppLayout() {
   if (roleName !== 'ADMIN' && location.pathname !== '/settings') {
     backgroundImage =
       theme === 'dark' ||
-        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         ? '/background-dark.png'
         : '/background-light.png';
   }
