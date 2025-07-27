@@ -116,3 +116,40 @@ export const formatCurrency = (amount: number) => {
     currency: 'VND',
   }).format(amount);
 };
+
+export const formatPrice = (price: number) => {
+  if (price === 0) return 'Miễn phí';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+  }).format(price);
+};
+
+export const formatPlanPermissionName = (regex: string) => {
+  switch (regex) {
+    case 'search_result':
+      return 'Kết quả tìm kiếm';
+    case 'campaign_members':
+      return 'Số thành viên tham gia chiến dịch';
+
+    case 'campaign_invitation':
+      return 'Số lời mời thành viên tham gia chiến dịch';
+
+    case 'campaign_apply':
+      return 'Số chiến dịch được ứng tuyển';
+    default:
+      return regex;
+  }
+};
+
+export const formatPlanType = (regex: string) => {
+  switch (regex) {
+    case 'one_month':
+      return 'Tháng';
+    case 'one_year':
+      return 'Năm';
+    default:
+      return regex;
+  }
+};

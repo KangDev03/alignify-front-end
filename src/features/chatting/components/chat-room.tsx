@@ -15,6 +15,7 @@ import type { RootState } from '@/redux/store';
 
 import MessageCard from './message-card';
 import { chatApi, useGetMessagesInRoomQuery } from '../chat-sheet.service';
+import { setLastMsg } from '../chat-sheet.slice';
 import type { ChatMessage } from '../chat-sheet.type';
 
 interface ChatRoomProps {
@@ -48,7 +49,7 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
   const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const dispatch = useDispatch();
   const currentMessageRef = useRef<HTMLDivElement>(null);
-
+  const [currentMessageId, setCurrentMessageId] = useState<string>();
   useEffect(() => {
     if (data?.data) {
       setMessages(data?.data);
@@ -57,12 +58,14 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
 
   useEffect(() => {
     if (!token) return;
-    let subMsg: any, subRead: any;
+    let subMsg: any;
     getStompClient(token).then((client) => {
       subMsg = client.subscribe(`/topic/messages/${chatRoomId}`, (res: any) => {
         try {
           const receivedMessage: ChatMessage = JSON.parse(res.body);
           setMessages((prev) => {
+            setCurrentMessageId(receivedMessage.message.messageId!);
+            dispatch(setLastMsg(receivedMessage));
             const updatedMessages = prev.map((msg) =>
               msg.message.tempId === receivedMessage.message.tempId
                 ? { ...receivedMessage, isSending: false }
@@ -80,61 +83,26 @@ export default function ChatRoom({ chatRoomId, roomName }: ChatRoomProps) {
           console.error('Error parsing STOMP message:', error);
         }
       });
-      // subRead = client.subscribe(`/topic/read/${chatRoomId}`, (res: any) => {
-      //   try {
-      //     const update: ReadStatusUpdate = JSON.parse(res.body);
-      //     setMessages((prev) =>
-      //       prev.map((msg) =>
-      //         msg.message.messageId === update.messageId
-      //           ? { ...msg, message: { ...msg.message, readBy: update.readBy } }
-      //           : msg,
-      //       ),
-      //     );
-      //   } catch (error) {
-      //     console.error('Error parsing STOMP read update:', error);
-      //   }
-      // });
     });
     return () => {
       if (subMsg) subMsg.unsubscribe();
-      if (subRead) subRead.unsubscribe();
     };
   }, [chatRoomId, token, dispatch]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          getStompClient(token!).then((client) => {
-            if (entry.isIntersecting && client.connected) {
-              const messageId = entry.target.getAttribute('data-message-id');
-              if (
-                messageId &&
-                !messages
-                  .find((msg) => msg.message.messageId === messageId)
-                  ?.message.readBy.includes(userId!)
-              ) {
-                client.send(
-                  `/app/read/${chatRoomId}`,
-                  { Authorization: `Bearer ${token}` },
-                  JSON.stringify({ messageId }),
-                );
-              }
-            }
-          });
-        });
-      },
-      { threshold: 0.5 },
-    );
-
-    messageRefs.current.forEach((element) => {
-      if (element) observer.observe(element);
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [messages, chatRoomId, userId, token]);
+    if (chatRoomId && token && currentMessageId) {
+      getStompClient(token).then((client) => {
+        const readMessagePayload = { messageId: currentMessageId };
+        if (client.connected) {
+          client.send(
+            `/app/read/${chatRoomId}`,
+            { Authorization: `Bearer ${token}` },
+            JSON.stringify(readMessagePayload),
+          );
+        }
+      });
+    }
+  }, [chatRoomId, userId, token, currentMessageId]);
 
   useEffect(() => {
     currentMessageRef.current?.scrollIntoView({ behavior: 'auto' });

@@ -329,7 +329,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
                 isUpdating ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang cập nhật...
+                    Đang cập nhật
                   </>
                 ) : (
                   'Cập nhật bài viết'
@@ -337,7 +337,7 @@ export default function ContentPopUp({ contentData }: PopUpContentProps) {
               ) : isPosting ? (
                 <>
                   <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Đang đăng...
+                  Đang đăng
                 </>
               ) : (
                 'Đăng bài viết'

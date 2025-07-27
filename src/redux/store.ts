@@ -5,22 +5,69 @@ import storage from 'redux-persist/lib/storage';
 import { usersSlice } from '@/features/admin/admin.slice';
 import applicantReducer from '@/features/applicants/applicant.slice';
 import authReducer from '@/features/auth/auth.slice';
+import { chatSheetSlice } from '@/features/chatting/chat-sheet.slice';
 import commonReducer from '@/features/common/common.slice';
 import { homeReducer, refetchReducer } from '@/features/home/home.slice';
 import { invitationSlice } from '@/features/invitation/invitation.slice';
-import { campaignSlice } from '@/features/my-campaign/campaign.slice';
+import {
+  campaignSlice,
+  campaignTrackingBrandSlice,
+  campaignTrackingSlice,
+} from '@/features/my-campaign/campaign.slice';
 import { notificationSlice } from '@/features/notification/notification.slice';
 import { profileSlice } from '@/features/profile/profile.slice';
 
 import { baseApi } from './baseApi';
 
-const persistConfig = {
+const persistAuthConfig = {
   key: 'auth',
   storage,
-  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name'],
+  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name', 'twoFA', 'sound', 'publicAcc', 'active'],
+  transforms: [
+    {
+      in: (state: any, key: string) => {
+        if (key === 'profile') {
+          const role = state.role;
+
+          return {
+            ...state,
+            publicAcc: role === 'INFLUENCER' ? state.publicAcc : null,
+          };
+        }
+        return state;
+      },
+      out: (state: any) => state,
+    },
+  ],
 };
 
-const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const persistProfileConfig = {
+  key: 'profile',
+  storage,
+  whitelist: ['contents', 'influencerProfile', 'brandProfile'],
+  transforms: [
+    {
+      in: (state: any, key: string) => {
+        if (key === 'profile') {
+          const role = state.role;
+
+          return {
+            ...state,
+            influencerProfile: role === 'INFLUENCER' ? state.influencerProfile : undefined,
+            brandProfile: role === 'BRAND' ? state.brandProfile : undefined,
+            contents: role === 'INFLUENCER' ? state.contents : [],
+          };
+        }
+        return state;
+      },
+      out: (state: any) => state,
+    },
+  ],
+};
+
+const persistedAuthReducer = persistReducer(persistAuthConfig, authReducer);
+
+const persistedProfileReducer = persistReducer(persistProfileConfig, profileSlice.reducer);
 
 export const store = configureStore({
   reducer: {
@@ -32,9 +79,12 @@ export const store = configureStore({
     home: homeReducer,
     notification: notificationSlice.reducer,
     campaign: campaignSlice.reducer,
-    profile: profileSlice.reducer,
+    campaignTracking: campaignTrackingSlice.reducer,
+    camapignTrackingBrand: campaignTrackingBrandSlice.reducer,
+    profile: persistedProfileReducer,
     usersManagment: usersSlice.reducer,
     invitation: invitationSlice.reducer,
+    chatSheet: chatSheetSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

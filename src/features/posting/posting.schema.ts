@@ -104,30 +104,34 @@ export const campaignFormSchema = z
             z.object({
               video: z
                 .object({
-                  like: z.number().min(0, 'Số lượng ít nhất là 0'),
-                  comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  like: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                  comment: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
                   share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                  view: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
                 })
                 .optional(),
               post: z
                 .object({
-                  like: z.number().min(0, 'Số lượng ít nhất là 0'),
-                  comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  like: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                  comment: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
                   share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                  view: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
                 })
                 .optional(),
               story: z
                 .object({
-                  like: z.number().min(0, 'Số lượng ít nhất là 0'),
-                  comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  like: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                  comment: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
                   share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                  view: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
                 })
                 .optional(),
               reel: z
                 .object({
-                  like: z.number().min(0, 'Số lượng ít nhất là 0'),
-                  comment: z.number().min(0, 'Số lượng ít nhất là 0'),
+                  like: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                  comment: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
                   share: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
+                  view: z.number().min(0, 'Số lượng ít nhất là 0').optional(),
                 })
                 .optional(),
             }),
