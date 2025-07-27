@@ -26,7 +26,7 @@ type BrandPage =
   | 'invitations'
   | 'statistics'
   | 'upgrade-plan';
-type CurrentPage = InfluencerPage | BrandPage;
+type CurrentPage = InfluencerPage | BrandPage ;
 
 interface HeaderProps {
   onLogout: () => void;
@@ -81,7 +81,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
       else if (page === 'invitations') navigate('/invitation');
       else if (page === 'statistics') navigate('/statistics');
       else if (page === 'upgrade-plan') navigate('/upgrade-plan');
-    }
+    } 
   };
 
   const navigationItems =
