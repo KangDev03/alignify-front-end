@@ -121,7 +121,7 @@ function AppLayout() {
       >
         <Outlet />
         <PopUpTrigger />
-        <ChatBot />
+        {roleName === 'INFLUENCER' && <ChatBot />}
       </main>
       {/* <AppFooter /> */}
     </div>
