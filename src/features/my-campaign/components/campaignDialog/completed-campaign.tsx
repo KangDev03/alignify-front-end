@@ -1,3 +1,5 @@
+import { useSelector } from 'react-redux';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -10,13 +12,16 @@ import {
 
 import { Icons } from '@/components/icons/icons';
 import type { Campaign } from '@/features/common/common.type';
+import type { RootState } from '@/redux/store';
 
 import CampaignDetail from '../campaign-detail';
+import ViewProgressDialog from '../view-progress';
 
 interface CompletedCampaignDialogProps {
   campaign: Campaign;
 }
 export default function CompletedCampaignDialog({ campaign }: CompletedCampaignDialogProps) {
+  const { role: userRole } = useSelector((state: RootState) => state.auth);
   return (
     <Dialog>
       <DialogTrigger asChild>
