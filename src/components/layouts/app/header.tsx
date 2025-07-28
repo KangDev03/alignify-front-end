@@ -7,7 +7,6 @@ import { useLocation, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 
 import { Icons } from '@/components/icons/icons';
-import { LanguageSelect } from '@/components/language-select';
 import { UserDropdown } from '@/components/layouts/app/user-dropdown';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import ChatSheet from '@/features/chatting/components/chat-sheet';
@@ -154,7 +153,6 @@ export function AppHeader({ onLogout }: HeaderProps) {
           </nav>
 
           <div className="flex items-center space-x-2">
-            <LanguageSelect variant="minimal" />
             <Button
               variant="ghost"
               size="sm"
