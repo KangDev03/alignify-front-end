@@ -82,18 +82,18 @@ export default function ProfileSection() {
       categoryIds: profileData?.data.categories?.map((category) => category.categoryId) ?? [],
       socialMediaLinks: Array.isArray(profileData?.data.socialMediaLinks)
         ? (profileData?.data.socialMediaLinks as SocialMedia[]).map((item) => ({
-            platform: item.platform,
-            url: item.url,
-            follower: item.follower,
-          }))
+          platform: item.platform,
+          url: item.url,
+          follower: item.follower,
+        }))
         : [],
       contacts:
         profileData?.data && 'contacts' in profileData.data && profileData.data.contacts
           ? Array.isArray(profileData?.data.contacts)
             ? (profileData?.data.contacts as Contact[]).map((item) => ({
-                contact_type: item.contact_type,
-                contact_infor: item.contact_infor,
-              }))
+              contact_type: item.contact_type,
+              contact_infor: item.contact_infor,
+            }))
             : []
           : [],
     },
@@ -156,19 +156,19 @@ export default function ProfileSection() {
 
       socialMediaLinks: Array.isArray(profile.socialMediaLinks)
         ? (profile.socialMediaLinks as SocialMedia[]).map((item) => ({
-            platform: item.platform,
-            url: item.url,
-            follower: item.follower,
-          }))
+          platform: item.platform,
+          url: item.url,
+          follower: item.follower,
+        }))
         : [],
 
       contacts:
         'contacts' in profile && profile.contacts
           ? Array.isArray(profile.contacts)
             ? (profile.contacts as Contact[]).map((item) => ({
-                contact_type: item.contact_type,
-                contact_infor: item.contact_infor,
-              }))
+              contact_type: item.contact_type,
+              contact_infor: item.contact_infor,
+            }))
             : []
           : [],
     };
@@ -179,10 +179,10 @@ export default function ProfileSection() {
   useEffect(() => {
     (profileData?.data.socialMediaLinks && Array.isArray(profileData.data.socialMediaLinks)
       ? profileData.data.socialMediaLinks.map((item) => ({
-          platform: item.platform,
-          url: item.url,
-          follower: item.follower,
-        }))
+        platform: item.platform,
+        url: item.url,
+        follower: item.follower,
+      }))
       : []
     ).forEach((item) => {
       setApproveSocialLinks((prev) => {
@@ -700,12 +700,12 @@ export default function ProfileSection() {
                                 <FormItem className="">
                                   <FormControl>
                                     {form.watch(`socialMediaLinks.${idx}.url`) &&
-                                    approveSocialLinks.some(
-                                      (link) =>
-                                        link.platform ===
+                                      approveSocialLinks.some(
+                                        (link) =>
+                                          link.platform ===
                                           form.watch(`socialMediaLinks.${idx}.platform`) &&
-                                        link.url === form.watch(`socialMediaLinks.${idx}.url`),
-                                    ) ? (
+                                          link.url === form.watch(`socialMediaLinks.${idx}.url`),
+                                      ) ? (
                                       <FollowerInput
                                         showRefetchComponent={field.value === 0}
                                         follower={field.value}
@@ -1000,12 +1000,12 @@ export default function ProfileSection() {
                                 <FormItem className="">
                                   <FormControl>
                                     {form.watch(`socialMediaLinks.${idx}.url`) &&
-                                    approveSocialLinks.some(
-                                      (link) =>
-                                        link.platform ===
+                                      approveSocialLinks.some(
+                                        (link) =>
+                                          link.platform ===
                                           form.watch(`socialMediaLinks.${idx}.platform`) &&
-                                        link.url === form.watch(`socialMediaLinks.${idx}.url`),
-                                    ) ? (
+                                          link.url === form.watch(`socialMediaLinks.${idx}.url`),
+                                      ) ? (
                                       <FollowerInput
                                         showRefetchComponent={field.value === 0}
                                         follower={field.value}

@@ -4,6 +4,7 @@
   "testimonials": "Testimonials",
   "login": "Sign In",
   "register": "Sign Up",
+  "moveToHome": "Go to Home",
 
   "landing": {
     "features": {
@@ -458,6 +459,152 @@
         "respondedInvites": "Pending Responses",
         "acceptanceRate": "Acceptance Rate"
       }
+    }
+  },
+
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage account and customization",
+    "groups": {
+      "general": "General Settings",
+      "customization": "Customization",
+      "other": "Others"
+    },
+    "items": {
+      "profile": "Profile",
+      "account": "Account",
+      "security": "Security",
+      "notifications": "Notifications",
+      "appearance": "Appearance",
+      "privacy": "Privacy",
+      "billing": "Billing"
+    }
+  },
+
+  "account": {
+    "title": "Account",
+    "description": "Manage your account information and login options.",
+    "regionTitle": "Region Options",
+    "languageLabel": "Language",
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "These actions cannot be undone. Please proceed with caution.",
+      "deleteButton": "Delete Account"
+    }
+  },
+
+  "appearance": {
+    "title": "Appearance",
+    "description": "Customize interface and user experience.",
+    "themeCard": {
+      "title": "Theme",
+      "description": "Choose a theme for the application.",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "lightLabel": "Light theme",
+      "darkLabel": "Dark theme",
+      "systemLabel": "Follow system"
+    }
+  },
+
+  "notifications": {
+    "title": "Notifications",
+    "description": "Customize how you receive notifications from the system.",
+    "email": {
+      "title": "Email Notifications",
+      "campaign": {
+        "label": "New campaigns",
+        "description": "Receive emails when relevant campaigns are available"
+      },
+      "message": {
+        "label": "New messages",
+        "description": "Get notified when brands/influencers message you"
+      },
+      "system": {
+        "label": "System updates",
+        "description": "Information about new features and updates"
+      }
+    },
+    "push": {
+      "title": "Push Notifications",
+      "sound": {
+        "label": "Notification sound",
+        "description": "Play sound when a new notification arrives"
+      }
+    }
+  },
+
+  "privacy": {
+    "title": "Privacy",
+    "description": "Control your privacy and personal data.",
+    "profileVisibility": {
+      "title": "Profile Visibility",
+      "publicLabel": "Public Profile",
+      "publicDescription": "Allow others to view your profile"
+    },
+    "dataControl": {
+      "title": "Data Control",
+      "download": "Download my data",
+      "delete": "Request data deletion",
+      "viewPolicy": "View privacy policy"
+    },
+    "otherOptions": {
+      "stats": {
+        "label": "Show statistics",
+        "description": "Display follower count and engagement rate"
+      },
+      "contact": {
+        "label": "Allow contact",
+        "description": "Brands can message you directly"
+      },
+      "usageAnalytics": {
+        "label": "Usage analytics",
+        "description": "Helps improve user experience"
+      },
+      "personalAds": {
+        "label": "Personalized ads",
+        "description": "Show ads based on your interests"
+      }
+    }
+  },
+
+  "security": {
+    "sectionTitle": "Security",
+    "sectionDescription": "Manage your account password and security options.",
+    "password": {
+      "title": "Change Password",
+      "oldLabel": "Current Password",
+      "newLabel": "New Password",
+      "confirmLabel": "Confirm New Password",
+      "placeholderOld": "Enter current password",
+      "placeholderNew": "Enter new password",
+      "placeholderConfirm": "Re-enter new password",
+      "updateButton": "Update Password",
+      "updating": "Updating password..."
+    },
+    "2fa": {
+      "title": "Two-Factor Authentication (2FA)",
+      "description": "Add an extra layer of security to your account.",
+      "emailLabel": "Email Verification",
+      "emailDesc": "Receive verification codes via email"
+    },
+    "sessions": {
+      "title": "Login Sessions",
+      "description": "Manage the devices that are logged into your account.",
+      "currentDevice": "Current",
+      "logout": "Log Out",
+      "logoutAll": "Log out of all other devices",
+      "example": {
+        "desktop": "Chrome on Windows",
+        "mobile": "Safari on iPhone",
+        "locationNow": "Active now • HCM",
+        "locationPast": "2 hours ago • HCM"
+      }
+    },
+    "toast": {
+      "success": "Password changed successfully!",
+      "error": "Password change failed"
     }
   }
 }

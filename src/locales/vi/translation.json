@@ -4,6 +4,7 @@
   "testimonials": "Đánh giá",
   "login": "Đăng nhập",
   "register": "Đăng ký",
+  "moveToHome": "Chuyển đến Trang chủ",
 
   "landing": {
     "features": {
@@ -489,6 +490,152 @@
         "respondedInvites": "Chờ phản hồi",
         "acceptanceRate": "Tỷ lệ chấp nhận"
       }
+    }
+  },
+
+  "settings": {
+    "title": "Cài đặt",
+    "subtitle": "Quản lý tài khoản và tùy chỉnh",
+    "groups": {
+      "general": "Cài đặt chung",
+      "customization": "Tùy chỉnh",
+      "other": "Khác"
+    },
+    "items": {
+      "profile": "Hồ sơ cá nhân",
+      "account": "Tài khoản",
+      "security": "Bảo mật",
+      "notifications": "Thông báo",
+      "appearance": "Giao diện",
+      "privacy": "Quyền riêng tư",
+      "billing": "Thanh toán"
+    }
+  },
+
+  "account": {
+    "title": "Tài khoản",
+    "description": "Quản lý thông tin tài khoản và tùy chọn đăng nhập.",
+    "regionTitle": "Tùy chọn khu vực",
+    "languageLabel": "Ngôn ngữ",
+    "dangerZone": {
+      "title": "Vùng nguy hiểm",
+      "description": "Các hành động này không thể hoàn tác. Hãy cân nhắc kỹ trước khi thực hiện.",
+      "deleteButton": "Xóa tài khoản"
+    }
+  },
+
+  "appearance": {
+    "title": "Giao diện",
+    "description": "Tùy chỉnh giao diện và trải nghiệm sử dụng.",
+    "themeCard": {
+      "title": "Chủ đề",
+      "description": "Chọn chủ đề hiển thị cho ứng dụng.",
+      "light": "Sáng",
+      "dark": "Tối",
+      "system": "Hệ thống",
+      "lightLabel": "Chủ đề sáng",
+      "darkLabel": "Chủ đề tối",
+      "systemLabel": "Theo hệ thống"
+    }
+  },
+
+  "notifications": {
+    "title": "Thông báo",
+    "description": "Tùy chỉnh cách bạn nhận thông báo từ hệ thống.",
+    "email": {
+      "title": "Thông báo Email",
+      "campaign": {
+        "label": "Chiến dịch mới",
+        "description": "Nhận email khi có chiến dịch phù hợp"
+      },
+      "message": {
+        "label": "Tin nhắn mới",
+        "description": "Thông báo khi có tin nhắn từ brands/influencers"
+      },
+      "system": {
+        "label": "Cập nhật hệ thống",
+        "description": "Thông tin về tính năng mới và cập nhật"
+      }
+    },
+    "push": {
+      "title": "Thông báo đẩy",
+      "sound": {
+        "label": "Âm thanh thông báo",
+        "description": "Phát âm thanh khi có thông báo mới"
+      }
+    }
+  },
+
+  "privacy": {
+    "title": "Quyền riêng tư",
+    "description": "Kiểm soát quyền riêng tư và dữ liệu cá nhân của bạn.",
+    "profileVisibility": {
+      "title": "Hiển thị hồ sơ",
+      "publicLabel": "Hồ sơ công khai",
+      "publicDescription": "Cho phép mọi người xem hồ sơ của bạn"
+    },
+    "dataControl": {
+      "title": "Quyền kiểm soát dữ liệu",
+      "download": "Tải xuống dữ liệu của tôi",
+      "delete": "Yêu cầu xóa dữ liệu",
+      "viewPolicy": "Xem chính sách quyền riêng tư"
+    },
+    "otherOptions": {
+      "stats": {
+        "label": "Hiển thị thống kê",
+        "description": "Hiển thị số followers và engagement rate"
+      },
+      "contact": {
+        "label": "Cho phép liên hệ",
+        "description": "Brands có thể gửi tin nhắn trực tiếp"
+      },
+      "usageAnalytics": {
+        "label": "Phân tích sử dụng",
+        "description": "Giúp cải thiện trải nghiệm sử dụng"
+      },
+      "personalAds": {
+        "label": "Quảng cáo được cá nhân hóa",
+        "description": "Hiển thị quảng cáo phù hợp với sở thích"
+      }
+    }
+  },
+
+  "security": {
+    "sectionTitle": "Bảo mật",
+    "sectionDescription": "Quản lý mật khẩu và các tùy chọn bảo mật tài khoản.",
+    "password": {
+      "title": "Đổi mật khẩu",
+      "oldLabel": "Mật khẩu hiện tại",
+      "newLabel": "Mật khẩu mới",
+      "confirmLabel": "Xác nhận mật khẩu mới",
+      "placeholderOld": "Nhập mật khẩu hiện tại",
+      "placeholderNew": "Nhập mật khẩu mới",
+      "placeholderConfirm": "Nhập lại mật khẩu mới",
+      "updateButton": "Cập nhật mật khẩu",
+      "updating": "Đang cập nhật mật khẩu..."
+    },
+    "2fa": {
+      "title": "Xác thực hai yếu tố (2FA)",
+      "description": "Thêm lớp bảo mật bổ sung cho tài khoản của bạn.",
+      "emailLabel": "Xác thực qua email",
+      "emailDesc": "Nhận mã xác thực qua email"
+    },
+    "sessions": {
+      "title": "Phiên đăng nhập",
+      "description": "Quản lý các thiết bị đã đăng nhập vào tài khoản.",
+      "currentDevice": "Hiện tại",
+      "logout": "Đăng xuất",
+      "logoutAll": "Đăng xuất tất cả thiết bị khác",
+      "example": {
+        "desktop": "Chrome trên Windows",
+        "mobile": "Safari trên iPhone",
+        "locationNow": "Hoạt động hiện tại • TP. HCM",
+        "locationPast": "2 giờ trước • TP. HCM"
+      }
+    },
+    "toast": {
+      "success": "Đổi mật khẩu thành công!",
+      "error": "Đổi mật khẩu thất bại"
     }
   }
 }

@@ -58,7 +58,7 @@ export function LandingHeader() {
                 onClick={() => navigate('/home')}
                 className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
               >
-                Vào trang chính
+                {t('moveToHome')}
               </Button>
               <UserDropdown onLogout={handleLogout} />
             </>

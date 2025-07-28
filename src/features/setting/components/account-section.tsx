@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Trash2 } from 'lucide-react';
@@ -8,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 
 import { LanguageSelect } from '@/components/language-select';
-
 import { changeActiveAcc, logout } from '@/features/auth/auth.slice';
 import { baseApi } from '@/redux/baseApi';
 import { persistor } from '@/redux/store';
@@ -16,6 +16,7 @@ import { persistor } from '@/redux/store';
 import { useCloseAccountMutation } from '../setting.service';
 
 export default function AccountSection() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [closeAccount] = useCloseAccountMutation();
@@ -30,9 +31,9 @@ export default function AccountSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Tài khoản</h3>
+        <h3 className="text-lg font-medium">{t('account.title')}</h3>
         <p className="text-sm text-muted-foreground">
-          Quản lý thông tin tài khoản và tùy chọn đăng nhập.
+          {t('account.description')}
         </p>
       </div>
 
@@ -54,12 +55,12 @@ export default function AccountSection() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Tùy chọn khu vực</CardTitle>
+          <CardTitle>{t('account.regionTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="language">Ngôn ngữ</Label>
+              <Label htmlFor="language">{t('account.languageLabel')}</Label>
               <LanguageSelect variant="default" />
             </div>
           </div>
@@ -68,9 +69,9 @@ export default function AccountSection() {
 
       <Card className="border-destructive">
         <CardHeader>
-          <CardTitle className="text-destructive">Vùng nguy hiểm</CardTitle>
+          <CardTitle className="text-destructive">{t('account.dangerZone.title')}</CardTitle>
           <CardDescription>
-            Các hành động này không thể hoàn tác. Hãy cân nhắc kỹ trước khi thực hiện.
+            {t('account.dangerZone.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -83,7 +84,7 @@ export default function AccountSection() {
             }}
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            Xóa tài khoản
+            {t('account.dangerZone.deleteButton')}
           </Button>
         </CardContent>
       </Card>
