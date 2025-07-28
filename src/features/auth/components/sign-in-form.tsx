@@ -30,7 +30,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
 
 import { useGoogleLoginMutation, useLoginMutation } from '../auth.service';
-import { changeActiveAcc, setCredentials } from '../auth.slice';
+import { changeActiveAcc, setCredentials, setPlan } from '../auth.slice';
 
 export default function SignInForm() {
   const dispatch = useAppDispatch();
@@ -66,6 +66,11 @@ export default function SignInForm() {
         navigate('/home');
       }
       dispatch(setCredentials(response));
+      console.log(response);
+
+      if (response.data.plan) {
+        dispatch(setPlan({ planId: response.data.plan }));
+      }
       await closeAccount(true);
       dispatch(changeActiveAcc({ turn: true }));
       toast.success('Đăng nhập thành công!');

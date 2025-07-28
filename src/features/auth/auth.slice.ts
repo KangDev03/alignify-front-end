@@ -14,6 +14,7 @@ interface AuthState {
   sound: boolean;
   publicAcc: boolean | null;
   active: boolean;
+  planId: string | null;
 }
 
 const initialState: AuthState = {
@@ -26,6 +27,7 @@ const initialState: AuthState = {
   sound: true,
   publicAcc: null,
   active: true,
+  planId: null,
 };
 
 export const authSlice = createSlice({
@@ -76,6 +78,9 @@ export const authSlice = createSlice({
     changeActiveAcc: (state, action: PayloadAction<{ turn: boolean }>) => {
       state.active = action.payload.turn;
     },
+    setPlan: (state, action: PayloadAction<{ planId: string }>) => {
+      state.planId = action.payload.planId;
+    },
   },
 });
 
@@ -88,5 +93,6 @@ export const {
   changeSoundMode,
   changePublicAcc,
   changeActiveAcc,
+  setPlan,
 } = authSlice.actions;
 export default authSlice.reducer;
