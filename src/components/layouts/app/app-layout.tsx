@@ -7,8 +7,9 @@ import { useSound } from 'use-sound';
 import { AppHeader } from '@/components/layouts/app/header';
 import { useTheme } from '@/components/theme/theme-provider';
 import ChatBot from '@/features/assitant/components/chatbot';
-import { logout } from '@/features/auth/auth.slice';
+import { logout, setPlan } from '@/features/auth/auth.slice';
 import type { UserBan } from '@/features/auth/auth.type';
+import type { UserPlan } from '@/features/common/common.type';
 import { addReceivedNotification } from '@/features/notification/notification.slice';
 import type { RecievedNotification } from '@/features/notification/notification.type';
 import PopUpTrigger from '@/features/posting/components/popUp-trigger';
@@ -98,6 +99,26 @@ function AppLayout() {
       });
     }
   }, [token, userId]);
+
+  useEffect(() => {
+    if (!token || !userId) return;
+    let subPlan: any;
+    getStompClient(token).then((client) => {
+      subPlan = client.subscribe(`/topic/plans/${userId}`, (res: Stomp.Message) => {
+        try {
+          const received: UserPlan = JSON.parse(res.body);
+          if (received) {
+            dispatch(setPlan({ planId: received.planId }));
+          }
+        } catch (error) {
+          console.error('Error parsing STOMP message:', error);
+        }
+      });
+    });
+    return () => {
+      if (subPlan) subPlan.unsubscribe();
+    };
+  }, [token, userId, dispatch]);
 
   let backgroundImage: string | undefined = undefined;
   if (roleName !== 'ADMIN' && location.pathname !== '/settings') {

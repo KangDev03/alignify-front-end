@@ -29,7 +29,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { type VerifyOTPFormValues, verifyOTPSchema } from '../auth.schema';
 import { useRegisterMutation, useRequestOTPMutation, useVerifyOTPMutation } from '../auth.service';
-import { changeActiveAcc, setCredentials } from '../auth.slice';
+import { changeActiveAcc, setCredentials, setPlan } from '../auth.slice';
 
 export default function VerifyOTPForm() {
   const dispatch = useDispatch();
@@ -177,6 +177,9 @@ export default function VerifyOTPForm() {
           navigate('/home');
         }
         dispatch(setCredentials(verifyResponse));
+        if (verifyResponse.data.plan) {
+          dispatch(setPlan({ planId: verifyResponse.data.plan }));
+        }
         await closeAccount(true);
         dispatch(changeActiveAcc({ turn: true }));
         toast.success('Đăng nhập thành công!');

@@ -67,6 +67,7 @@ export function LandingPricing() {
               {brandPlans &&
                 brandPlans
                   .filter((plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'))
+                  .sort((a, b) => a.price - b.price)
                   .map((plan) => (
                     <PlanCard
                       key={plan.planId}
@@ -82,6 +83,7 @@ export function LandingPricing() {
               {influencerPlans &&
                 influencerPlans
                   .filter((plan) => plan.planType === (isAnnual ? 'one_year' : 'one_month'))
+                  .sort((a, b) => a.price - b.price)
                   .map((plan) => (
                     <PlanCard
                       key={plan.planId}

@@ -13,6 +13,7 @@ interface ILoginReponse {
   token: string;
   role: RoleName;
   user: UserDTO;
+  plan?: string;
 }
 
 export type LoginResponse = ApiReponseSuccess<ILoginReponse>;
