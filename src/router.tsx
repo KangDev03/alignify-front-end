@@ -39,7 +39,8 @@ function Router() {
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
           <Route path="reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="select-role" element={<SelectRolePage />} />
-          <Route path="verify-otp" element={<VerifyOtpPage />} />
+          <Route path="register-verify" element={<VerifyOtpPage />} />
+          <Route path="login-verify" element={<VerifyOtpPage />} />
         </Route>
         <Route
           element={

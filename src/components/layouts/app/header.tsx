@@ -61,13 +61,33 @@ export function AppHeader({ onLogout }: HeaderProps) {
     }
   };
 
-  const handleScrollToTop = () => {
-    if (location.pathname === '/home') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      navigate('/home');
+  const getPathByPage = (page: CurrentPage): string => {
+    switch (page) {
+      case 'home': return '/home';
+      case 'my-campaign': return '/my-campaign';
+      case 'applications': return '/applications';
+      case 'invitations': return '/invitation';
+      case 'statistics': return '/statistics';
+      case 'upgrade-plan': return '/upgrade-plan';
+      case 'campaign-management': return '/campaign-management';
+      case 'applicants': return '/applicants';
+      default: return '/home';
     }
   };
+
+  const handleScrollToTop = (path: string) => {
+    if (location.pathname === path) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate(path);
+    }
+  };
+
+  const handleToLandingPage = () => {
+    if (location.pathname !== '/') {
+      navigate('/')
+    }
+  }
 
   const handlePageChange = (page: CurrentPage) => {
     if (userRole === 'INFLUENCER') {
@@ -109,7 +129,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1 cursor-pointer" onClick={handleScrollToTop}>
+            <div className="flex items-center space-x-1 cursor-pointer" onClick={handleToLandingPage}>
               <img src="/Alignify_logo.png" alt="Alignify logo" className="h-16 object-contain" />
               <span className="font-extrabold text-3xl text-primary">Alignify</span>
             </div>
@@ -123,7 +143,7 @@ export function AppHeader({ onLogout }: HeaderProps) {
                   key={item.id}
                   variant={currentPage() === item.id ? 'default' : 'ghost'}
                   size="sm"
-                  onClick={() => handlePageChange(item.id as CurrentPage)}
+                  onClick={() => handleScrollToTop(getPathByPage(item.id as CurrentPage))}
                   className="flex justify-center items-center space-x-2 h-9"
                 >
                   <Icon />

@@ -1,13 +1,32 @@
+import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 import { Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import { LanguageSelect } from '@/components/language-select';
 
+import { changeActiveAcc, logout } from '@/features/auth/auth.slice';
+import { baseApi } from '@/redux/baseApi';
+import { persistor } from '@/redux/store';
+
+import { useCloseAccountMutation } from '../setting.service';
+
 export default function AccountSection() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [closeAccount] = useCloseAccountMutation();
+
+  const handleLogout = useCallback(() => {
+    dispatch(baseApi.util.resetApiState());
+    dispatch(logout());
+    persistor.purge();
+    navigate('/');
+  }, [dispatch, navigate]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -17,7 +36,7 @@ export default function AccountSection() {
         </p>
       </div>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Thông tin đăng nhập</CardTitle>
         </CardHeader>
@@ -31,7 +50,7 @@ export default function AccountSection() {
             <Input id="phone" defaultValue="+84 901 234 567" />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
       <Card>
         <CardHeader>
@@ -55,7 +74,14 @@ export default function AccountSection() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button variant="destructive">
+          <Button
+            variant="destructive"
+            onClick={async () => {
+              dispatch(changeActiveAcc({ turn: false }));
+              await closeAccount(false);
+              handleLogout();
+            }}
+          >
             <Trash2 className="h-4 w-4 mr-2" />
             Xóa tài khoản
           </Button>

@@ -23,19 +23,21 @@ import { Input } from '@/components/ui/input';
 
 import { Icons } from '@/components/icons/icons';
 import { type SignInFormValues, signInSchema } from '@/features/auth/auth.schema';
+import { useCloseAccountMutation } from '@/features/setting/setting.service';
 import { useAppDispatch } from '@/hooks/redux';
 import { isApiResponseError } from '@/utils/format';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleLogin } from '@react-oauth/google';
 
 import { useGoogleLoginMutation, useLoginMutation } from '../auth.service';
-import { setCredentials } from '../auth.slice';
+import { changeActiveAcc, setCredentials, setPlan } from '../auth.slice';
 
 export default function SignInForm() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
   const [loginViaGoogle] = useGoogleLoginMutation();
+  const [closeAccount] = useCloseAccountMutation();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -48,13 +50,29 @@ export default function SignInForm() {
   async function onSubmit(values: { email: string; password: string }) {
     try {
       const response = await login(values).unwrap();
-      if (!response.data?.role) navigate('/auth/login');
+      console.log(response.data);
+
+      if (response.data?.user.twoFA) {
+        navigate('/auth/login-verify', { state: response.data });
+        return;
+      }
+      if (!response.data?.role) {
+        navigate('/auth/login');
+        return;
+      }
       if (response.data?.role === 'ADMIN') {
         navigate('/dashboard');
       } else {
         navigate('/home');
       }
       dispatch(setCredentials(response));
+      console.log(response);
+
+      if (response.data.plan) {
+        dispatch(setPlan({ planId: response.data.plan }));
+      }
+      await closeAccount(true);
+      dispatch(changeActiveAcc({ turn: true }));
       toast.success('Đăng nhập thành công!');
     } catch (err: unknown) {
       if (isApiResponseError(err)) {

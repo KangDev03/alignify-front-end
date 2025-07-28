@@ -99,6 +99,11 @@ export interface UserDTO {
   avatarUrl?: string;
   createdAt?: string;
   permissions?: Permission[];
+  twoFA?: boolean;
+  email?: string;
+  sound?: boolean;
+  publicAcc?: boolean;
+  active?: boolean;
 }
 
 export const SupportedPlatforms: ISupportedPlatforms[] = [
@@ -150,3 +155,12 @@ export const SupportedPostTypeByPlatform: PostTypeByPlatform = {
     },
   ],
 };
+
+export interface UserPlan {
+  userPlanId: string;
+  userId: string;
+  planId: string;
+  createdAt: string;
+  status: string;
+  completedAt: string;
+}

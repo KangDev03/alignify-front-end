@@ -5,7 +5,14 @@ import { Calendar, Eye } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 import type { ApplicationByInfluencer } from '@/features/application/application.type';
 import ApplicationDetail from '@/features/application/components/application-detail';
@@ -70,7 +77,7 @@ export default function ApplicationCard({ application, campaignInfo }: Applicati
                 {t("applications.viewApplication")}
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] sm:max-h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
+            <DialogContent className="sm:max-w-[600px] sm:max-h-[85%] gap-0 p-0 pb-4 pr-2" showCloseButton={false}>
               <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
                 <DialogTitle className='font-semibold text-xl text-center'>{t("applications.campaignPostBy")} {campaignInfo.brandName}</DialogTitle>
                 <DialogDescription className='hidden'></DialogDescription>

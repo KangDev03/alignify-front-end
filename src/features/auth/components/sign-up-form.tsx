@@ -112,7 +112,7 @@ export default function SignUpForm() {
       const otpResponse = await requestOTP({ email: values.email }).unwrap();
       if (otpResponse.message) {
         toast.success(otpResponse.message);
-        navigate('/auth/verify-otp', { state: registerData });
+        navigate('/auth/register-verify', { state: registerData });
       }
     } catch (err) {
       console.error('OTP request failed:', err);

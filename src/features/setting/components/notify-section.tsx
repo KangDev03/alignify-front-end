@@ -1,15 +1,19 @@
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 
+import { changeSoundMode } from '@/features/auth/auth.slice';
+import type { RootState } from '@/redux/store';
+
+import { useChangeSoundModeMutation } from '../setting.service';
+
 export default function NotificationsSection() {
+  const dispatch = useDispatch();
+  const { sound } = useSelector((state: RootState) => state.auth);
+  const [turnSound] = useChangeSoundModeMutation();
+
   return (
     <div className="space-y-6">
       <div>
@@ -59,24 +63,23 @@ export default function NotificationsSection() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Thông báo trên trình duyệt</Label>
-              <p className="text-sm text-muted-foreground">
-                Hiển thị thông báo ngay cả khi không mở website
-              </p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
               <Label>Âm thanh thông báo</Label>
               <p className="text-sm text-muted-foreground">Phát âm thanh khi có thông báo mới</p>
             </div>
-            <Switch />
+            <Switch
+              id="sound"
+              checked={sound}
+              onClick={async () => {
+                const newSoundState = !sound;
+                dispatch(changeSoundMode({ turn: newSoundState }));
+                await turnSound(newSoundState);
+              }}
+            />
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Tần suất thông báo</CardTitle>
         </CardHeader>
@@ -96,7 +99,7 @@ export default function NotificationsSection() {
             </Select>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }

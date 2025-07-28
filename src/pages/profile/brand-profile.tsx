@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -14,8 +15,12 @@ import { BrandInfoCard } from '@/features/profile/components/brand-info';
 import { BrandProfileSkeletion } from '@/features/profile/components/profile-skeletion';
 import { ProfileSocialLinks } from '@/features/profile/components/profile-social-links';
 import { useGetBrandProfileUserQuery } from '@/features/profile/profile.service';
+import { setBrandProfileSlice } from '@/features/profile/profile.slice';
+import type { RootState } from '@/redux/store';
 
 export function BrandProfilePage() {
+  const dispatch = useDispatch();
+  const { brandProfile } = useSelector((state: RootState) => state.profile);
   const navigate = useNavigate();
   const location = useLocation();
   let userId = location.pathname.split('/').pop() || undefined;
@@ -25,10 +30,15 @@ export function BrandProfilePage() {
     data: profileRaw,
     isLoading,
     isError,
+    isSuccess,
   } = useGetBrandProfileUserQuery(userId, {
     refetchOnMountOrArgChange: true,
     refetchOnReconnect: true,
   });
+
+  useEffect(() => {
+    if (isSuccess && profileRaw && !userId) dispatch(setBrandProfileSlice(profileRaw));
+  }, [dispatch, profileRaw, isSuccess, userId]);
 
   useEffect(() => {
     if (isError) {
@@ -49,7 +59,7 @@ export function BrandProfilePage() {
     return <BrandProfileSkeletion />;
   }
 
-  const profile = profileRaw?.data;
+  const profile = userId ? profileRaw?.data : brandProfile!;
   const contactMap = Array.isArray(profile.contacts)
     ? Object.fromEntries(profile.contacts.map((c: any) => [c.contact_type, c.contact_infor]))
     : {};

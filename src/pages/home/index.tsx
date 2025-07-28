@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import { Star, TrendingUp } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -27,13 +28,20 @@ import Influencers from '@/features/home/components/influencers';
 import { useGetCampaignTop3Query, useGetTopInfluencerQuery } from '@/features/home/home.service';
 import { resetHomeState, setRefetch } from '@/features/home/home.slice';
 import type { homeTab } from '@/features/home/home.type';
+import {
+  useGetBrandProfileUserQuery,
+  useGetInfluencerProfileUserQuery,
+} from '@/features/profile/profile.service';
+import { setBrandProfileSlice, setInfluencerProfileSlice } from '@/features/profile/profile.slice';
 import { useAppDispatch } from '@/hooks/redux';
+import type { RootState } from '@/redux/store';
 import { formatNumber } from '@/utils/format';
 
 
 export function HomePage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { role } = useSelector((state: RootState) => state.auth);
   const { data: roles } = useGetRolesQuery();
   const { data: categories } = useGetCategoriesQuery();
   const { data: top3Campaign } = useGetCampaignTop3Query();
@@ -44,6 +52,30 @@ export function HomePage() {
     categoryId: 'all',
     categoryName: 'Tất Cả',
   });
+
+  const { data: influencerProfileRaw, isSuccess: isInfluencerSuccess } =
+    useGetInfluencerProfileUserQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    });
+
+  const { data: brandProfileRaw, isSuccess: isBrandSuccess } = useGetBrandProfileUserQuery(
+    undefined,
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    },
+  );
+
+  useEffect(() => {
+    if (isInfluencerSuccess && influencerProfileRaw && role === 'INFLUENCER')
+      dispatch(setInfluencerProfileSlice(influencerProfileRaw));
+  }, [dispatch, influencerProfileRaw, isInfluencerSuccess, role]);
+
+  useEffect(() => {
+    if (isBrandSuccess && brandProfileRaw && role === 'BRAND')
+      dispatch(setBrandProfileSlice(brandProfileRaw));
+  }, [dispatch, brandProfileRaw, isBrandSuccess, role]);
 
   const [activeTab, setActiveTab] = useState<homeTab>('campaign');
   const tabs = [

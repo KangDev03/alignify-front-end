@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 import { Calendar, Clock, RefreshCw, XCircle } from 'lucide-react';
 
 import {
@@ -30,8 +31,9 @@ interface ApplicationDetailProps {
 
 export default function ApplicationDetail({ application, campaignInfo }: ApplicationDetailProps) {
   const { t } = useTranslation();
-  const handleGoToCampaign = (applicationId: string) => {
-    console.log(`Chuyển đến chiến dịch từ đơn ứng tuyển ${applicationId}`);
+  const navigate = useNavigate();
+  const handleGoToCampaign = () => {
+    navigate('/my-campaign');
   };
 
   const handleReapply = (applicationId: string) => {
@@ -69,7 +71,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
     .filter((req): req is NonNullable<typeof req> => req !== null);
 
   return (
-    <div className="px-6 overflow-auto scrollbar-small">
+    <div className="py-3 px-6 pr-3 overflow-y-auto scrollbar-thin">
       <div className="pb-4 pt-1">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
@@ -381,7 +383,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
             </Button>
           )}
           {application.status.toUpperCase() === 'ACCEPTED' && (
-            <Button variant="default" onClick={() => handleGoToCampaign(application.applicationId)}>
+            <Button variant="default" onClick={() => handleGoToCampaign()}>
               <Clock className="h-4 w-4" />
               {t("applications.applicationDetail.buttonText.goToCampaign")}
             </Button>

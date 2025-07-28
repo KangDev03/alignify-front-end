@@ -2,9 +2,15 @@ import { Monitor, Moon, Sun } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+
+import { type Theme, useTheme } from '@/components/theme/theme-provider';
 
 export default function AppearanceSection() {
+  const { theme, setTheme } = useTheme();
+  const toggleTheme = (selectedTheme: Theme) => {
+    setTheme(selectedTheme);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -25,7 +31,14 @@ export default function AppearanceSection() {
                 <p className="text-sm font-medium">Sáng</p>
               </div>
               <div className="flex items-center space-x-2">
-                <input type="radio" name="theme" value="light" defaultChecked />
+                <input
+                  type="radio"
+                  name="theme"
+                  value="light"
+                  checked={theme === 'light'}
+                  onChange={() => toggleTheme('light')}
+                  className="cursor-pointer"
+                />
                 <Label>Theme sáng</Label>
               </div>
             </div>
@@ -35,7 +48,14 @@ export default function AppearanceSection() {
                 <p className="text-sm font-medium">Tối</p>
               </div>
               <div className="flex items-center space-x-2">
-                <input type="radio" name="theme" value="dark" />
+                <input
+                  type="radio"
+                  name="theme"
+                  value="dark"
+                  checked={theme === 'dark'}
+                  onChange={() => toggleTheme('dark')}
+                  className="cursor-pointer"
+                />
                 <Label>Theme tối</Label>
               </div>
             </div>
@@ -45,7 +65,14 @@ export default function AppearanceSection() {
                 <p className="text-sm font-medium">Hệ thống</p>
               </div>
               <div className="flex items-center space-x-2">
-                <input type="radio" name="theme" value="system" />
+                <input
+                  type="radio"
+                  name="theme"
+                  value="system"
+                  checked={theme === 'system'}
+                  onChange={() => toggleTheme('system')}
+                  className="cursor-pointer"
+                />
                 <Label>Theo hệ thống</Label>
               </div>
             </div>
@@ -53,7 +80,7 @@ export default function AppearanceSection() {
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Màu chủ đạo</CardTitle>
         </CardHeader>
@@ -74,9 +101,9 @@ export default function AppearanceSection() {
             ))}
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Tùy chỉnh hiển thị</CardTitle>
         </CardHeader>
@@ -100,7 +127,7 @@ export default function AppearanceSection() {
             <Switch defaultChecked />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }
