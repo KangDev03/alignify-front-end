@@ -120,12 +120,34 @@ export default function RecruitingCampaignDialog({
   };
   return (
     <div className="w-full grid grid-cols-2 gap-2">
-      {userRole === 'BRAND' && campaign.contractUrl ? (
+      {userRole === 'INFLUENCER' && campaign.contractUrl ? (
         <Button
           variant="outline"
           size="sm"
           type="button"
-          onClick={() => window.open(campaign.contractUrl, '_blank')}
+          onClick={async (e) => {
+            e.stopPropagation();
+            if (campaign.contractUrl) {
+              try {
+                const response = await fetch(campaign.contractUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const fileName =
+                  campaign.contractUrl.split('/').pop() ||
+                  (campaign.contractUrl.endsWith('.pdf') ? '.pdf' : '');
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+              } catch {
+                toast.error('Không thể tải file CV. Vui lòng thử lại sau.');
+              }
+            }
+            window.open(campaign.contractUrl, '_blank');
+          }}
         >
           <Icons.fileText className="h-4 w-4 mr-1" />
           Hợp đồng
