@@ -22,16 +22,28 @@ import { baseApi } from './baseApi';
 const persistAuthConfig = {
   key: 'auth',
   storage,
-  whitelist: ['id', 'token', 'role', 'avatarUrl', 'name', 'twoFA', 'sound', 'publicAcc', 'active'],
+  whitelist: [
+    'id',
+    'token',
+    'role',
+    'avatarUrl',
+    'name',
+    'twoFA',
+    'sound',
+    'publicAcc',
+    'active',
+    'planId',
+  ],
   transforms: [
     {
       in: (state: any, key: string) => {
-        if (key === 'profile') {
+        if (key === 'auth') {
           const role = state.role;
 
           return {
             ...state,
             publicAcc: role === 'INFLUENCER' ? state.publicAcc : null,
+            planId: role === 'ADMIN' ? null : state.planId,
           };
         }
         return state;

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Check,
   Crown,
@@ -35,6 +36,7 @@ import {
   useCreatePaypalMutation,
 } from '@/features/payment/payment.service';
 import { useGetPlansByRoleQuery } from '@/features/upgrade-plan/components/upgrade-plan.service';
+import type { RootState } from '@/redux/store';
 import { formatPlanPermissionName, formatPlanType, formatPrice } from '@/utils/format';
 
 interface UpgradePlanProps {
@@ -107,6 +109,9 @@ interface UpgradePlanProps {
 //   });
 // };
 export function UpgradePlan({ userRole }: UpgradePlanProps) {
+  const { planId: currentPlanId } = useSelector((state: RootState) => state.auth);
+  console.log(currentPlanId);
+
   const [isAnnual, setIsAnnual] = useState<boolean>(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -114,28 +119,33 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
 
   const currentPlan = userRole === 'INFLUENCER' ? 'creator' : 'starter';
   const { data: fetchedPlans } = useGetPlansByRoleQuery(userRole.toLowerCase() ?? '');
+  // useEffect(() => {
+  //   if (fetchedPlans?.data?.length) {
+  //     const free = fetchedPlans.data.find((plan) => plan.price === 0);
+  //     if (free?.planId) {
+  //       setCurrentPlanId((prev) => prev || free.planId);
+  //     }
+  //   }
+  // }, [fetchedPlans]);
+
+  //m lam de set free plan thoi ma
+  // T làm rồi đó với t sửa lại chút còn cái set nó t  chưa dùng vì để m làm đó chứ đừng ctrl z lại\
+  // t dang lam do
   const [createPayOS] = useCreatePayOSMutation();
   const [createPaypal] = useCreatePaypalMutation();
 
   const handleUpgrade = (planId: string) => {
-    if (planId === currentPlanId) return;
+    // if (planId === currentPlanId) return;
 
     const selected = plansFilter.find((plan) => plan.planId === planId);
     setSelectedPlanId(planId);
 
     if (!selected) return;
 
-    if (selected.price === 0) {
-      setCurrentPlanId(planId);
-      console.log('Gói miễn phí đã được kích hoạt.');
-      return;
-    }
-
     setShowPaymentDialog(true);
   };
 
-  const [currentPlanId, setCurrentPlanId] = useState<string>(currentPlan);
-
+  // const [currentPlanId, setCurrentPlanId] = useState<string | undefined>(undefined);
   if (!fetchedPlans || !fetchedPlans.data || fetchedPlans.data.length <= 0) {
     return <p>Không có plan nào</p>;
   }
@@ -157,18 +167,12 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
       return;
     }
 
-    if (selectedPlanData.price === 0) {
-      console.log('Gói miễn phí, không cần thanh toán');
-      return;
-    }
-
     try {
       if (paymentMethod === 'paypal') {
         const usdPrice = convertVndToUsd(selectedPlanData.price);
         const res = await createPaypal({ price: usdPrice }).unwrap();
 
         if (res?.redirectUrl) {
-          setCurrentPlanId(selectedPlanData.planId);
           window.location.href = res.redirectUrl;
         } else {
           console.error('Không nhận được approval URL từ Paypal');
@@ -179,9 +183,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
           returnUrl: 'http://localhost:3000/upgrade-plan',
           cancelUrl: 'http://localhost:3000/upgrade-plan',
         }).unwrap();
-        console.log(selectedPlanData.planId);
         if (res.error === 0 && res.data?.checkoutUrl) {
-          setCurrentPlanId(selectedPlanData.planId);
           window.location.href = res.data.checkoutUrl;
         } else {
           console.error('Không có checkoutUrl hoặc có lỗi:', res.message);

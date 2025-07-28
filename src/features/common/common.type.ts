@@ -155,3 +155,12 @@ export const SupportedPostTypeByPlatform: PostTypeByPlatform = {
     },
   ],
 };
+
+export interface UserPlan {
+  userPlanId: string;
+  userId: string;
+  planId: string;
+  createdAt: string;
+  status: string;
+  completedAt: string;
+}
