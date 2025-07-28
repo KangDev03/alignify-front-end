@@ -1,18 +1,30 @@
+
 import { useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
 
+import { UserDropdown } from "@/components/layouts/app/user-dropdown";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { logout } from "@/features/auth/auth.slice";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+
 
 export function LandingHeader() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { token } = useAppSelector((state) => state.auth);
 
   const handleScrollToTop = () => {
-    if (location.pathname === '/landing-page') {
+    if (location.pathname === '/') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      navigate('/landing-page');
+      navigate('/');
     }
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
   };
 
   return (
@@ -37,15 +49,29 @@ export function LandingHeader() {
         </nav>
         <div className="flex items-center space-x-2">
           <ThemeToggle />
-          <Button variant="ghost" onClick={() => { navigate('/auth/login'); }}>
-            Đăng nhập
-          </Button>
-          <Button
-            onClick={() => { navigate('/auth/select-role'); }}
-            className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
-          >
-            Đăng ký
-          </Button>
+          {token ? (
+            <>
+              <Button
+                onClick={() => navigate('/home')}
+                className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
+              >
+                Vào trang chính
+              </Button>
+              <UserDropdown onLogout={handleLogout} />
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" onClick={() => { navigate('/auth/login'); }}>
+                Đăng nhập
+              </Button>
+              <Button
+                onClick={() => { navigate('/auth/select-role'); }}
+                className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
+              >
+                Đăng ký
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>
