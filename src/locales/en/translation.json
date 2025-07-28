@@ -1,0 +1,610 @@
+{
+  "features": "Features",
+  "pricing": "Pricing",
+  "testimonials": "Testimonials",
+  "login": "Sign In",
+  "register": "Sign Up",
+  "moveToHome": "Go to Home",
+
+  "landing": {
+    "features": {
+      "brand": {
+        "title1": "Smart Influencer Search",
+        "description1": "AI-powered matching helps find the right influencer for your brand",
+        "title2": "Comprehensive Campaign Management",
+        "description2": "Track performance, ROI, and engagement from a single dashboard",
+        "title3": "Collaboration Tools",
+        "description3": "Chat directly, share briefs, and provide feedback with influencers",
+        "title4": "Secure Payment",
+        "description4": "Escrow system protects both brands and influencers"
+      },
+      "influencer": {
+        "title1": "Professional Portfolio",
+        "description1": "Showcase your work with an auto-generated media kit",
+        "title2": "Detailed Analytics",
+        "description2": "Track engagement, reach, and income from campaigns",
+        "title3": "Networking Community",
+        "description3": "Connect with other influencers and share experiences",
+        "title4": "Opportunity Matching",
+        "description4": "Get notified of opportunities that match your niche"
+      }
+    },
+    "pricing": {
+      "title": "Flexible Pricing",
+      "description": "Choose a plan that fits your needs and budget",
+      "switch": {
+        "monthly": "Monthly",
+        "yearly": "Yearly"
+      },
+      "plans": {
+        "brands": "For Brands",
+        "influencers": "For Influencers"
+      },
+      "button": "Get Started",
+      "brand": {
+        "starter": {
+          "name": "Starter",
+          "price": "Free",
+          "description": "For startups and small businesses",
+          "features": [
+            "Create up to 3 campaigns/month",
+            "Search up to 100 influencers",
+            "5 influencers per campaign"
+          ]
+        },
+        "pro": {
+          "name": "Professional",
+          "price": "₫499,000/month",
+          "description": "For medium businesses",
+          "features": [
+            "Create up to 25 campaigns/month",
+            "Unlimited search",
+            "Connect up to 100 influencers"
+          ]
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "price": "₫1,499,000/month",
+          "description": "For large enterprises",
+          "features": [
+            "Unlimited campaigns",
+            "Unlimited influencer search",
+            "Unlimited influencers"
+          ]
+        }
+      },
+      "influencer": {
+        "creator": {
+          "name": "Creator",
+          "price": "Free",
+          "description": "For new creators",
+          "features": [
+            "Apply to 5 campaigns/month",
+            "Search up to 10 campaigns"
+          ]
+        },
+        "pro": {
+          "name": "Pro Creator",
+          "price": "₫199,000/month",
+          "description": "For professional influencers",
+          "features": [
+            "Apply to 10 campaigns/month",
+            "Search up to 20 campaigns"
+          ]
+        },
+        "agency": {
+          "name": "Agency",
+          "price": "₫799,000/month",
+          "description": "For agencies and MCNs",
+          "features": ["Unlimited applications", "Unlimited campaign search"]
+        }
+      }
+    },
+    "testimonials": {
+      "0": "This platform helped us find the right influencers and increased ROI by 300%. Amazing!",
+      "1": "I found many reputable brands and doubled my income thanks to this platform. Highly recommended!",
+      "2": "The analytics dashboard is very detailed, helping us track performance and optimize campaigns effectively."
+    },
+    "stats": {
+      "influencers": "Influencers",
+      "brands": "Brands",
+      "campaigns": "Campaigns",
+      "posts": "Posts"
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "description": "Join a thriving community of thousands of brands and influencers",
+      "button": "Start today"
+    }
+  },
+
+  "landingHero": {
+    "titleLine1": "Connect Brands & Influencers",
+    "titleLine2": "More effective than ever",
+    "description": "A complete platform that helps brands find suitable influencers and influencers connect with great collaboration opportunities",
+    "stats": {
+      "0": "Active users",
+      "1": "Successful campaigns",
+      "2": "Influencers joined",
+      "3": "Partnered brands"
+    }
+  },
+
+  "landingFeatures": {
+    "title": "Outstanding Features",
+    "description": "Designed specifically for the needs of each target user",
+    "tabBrands": "For Brands",
+    "tabInfluencers": "For Influencers"
+  },
+
+  "plan": {
+    "recommended": "Recommended",
+    "buttonText": "Get started",
+    "features": "Features",
+    "otherFeatures": "Other features"
+  },
+
+  "landingTestimonials": {
+    "title": "What our customers say",
+    "description": "Thousands of brands and influencers trust us"
+  },
+
+  "landingFooter": {
+    "description": "Vietnam's leading platform connecting brands and influencers",
+    "product": "Product",
+    "forBrands": "For Brands",
+    "forInfluencers": "For Influencers",
+    "analytics": "Analytics",
+    "api": "API",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "contact": "Contact",
+    "blog": "Blog",
+    "community": "Community",
+    "company": "Company",
+    "aboutUs": "About Us",
+    "careers": "Careers",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "copyright": "© 2024 InfluenceHub. All rights reserved."
+  },
+
+  "header": {
+    "nav": {
+      "home": "Home",
+      "myCampaign": "My Campaigns",
+      "applications": "Applications",
+      "invitations": "Invitations",
+      "statistics": "Statistics",
+      "campaignManagement": "Campaign Management",
+      "applicants": "Applicants",
+      "reports": "Reports",
+      "upgrade": "Upgrade"
+    }
+  },
+
+  "home": {
+    "title": "Explore",
+    "searchPlaceholder": "Search...",
+    "selectCategory": "Select category",
+    "all": "All",
+    "tabs": {
+      "campaign": "Campaigns",
+      "brand": "Brands",
+      "influencer": "Influencers",
+      "forum": "Forum"
+    },
+    "campaigns": {
+      "trending": "Trending Campaigns",
+      "updating": "Updating"
+    },
+    "influencers": {
+      "top": "Top Influencers",
+      "followers": "followers"
+    }
+  },
+
+  "campaign": {
+    "notFound": "No campaigns found",
+    "noCampaign": "No campaigns posted",
+    "noNewCampaign": "No new campaign posts",
+    "tryLater": "You can come back later when campaigns are available.",
+    "tryLaterNew": "You can come back later when new campaigns are posted."
+  },
+
+  "brand": {
+    "notFound": "No brand accounts found",
+    "empty": "No brand accounts available",
+    "emptyDesc": "You can come back later when brand accounts are available.",
+    "noMore": "No more brand accounts",
+    "noMoreDesc": "You can come back later when new brand accounts are available.",
+    "viewProfile": "View profile",
+    "campaignCount": "campaigns"
+  },
+
+  "influencer": {
+    "notFound": "No influencer accounts found",
+    "empty": "No influencer accounts available",
+    "emptyDesc": "You can come back later when influencer accounts are available.",
+    "noMore": "No more influencer accounts",
+    "noMoreDesc": "You can come back later when new influencer accounts appear.",
+    "followers": "followers",
+    "viewProfile": "View profile"
+  },
+
+  "forum": {
+    "notFound": "No posts found",
+    "empty": "No posts in the forum",
+    "emptyDesc": "You can come back later when forum posts appear.",
+    "noMore": "No more posts in the forum",
+    "noMoreDesc": "You can come back later when new posts appear.",
+    "private": "Private",
+    "edit": "Edit post",
+    "delete": "Delete post",
+    "confirmDelete": "Confirm delete post",
+    "confirmDeleteDescription": "Are you sure you want to delete this post? This action cannot be undone.",
+    "cancel": "Cancel",
+    "deleting": "Deleting...",
+    "deleteSuccess": "Post deleted successfully",
+    "deleteError": "Failed to delete post. Please try again!",
+    "readMore": "Read more",
+    "readLess": "Read less",
+    "postBy": "Posted by",
+    "loadingMore": "Loading more...",
+    "firstComment": "Be the first to comment",
+    "enterComment": "Enter a comment",
+    "MyComments": "Me"
+  },
+
+  "myCampaigns": {
+    "title": "My Campaigns",
+    "tabs": {
+      "pending": "Not started",
+      "participating": "In progress",
+      "completed": "Completed"
+    },
+    "searchPlaceholder": "Search...",
+    "noCampaigns": {
+      "pending": "You don't have any pending or recruiting campaigns",
+      "participating": "You don't have any campaigns in progress",
+      "completed": "You don't have any completed campaigns"
+    }
+  },
+
+  "campaignCard": {
+    "apply": "Apply",
+    "applied": "applied",
+    "applySuccess": "Successfully applied",
+    "applyError": "Failed to apply. Please try again!",
+    "startRecruitment": "start recruitment",
+    "campaignStartRecruitment": "Campaign has started recruiting!",
+    "failedPhase": "Failed to change phase!",
+    "updateSuccess": "Upload successful!",
+    "deletedCampaign": "Campaign deleted",
+    "draftCampaign": "Campaign moved to draft",
+    "endRecruitment": "Recruitment ended",
+    "youEndRecruitment": "You have ended the recruitment",
+    "endRecruitmentSuccess": "Recruitment ended successfully",
+    "startedCampaign": "Campaign started",
+    "youStartCampaign": "You have started the campaign",
+    "startCampaign": "Campaign has started!",
+    "completedCampaign": "Campaign completed",
+    "endCampaign": "You have ended the campaign",
+    "endedCampaign": "Campaign has ended!",
+    "submitedProgress": "updated the campaign's progress",
+    "submitProgressSuccess": "Progress updated successfully!",
+    "approveProgress": "Content approved!",
+    "rejectProgress": "Content rejected!",
+    "approved": "Approved",
+    "pending": "Pending",
+    "rejected": "Rejected",
+    "unknown": "Unknown",
+    "updateProgressButton": "Update progress",
+    "updateProgressDialogTitle": "Update campaign progress",
+    "contentCount": "content",
+    "contentTitle": "Content",
+    "contentLinkLabel": "Content link",
+    "link": "Link",
+    "cancelButton": "Cancel",
+    "submitButton": "Submit update",
+    "viewProgress": "View progress",
+    "viewProgressDialogTitle": "campaign progress",
+    "overviewProgress": "Overall progress",
+    "progressPercentageText": "completed",
+    "progressDetails": "Progress details",
+    "noUpdateProgress": "No progress update yet",
+    "submitAt": "Submitted at",
+    "approve": "Approve",
+    "reject": "Reject",
+    "accepted": "Accepted",
+    "closeButton": "Close",
+    "editButton": "Edit",
+    "recruitButton": "Post recruitment",
+    "sureApply": "Are you sure you want to apply for this campaign?",
+    "uploadContract": "Upload your contract",
+    "choseContractButton": "Choose contract",
+    "viewContract": "Preview",
+    "deleteContract": "Delete contract",
+    "uploadingCampaign": "Posting campaign...",
+    "viewCampaignDetails": "View details",
+    "campaignPostBy": "Campaign by",
+    "appliedButton": "Applied",
+    "uploadPortfolioOrCV": "Upload your CV or Portfolio",
+    "uploadCVError": "Cannot upload CV file. Please try again later.",
+    "attached": "Attached",
+    "unupload": "Not uploaded",
+    "choseImgButton": "Choose image",
+    "orText": "or",
+    "useByYou": "Used by you",
+    "deleteImg": "Delete image",
+    "applying": "Applying",
+    "contract": "Contract",
+    "uploading": "Uploading",
+    "upload": "Upload",
+    "editDialogDesc": "Are you sure you want to edit the campaign? This action will move your campaign back to draft. All applications and invitations will be deleted. Make sure you are performing this action yourself!",
+    "confirmButton": "Confirm",
+    "endRecruitmentButton": "End recruitment",
+    "startCampaignButton": "Start",
+    "trackCampaignButton": "Track campaign",
+    "endButton": "End",
+    "viewReport": "View report",
+    "categories": "Categories",
+    "applicants": "Applicants",
+    "popular": "Popular",
+    "describeCampaign": "Describe campaign",
+    "platform": "Platform",
+    "budget": "Budget",
+    "time": "Time",
+    "status": "Status",
+    "campaignStatus": {
+      "draft": "Draft",
+      "recruiting": "Recruiting",
+      "pending": "Pending",
+      "participating": "Participating",
+      "completed": "Completed"
+    },
+    "InluencerRequirements": "Influencer Requirements",
+    "postRequirements": "Post Requirements",
+    "viewCount": "View Count",
+    "followers": "Followers",
+    "likeCount": "Like Count",
+    "commentCount": "Comment Count",
+    "shareCount": "Share Count",
+    "uploadPost": "Upload post",
+    "uploadPostSuccess": "Post uploaded successfully!",
+    "uploadingPost": "Uploading post..."
+  },
+
+  "applications": {
+    "tabs": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "sectionTitle": "My Applications",
+    "searchPlaceholder": "Search...",
+    "noApplications": {
+      "pending": {
+        "title": "You have no applications in pending status",
+        "description": "You can come back here after applying to new campaigns."
+      },
+      "accepted": {
+        "title": "You have no applications in accepted status",
+        "description": "You can come back here after recruiters accept your applications."
+      },
+      "rejected": {
+        "title": "You have no applications in rejected status",
+        "description": "You can come back here after recruiters reject your applications."
+      }
+    },
+    "applied": "Applied",
+    "ago": "ago",
+    "appliedOn": "Applied on",
+    "viewApplication": "View application",
+    "campaignPostBy": "Campaign by",
+    "applicationInformation": "Application Information",
+    "expectedResponse": "Expected response time",
+    "applicationDetail": {
+      "buttonText": {
+        "cancelApply": "Cancel apply",
+        "goToCampaign": "Go to campaign",
+        "reapply": "Reapply"
+      }
+    }
+  },
+
+  "invitation": {
+    "sectionTitle": "Invitation Management",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "badge": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "toast": {
+      "acceptError": "Failed to accept the invitation. Please try again!"
+    },
+    "notification": {
+      "acceptForBrand": "You have accepted the invitation from",
+      "acceptForInfluenceer": "Your invitation has been accepted"
+    },
+    "card": {
+      "budget": "Budget",
+      "timeLimit": "Time Limit",
+      "rejectButton": "Reject",
+      "acceptButton": "Accept"
+    },
+    "influencer": {
+      "sectionDescription": "Respond to invitations from brands",
+      "cardTitle": {
+        "totalInvites": "Total Invitations",
+        "respondedInvites": "Responded",
+        "pendingInvites": "Pending"
+      }
+    },
+    "brand": {
+      "sectionDescription": "Manage invitations sent to influencers",
+      "cardTitle": {
+        "totalInvites": "Total Invitations",
+        "respondedInvites": "Pending Responses",
+        "acceptanceRate": "Acceptance Rate"
+      }
+    }
+  },
+
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage account and customization",
+    "groups": {
+      "general": "General Settings",
+      "customization": "Customization",
+      "other": "Others"
+    },
+    "items": {
+      "profile": "Profile",
+      "account": "Account",
+      "security": "Security",
+      "notifications": "Notifications",
+      "appearance": "Appearance",
+      "privacy": "Privacy",
+      "billing": "Billing"
+    }
+  },
+
+  "account": {
+    "title": "Account",
+    "description": "Manage your account information and login options.",
+    "regionTitle": "Region Options",
+    "languageLabel": "Language",
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "These actions cannot be undone. Please proceed with caution.",
+      "deleteButton": "Delete Account"
+    }
+  },
+
+  "appearance": {
+    "title": "Appearance",
+    "description": "Customize interface and user experience.",
+    "themeCard": {
+      "title": "Theme",
+      "description": "Choose a theme for the application.",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "lightLabel": "Light theme",
+      "darkLabel": "Dark theme",
+      "systemLabel": "Follow system"
+    }
+  },
+
+  "notifications": {
+    "title": "Notifications",
+    "description": "Customize how you receive notifications from the system.",
+    "email": {
+      "title": "Email Notifications",
+      "campaign": {
+        "label": "New campaigns",
+        "description": "Receive emails when relevant campaigns are available"
+      },
+      "message": {
+        "label": "New messages",
+        "description": "Get notified when brands/influencers message you"
+      },
+      "system": {
+        "label": "System updates",
+        "description": "Information about new features and updates"
+      }
+    },
+    "push": {
+      "title": "Push Notifications",
+      "sound": {
+        "label": "Notification sound",
+        "description": "Play sound when a new notification arrives"
+      }
+    }
+  },
+
+  "privacy": {
+    "title": "Privacy",
+    "description": "Control your privacy and personal data.",
+    "profileVisibility": {
+      "title": "Profile Visibility",
+      "publicLabel": "Public Profile",
+      "publicDescription": "Allow others to view your profile"
+    },
+    "dataControl": {
+      "title": "Data Control",
+      "download": "Download my data",
+      "delete": "Request data deletion",
+      "viewPolicy": "View privacy policy"
+    },
+    "otherOptions": {
+      "stats": {
+        "label": "Show statistics",
+        "description": "Display follower count and engagement rate"
+      },
+      "contact": {
+        "label": "Allow contact",
+        "description": "Brands can message you directly"
+      },
+      "usageAnalytics": {
+        "label": "Usage analytics",
+        "description": "Helps improve user experience"
+      },
+      "personalAds": {
+        "label": "Personalized ads",
+        "description": "Show ads based on your interests"
+      }
+    }
+  },
+
+  "security": {
+    "sectionTitle": "Security",
+    "sectionDescription": "Manage your account password and security options.",
+    "password": {
+      "title": "Change Password",
+      "oldLabel": "Current Password",
+      "newLabel": "New Password",
+      "confirmLabel": "Confirm New Password",
+      "placeholderOld": "Enter current password",
+      "placeholderNew": "Enter new password",
+      "placeholderConfirm": "Re-enter new password",
+      "updateButton": "Update Password",
+      "updating": "Updating password..."
+    },
+    "2fa": {
+      "title": "Two-Factor Authentication (2FA)",
+      "description": "Add an extra layer of security to your account.",
+      "emailLabel": "Email Verification",
+      "emailDesc": "Receive verification codes via email"
+    },
+    "sessions": {
+      "title": "Login Sessions",
+      "description": "Manage the devices that are logged into your account.",
+      "currentDevice": "Current",
+      "logout": "Log Out",
+      "logoutAll": "Log out of all other devices",
+      "example": {
+        "desktop": "Chrome on Windows",
+        "mobile": "Safari on iPhone",
+        "locationNow": "Active now • HCM",
+        "locationPast": "2 hours ago • HCM"
+      }
+    },
+    "toast": {
+      "success": "Password changed successfully!",
+      "error": "Password change failed"
+    }
+  }
+}

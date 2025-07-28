@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ export default function PendingCampaignDialog({
   campaign,
   sendNotification,
 }: PendingCampaignDialogProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { role: userRole, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
   const [changeStatus] = useChangeStatusMutation();
@@ -39,22 +41,22 @@ export default function PendingCampaignDialog({
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'PARTICIPATING' }).unwrap();
       sendNotificationForAll(
         campaign.appliedInfluencerIds ?? [],
-        `Đã bắt đầu chiến dịch\n${campaign?.campaignName}`,
+        `${t("campaignCard.startedCampaign")}\n${campaign?.campaignName}`,
         name!,
         avatarUrl!,
         sendNotification,
       );
       sendNotification({
         userId: id!,
-        content: `Bạn đã bắt đầu chiến dịch\n${campaign?.campaignName}`,
+        content: `${t("campaignCard.youStartCampaign")}\n${campaign?.campaignName}`,
         name: name!,
         avatarUrl: avatarUrl!,
       });
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'PARTICIPATING' }));
-      toast.success('Chiến dịch đã bắt đầu!');
+      toast.success(t("campaignCard.startCampaign"));
     } catch (error) {
       console.error(error);
-      toast.error('Chuyển giai đoạn thất bại!');
+      toast.error(t("campaignCard.failedPhaseChange"));
     }
   };
   const handleMoveToDraft = async () => {
@@ -62,14 +64,14 @@ export default function PendingCampaignDialog({
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'DRAFT' }).unwrap();
       sendNotificationForAll(
         campaign.appliedInfluencerIds ?? [],
-        `Đã xóa chiến dịch\n${campaign?.campaignName}`,
+        `${t("campaignCard.deletedCampaign")}\n${campaign?.campaignName}`,
         name!,
         avatarUrl!,
         sendNotification,
       );
       sendNotification({
         userId: id!,
-        content: `Chiến dịch đã về dạng nháp\n${campaign?.campaignName}`,
+        content: `${t("campaignCard.draftCampaign")}\n${campaign?.campaignName}`,
         name: name!,
         avatarUrl: avatarUrl!,
       });
@@ -77,7 +79,7 @@ export default function PendingCampaignDialog({
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'DRAFT' }));
     } catch (error) {
       console.error(error);
-      toast.error('Chuyển giai đoạn thất bại!');
+      toast.error(t("campaignCard.failedPhaseChange"));
     }
   };
   return (
@@ -86,13 +88,13 @@ export default function PendingCampaignDialog({
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="flex items-center w-full bg-transparent">
             <Icons.eye className="h-4 w-4 mr-2" />
-            Xem chi tiết
+            {t("campaignCard.viewCampaignDetails")}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
           <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
             <DialogTitle className="font-semibold text-xl text-center">
-              Chiến dịch của {campaign.brandName}
+              {t("campaignCard.campaignPostBy")} {campaign.brandName}
             </DialogTitle>
             <DialogDescription className="hidden"></DialogDescription>
           </DialogHeader>
@@ -109,7 +111,7 @@ export default function PendingCampaignDialog({
             onClick={handleStartCampaign}
           >
             <Icons.play className="h-4 w-4 mr-1" />
-            Bắt đầu
+            {t("campaignCard.startCampaignButton")}
           </Button>
         </>
       )}

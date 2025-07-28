@@ -1,8 +1,9 @@
-
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
 
+import { LanguageSelect } from "@/components/language-select";
 import { UserDropdown } from "@/components/layouts/app/user-dropdown";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { logout } from "@/features/auth/auth.slice";
@@ -10,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 
 
 export function LandingHeader() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { token } = useAppSelector((state) => state.auth);
@@ -38,16 +40,17 @@ export function LandingHeader() {
         </div>
         <nav className="hidden md:flex items-center space-x-6">
           <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-            Tính năng
+            {t('features')}
           </a>
           <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-            Bảng giá
+            {t('pricing')}
           </a>
           <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">
-            Đánh giá
+            {t('testimonials')}
           </a>
         </nav>
         <div className="flex items-center space-x-2">
+          <LanguageSelect variant="default" />
           <ThemeToggle />
           {token ? (
             <>
@@ -55,20 +58,20 @@ export function LandingHeader() {
                 onClick={() => navigate('/home')}
                 className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
               >
-                Vào trang chính
+                {t('moveToHome')}
               </Button>
               <UserDropdown onLogout={handleLogout} />
             </>
           ) : (
             <>
               <Button variant="ghost" onClick={() => { navigate('/auth/login'); }}>
-                Đăng nhập
+                {t('login')}
               </Button>
               <Button
                 onClick={() => { navigate('/auth/select-role'); }}
                 className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700"
               >
-                Đăng ký
+                {t('register')}
               </Button>
             </>
           )}

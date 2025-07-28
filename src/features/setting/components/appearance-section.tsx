@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Monitor, Moon, Sun } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { type Theme, useTheme } from '@/components/theme/theme-provider';
 
 export default function AppearanceSection() {
+  const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const toggleTheme = (selectedTheme: Theme) => {
     setTheme(selectedTheme);
@@ -14,21 +16,21 @@ export default function AppearanceSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Giao diện</h3>
-        <p className="text-sm text-muted-foreground">Tùy chỉnh giao diện và trải nghiệm sử dụng.</p>
+        <h3 className="text-lg font-medium">{t('appearance.title')}</h3>
+        <p className="text-sm text-muted-foreground">T{t('appearance.description')}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Theme</CardTitle>
-          <CardDescription>Chọn theme hiển thị cho ứng dụng.</CardDescription>
+          <CardTitle>{t('appearance.themeCard.title')}</CardTitle>
+          <CardDescription>{t('appearance.themeCard.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <div className="border-2 border-primary rounded-lg p-4 bg-background">
                 <Sun className="h-6 w-6 mb-2" />
-                <p className="text-sm font-medium">Sáng</p>
+                <p className="text-sm font-medium">{t('appearance.themeCard.light')}</p>
               </div>
               <div className="flex items-center space-x-2">
                 <input
@@ -39,13 +41,13 @@ export default function AppearanceSection() {
                   onChange={() => toggleTheme('light')}
                   className="cursor-pointer"
                 />
-                <Label>Theme sáng</Label>
+                <Label>{t('appearance.themeCard.lightLabel')}</Label>
               </div>
             </div>
             <div className="space-y-2">
               <div className="border rounded-lg p-4 bg-slate-900 text-white">
                 <Moon className="h-6 w-6 mb-2" />
-                <p className="text-sm font-medium">Tối</p>
+                <p className="text-sm font-medium">{t('appearance.themeCard.dark')}</p>
               </div>
               <div className="flex items-center space-x-2">
                 <input
@@ -56,13 +58,13 @@ export default function AppearanceSection() {
                   onChange={() => toggleTheme('dark')}
                   className="cursor-pointer"
                 />
-                <Label>Theme tối</Label>
+                <Label>{t('appearance.themeCard.darkLabel')}</Label>
               </div>
             </div>
             <div className="space-y-2">
               <div className="border rounded-lg p-4 bg-gradient-to-br from-background to-slate-100">
                 <Monitor className="h-6 w-6 mb-2" />
-                <p className="text-sm font-medium">Hệ thống</p>
+                <p className="text-sm font-medium">{t('appearance.themeCard.system')}</p>
               </div>
               <div className="flex items-center space-x-2">
                 <input
@@ -73,7 +75,7 @@ export default function AppearanceSection() {
                   onChange={() => toggleTheme('system')}
                   className="cursor-pointer"
                 />
-                <Label>Theo hệ thống</Label>
+                <Label>{t('appearance.themeCard.systemLabel')}</Label>
               </div>
             </div>
           </div>

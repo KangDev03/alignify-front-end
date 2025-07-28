@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertCircleIcon, Search } from 'lucide-react';
 
 import { Alert, AlertTitle } from '@/components/ui/alert';
@@ -13,17 +14,19 @@ import CampaignCard from '@/features/my-campaign/components/campaign-card';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 
-const tabs = [
-  { value: ['pending', 'recruiting'], label: 'Chưa bắt đầu' },
-  { value: ['participating'], label: 'Đang diễn ra' },
-  { value: ['completed'], label: 'Đã kết thúc' },
-];
 
 export default function MyCampaignPage() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState('pending');
   const { data: campaignsResponse } = useGetAllCampaignsOfInfluencerQuery();
   const { campaigns } = useAppSelector((state: RootState) => state.campaign);
+
+  const tabs = [
+    { value: ['pending', 'recruiting'], label: t('myCampaigns.tabs.pending') },
+    { value: ['participating'], label: t('myCampaigns.tabs.participating') },
+    { value: ['completed'], label: t('myCampaigns.tabs.completed') },
+  ];
 
   useEffect(() => {
     if (campaignsResponse) dispatch(setCampagin(campaignsResponse));
@@ -36,7 +39,7 @@ export default function MyCampaignPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Chiến dịch của tôi</h1>
+      <h1 className="text-3xl font-bold">{t('myCampaigns.title')}</h1>
       <Tabs
         defaultValue="pending"
         value={activeTab}
@@ -58,7 +61,7 @@ export default function MyCampaignPage() {
           </TabsList>
           <div className="relative w-2/5">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Tìm kiếm..." className="pl-8" />
+            <Input placeholder={t('myCampaigns.searchPlaceholder')} className="pl-8" />
           </div>
         </div>
 
@@ -73,10 +76,10 @@ export default function MyCampaignPage() {
                 <AlertCircleIcon />
                 <AlertTitle>
                   {activeTab === 'pending' || activeTab === 'recruiting'
-                    ? 'Bạn chưa có chiến dịch nào đang chờ bắt đầu hoặc đang tuyển'
+                    ? t('myCampaigns.noCampaigns.pending')
                     : activeTab === 'participating'
-                      ? 'Bạn chưa có chiến dịch nào đang diễn ra'
-                      : 'Bạn chưa có chiến dịch nào đã kết thúc'}
+                      ? t('myCampaigns.noCampaigns.participating')
+                      : t('myCampaigns.noCampaigns.completed')}
                 </AlertTitle>
               </Alert>
             )}

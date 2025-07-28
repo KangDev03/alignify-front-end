@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +10,7 @@ import type { RootState } from '@/redux/store';
 import InvitationCard from './invitation-card';
 
 export default function InvitationList() {
+  const { t } = useTranslation();
   const { invitations } = useSelector((state: RootState) => state.invitation);
 
   const filterInvitations = (status?: string) => {
@@ -19,15 +21,15 @@ export default function InvitationList() {
     <div className="space-y-6">
       <Tabs defaultValue="all" className="w-full">
         <TabsList>
-          <TabsTrigger value="all">Tất cả ({invitations.length})</TabsTrigger>
+          <TabsTrigger value="all">{t("invitation.tabs.all")} ({invitations.length})</TabsTrigger>
           <TabsTrigger value="PENDING">
-            Chờ phản hồi ({filterInvitations('PENDING')?.length})
+            {t("invitation.tabs.pending")} ({filterInvitations('PENDING')?.length})
           </TabsTrigger>
           <TabsTrigger value="ACCEPTED">
-            Đã chấp nhận ({filterInvitations('ACCEPTED')?.length})
+            {t("invitation.tabs.accepted")} ({filterInvitations('ACCEPTED')?.length})
           </TabsTrigger>
           <TabsTrigger value="REJECTED">
-            Đã từ chối ({filterInvitations('REJECTED')?.length})
+            {t("invitation.tabs.rejected")} ({filterInvitations('REJECTED')?.length})
           </TabsTrigger>
         </TabsList>
 

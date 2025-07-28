@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -17,24 +19,26 @@ interface LandingFeaturesProps {
 }
 
 export function LandingFeatures({ activeTab, setActiveTab, brandFeatures, influencerFeatures }: LandingFeaturesProps) {
+  const { t } = useTranslation();
+
   return (
     <section id="features" className="py-20 px-4 bg-muted/50">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Tính năng nổi bật</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("landingFeatures.title")}</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Được thiết kế riêng cho nhu cầu của từng đối tượng
+            {t("landingFeatures.description")}
           </p>
         </div>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-4xl mx-auto">
           <TabsList className="grid w-full grid-cols-2 mb-12">
             <TabsTrigger value="brands" className="flex items-center gap-2">
               <Icons.crown className="h-4 w-4" />
-              Dành cho Brands
+              {t("landingFeatures.tabBrands")}
             </TabsTrigger>
             <TabsTrigger value="influencers" className="flex items-center gap-2">
               <Icons.camera className="h-4 w-4" />
-              Dành cho Influencers
+              {t("landingFeatures.tabInfluencers")}
             </TabsTrigger>
           </TabsList>
           <TabsContent value="brands">

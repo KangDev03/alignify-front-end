@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -44,6 +45,7 @@ export default function HomeCampaignDialog({
   campaign,
   sendNotification,
 }: HomeCampaignDialogProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { role: userRole, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
   const [applyCampaign, { isLoading: isApplying }] = useApplyCampaignMutation();
@@ -63,22 +65,22 @@ export default function HomeCampaignDialog({
       await applyCampaign({ campaignId: campaign.campaignId, CV: cv }).unwrap();
       sendNotification({
         userId: campaign.brandId,
-        content: `${name!} đã ứng tuyển\n${campaign?.campaignName}`,
+        content: `${name!} ${t("campaignCard.applied")}\n${campaign?.campaignName}`,
         avatarUrl: avatarUrl!,
         name: campaign.brandName!,
       });
       sendNotification({
         userId: id!,
-        content: `Ứng tuyển thành công\n${campaign?.campaignName}`,
+        content: `${t("campaignCard.applySuccess")}\n${campaign?.campaignName}`,
         avatarUrl: avatarUrl!,
         name: name!,
       });
       dispatch(applyForApplciation({ campaignId: campaign.campaignId, influencerId: id! }));
-      toast.success('Ứng tuyển thành công.');
+      toast.success(t("campaignCard.applySuccess"));
       form.reset();
     } catch (error) {
       console.log(error);
-      toast.error('Ứng tuyển thất bại. Vui lòng thử lại sau.');
+      toast.error(t("campaignCard.applyError"));
     }
   };
   return (
@@ -87,13 +89,13 @@ export default function HomeCampaignDialog({
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="flex items-center w-full bg-transparent">
             <Icons.eye className="h-4 w-4 mr-2" />
-            Xem chi tiết
+            {t("campaignCard.viewCampaignDetails")}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
           <DialogHeader className="border-b-2 border-border p-0 m-0 py-3">
             <DialogTitle className="font-semibold text-xl text-center">
-              Chiến dịch của {campaign.brandName}
+              {t("campaignCard.campaignPostBy")} {campaign.brandName}
             </DialogTitle>
             <DialogDescription className="hidden"></DialogDescription>
           </DialogHeader>
@@ -103,18 +105,18 @@ export default function HomeCampaignDialog({
       {userRole === 'INFLUENCER' &&
         (isApplied ? (
           <Button variant="default" size="sm" className="flex-1" disabled>
-            Đã ứng tuyển
+            {t("campaignCard.appliedButton")}
           </Button>
         ) : (
           <Dialog>
             <DialogTrigger className="flex-1">
               <Button variant="default" size="sm" className="w-full">
-                Ứng tuyển
+                {t("campaignCard.apply")}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] flex flex-col gap-4">
               <DialogHeader>
-                <DialogTitle>Bạn có chắc chắn muốn ứng tuyển vào chiến dịch không ?</DialogTitle>
+                <DialogTitle>{t("campaignCard.sureApply")}</DialogTitle>
               </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleApplyCampaign)}>
@@ -123,7 +125,7 @@ export default function HomeCampaignDialog({
                     name="cv"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Tải lên CV hoặc Portfolio của bạn</FormLabel>
+                        <FormLabel>{t("campaignCard.uploadPortfolioOrCV")}</FormLabel>
                         <FormControl>
                           <div>
                             <Input
@@ -145,9 +147,9 @@ export default function HomeCampaignDialog({
                                   size="sm"
                                 >
                                   <Icons.fileImage />
-                                  <span>Chọn ảnh</span>
+                                  <span>{t("campaignCard.choseImgButton")}</span>
                                 </Button>
-                                <span className="text-sm">hoặc</span>
+                                <span className="text-sm">{t("campaignCard.orText")}</span>
                                 <Button
                                   type="button"
                                   onClick={() => document.getElementById('poster-upload')?.click()}
@@ -155,7 +157,7 @@ export default function HomeCampaignDialog({
                                   size="sm"
                                 >
                                   <Icons.fileImage />
-                                  <span>Sử dụng của bạn</span>
+                                  <span>{t("campaignCard.useByYou")}</span>
                                 </Button>
                               </div>
                             </div>
@@ -173,7 +175,7 @@ export default function HomeCampaignDialog({
                               }
                             >
                               <Icons.eye />
-                              <span>Xem trước</span>
+                              <span>{t("campaignCard.viewContract")}</span>
                             </Button>
                             <Button
                               type="button"
@@ -182,7 +184,7 @@ export default function HomeCampaignDialog({
                               onClick={() => field.onChange(undefined)}
                             >
                               <Icons.trash />
-                              <span>Xóa ảnh</span>
+                              <span>{t("campaignCard.deleteImg")}</span>
                             </Button>
                           </div>
                         )}
@@ -193,10 +195,10 @@ export default function HomeCampaignDialog({
                     {isApplying ? (
                       <>
                         <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Đang ứng tuyển
+                        {t("campaignCard.applying")}
                       </>
                     ) : (
-                      'Ứng tuyển'
+                      t("campaignCard.apply")
                     )}
                   </Button>
                 </form>

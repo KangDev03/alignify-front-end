@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import type { RootState } from '@/redux/store';
 import { useChangeSoundModeMutation } from '../setting.service';
 
 export default function NotificationsSection() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { sound } = useSelector((state: RootState) => state.auth);
   const [turnSound] = useChangeSoundModeMutation();
@@ -17,38 +19,38 @@ export default function NotificationsSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Thông báo</h3>
+        <h3 className="text-lg font-medium">{t('notifications.title')}</h3>
         <p className="text-sm text-muted-foreground">
-          Tùy chỉnh cách bạn nhận thông báo từ hệ thống.
+          {t('notifications.description')}
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Thông báo Email</CardTitle>
+          <CardTitle>{t('notifications.email.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Chiến dịch mới</Label>
-              <p className="text-sm text-muted-foreground">Nhận email khi có chiến dịch phù hợp</p>
+              <Label>{t('notifications.email.campaign.label')}</Label>
+              <p className="text-sm text-muted-foreground">{t('notifications.email.campaign.description')}</p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Tin nhắn mới</Label>
+              <Label>{t('notifications.email.message.label')}</Label>
               <p className="text-sm text-muted-foreground">
-                Thông báo khi có tin nhắn từ brands/influencers
+                {t('notifications.email.message.description')}
               </p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Cập nhật hệ thống</Label>
+              <Label>{t('notifications.email.system.label')}</Label>
               <p className="text-sm text-muted-foreground">
-                Thông tin về tính năng mới và cập nhật
+                {t('notifications.email.system.description')}
               </p>
             </div>
             <Switch />
@@ -58,13 +60,13 @@ export default function NotificationsSection() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Push Notifications</CardTitle>
+          <CardTitle>{t('notifications.push.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Âm thanh thông báo</Label>
-              <p className="text-sm text-muted-foreground">Phát âm thanh khi có thông báo mới</p>
+              <Label>{t('notifications.push.sound.label')}</Label>
+              <p className="text-sm text-muted-foreground">{t('notifications.push.sound.description')}</p>
             </div>
             <Switch
               id="sound"

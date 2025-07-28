@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Calendar, DollarSignIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -31,6 +32,7 @@ export interface SelectRequirement {
 }
 
 export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
+  const { t } = useTranslation();
   const { id: userId } = useSelector((state: RootState) => state.auth);
   const initializeSelectRequirement = (campaignRequirements: Campaign['campaignRequirements']) => {
     return campaignRequirements.map((req) => ({
@@ -91,13 +93,13 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
         </div>
 
         <div>
-          <h4 className="text-sm font-medium mb-1">Mô tả chiến dịch:</h4>
+          <h4 className="text-sm font-medium mb-1">{t("campaignCard.describeCampaign")}:</h4>
           <p className="text-sm text-muted-foreground">{campaign.content}</p>
         </div>
 
         {campaign.categories.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            <h4 className="text-sm font-medium">Danh mục:</h4>
+            <h4 className="text-sm font-medium">{t("campaignCard.categories")}:</h4>
             {campaign.categories.map((cat: any, i: number) => (
               <Badge key={cat.categoryId ?? i} variant="outline">
                 {cat.categoryName ?? cat}
@@ -106,7 +108,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
           </div>
         )}
         <div className="flex flex-wrap gap-2">
-          <h4 className="text-sm font-medium">Nền tảng:</h4>
+          <h4 className="text-sm font-medium">{t("campaignCard.platform")}:</h4>
           {orderedCampaignRequirements.map((require, idx) => {
             let style = '';
             const platform = require.platform.toLowerCase();
@@ -147,7 +149,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
         <div className="grid grid-cols-2 gap-4">
           {/* Ngân sách */}
           <div className="flex flex-col">
-            <h4 className="text-sm font-medium mb-1">Ngân sách</h4>
+            <h4 className="text-sm font-medium mb-1">{t("campaignCard.budget")}</h4>
             <div className="flex items-center w-fit mr-4">
               <DollarSignIcon className="w-4 h-4 mr-2 text-green-500" />
               <span>{`${Number(campaign.budget).toLocaleString('vi-VN')} VNĐ`}</span>
@@ -156,7 +158,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
 
           {/* Thời gian */}
           <div className="flex flex-col">
-            <h4 className="text-sm font-medium mb-1">Thời gian</h4>
+            <h4 className="text-sm font-medium mb-1">{t("campaignCard.time")}</h4>
             <div className="flex items-center w-fit">
               <Calendar className="w-4 h-4 mr-2 text-primary" />
               <p>{`${formatDate(campaign.startAt)} - ${formatDate(campaign.dueAt)}`}</p>
@@ -167,52 +169,52 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
         <Separator />
 
         <div className="flex flex-row gap-2 items-center">
-          <p className="text-sm font-medium">Trạng thái:</p>
+          <p className="text-sm font-medium">{t("campaignCard.status")}:</p>
           {StatusBadge(campaign.status)}
         </div>
 
         {(campaign.joinedInfluencerIds.includes(userId!) ||
           campaign.brandId === userId ||
           campaign.appliedInfluencerIds?.includes(userId!)) && (
-          <div className="flex flex-row gap-2 items-center">
-            <p className="text-sm font-medium">Hợp đồng:</p>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={async (e) => {
-                e.stopPropagation();
-                if (campaign.contractUrl) {
-                  try {
-                    const response = await fetch(campaign.contractUrl);
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    const fileName =
-                      campaign.contractUrl.split('/').pop() ||
-                      (campaign.contractUrl.endsWith('.pdf') ? 'cv.pdf' : 'cv');
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    window.URL.revokeObjectURL(url);
-                  } catch {
-                    toast.error('Không thể tải file CV. Vui lòng thử lại sau.');
+            <div className="flex flex-row gap-2 items-center">
+              <p className="text-sm font-medium">{t("campaignCard.contract")}:</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (campaign.contractUrl) {
+                    try {
+                      const response = await fetch(campaign.contractUrl);
+                      const blob = await response.blob();
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      const fileName =
+                        campaign.contractUrl.split('/').pop() ||
+                        (campaign.contractUrl.endsWith('.pdf') ? 'cv.pdf' : 'cv');
+                      a.download = fileName;
+                      document.body.appendChild(a);
+                      a.click();
+                      a.remove();
+                      window.URL.revokeObjectURL(url);
+                    } catch {
+                      toast.error(t("campaignCard.uploadCVError"));
+                    }
                   }
-                }
-              }}
-            >
-              <Icons.fileUser className="h-4 w-4 mr-1" />
-              {campaign.contractUrl ? 'Đính kèm' : 'Chưa tải lên'}
-            </Button>
-          </div>
-        )}
+                }}
+              >
+                <Icons.fileUser className="h-4 w-4 mr-1" />
+                {campaign.contractUrl ? t("campaignCard.attached") : t("campaignCard.unupload")}
+              </Button>
+            </div>
+          )}
 
         <div className="flex flex-col gap-2">
-          <p className="font-semibold">Yêu cầu về influencer</p>
+          <p className="font-semibold">{t("campaignCard.InluencerRequirements")}</p>
           <div className="flex gap-1 items-center">
             <Icons.circleAlert size={14} />
-            <p className="text-sm">Lượt theo dõi</p>
+            <p className="text-sm">{t("campaignCard.followers")}</p>
           </div>
           <div
             className={cn(
@@ -268,7 +270,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <p className="font-semibold">Yêu cầu về các bài đăng trên các nền tảng</p>
+          <p className="font-semibold">{t("campaignCard.postRequirements")}</p>
           <div
             className={cn(
               'flex items-start flex-wrap',
@@ -383,7 +385,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
                                     side="bottom"
                                     className="rounded-full text-xs py-1"
                                   >
-                                    <p>Lượt thích</p>
+                                    <p>{t("campaignCard.likeCount")}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -399,7 +401,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
                                     side="bottom"
                                     className="rounded-full text-xs py-1"
                                   >
-                                    <p>Lượt thích</p>
+                                    <p>{t("campaignCard.likeCount")}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -415,7 +417,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
                                     side="bottom"
                                     className="rounded-full text-xs py-1"
                                   >
-                                    <p>Lượt thích</p>
+                                    <p>{t("campaignCard.likeCount")}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -428,7 +430,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
                                     side="bottom"
                                     className="rounded-full text-xs py-1"
                                   >
-                                    <p>Lượt thích</p>
+                                    <p>{t("campaignCard.likeCount")}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -442,7 +444,7 @@ export default function CampaignDetail({ campaign }: { campaign: Campaign }) {
                                   <Icons.messageCircle size={14} className="text-blue-500 p-0" />
                                 </TooltipTrigger>
                                 <TooltipContent side="bottom" className="rounded-full text-xs py-1">
-                                  <p>Lượt bình luận</p>
+                                  <p>{t("campaignCard.commentCount")}</p>
                                 </TooltipContent>
                               </Tooltip>
                               <p>{require.details[selectedIndex].comment}</p>

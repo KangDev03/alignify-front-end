@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ export default function ParticipatingCampaignDialog({
   campaign,
   sendNotification,
 }: ParticipatingCampaignDialogProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { role: userRole, id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
   const [changeStatus] = useChangeStatusMutation();
@@ -40,31 +42,31 @@ export default function ParticipatingCampaignDialog({
       await changeStatus({ campaignId: campaign.campaignId, newStatus: 'COMPLETED' }).unwrap();
       sendNotificationForAll(
         campaign.appliedInfluencerIds ?? [],
-        `Đã hoàn thành chiến dịch\n${campaign?.campaignName}`,
+        `${t("campaignCard.completedCampaign")}\n${campaign?.campaignName}`,
         name!,
         avatarUrl!,
         sendNotification,
       );
       sendNotification({
         userId: id!,
-        content: `Bạn đã kết thúc chiến dịch\n${campaign?.campaignName}`,
+        content: `${t("campaignCard.endCampaign")}\n${campaign?.campaignName}`,
         name: name!,
         avatarUrl: avatarUrl!,
       });
       setTimeout(() => {
         sendNotificationForAll(
           campaign.appliedInfluencerIds ?? [],
-          `Đã hoàn thành chiến dịch\n${campaign?.campaignName}`,
+          `${t("campaignCard.completedCampaign")}\n${campaign?.campaignName}`,
           '',
           '',
           sendNotification,
         );
       }, 1000 * 60);
       dispatch(changeCampaignStatus({ campaignId: campaign.campaignId, status: 'COMPLETED' }));
-      toast.success('Chiến dịch đã kết thúc!');
+      toast.success(t("campaignCard.endedCampaign"));
     } catch (error) {
       console.error(error);
-      toast.error('Chuyển giai đoạn thất bại!');
+      toast.error(t("campaignCard.failedPhaseChange"));
     }
   };
   return (
@@ -73,13 +75,13 @@ export default function ParticipatingCampaignDialog({
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
             <Icons.eye className="w-4 h-4 mr-2" />
-            Theo dõi chiến dịch
+            {t("campaignCard.trackCampaignButton")}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4" showCloseButton={false}>
           <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
             <DialogTitle className="font-semibold text-xl text-center">
-              Chiến dịch của {campaign.brandName}
+              {t("campaignCard.campaignPostBy")} {campaign.brandName}
             </DialogTitle>
             <DialogDescription className="hidden"></DialogDescription>
           </DialogHeader>
@@ -96,7 +98,7 @@ export default function ParticipatingCampaignDialog({
             onClick={handleEndCampaign}
           >
             <Icons.play className="h-4 w-4 mr-1" />
-            Kết thúc
+            {t("campaignCard.endButton")}
           </Button>
         </>
       )}
