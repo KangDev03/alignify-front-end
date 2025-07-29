@@ -119,18 +119,16 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
 
   const currentPlan = userRole === 'INFLUENCER' ? 'creator' : 'starter';
   const { data: fetchedPlans } = useGetPlansByRoleQuery(userRole.toLowerCase() ?? '');
+  console.log(fetchedPlans?.data);
   // useEffect(() => {
-  //   if (fetchedPlans?.data?.length) {
-  //     const free = fetchedPlans.data.find((plan) => plan.price === 0);
-  //     if (free?.planId) {
-  //       setCurrentPlanId((prev) => prev || free.planId);
+  //   if (!currentPlanId && fetchedPlans?.data?.length) {
+  //     const freePlan = fetchedPlans.data.find((plan) => plan.price === 0);
+  //     if (freePlan?.planId) {
+  //       setSelectedPlanId(freePlan.planId);
   //     }
   //   }
-  // }, [fetchedPlans]);
+  // }, [fetchedPlans, currentPlanId]);
 
-  //m lam de set free plan thoi ma
-  // T làm rồi đó với t sửa lại chút còn cái set nó t  chưa dùng vì để m làm đó chứ đừng ctrl z lại\
-  // t dang lam do
   const [createPayOS] = useCreatePayOSMutation();
   const [createPaypal] = useCreatePaypalMutation();
 
