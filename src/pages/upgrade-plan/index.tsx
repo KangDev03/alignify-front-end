@@ -119,18 +119,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
 
   const currentPlan = userRole === 'INFLUENCER' ? 'creator' : 'starter';
   const { data: fetchedPlans } = useGetPlansByRoleQuery(userRole.toLowerCase() ?? '');
-  // useEffect(() => {
-  //   if (fetchedPlans?.data?.length) {
-  //     const free = fetchedPlans.data.find((plan) => plan.price === 0);
-  //     if (free?.planId) {
-  //       setCurrentPlanId((prev) => prev || free.planId);
-  //     }
-  //   }
-  // }, [fetchedPlans]);
 
-  //m lam de set free plan thoi ma
-  // T làm rồi đó với t sửa lại chút còn cái set nó t  chưa dùng vì để m làm đó chứ đừng ctrl z lại\
-  // t dang lam do
   const [createPayOS] = useCreatePayOSMutation();
   const [createPaypal] = useCreatePaypalMutation();
 
@@ -196,7 +185,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      { }
+      {}
       <div className="text-center mb-12">
         <div className="flex items-center justify-center mb-4">
           <Crown className="h-8 w-8 text-amber-500 mr-2" />
@@ -229,9 +218,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
             <PlanCard key={plan.planId} plan={plan} currentPlan={currentPlan}>
               {location.pathname !== '/dashboard' && (
                 <Button
-                  className={
-                    'w-full text-base font-semibold'
-                  }
+                  className={'w-full text-base font-semibold'}
                   onClick={() => plan.planId !== currentPlanId && handleUpgrade(plan.planId)}
                   disabled={plan.planId === currentPlanId}
                 >
@@ -275,7 +262,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
                           return (
                             <td key={plan.planId} className="text-center p-4">
                               {permission &&
-                                (permission.limited === undefined || permission.limited > 0) ? (
+                              (permission.limited === undefined || permission.limited > 0) ? (
                                 <div className="flex flex-col items-center">
                                   <Check className="h-5 w-5 text-green-500" />
                                   {permission.limited !== undefined && (
