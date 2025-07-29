@@ -119,15 +119,6 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
 
   const currentPlan = userRole === 'INFLUENCER' ? 'creator' : 'starter';
   const { data: fetchedPlans } = useGetPlansByRoleQuery(userRole.toLowerCase() ?? '');
-  console.log(fetchedPlans?.data);
-  // useEffect(() => {
-  //   if (!currentPlanId && fetchedPlans?.data?.length) {
-  //     const freePlan = fetchedPlans.data.find((plan) => plan.price === 0);
-  //     if (freePlan?.planId) {
-  //       setSelectedPlanId(freePlan.planId);
-  //     }
-  //   }
-  // }, [fetchedPlans, currentPlanId]);
 
   const [createPayOS] = useCreatePayOSMutation();
   const [createPaypal] = useCreatePaypalMutation();
