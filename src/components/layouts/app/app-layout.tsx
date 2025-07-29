@@ -51,9 +51,9 @@ function AppLayout() {
           if (received && received.userId && received.userId === userId) {
             toast.warning(
               'Tài khoản của bạn đã bị khóa vào lúc: ' +
-                formatTime(parseIsoToDateTime(received.createdAt)) +
-                ' ' +
-                formatDate(parseIsoToDateTime(received.createdAt)),
+              formatTime(parseIsoToDateTime(received.createdAt)) +
+              ' ' +
+              formatDate(parseIsoToDateTime(received.createdAt)),
             );
             handleLogout();
           }
@@ -124,7 +124,7 @@ function AppLayout() {
   if (roleName !== 'ADMIN' && location.pathname !== '/settings') {
     backgroundImage =
       theme === 'dark' ||
-      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         ? '/background-dark.png'
         : '/background-light.png';
   }

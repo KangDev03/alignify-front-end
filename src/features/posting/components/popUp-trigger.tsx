@@ -4,6 +4,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Icons } from '@/components/icons/icons';
 import type { RoleName } from '@/features/common/common.type';
 import { useAppSelector } from '@/hooks/redux';
+import { cn } from '@/lib/utils';
 import type { RootState } from '@/redux/store';
 import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
 
@@ -17,7 +18,7 @@ export default function PopUpTrigger() {
   return (
     userRole !== 'ADMIN' && (
       <Dialog>
-        <DialogTrigger className="fixed bottom-24 right-8 cursor-pointer">
+        <DialogTrigger className={cn(userRole === "BRAND" ? "fixed bottom-6 right-8 cursor-pointer" : "fixed bottom-24 right-8 cursor-pointer")}>
           {userRole === 'INFLUENCER' ? (
             <Tooltip delayDuration={500}>
               <TooltipTrigger>

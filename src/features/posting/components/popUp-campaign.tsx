@@ -102,36 +102,36 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
         : [{ platform: '', followers: undefined }],
       campaignRequirements: campaignData?.campaignRequirements?.length
         ? campaignData.campaignRequirements.map((req) => {
-            return {
-              platform: req.platform,
-              post_type: req.post_type,
-              quantity: req.quantity,
-              postDetails: req.details.map((item) => {
-                const postType = item.post_type?.toLowerCase() as PostType;
-                return {
-                  [postType]: {
-                    like: item.like,
-                    comment: item.comment,
-                    share: item.share,
-                    view: item.view,
-                  },
-                };
-              }),
-            };
-          })
+          return {
+            platform: req.platform,
+            post_type: req.post_type,
+            quantity: req.quantity,
+            postDetails: req.details.map((item) => {
+              const postType = item.post_type?.toLowerCase() as PostType;
+              return {
+                [postType]: {
+                  like: item.like,
+                  comment: item.comment,
+                  share: item.share,
+                  view: item.view,
+                },
+              };
+            }),
+          };
+        })
         : [
-            {
-              platform: '',
-              post_type: '',
-              quantity: undefined,
-              postDetails: [
-                { post: { like: 0, comment: 0, share: 0, view: 0 } },
-                { video: { like: 0, comment: 0, share: 0, view: 0 } },
-                { story: { like: 0, comment: 0, share: 0, view: 0 } },
-                { reel: { like: 0, comment: 0, share: 0, view: 0 } },
-              ],
-            },
-          ],
+          {
+            platform: '',
+            post_type: '',
+            quantity: undefined,
+            postDetails: [
+              { post: { like: 0, comment: 0, share: 0, view: 0 } },
+              { video: { like: 0, comment: 0, share: 0, view: 0 } },
+              { story: { like: 0, comment: 0, share: 0, view: 0 } },
+              { reel: { like: 0, comment: 0, share: 0, view: 0 } },
+            ],
+          },
+        ],
       categoryIds: campaignData?.categories.map((cat) => cat.categoryId) || [],
       image: undefined,
     },
@@ -249,8 +249,8 @@ export default function CampaignPopUp({ campaignData }: PopUpCampaignProps) {
           createdAt,
           categories: campaignRaw.categoryIds
             ? campaignRaw.categoryIds.map((catId) => {
-                return categories!.find((cat) => cat.categoryId === catId)!;
-              })
+              return categories!.find((cat) => cat.categoryId === catId)!;
+            })
             : _categories,
         };
         const res = await updateCampaign({
