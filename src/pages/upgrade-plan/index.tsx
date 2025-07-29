@@ -218,12 +218,7 @@ export function UpgradePlan({ userRole }: UpgradePlanProps) {
             <PlanCard key={plan.planId} plan={plan} currentPlan={currentPlan}>
               {location.pathname !== '/dashboard' && (
                 <Button
-                  className={
-                    'w-full mt-4 py-2 text-base font-semibold rounded-xl ' +
-                    (plan.planId === currentPlanId
-                      ? 'bg-blue-500 text-white cursor-default'
-                      : 'bg-blue-500 text-white hover:bg-blue-600')
-                  }
+                  className={'w-full text-base font-semibold'}
                   onClick={() => plan.planId !== currentPlanId && handleUpgrade(plan.planId)}
                   disabled={plan.planId === currentPlanId}
                 >

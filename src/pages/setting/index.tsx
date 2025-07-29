@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Bell, CreditCard, Lock, Palette, SettingsIcon, Shield, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Bell, Lock, Palette, SettingsIcon, Shield, User } from 'lucide-react';
 
 import {
   Sidebar,
@@ -19,7 +20,7 @@ import {
 
 import AccountSection from '@/features/setting/components/account-section';
 import AppearanceSection from '@/features/setting/components/appearance-section';
-import BillingSection from '@/features/setting/components/billing-section';
+// import BillingSection from '@/features/setting/components/billing-section';
 import NotificationsSection from '@/features/setting/components/notify-section';
 import PrivacySection from '@/features/setting/components/privacy-section';
 import ProfileSection from '@/features/setting/components/profile-section';
@@ -34,31 +35,35 @@ type SettingsSection =
   | 'billing'
   | 'privacy';
 
-const sidebarItems = [
-  {
-    group: 'Cài đặt chung',
-    items: [
-      { id: 'profile', label: 'Hồ sơ cá nhân', icon: User },
-      { id: 'account', label: 'Tài khoản', icon: SettingsIcon },
-      { id: 'security', label: 'Bảo mật', icon: Shield },
-    ],
-  },
-  {
-    group: 'Tùy chỉnh',
-    items: [
-      { id: 'notifications', label: 'Thông báo', icon: Bell },
-      { id: 'appearance', label: 'Giao diện', icon: Palette },
-      { id: 'privacy', label: 'Quyền riêng tư', icon: Lock },
-    ],
-  },
-  {
-    group: 'Khác',
-    items: [{ id: 'billing', label: 'Thanh toán', icon: CreditCard }],
-  },
-];
 
 export function Settings() {
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState<SettingsSection>('profile');
+
+  const sidebarItems = [
+    {
+      group: t('settings.groups.general'),
+      items: [
+        { id: 'profile', label: t('settings.items.profile'), icon: User },
+        { id: 'account', label: t('settings.items.account'), icon: SettingsIcon },
+        { id: 'security', label: t('settings.items.security'), icon: Shield },
+      ],
+    },
+    {
+      group: t('settings.groups.customization'),
+      items: [
+        { id: 'notifications', label: t('settings.items.notifications'), icon: Bell },
+        { id: 'appearance', label: t('settings.items.appearance'), icon: Palette },
+        { id: 'privacy', label: t('settings.items.privacy'), icon: Lock },
+      ],
+    },
+    // {
+    //   group: t('settings.groups.other'),
+    //   items: [
+    //     { id: 'billing', label: t('settings.items.billing'), icon: CreditCard },
+    //   ],
+    // },
+  ];
 
   const renderContent = () => {
     switch (activeSection) {
@@ -72,8 +77,8 @@ export function Settings() {
         return <NotificationsSection />;
       case 'appearance':
         return <AppearanceSection />;
-      case 'billing':
-        return <BillingSection />;
+      // case 'billing':
+      //   return <BillingSection />;
       case 'privacy':
         return <PrivacySection />;
       default:
@@ -88,8 +93,8 @@ export function Settings() {
           <SidebarHeader className="border-b px-4 py-3">
             <div className="flex items-center space-x-2">
               <div>
-                <h1 className="font-semibold">Cài đặt</h1>
-                <p className="text-sm text-muted-foreground">Quản lý tài khoản và tùy chỉnh</p>
+                <h1 className="font-semibold">{t('settings.title')}</h1>
+                <p className="text-sm text-muted-foreground">{t('settings.subtitle')}</p>
               </div>
             </div>
           </SidebarHeader>

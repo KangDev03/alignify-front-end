@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ type PlanCardProps = {
 };
 
 const PlanCard = ({ plan, currentPlan, children }: PlanCardProps) => {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const [deletePlan] = useDeletePlanMutation();
@@ -40,13 +42,12 @@ const PlanCard = ({ plan, currentPlan, children }: PlanCardProps) => {
   return (
     <Card
       key={plan.planId}
-      className={`relative transition-all duration-300 hover:shadow-lg ${
-        plan.isPopular && !location.pathname.endsWith('/dashboard')
-          ? 'ring-2 ring-primary shadow-lg scale-105'
-          : plan.isPopular
-            ? 'ring-2 ring-primary shadow-lg'
-            : ''
-      } ${plan.planId === currentPlan ? 'border-green-500' : ''}`}
+      className={`relative transition-all duration-300 hover:shadow-lg ${plan.isPopular && !location.pathname.endsWith('/dashboard')
+        ? 'ring-2 ring-primary shadow-lg scale-105'
+        : plan.isPopular
+          ? 'ring-2 ring-primary shadow-lg'
+          : ''
+        } ${plan.planId === currentPlan ? 'border-green-500' : ''}`}
     >
       {/* {badge && location.pathname !== '/dashboard' && (
         <div className="flex justify-center">
@@ -60,7 +61,7 @@ const PlanCard = ({ plan, currentPlan, children }: PlanCardProps) => {
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
           <div className="bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded-full flex items-center shadow">
             <Icons.star className="h-4 w-4 mr-1" />
-            Được Đề Xuất
+            {t("plan.recommended")}
           </div>
         </div>
       )}
@@ -68,7 +69,7 @@ const PlanCard = ({ plan, currentPlan, children }: PlanCardProps) => {
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
           <div className="bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded-full flex items-center shadow">
             <Icons.star className="h-4 w-4 mr-1" />
-            Được Đề Xuất
+            {t("plan.recommended")}
           </div>
         </div>
       )}
@@ -103,47 +104,52 @@ const PlanCard = ({ plan, currentPlan, children }: PlanCardProps) => {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
-        <div className="text-center">
-          <div className="text-3xl font-bold">{formatPrice(plan.price)}</div>
-          <div className="text-sm text-muted-foreground">{formatPlanType(plan.planType)}</div>
-        </div>
+      <CardContent className="h-full flex flex-col">
+        <div className="flex-1 space-y-3">
+          <div className="text-center">
+            <div className="text-3xl font-bold">{formatPrice(plan.price)}</div>
+            <div className="text-sm text-muted-foreground">{formatPlanType(plan.planType)}</div>
+          </div>
 
-        <div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground">
-          <div className="flex items-center space-x-1">
-            <Icons.users className="h-4 w-4" />
-            <span>{plan.planCount} </span>
+          <div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground">
+            <div className="flex items-center space-x-1">
+              <Icons.users className="h-4 w-4" />
+              <span>{plan.planCount} </span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-medium">{t("plan.features")}:</h4>
+            <ul className="space-y-1">
+              {plan.planPermissions.slice(0, 4).map((planPermission, index) => (
+                <li key={index} className="flex items-start space-x-2 text-sm">
+                  <Icons.check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>
+                    {formatPlanPermissionName(planPermission.planPermissionName)}
+                    {typeof planPermission.limited === 'number'
+                      ? ` tối đa ${planPermission.limited}`
+                      : ''}
+                  </span>
+                </li>
+              ))}
+              {plan.planPermissions.length > 4 && (
+                <li className="text-sm text-muted-foreground">
+                  +{plan.planPermissions.length - 4} {t("plan.otherFeatures")}
+                </li>
+              )}
+            </ul>
+          </div>
+
+          <div className="pt-4 border-t">
+            <div className="text-xs text-muted-foreground">
+              {/* Tạo ngày: {new Date(createdAt).toLocaleDateString('vi-VN')} */}
+            </div>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <h4 className="font-medium">Tính năng:</h4>
-          <ul className="space-y-1">
-            {plan.planPermissions.slice(0, 4).map((planPermission, index) => (
-              <li key={index} className="flex items-start space-x-2 text-sm">
-                <Icons.check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>
-                  {formatPlanPermissionName(planPermission.planPermissionName)}
-                  {typeof planPermission.limited === 'number'
-                    ? ` tối đa ${planPermission.limited}`
-                    : ''}
-                </span>
-              </li>
-            ))}
-            {plan.planPermissions.length > 4 && (
-              <li className="text-sm text-muted-foreground">
-                +{plan.planPermissions.length - 4} tính năng khác
-              </li>
-            )}
-          </ul>
+        <div className="mt-auto">
+          {children}
         </div>
-
-        <div className="pt-4 border-t">
-          <div className="text-xs text-muted-foreground">
-            {/* Tạo ngày: {new Date(createdAt).toLocaleDateString('vi-VN')} */}
-          </div>
-        </div>
-        {children}
       </CardContent>
     </Card>
   );

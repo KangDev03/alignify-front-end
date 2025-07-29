@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import type { RootState } from '@/redux/store';
 import { useChangePublicModeMutation } from '../setting.service';
 
 export default function PrivacySection() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { publicAcc, role } = useSelector((state: RootState) => state.auth);
   const [changePublicMode] = useChangePublicModeMutation();
@@ -18,23 +20,23 @@ export default function PrivacySection() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Quyền riêng tư</h3>
+        <h3 className="text-lg font-medium">{t('privacy.title')}</h3>
         <p className="text-sm text-muted-foreground">
-          Kiểm soát quyền riêng tư và dữ liệu cá nhân của bạn.
+          {t('privacy.description')}
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Hiển thị hồ sơ</CardTitle>
+          <CardTitle>{t('privacy.profileVisibility.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {role === 'INFLUENCER' && (
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Hồ sơ công khai</Label>
+                <Label>{t('privacy.profileVisibility.publicLabel')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Cho phép mọi người xem hồ sơ của bạn
+                  {t('privacy.profileVisibility.publicDescription')}
                 </p>
               </div>
               <Switch
@@ -93,18 +95,18 @@ export default function PrivacySection() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Quyền kiểm soát dữ liệu</CardTitle>
+          <CardTitle>{t('privacy.dataControl.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
             <Button variant="outline" className="w-full justify-start">
-              Tải xuống dữ liệu của tôi
+              {t('privacy.dataControl.download')}
             </Button>
             {/* <Button variant="outline" className="w-full justify-start">
-              Yêu cầu xóa dữ liệu
+              {t('privacy.dataControl.delete')}
             </Button> */}
             {/* <Button variant="outline" className="w-full justify-start">
-              Xem chính sách quyền riêng tư
+              {t('privacy.dataControl.viewPolicy')}
             </Button> */}
           </div>
         </CardContent>

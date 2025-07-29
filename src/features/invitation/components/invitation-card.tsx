@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
@@ -15,39 +16,8 @@ import { formatCurrency, formatDate, isApiResponseError } from '@/utils/format';
 import { useConfirmInvitationMutation } from '../invitation.service';
 import type { Invitation } from '../invitation.type';
 
-const getStatusBadge = (status: string) => {
-  switch (status) {
-    case 'PENDING':
-      return (
-        <Badge className="py-0.5" variant="pending">
-          <Icons.clock4 size={12} className="" />
-          <p className="leading-6">Chờ phản hồi</p>
-        </Badge>
-      );
-    case 'ACCEPTED':
-      return (
-        <Badge className="py-0.5" variant="accepted">
-          <Icons.circleCheckBig size={12} className="" />
-          <p className="leading-6">Đã chấp nhận</p>
-        </Badge>
-      );
-    case 'REJECTED':
-      return (
-        <Badge className="py-0.5" variant="rejected">
-          <Icons.circleX size={12} className="" />
-          <p className="leading-6">Bị từ chối</p>
-        </Badge>
-      );
-    default:
-      return (
-        <Badge className="py-0.5" variant="outline">
-          {status}
-        </Badge>
-      );
-  }
-};
-
 const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
+  const { t } = useTranslation();
   const { role, id: userId, avatarUrl, name } = useSelector((state: RootState) => state.auth);
   const [confirmInvitation, { isSuccess, isLoading }] = useConfirmInvitationMutation();
   const [loadingType, setLoadingType] = useState<'ACCEPT' | 'REJECT' | null>(null);
@@ -62,7 +32,7 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
       });
     } catch (error) {
       if (isApiResponseError(error)) toast.error(error.data.error);
-      else toast.error('Xác nhận lời mời thất bại. Vui lòng thử lại!');
+      else toast.error(t("invitation.toast.acceptError"));
     } finally {
       setLoadingType(null);
     }
@@ -72,18 +42,50 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
     if (isSuccess) {
       sendNotification({
         userId: userId!,
-        content: `Bạn đã chấp nhận lời mời của ${invitation.campaign.brandName}\n${invitation.campaign.campaignName}`,
+        content: `${t("invitation.notification.acceptForBrand")} ${invitation.campaign.brandName}\n${invitation.campaign.campaignName}`,
         avatarUrl: avatarUrl!,
         name: name!,
       });
       sendNotification({
         userId: invitation.campaign.brandId,
-        content: `Đã chấp nhận lời mời của bạn\n${invitation.campaign.campaignName}`,
+        content: `${t("invitation.notification.acceptForInfluenceer")}\n${invitation.campaign.campaignName}`,
         avatarUrl: avatarUrl!,
         name: name!,
       });
     }
-  }, [isSuccess, avatarUrl, invitation.campaign, name, userId, sendNotification]);
+  }, [isSuccess, avatarUrl, invitation.campaign, name, userId, sendNotification, t]);
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return (
+          <Badge className="py-0.5" variant="pending">
+            <Icons.clock4 size={12} className="" />
+            <p className="leading-6">{t("invitation.badge.pending")}</p>
+          </Badge>
+        );
+      case 'ACCEPTED':
+        return (
+          <Badge className="py-0.5" variant="accepted">
+            <Icons.circleCheckBig size={12} className="" />
+            <p className="leading-6">{t("invitation.badge.accepted")}</p>
+          </Badge>
+        );
+      case 'REJECTED':
+        return (
+          <Badge className="py-0.5" variant="rejected">
+            <Icons.circleX size={12} className="" />
+            <p className="leading-6">{t("invitation.badge.rejected")}</p>
+          </Badge>
+        );
+      default:
+        return (
+          <Badge className="py-0.5" variant="outline">
+            {status}
+          </Badge>
+        );
+    }
+  };
 
   return (
     <Card className="hover:shadow-md transition-shadow ">
@@ -114,9 +116,9 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
         </div>
         <p className="mt-1 text-center">{invitation.campaign.campaignName}</p>
         <div className="flex items-center text-center justify-center gap-2 text-[#666]">
-          <span>Ngân sách: {formatCurrency(invitation.campaign.budget)}</span>
+          <span>{t("invitation.card.budget")}: {formatCurrency(invitation.campaign.budget)}</span>
           <span>|</span>
-          <span>Giới hạn: {formatDate(invitation.createdAt)}</span>
+          <span>{t("invitation.card.timeLimit")}: {formatDate(invitation.createdAt)}</span>
           {/* {invitation.respondedAt && (
                   <span>Phản hồi: {formatDate(invitation.respondedAt)}</span>
                 )} */}
@@ -138,7 +140,7 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
               {isLoading && loadingType === 'REJECT' && (
                 <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Từ chối
+              {t("invitation.card.rejectButton")}
             </Button>
             <Button
               type="button"
@@ -150,7 +152,7 @@ const InvitationCard = ({ invitation }: { invitation: Invitation }) => {
               {isLoading && loadingType === 'ACCEPT' && (
                 <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Chấp nhận
+              {t("invitation.card.acceptButton")}
             </Button>
           </div>
         )}

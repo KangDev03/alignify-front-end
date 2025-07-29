@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useNavigate } from 'react-router';
 import { AlertCircleIcon } from 'lucide-react';
@@ -28,6 +29,7 @@ interface BrandsProps {
 }
 
 export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { role } = useAppSelector((state: RootState) => state.common);
@@ -77,7 +79,6 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
   );
 
   let isLoading: boolean | null = null;
-  console.log(`Data: ${categoryData}`);
   if (isSearching) {
     isLoading = isLoadingSearch;
   } else if (isAll) {
@@ -178,7 +179,7 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
     return (
       <Alert variant="default">
         <AlertCircleIcon />
-        <AlertTitle>Không tìm thấy tài khoản Brand nào</AlertTitle>
+        <AlertTitle>{t('brand.notFound')}</AlertTitle>
       </Alert>
     );
   }
@@ -194,68 +195,68 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
         <div className="space-y-4">
           {brandProfile && brandProfile.length > 0
             ? brandProfile.map((brand) => (
-                <Card
-                  key={brand.id}
-                  className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
-                >
-                  <CardContent>
-                    <div className="flex items-center space-x-4">
-                      <Avatar className="h-16 w-16">
-                        <AvatarImage
-                          src={brand.avatarUrl || '/placeholder.svg'}
-                          alt={brand.name}
-                          className="object-cover"
-                        />
-                        <AvatarFallback>{brand.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 flex flex-col gap-1">
-                        <div className="flex items-center space-x-2">
-                          <h3 className="font-semibold">{brand.name}</h3>
+              <Card
+                key={brand.id}
+                className="border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-all"
+              >
+                <CardContent>
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage
+                        src={brand.avatarUrl || '/placeholder.svg'}
+                        alt={brand.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback>{brand.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 flex flex-col gap-1">
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-semibold">{brand.name}</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{brand.bio}</p>
+                      {brand?.category && (
+                        <div className="flex gap-1 text-sm text-muted-foreground capitalize">
+                          {brand?.category.map((cat: Category, i) => (
+                            <Badge key={cat.categoryId ?? i} variant="outline">
+                              {cat.categoryName ?? cat}
+                            </Badge>
+                          ))}
                         </div>
-                        <p className="text-sm text-muted-foreground">{brand.bio}</p>
-                        {brand?.category && (
-                          <div className="flex gap-1 text-sm text-muted-foreground capitalize">
-                            {brand?.category.map((cat: Category, i) => (
-                              <Badge key={cat.categoryId ?? i} variant="outline">
-                                {cat.categoryName ?? cat}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-                        <div className="flex items-center space-x-4 mt-2 text-sm">
-                          <div className="flex items-center space-x-1">
-                            <Icons.building2 className="h-4 w-4" />
-                            <span>{brand.totalCampaign} chiến dịch</span>
-                          </div>
+                      )}
+                      <div className="flex items-center space-x-4 mt-2 text-sm">
+                        <div className="flex items-center space-x-1">
+                          <Icons.building2 className="h-4 w-4" />
+                          <span>{brand.totalCampaign} {t('brand.campaignCount')}</span>
                         </div>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate(`/brand/${brand.id}`)}
-                      >
-                        Xem hồ sơ
-                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/brand/${brand.id}`)}
+                    >
+                      {t('brand.viewProfile')}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
             : brandProfile.length === 0 &&
-              isLoading == null && (
-                <Alert variant="default">
-                  <AlertCircleIcon />
-                  <AlertTitle>Không có tài khoản Brand nào</AlertTitle>
-                  <AlertDescription>
-                    Bạn có thể quay lại đây sau khi các tài khoản Brand xuất hiện.
-                  </AlertDescription>
-                </Alert>
-              )}
+            isLoading == null && (
+              <Alert variant="default">
+                <AlertCircleIcon />
+                <AlertTitle>{t('brand.empty')}</AlertTitle>
+                <AlertDescription>
+                  {t('brand.emptyDesc')}
+                </AlertDescription>
+              </Alert>
+            )}
           {!hasMore && brandProfile.length > 0 && (
             <Alert variant="default">
               <AlertCircleIcon />
-              <AlertTitle>Không còn tài khoản Brand nào</AlertTitle>
+              <AlertTitle>{t('brand.noMore')}</AlertTitle>
               <AlertDescription>
-                Bạn có thể quay lại đây sau khi các tài khoản Brand mới xuất hiện.
+                {t('brand.noMoreDesc')}
               </AlertDescription>
             </Alert>
           )}
@@ -264,9 +265,9 @@ export default function Brands({ searchTerm, selectedCategoryId }: BrandsProps) 
       {brandProfile.length === 0 && !isLoading && (
         <Alert variant="default">
           <AlertCircleIcon />
-          <AlertTitle>Không có tài khoản Brand nào</AlertTitle>
+          <AlertTitle>{t('brand.empty')}</AlertTitle>
           <AlertDescription>
-            Bạn có thể quay lại đây sau khi các tài khoản Brand xuất hiện.
+            {t('brand.emptyDesc')}
           </AlertDescription>
         </Alert>
       )}

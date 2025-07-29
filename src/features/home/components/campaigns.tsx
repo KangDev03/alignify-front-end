@@ -1,4 +1,5 @@
-import { useEffect, useMemo,useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDispatch } from 'react-redux';
 import { AlertCircleIcon } from 'lucide-react';
@@ -25,6 +26,7 @@ interface CampaignsProps {
   searchTerm: string | null;
 }
 export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsProps) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { campaign } = useAppSelector((state) => state.homeRefetch);
   const { campaignPosting }: { campaignPosting: Campaign[] } = useAppSelector(
@@ -81,9 +83,7 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
       : { term: '', pageNumber: pageNumber, pageSize: 10 },
     { skip: !isSearching },
   );
-  // Log dữ liệu trả về khi tìm kiếm chiến dịch
   if (isSearching) {
-    // eslint-disable-next-line no-console
     console.log('Kết quả tìm kiếm chiến dịch:', searchResult);
   }
   let isLoading: boolean | null = null;
@@ -97,7 +97,6 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
   if ((isLoadingAll || isLoadingCategory || isLoadingSearch) && campaignPosting.length === 0) {
     isLoading = true;
   }
-  // Chuẩn hóa lấy mảng campaign cho search, dùng useMemo để tối ưu và tránh warning
   const searchCampaigns = useMemo(() => {
     if (!isSearching) return [];
     if (Array.isArray(searchResult?.data)) return searchResult?.data;
@@ -242,7 +241,7 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
     return (
       <Alert variant="default">
         <AlertCircleIcon />
-        <AlertTitle>Không tìm thấy chiến dịch nào</AlertTitle>
+        <AlertTitle>{t('campaign.notFound')}</AlertTitle>
       </Alert>
     );
   }
@@ -264,19 +263,15 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
             isLoading == null && (
               <Alert variant="default">
                 <AlertCircleIcon />
-                <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
-                <AlertDescription>
-                  Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
-                </AlertDescription>
+                <AlertTitle>{t('campaign.noCampaign')}</AlertTitle>
+                <AlertDescription>{t('campaign.tryLater')}</AlertDescription>
               </Alert>
             )}
           {!hasMore && campaignPosting.length > 0 && (
             <Alert variant="default">
               <AlertCircleIcon />
-              <AlertTitle>Không có bài đăng chiến dịch mới nào</AlertTitle>
-              <AlertDescription>
-                Bạn có thể quay lại đây sau khi các chiến dịch mới xuất hiện.
-              </AlertDescription>
+              <AlertTitle>{t('campaign.noNewCampaign')}</AlertTitle>
+              <AlertDescription>{t('campaign.tryLaterNew')}</AlertDescription>
             </Alert>
           )}
         </div>
@@ -284,10 +279,8 @@ export default function Campaigns({ selectedCategoryId, searchTerm }: CampaignsP
       {campaignPosting.length === 0 && !isLoading && (
         <Alert variant="default">
           <AlertCircleIcon />
-          <AlertTitle>Không có chiến dịch nào được đăng</AlertTitle>
-          <AlertDescription>
-            Bạn có thể quay lại đây sau khi các chiến dịch xuất hiện.
-          </AlertDescription>
+          <AlertTitle>{t('campaign.noCampaign')}</AlertTitle>
+          <AlertDescription>{t('campaign.tryLater')}</AlertDescription>
         </Alert>
       )}
     </>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import InvitationList from '@/features/invitation/components/invitation-list';
 import type { RootState } from '@/redux/store';
 
 export default function InfluencerInvitations() {
+  const { t } = useTranslation();
   const { invitations } = useSelector((state: RootState) => state.invitation);
 
   const getInvitationsCountByStatus = (status?: string) => {
@@ -18,15 +20,15 @@ export default function InfluencerInvitations() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý lời mời</h1>
-          <p className="mt-2 text-muted-foreground">Phản hồi lời mời từ các Brand (nhãn hàng)</p>
+          <h1 className="text-3xl font-bold">{t("invitation.sectionTitle")}</h1>
+          <p className="mt-2 text-muted-foreground">{t("invitation.influencer.sectionDescription")}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="gap-2 h-fit">
           <CardHeader>
-            <CardTitle className="text-sm">Tổng lời mời</CardTitle>
+            <CardTitle className="text-sm">{t("invitation.influencer.cardTitle.totalInvites")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{invitations.length}</div>
@@ -34,7 +36,7 @@ export default function InfluencerInvitations() {
         </Card>
         <Card className="gap-2 h-fit">
           <CardHeader>
-            <CardTitle className="text-sm">Đã phản hồi</CardTitle>
+            <CardTitle className="text-sm">{t("invitation.influencer.cardTitle.respondedInvites")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
@@ -44,7 +46,7 @@ export default function InfluencerInvitations() {
         </Card>
         <Card className="gap-2 h-fit">
           <CardHeader>
-            <CardTitle className="text-sm">Chờ phản hồi</CardTitle>
+            <CardTitle className="text-sm">{t("invitation.influencer.cardTitle.pendingInvites")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">

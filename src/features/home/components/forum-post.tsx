@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -41,6 +42,7 @@ export interface LikeSending {
 }
 
 export function ForumPost({ contentPosting }: ForumPostProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { token, id: userId } = useAppSelector((state: RootState) => state.auth);
   const [isReadMore, setReadMore] = useState(false);
@@ -149,10 +151,10 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      toast.success("Đã xóa bài viết thành công")
+      toast.success(t('forum.deleteSuccess'))
       setPopoverOpen(false)
     } catch (_error) {
-      toast.error("Xóa bài viết thất bại. Vui lòng thử lại!")
+      toast.error(t('forum.deleteError'))
     } finally {
       setIsDeleting(false)
     }
@@ -180,7 +182,7 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
                 {!contentPosting.isPublic && (
                   <Badge variant="secondary" className="text-xs">
                     <Icons.lock className="w-3 h-3 mr-1" />
-                    Riêng tư
+                    {t('forum.private')}
                   </Badge>
                 )}
               </div>
@@ -199,7 +201,7 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
                         <DialogTrigger>
                           <Button variant="ghost" className="w-full justify-start h-9">
                             <Icons.edit className="w-4 h-4 mr-3" />
-                            Chỉnh sửa bài viết
+                            {t('forum.edit')}
                           </Button>
                         </DialogTrigger>
                         <ContentPopUp contentData={contentPosting} />
@@ -214,18 +216,18 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
                             className="w-full justify-start h-9 text-destructive hover:text-destructive hover:bg-destructive/10"
                           >
                             <Icons.trash2 className="w-4 h-4 mr-3" />
-                            Xóa bài viết
+                            {t('forum.delete')}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Xác nhận xóa bài viết</AlertDialogTitle>
+                            <AlertDialogTitle>{t('forum.confirmDelete')}</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.
+                              {t('forum.confirmDeleteDescription')}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Hủy</AlertDialogCancel>
+                            <AlertDialogCancel>{t('forum.cancel')}</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={handleDeletePost}
                               disabled={isDeleting}
@@ -234,10 +236,10 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
                               {isDeleting ? (
                                 <>
                                   <Icons.loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                  Đang xóa...
+                                  {t('forum.deleting')}
                                 </>
                               ) : (
-                                "Xóa bài viết"
+                                t('forum.delete')
                               )}
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -271,7 +273,7 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
               className="p-0 h-auto text-primary text-sm mt-1"
               onClick={() => setReadMore(!isReadMore)}
             >
-              {isReadMore ? 'Thu gọn' : 'Đọc thêm'}
+              {isReadMore ? t('forum.readLess') : t('forum.readMore')}
             </Button>
           </div>
         </div>
@@ -314,7 +316,7 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
               >
                 <DialogHeader className="border-b-2 border-border p-0 m-0 py-3">
                   <DialogTitle className="font-semibold text-xl text-center">
-                    Bài đăng của {contentPosting.userName}
+                    {t('forum.postBy')} {contentPosting.userName}
                   </DialogTitle>
                   <DialogDescription className="hidden"></DialogDescription>
                 </DialogHeader>
@@ -325,10 +327,6 @@ export function ForumPost({ contentPosting }: ForumPostProps) {
                 />
               </DialogContent>
             </Dialog>
-            {/* <div className="flex items-center space-x-2 text-muted-foreground">
-              <Icons.eye className="h-4 w-4" />
-              <span className="text-sm">{post.views} lượt xem</span>
-            </div> */}
           </div>
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
             <Icons.share2 className="h-4 w-4" />

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 
@@ -36,6 +37,7 @@ export default function PostDetailConfirmation({
   campaignTrackingId,
   campaign,
 }: PostDetailConfirmationProps) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [accepted, setAccepted] = useState<boolean>();
   const platformKey = req.platform.toLowerCase() as keyof typeof SupportedPostTypeByPlatform;
@@ -127,27 +129,27 @@ export default function PostDetailConfirmation({
               let label = '';
               switch (contentType) {
                 case 'view':
-                  label = 'Lượt xem ';
+                  label = t("campaignCard.viewCount") + ' ';
                   break;
                 case 'like':
-                  label = 'Lượt thích ';
+                  label = t("campaignCard.likeCount") + ' ';
                   break;
                 case 'comment':
-                  label = 'Lượt bình luận ';
+                  label = t("campaignCard.commentCount") + ' ';
                   break;
                 case 'share':
-                  label = 'Lượt chia sẻ ';
+                  label = t("campaignCard.shareCount") + ' ';
                   break;
               }
               return (
                 <div key={contentType + idx}>
                   <p className="flex gap-1 items-center">
                     {content[contentType] >=
-                    (campaignRequirements.find(
-                      (campaignReq) =>
-                        campaignReq.platform === req.platform &&
-                        campaignReq.post_type === req.post_type,
-                    )?.details[contentIndex][contentType] ?? 0) ? (
+                      (campaignRequirements.find(
+                        (campaignReq) =>
+                          campaignReq.platform === req.platform &&
+                          campaignReq.post_type === req.post_type,
+                      )?.details[contentIndex][contentType] ?? 0) ? (
                       <Icons.check size={16} className="text-primary stroke-3" />
                     ) : (
                       <Icons.x size={16} className="text-destructive stroke-3" />
@@ -186,10 +188,10 @@ export default function PostDetailConfirmation({
                 {isLoading && !accepted ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Từ chối
+                    {t("campaignCard.reject")}
                   </>
                 ) : (
-                  'Từ chối'
+                  t("campaignCard.reject")
                 )}
               </Button>
               <Button
@@ -211,10 +213,10 @@ export default function PostDetailConfirmation({
                 {isLoading && accepted ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Chấp nhận
+                    {t("campaignCard.accept")}
                   </>
                 ) : (
-                  'Chấp nhận'
+                  t("campaignCard.accept")
                 )}
               </Button>
             </div>

@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,7 @@ interface DraftDialogProps {
   sendNotification: (notification: NotificationSending) => void;
 }
 export default function DraftCampaignDialog({ campaign, sendNotification }: DraftDialogProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { id, name, avatarUrl } = useAppSelector((state: RootState) => state.auth);
 
@@ -54,7 +56,7 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
       await uploadContract({ campaignId: campaign.campaignId, contract: contract }).unwrap();
       sendNotification({
         userId: id!,
-        content: `${campaign?.campaignName} bắt đầu tuyển dụng`,
+        content: `${campaign?.campaignName} ${t("campaignCard.startRecruitment")}`,
         name: name!,
         avatarUrl: avatarUrl!,
       });
@@ -65,11 +67,11 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
           contractUrl: URL.createObjectURL(values.contract),
         }),
       );
-      toast.success('Chiến dịch bắt đầu tuyển!');
+      toast.success(t("campaignCard.campaignStartRecruitment"));
       contractForm.reset();
     } catch (error) {
       console.error(error);
-      toast.error('Chuyển giai đoạn thất bại!');
+      toast.error(t("campaignCard.failedPhaseChange"));
     }
   };
   return (
@@ -78,7 +80,7 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
             <Icons.edit className="h-4 w-4 mr-1" />
-            Chỉnh sửa
+            {t("campaignCard.editButton")}
           </Button>
         </DialogTrigger>
         <CampaignPopUp campaignData={campaign} />
@@ -88,12 +90,12 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
         <DialogTrigger className="flex-1">
           <Button variant="default" size="sm" className="flex-1 w-full" type="button">
             <Icons.play className="h-4 w-4 mr-1" />
-            Đăng tuyển
+            {t("campaignCard.recruitButton")}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[600px] flex flex-col gap-4">
           <DialogHeader>
-            <DialogTitle>Bạn có chắc chắn muốn ứng tuyển vào chiến dịch không ?</DialogTitle>
+            <DialogTitle>{t("campaignCard.sureApply")}</DialogTitle>
           </DialogHeader>
           <Form {...contractForm}>
             <form onSubmit={contractForm.handleSubmit(handleStartRecruit)}>
@@ -102,7 +104,7 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
                 name="contract"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tải lên hợp đồng của bạn</FormLabel>
+                    <FormLabel>{t("campaignCard.uploadContract")}</FormLabel>
                     <FormControl>
                       <div>
                         <Input
@@ -124,7 +126,7 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
                               size="sm"
                             >
                               <Icons.fileImage />
-                              <span>Chọn hợp đồng</span>
+                              <span>{t("campaignCard.choseContractButton")}</span>
                             </Button>
                           </div>
                         </div>
@@ -140,7 +142,7 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
                           onClick={() => window.open(URL.createObjectURL(field.value), '_blank')}
                         >
                           <Icons.eye />
-                          <span>Xem trước</span>
+                          <span>{t("campaignCard.viewContract")}</span>
                         </Button>
                         <Button
                           type="button"
@@ -149,7 +151,7 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
                           onClick={() => field.onChange(undefined)}
                         >
                           <Icons.trash />
-                          <span>Xóa hợp đồng</span>
+                          <span>{t("campaignCard.deleteContract")}</span>
                         </Button>
                       </div>
                     )}
@@ -160,10 +162,10 @@ export default function DraftCampaignDialog({ campaign, sendNotification }: Draf
                 {isUploading ? (
                   <>
                     <Icons.loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang đăng chiến dịch
+                    {t("campaignCard.uploadingCampaign")}
                   </>
                 ) : (
-                  'Đăng tuyển'
+                  t("campaignCard.recruitButton")
                 )}
               </Button>
             </form>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Alert, AlertTitle } from '@/components/ui/alert';
@@ -49,26 +50,28 @@ import {
   useSendInvitationsMutation,
 } from '../invitation.service';
 
-const recommendLetter = (campaign: Campaign) => {
-  return `Xin chào,
-
-Chúng tôi là đại diện từ ${campaign.brandName}. Hiện tại, chúng tôi đang triển khai chiến dịch ${campaign.campaignName}, dự kiến diễn ra từ ${formatDate(campaign.startAt)} đến ${formatDate(campaign.dueAt)}, và rất mong muốn được hợp tác với bạn.
-
-Nếu bạn quan tâm, mình sẽ gửi thêm thông tin chi tiết.
-
-Rất mong nhận được phản hồi từ bạn!
-
-Trân trọng,
-${campaign.brandName}`;
-};
-
 export default function InvitationModal() {
+  const { t } = useTranslation();
   const closeDialogRef = useRef<HTMLButtonElement>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>({
     categoryId: 'all',
-    categoryName: 'Tất cả',
+    categoryName: t("invitation.modal.categoryAll"),
   });
+
+  const recommendLetter = (campaign: Campaign) => {
+    return `Xin chào,
+  
+  Chúng tôi là đại diện từ ${campaign.brandName}. Hiện tại, chúng tôi đang triển khai chiến dịch ${campaign.campaignName}, dự kiến diễn ra từ ${formatDate(campaign.startAt)} đến ${formatDate(campaign.dueAt)}, và rất mong muốn được hợp tác với bạn.
+  
+  Nếu bạn quan tâm, mình sẽ gửi thêm thông tin chi tiết.
+  
+  Rất mong nhận được phản hồi từ bạn!
+  
+  Trân trọng,
+  ${campaign.brandName}`;
+  };
+
   const { data: categoryRaw } = useGetCategoriesQuery(undefined, { refetchOnFocus: true });
   const { data: roleRaw } = useGetRolesQuery(undefined, { refetchOnFocus: true });
   const influencerRoleId = roleRaw?.data?.find((item) => item.roleName === 'INFLUENCER')?.roleId;
@@ -85,11 +88,11 @@ export default function InvitationModal() {
   const [toastId, setToastId] = useState<string | number | undefined>();
   let max =
     selectedCampaign?.influencerCountExpected &&
-    selectedCampaign?.invitedInfluencerIds &&
-    selectedCampaign.joinedInfluencerIds
+      selectedCampaign?.invitedInfluencerIds &&
+      selectedCampaign.joinedInfluencerIds
       ? selectedCampaign.influencerCountExpected -
-        selectedCampaign.joinedInfluencerIds.length -
-        selectedCampaign.invitedInfluencerIds.length
+      selectedCampaign.joinedInfluencerIds.length -
+      selectedCampaign.invitedInfluencerIds.length
       : 0;
   if (max <= 0) max = 0;
   const form = useForm<InvitationFormValues>({
@@ -111,7 +114,7 @@ export default function InvitationModal() {
 
   const handleInfluencerSelect = (influencerId: string) => {
     if (selectedCampaign === undefined || selectedCampaign === null) {
-      toast.error('Vui lòng chọn chiến dịch trước!');
+      toast.error(t("invitation.modal.toast.selectCampaign"));
       return;
     }
     let newSelected: string[];
@@ -124,7 +127,6 @@ export default function InvitationModal() {
     } else {
       newSelected = [...selectedInfluencers, influencerId];
     }
-    console.log(newSelected);
     setSelectedInfluencers(newSelected);
     form.setValue('influencerIds', newSelected);
   };
@@ -135,45 +137,44 @@ export default function InvitationModal() {
       closeDialogRef.current?.click();
       setSelectedInfluencers([]);
       form.reset();
-      console.log(values.influencerIds);
     } catch (error) {
       if (isApiResponseError(error)) {
         toast.error(error.data.error);
-      } else toast.error('Gửi lời mời thất bại. Vui lòng thử lại!');
+      } else toast.error(t("invitation.modal.toast.sendError"));
     }
   };
 
   useEffect(() => {
     if (isSending && !toastId) {
-      const id = toast.loading('Đang gửi lời mời!', { duration: 2000 });
+      const id = toast.loading(t("invitation.modal.toast.sending"), { duration: 2000 });
       setToastId(id);
     }
     if (!isSending && toastId) {
       toast.dismiss(toastId);
       setToastId(undefined);
     }
-  }, [isSending, toastId]);
+  }, [isSending, toastId, t]);
 
   useEffect(() => {
     if (isSuccess && toastId) {
       toast.dismiss(toastId);
-      toast.success('Gửi lời mời thành công!', { duration: 2000 });
+      toast.success(t("invitation.modal.toast.sendSuccess"), { duration: 2000 });
       setToastId(undefined);
     }
-  }, [isSuccess, toastId]);
+  }, [isSuccess, toastId, t]);
   useEffect(() => {
     if (isError && toastId) {
       toast.dismiss(toastId);
-      toast.success('Gửi lời mời thất bại!', { duration: 2000 });
+      toast.success(t("invitation.modal.toast.sendError"), { duration: 2000 });
       setToastId(undefined);
     }
-  }, [isError, toastId]);
+  }, [isError, toastId, t]);
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button>
           {/* <Icons.send className="h-4 w-4 mr-2" /> */}
-          Mời Influencer
+          {t("invitation.modal.inviteButton")}
         </Button>
       </DialogTrigger>
 

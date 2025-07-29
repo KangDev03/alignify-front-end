@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Calendar, Clock, RefreshCw, XCircle } from 'lucide-react';
 
@@ -29,6 +30,7 @@ interface ApplicationDetailProps {
 }
 
 export default function ApplicationDetail({ application, campaignInfo }: ApplicationDetailProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const handleGoToCampaign = () => {
     navigate('/my-campaign');
@@ -53,11 +55,11 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
   const campaignRequirementsArray = Array.isArray(campaignInfo.campaignRequirements)
     ? campaignInfo.campaignRequirements
     : Object.entries(campaignInfo.campaignRequirements || {}).map(([platform, quantity]) => ({
-        platform: platform as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
-        quantity: quantity as number,
-        post_type: '', // Placeholder, adjust if needed
-        details: [], // Placeholder, adjust if needed
-      }));
+      platform: platform as 'FACEBOOK' | 'TIKTOK' | 'YOUTUBE' | 'INSTAGRAM',
+      quantity: quantity as number,
+      post_type: '', // Placeholder, adjust if needed
+      details: [], // Placeholder, adjust if needed
+    }));
 
   const orderedCampaignRequirements = campaignInfo.influencerRequirements
     .map((influencerReq) => {
@@ -93,13 +95,13 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
 
       <div className="space-y-3">
         <div>
-          <h4 className="text-sm font-medium mb-1">Mô tả chiến dịch:</h4>
+          <h4 className="text-sm font-medium mb-1">{t("campaignCard.describeCampaign")}:</h4>
           <p className="text-sm text-muted-foreground">{campaignInfo.content}</p>
         </div>
 
         {campaignInfo.categories && (
           <div className="flex flex-row gap-2">
-            <h4 className="text-sm font-medium mb-2">Danh mục:</h4>
+            <h4 className="text-sm font-medium mb-2">{t("campaignCard.categories")}:</h4>
             <div className="flex flex-wrap gap-2">
               {campaignInfo.categories.map((category, index) => (
                 <Badge key={category.categoryId ?? index} variant="outline">
@@ -113,17 +115,17 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
         <Separator />
 
         <div className="flex flex-row gap-2">
-          <p className="text-sm font-medium ">Trạng thái:</p>
+          <p className="text-sm font-medium ">{t("campaignCard.status")}:</p>
           {StatusBadge(application.status)}
         </div>
-        <h4 className="text-sm font-medium mb-1">Thông tin ứng tuyển</h4>
+        <h4 className="text-sm font-medium mb-1">{t("applications.applicationInformation")}</h4>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="w-full">
             <div className="flex items-center ">
               <Calendar className="h-4 w-4 text-blue-500 mr-2" />
               <div>
-                <p className="text-muted-foreground text-sm whitespace-nowrap">Ngày ứng tuyển:</p>
+                <p className="text-muted-foreground text-sm whitespace-nowrap">{t("applications.appliedOn")}:</p>
                 <p className="text-sm ">{formatDate(application.createdAt)}</p>
               </div>
             </div>
@@ -132,7 +134,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
             <div className="flex items-center">
               <Calendar className="h-4 w-4 text-blue-500 mr-2" />
               <span className="text-sm">
-                <p className="text-muted-foreground text-sm whitespace-nowrap">Phản hồi dự kiến:</p>
+                <p className="text-muted-foreground text-sm whitespace-nowrap">{t("applications.expectedResponse")}:</p>
                 <p className="text-sm ">{formatDate(application.createdAt)}</p>
               </span>
             </div>
@@ -140,10 +142,10 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
         </div>
 
         <div className="flex flex-col gap-2">
-          <p className="font-semibold">Yêu cầu về influencer</p>
+          <p className="font-semibold">{t("campaignCard.InluencerRequirements")}</p>
           <div className="flex gap-1 items-center">
             <Icons.circleAlert size={14} />
-            <p className="text-sm">Lượt theo dõi</p>
+            <p className="text-sm">{t("campaignCard.followers")}</p>
           </div>
           <div className="flex justify-around items-start py-1">
             {Array.isArray(campaignInfo.influencerRequirements) &&
@@ -191,7 +193,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
         </div>
 
         <div className="flex flex-col gap-2">
-          <p className="font-semibold">Yêu cầu về các bài đăng trên các nền tảng</p>
+          <p className="font-semibold">{t("campaignCard.postRequirements")}</p>
           <div className="flex justify-around items-start flex-wrap">
             {orderedCampaignRequirements.map((require) => {
               let color = '';
@@ -250,9 +252,9 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
                             className={cn(
                               'p-1 m-0 h-fit text-black',
                               require.details[idx].post_type === selected?.post_type &&
-                                require.platform === selected.platform &&
-                                idx === selectedIndex &&
-                                'text-primary',
+                              require.platform === selected.platform &&
+                              idx === selectedIndex &&
+                              'text-primary',
                             )}
                             key={require.post_type + idx}
                             onClick={() => {
@@ -299,7 +301,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
                                     side="bottom"
                                     className="rounded-full text-xs py-1"
                                   >
-                                    <p>Lượt thích</p>
+                                    <p>{t("campaignCard.likeCount")}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -315,7 +317,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
                                     side="bottom"
                                     className="rounded-full text-xs py-1"
                                   >
-                                    <p>Lượt thích</p>
+                                    <p>{t("campaignCard.likeCount")}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -331,7 +333,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
                                     side="bottom"
                                     className="rounded-full text-xs py-1"
                                   >
-                                    <p>Lượt thích</p>
+                                    <p>{t("campaignCard.likeCount")}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -344,7 +346,7 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
                                     side="bottom"
                                     className="rounded-full text-xs py-1"
                                   >
-                                    <p>Lượt thích</p>
+                                    <p>{t("campaignCard.likeCount")}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -377,19 +379,19 @@ export default function ApplicationDetail({ application, campaignInfo }: Applica
           {application.status.toUpperCase() === 'PENDING' && (
             <Button variant="destructive">
               <XCircle className="h-4 w-4" />
-              Hủy ứng tuyển
+              {t("applications.applicationDetail.buttonText.cancelApply")}
             </Button>
           )}
           {application.status.toUpperCase() === 'ACCEPTED' && (
             <Button variant="default" onClick={() => handleGoToCampaign()}>
               <Clock className="h-4 w-4" />
-              Đến trang chiến dịch
+              {t("applications.applicationDetail.buttonText.goToCampaign")}
             </Button>
           )}
           {application.status === 'REJECTED' && (
             <Button variant="default" onClick={() => handleReapply(application.applicationId)}>
               <RefreshCw className="h-4 w-4" />
-              Apply lại
+              {t("applications.applicationDetail.buttonText.reapply")}
             </Button>
           )}
         </div>

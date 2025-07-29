@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useAppSelector } from "@/hooks/redux";
@@ -11,6 +13,7 @@ interface CommentCardProps {
 }
 
 export default function CommentCard({ comment }: CommentCardProps) {
+  const { t } = useTranslation();
   const { id } = useAppSelector((state: RootState) => state.auth);
   return <div className="flex gap-2">
     <Avatar className="h-8 w-8">
@@ -25,7 +28,7 @@ export default function CommentCard({ comment }: CommentCardProps) {
     </Avatar>
     <div className="flex flex-col text-sm gap-1">
       <div className="bg-border w-fit rounded-2xl px-3 py-[6px]">
-        <p className="font-semibold ">{id === comment.userId ? "Bạn" : comment.name}</p>
+        <p className="font-semibold ">{id === comment.userId ? t('forum.MyComments') : comment.name}</p>
         <p className="font-normal">{comment.content}</p>
       </div>
       <p className="text-[10px] font-semibold ml-2">{formatCommonLastTime(parseIsoToDateTime(comment.createdDate))}</p>

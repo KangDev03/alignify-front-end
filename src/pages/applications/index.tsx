@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertCircleIcon, Search } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -12,14 +13,16 @@ import ApplicationCard from '@/features/application/components/application-card'
 
 type TabKey = 'pending' | 'accepted' | 'rejected';
 
-const tabs: { value: TabKey; label: string }[] = [
-  { value: 'pending', label: 'Đang chờ duyệt' },
-  { value: 'accepted', label: 'Đã chấp nhận' },
-  { value: 'rejected', label: 'Bị từ chối' },
-];
 
 export function ApplicationsPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabKey>('pending');
+
+  const tabs: { value: TabKey; label: string }[] = [
+    { value: 'pending', label: t("applications.tabs.pending") },
+    { value: 'accepted', label: t("applications.tabs.accepted") },
+    { value: 'rejected', label: t("applications.tabs.rejected") },
+  ];
 
   const { data: rawData } = useGetApplicationsByInfluencerQuery(undefined, {
     refetchOnMountOrArgChange: true,
@@ -54,7 +57,7 @@ export function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Đơn ứng tuyển của tôi</h1>
+      <h1 className="text-3xl font-bold">{t("applications.sectionTitle")}</h1>
       <Tabs
         defaultValue="pending"
         value={activeTab}
@@ -71,7 +74,7 @@ export function ApplicationsPage() {
           </TabsList>
           <div className="relative w-2/5">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Tìm kiếm..." className="pl-8" />
+            <Input placeholder={t("applications.searchPlaceholder")} className="pl-8" />
           </div>
         </div>
 
@@ -93,9 +96,9 @@ export function ApplicationsPage() {
             ) : (
               <Alert variant="default">
                 <AlertCircleIcon />
-                <AlertTitle>Bạn không có đơn ứng tuyển nào ở trạng thái đang chờ duyệt</AlertTitle>
+                <AlertTitle>{t("applications.noApplications.pending.title")}</AlertTitle>
                 <AlertDescription>
-                  Bạn có thể quay lại đây sau khi ứng tuyển vào các chiến dịch mới.
+                  {t("applications.noApplications.pending.description")}
                 </AlertDescription>
               </Alert>
             )}
@@ -121,10 +124,10 @@ export function ApplicationsPage() {
               <Alert variant="default">
                 <AlertCircleIcon />
                 <AlertTitle>
-                  Bạn không có đơn ứng tuyển nào ở trạng thái đang đã chấp nhận
+                  {t("applications.noApplications.accepted.title")}
                 </AlertTitle>
                 <AlertDescription>
-                  Bạn có thể quay lại đây sau khi các nhà tuyển dụng xác nhận đơn ứng tuyển của bạn.
+                  {t("applications.noApplications.accepted.description")}
                 </AlertDescription>
               </Alert>
             )}
@@ -149,10 +152,10 @@ export function ApplicationsPage() {
               <Alert variant="default">
                 <AlertCircleIcon />
                 <AlertTitle>
-                  Bạn không có đơn ứng tuyển nào ở trạng thái đang đã chấp nhận
+                  {t("applications.noApplications.rejected.title")}
                 </AlertTitle>
                 <AlertDescription>
-                  Bạn có thể quay lại đây sau khi các nhà tuyển dụng xác nhận đơn ứng tuyển của bạn.
+                  {t("applications.noApplications.rejected.description")}
                 </AlertDescription>
               </Alert>
             )}

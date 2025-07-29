@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Star, TrendingUp } from 'lucide-react';
 
@@ -36,14 +37,9 @@ import { useAppDispatch } from '@/hooks/redux';
 import type { RootState } from '@/redux/store';
 import { formatNumber } from '@/utils/format';
 
-const tabs = [
-  { value: 'campaign', label: 'Chiến dịch' },
-  { value: 'brand', label: 'Brands' },
-  { value: 'influencer', label: 'Influencers' },
-  { value: 'forum', label: 'Forum' },
-];
 
 export function HomePage() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { role } = useSelector((state: RootState) => state.auth);
   const { data: roles } = useGetRolesQuery();
@@ -82,6 +78,12 @@ export function HomePage() {
   }, [dispatch, brandProfileRaw, isBrandSuccess, role]);
 
   const [activeTab, setActiveTab] = useState<homeTab>('campaign');
+  const tabs = [
+    { value: 'campaign', label: t('home.tabs.campaign') },
+    { value: 'brand', label: t('home.tabs.brand') },
+    { value: 'influencer', label: t('home.tabs.influencer') },
+    { value: 'forum', label: t('home.tabs.forum') },
+  ];
 
   useEffect(() => {
     dispatch(setRoles(roles));
@@ -120,7 +122,7 @@ export function HomePage() {
     <div className="min-h-screen bg-transparent transition-colors duration-300">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Khám phá</h1>
+          <h1 className="text-3xl font-bold">{t("home.title")}</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -131,7 +133,7 @@ export function HomePage() {
               <div className="relative flex-1">
                 <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Tìm kiếm..."
+                  placeholder={t("home.searchPlaceholder")}
                   value={searchTermChange}
                   onChange={(e) => setSearchTermChange(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
@@ -143,7 +145,7 @@ export function HomePage() {
                 onValueChange={(value) => {
                   dispatch(resetHomeState());
                   if (value === 'all') {
-                    setSelectedCategory({ categoryId: 'all', categoryName: 'Tất Cả' });
+                    setSelectedCategory({ categoryId: 'all', categoryName: t('home.all') });
                   } else {
                     const found = categories?.data!.find((cat) => cat.categoryId === value);
                     if (found) setSelectedCategory(found);
@@ -151,11 +153,11 @@ export function HomePage() {
                 }}
               >
                 <SelectTrigger className="w-full sm:w-[180px] capitalize">
-                  <SelectValue placeholder="Chọn danh mục" />
+                  <SelectValue placeholder={t("home.selectCategory")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all" className="capitalize">
-                    Tất Cả
+                    {t('home.all')}
                   </SelectItem>
                   {categories?.data!.map((category) => (
                     <SelectItem
@@ -220,13 +222,13 @@ export function HomePage() {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <TrendingUp className="h-5 w-5 text-blue-500" />
-                  <span>Chiến dịch hot</span>
+                  <span>{t('home.campaigns.trending')}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {top3Campaign?.data &&
-                Array.isArray(top3Campaign?.data) &&
-                top3Campaign.data.length > 0 ? (
+                  Array.isArray(top3Campaign?.data) &&
+                  top3Campaign.data.length > 0 ? (
                   top3Campaign.data.map((campaign) => (
                     <div
                       key={campaign.campaignId}
@@ -237,7 +239,7 @@ export function HomePage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-muted-foreground">Đang cập nhật</p>
+                  <p className="text-xs text-muted-foreground">{t('home.campaigns.updating')}</p>
                 )}
               </CardContent>
             </Card>
@@ -247,7 +249,7 @@ export function HomePage() {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <Star className="h-5 w-5 text-yellow-500" />
-                  <span>Top Influencers</span>
+                  <span>{t('home.influencers.top')}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -267,13 +269,13 @@ export function HomePage() {
                       <div className="flex-1">
                         <p className="text-sm font-medium">{influencer.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {formatNumber(influencer.follower ?? 0)} followers
+                          {formatNumber(influencer.follower ?? 0)} {t('home.influencers.followers')}
                         </p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-muted-foreground">Đang cập nhật</p>
+                  <p className="text-xs text-muted-foreground">{t('home.campaigns.updating')}</p>
                 )}
               </CardContent>
             </Card>

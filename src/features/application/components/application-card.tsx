@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar, Eye } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -24,6 +25,7 @@ interface ApplicationCardProps {
   campaignInfo: Campaign;
 }
 export default function ApplicationCard({ application, campaignInfo }: ApplicationCardProps) {
+  const { t } = useTranslation();
   const [openDialog, setOpenDialog] = useState<string | null>(null);
 
   return (
@@ -59,8 +61,8 @@ export default function ApplicationCard({ application, campaignInfo }: Applicati
           <Calendar className="w-4 h-4 mr-2 text-primary" />
           <span>
             {application.status === 'PENDING'
-              ? `Ứng tuyển ${formatLastTimeSentMessage(parseIsoToDateTime(application.createdAt))} trước`
-              : `Ngày ứng tuyển: ${formatDate(application.createdAt)}`}
+              ? `${t("applications.applied")} ${formatLastTimeSentMessage(parseIsoToDateTime(application.createdAt))} ${t("applications.ago")}`
+              : `${t("applications.appliedOn")}: ${formatDate(application.createdAt)}`}
           </span>
         </div>
 
@@ -72,18 +74,13 @@ export default function ApplicationCard({ application, campaignInfo }: Applicati
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center w-full">
                 <Eye className="h-4 w-4 mr-2" />
-                Xem chi tiết
+                {t("applications.viewApplication")}
               </Button>
             </DialogTrigger>
-            <DialogContent
-              className="sm:max-w-[600px] h-[85%] gap-0 p-0 pb-4 pr-2"
-              showCloseButton={false}
-            >
-              <DialogHeader className="h-fit border-b-2 border-border p-0 m-0 py-3">
-                <DialogTitle className="font-semibold text-xl text-center">
-                  Chiến dịch của {campaignInfo.brandName}
-                </DialogTitle>
-                <DialogDescription className="hidden"></DialogDescription>
+            <DialogContent className="sm:max-w-[600px] sm:max-h-[85%] gap-0 p-0 pb-4 pr-2" showCloseButton={false}>
+              <DialogHeader className='h-fit border-b-2 border-border p-0 m-0 py-3'>
+                <DialogTitle className='font-semibold text-xl text-center'>{t("applications.campaignPostBy")} {campaignInfo.brandName}</DialogTitle>
+                <DialogDescription className='hidden'></DialogDescription>
               </DialogHeader>
               <ApplicationDetail application={application} campaignInfo={campaignInfo} />
             </DialogContent>
