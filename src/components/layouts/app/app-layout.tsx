@@ -129,6 +129,13 @@ function AppLayout() {
         : '/background-light.png';
   }
 
+  useEffect(() => {
+    if (!token) {
+      navigate('/auth/login');
+      dispatch(logout());
+    }
+  }, [navigate, dispatch, token]);
+
   return (
     <div
       className="flex min-h-screen flex-col bg-cover bg-no-repeat bg-fixed"

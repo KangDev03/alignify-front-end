@@ -1,6 +1,7 @@
 'use client';
 
-import type * as React from 'react';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { BarChart3, CreditCard, Flag, Home, Megaphone, MessageSquare, Users } from 'lucide-react';
 
@@ -25,6 +26,7 @@ import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { logout } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/redux';
 import { baseApi } from '@/redux/baseApi';
+import type { RootState } from '@/redux/store';
 
 type AdminPage =
   | 'focus'
@@ -97,6 +99,13 @@ const navigationItems = [
 export function AdminLayout({ children, currentPage, onPageChange }: AdminLayoutProps) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { token, role } = useSelector((state: RootState) => state.auth);
+  useEffect(() => {
+    if (!token || !role) {
+      navigate('/auth/login');
+      dispatch(logout());
+    }
+  }, [navigate, dispatch, token, role]);
 
   const handleLogout = () => {
     dispatch(baseApi.util.resetApiState());
